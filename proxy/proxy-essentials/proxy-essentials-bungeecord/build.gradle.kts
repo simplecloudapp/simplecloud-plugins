@@ -8,8 +8,8 @@ version = "1.0.0-beta.1"
 dependencies {
     implementation(projects.proxy.proxyEssentials.proxyEssentialsShared)
     implementation(libs.adventure.text.serializer.gson)
-    implementation(libs.simplecloud.plugin.legacy)
-    implementation(libs.simplecloud.plugin.legacy.bungeecord)
+    implementation(projects.api.apiShared)
+    implementation(projects.api.apiBungeecord)
     implementation(libs.cloud.bungee)
     compileOnly(libs.bungeecord.api)
     compileOnly(libs.simplecloud.api)

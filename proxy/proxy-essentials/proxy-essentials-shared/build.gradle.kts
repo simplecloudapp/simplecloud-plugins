@@ -8,7 +8,7 @@ dependencies {
     api(libs.bundles.adventure)
     api(libs.bundles.configurate)
     api(libs.bundles.cloud)
-    implementation(libs.simplecloud.plugin.legacy)
+    implementation(projects.api.apiShared)
     compileOnly(libs.simplecloud.api)
     compileOnly(libs.slf4j.api)
 }

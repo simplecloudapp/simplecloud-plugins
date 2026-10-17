@@ -9,7 +9,7 @@ dependencies {
     compileOnly(libs.slf4j.api)
     implementation(libs.adventure)
     implementation(libs.adventure.text.minimessage)
-    implementation(libs.simplecloud.plugin)
+    implementation(projects.api.apiShared)
     implementation(libs.bundles.configurate)
     implementation(libs.bundles.cloud)
 }

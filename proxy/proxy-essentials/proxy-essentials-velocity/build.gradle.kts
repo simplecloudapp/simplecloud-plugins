@@ -10,8 +10,8 @@ version = "1.0.0-beta.1"
 dependencies {
     implementation(projects.proxy.proxyEssentials.proxyEssentialsShared)
     implementation(libs.cloud.velocity)
-    implementation(libs.simplecloud.plugin.legacy)
-    implementation(libs.simplecloud.plugin.legacy.velocity)
+    implementation(projects.api.apiShared)
+    implementation(projects.api.apiVelocity)
     compileOnly(libs.velocity.api)
     compileOnly(libs.simplecloud.api)
     compileOnly(libs.slf4j.api)

@@ -5,7 +5,7 @@ plugins {
 version = "1.0.10"
 
 dependencies {
-    api(libs.simplecloud.plugin)
+    api(projects.api.apiShared)
     implementation(libs.bundles.adventure)
     implementation(libs.bundles.configurate)
     compileOnly(libs.simplecloud.api)
