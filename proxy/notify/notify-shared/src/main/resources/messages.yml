@@ -1,0 +1,162 @@
+# The messages format version. Do not change this value.
+version: 1
+
+# ───────────────────────────────────────────────────────────────────────────────
+# Format
+# Controls how values inside messages are formatted.
+# ───────────────────────────────────────────────────────────────────────────────
+format:
+  # Pattern used for the <time>, <create_date> and <updated> placeholders.
+  # See java.time.format.DateTimeFormatter for all available pattern letters.
+  date: 'dd.MM.yyyy HH:mm:ss'
+
+# ───────────────────────────────────────────────────────────────────────────────
+# Variables
+# Reusable variables that can be used throughout the messages.
+# Usage: <variable_name> will be replaced with the defined value.
+# ───────────────────────────────────────────────────────────────────────────────
+variables:
+  prefix: '<color:#0EA5E9><bold>⚡</bold></color>'
+
+# ───────────────────────────────────────────────────────────────────────────────
+# Command Messages
+# ───────────────────────────────────────────────────────────────────────────────
+command:
+  # Overview of all commands the sender is allowed to use.
+  # Placeholders: <command>
+  help:
+    title: '<prefix> <#0EA5E9>SimpleCloud Notify commands'
+    entry: '<#E2E8F0><command>'
+    empty: '<prefix> <#F59E0B>No notify commands are available for you.'
+
+  # Hints for commands that were used with wrong or missing arguments.
+  # Placeholders: <command>, <playername>
+  usage:
+    invalid: '<prefix> <#DC2626>Use <#F8FAFC><command> <#DC2626>instead.'
+    entry: '<#E2E8F0><command>'
+    invalid-state: '<prefix> <#DC2626>Use <#F8FAFC>enable <#DC2626>or <#F8FAFC>disable<#DC2626>.'
+    invalid-toggle-value: '<prefix> <#DC2626>Use <#F8FAFC>true <#DC2626>or <#F8FAFC>false<#DC2626>.'
+    missing-player: '<prefix> <#DC2626>Missing player <#F8FAFC><playername><#DC2626>.'
+
+  permission:
+    denied: '<prefix> <#DC2626>You do not have permission to use this command.'
+
+  # Confirmation for a player who toggles their own notifications.
+  # Placeholders: <type>
+  notify:
+    enabled: '<prefix> <#A3E635>Server notifications are now <#F8FAFC>enabled<#A3E635>.'
+    disabled: '<prefix> <#A3E635>Server notifications are now <#F8FAFC>disabled<#A3E635>.'
+    already-enabled: '<prefix> <#F59E0B>Server notifications are already <#F8FAFC>enabled<#F59E0B>.'
+    already-disabled: '<prefix> <#F59E0B>Server notifications are already <#F8FAFC>disabled<#F59E0B>.'
+    type:
+      enabled: '<prefix> <#F8FAFC><type> <#A3E635>notifications are now <#F8FAFC>enabled<#A3E635>.'
+      disabled: '<prefix> <#F8FAFC><type> <#A3E635>notifications are now <#F8FAFC>disabled<#A3E635>.'
+      already-enabled: '<prefix> <#F8FAFC><type> <#F59E0B>notifications are already <#F8FAFC>enabled<#F59E0B>.'
+      already-disabled: '<prefix> <#F8FAFC><type> <#F59E0B>notifications are already <#F8FAFC>disabled<#F59E0B>.'
+
+  # Confirmation for an admin who toggles the notifications of another player.
+  # Placeholders: <playername>, <displayname>, <type>
+  set:
+    enabled: '<prefix> <#A3E635>Server notifications are now <#F8FAFC>enabled <#A3E635>for <white><head:<playername>:true> <#F8FAFC><displayname><#A3E635>.'
+    disabled: '<prefix> <#A3E635>Server notifications are now <#F8FAFC>disabled <#A3E635>for <white><head:<playername>:true> <#F8FAFC><displayname><#A3E635>.'
+    already-enabled: '<prefix> <#F59E0B>Server notifications are already <#F8FAFC>enabled <#F59E0B>for <white><head:<playername>:true> <#F8FAFC><displayname><#F59E0B>.'
+    already-disabled: '<prefix> <#F59E0B>Server notifications are already <#F8FAFC>disabled <#F59E0B>for <white><head:<playername>:true> <#F8FAFC><displayname><#F59E0B>.'
+    type:
+      enabled: '<prefix> <#F8FAFC><type> <#A3E635>notifications are now <#F8FAFC>enabled <#A3E635>for <white><head:<playername>:true> <#F8FAFC><displayname><#A3E635>.'
+      disabled: '<prefix> <#F8FAFC><type> <#A3E635>notifications are now <#F8FAFC>disabled <#A3E635>for <white><head:<playername>:true> <#F8FAFC><displayname><#A3E635>.'
+      already-enabled: '<prefix> <#F8FAFC><type> <#F59E0B>notifications are already <#F8FAFC>enabled <#F59E0B>for <white><head:<playername>:true> <#F8FAFC><displayname><#F59E0B>.'
+      already-disabled: '<prefix> <#F8FAFC><type> <#F59E0B>notifications are already <#F8FAFC>disabled <#F59E0B>for <white><head:<playername>:true> <#F8FAFC><displayname><#F59E0B>.'
+
+  # Overview of all notification types and their current state.
+  # Each entry can be clicked to toggle the type.
+  # Placeholders (entry): <type>, <state>, <toggle>
+  #   <state>  - Replaced with the "enabled" or "disabled" value below.
+  #   <toggle> - Click action that runs the matching enable/disable command.
+  list:
+    title: '<prefix> <#0EA5E9>Your notifications <#475569>(click to toggle)'
+    entry: '<toggle><hover:show_text:''<#94A3B8>Click to toggle''><#475569>» <#E2E8F0><type> <#475569>- <state></hover></toggle>'
+    enabled: '<#A3E635>enabled'
+    disabled: '<#DC2626>disabled'
+    empty: '<prefix> <#F59E0B>There are no notifications available for you.'
+
+  # Result of reloading this file.
+  reload:
+    config:
+      success: '<prefix> <#A3E635>Notify configuration was reloaded.'
+      failed: '<prefix> <#DC2626>Notify configuration could not be reloaded.'
+
+  # Errors that can occur while running a command.
+  # Placeholders: <playername>, <type>
+  error:
+    player-not-found: '<prefix> <#DC2626>Player <#F8FAFC><playername> <#DC2626>was not found.'
+    player-not-online: '<prefix> <#DC2626>Player <#F8FAFC><playername> <#DC2626>is not online.'
+    only-players: '<prefix> <#DC2626>This command can only be used by players.'
+    storage-unavailable: '<prefix> <#DC2626>Notify settings are currently unavailable.'
+    unknown-type: '<prefix> <#DC2626>Unknown notification type <#F8FAFC><type><#DC2626>. Use <#F8FAFC>/scnotify list<#DC2626>.'
+    internal: '<prefix> <#DC2626>An internal error occurred. Try again later.'
+
+# ───────────────────────────────────────────────────────────────────────────────
+# Notifications
+# Messages broadcast to every online player that has the matching permission
+# and has not disabled the notification type.
+# ───────────────────────────────────────────────────────────────────────────────
+notifications:
+  # Display names of the notification types.
+  # Used for the <type> placeholder in command messages.
+  types:
+    server.starting: 'Server starting'
+    server.available: 'Server available'
+    server.stopping: 'Server stopping'
+    server.stopped: 'Server stopped'
+    group.created: 'Group created'
+    group.deleted: 'Group deleted'
+    persistent-server.created: 'Persistent server created'
+    persistent-server.deleted: 'Persistent server deleted'
+
+  # Hover texts that can be inserted into notifications with
+  # <hover:show_text:'<notifications.hover.server>'>, ...group> or ...persistent-server>.
+  # Each hover supports the same placeholders as the notification it is used in.
+  hover:
+    server: |-
+      <#E2E8F0>Server information
+      <br><#94A3B8>Time<#475569>: <#E2E8F0><time>
+      <br><#94A3B8>State<#475569>: <#E2E8F0><state>
+      <br><#94A3B8>Address<#475569>: <#E2E8F0><ip>:<port>
+      <br><#94A3B8>Players<#475569>: <#E2E8F0><players>/<max>
+    group: |-
+      <#E2E8F0>Group information
+      <br><#94A3B8>Time<#475569>: <#E2E8F0><time>
+    persistent-server: |-
+      <#E2E8F0>Persistent server information
+      <br><#94A3B8>Time<#475569>: <#E2E8F0><time>
+
+  # Sent when a server changes its state.
+  # Placeholders:
+  #   <server>      - Name of the server's group.
+  #   <id>          - Numerical id of the server, prefixed with a space.
+  #   <group>       - Name of the server's group.
+  #   <uuid>        - Unique id of the server.
+  #   <state>       - New state of the server.
+  #   <ip>, <port>  - Address of the server.
+  #   <players>     - Current player count.
+  #   <max>         - Maximum player count.
+  #   <time>        - Time of the notification.
+  #   <create_date> - Time the server was created.
+  #   <updated>     - Time the server was last updated.
+  server:
+    starting: '<prefix> <#0EA5E9>Server <hover:show_text:''<notifications.hover.server>''><#F8FAFC><server></hover> <#0EA5E9>is now <#F8FAFC>starting<#0EA5E9>.'
+    available: '<prefix> <#A3E635>Server <hover:show_text:''<notifications.hover.server>''><#F8FAFC><server></hover> <#A3E635>is now <#F8FAFC>available<#A3E635>.'
+    stopping: '<prefix> <#F59E0B>Server <hover:show_text:''<notifications.hover.server>''><#F8FAFC><server></hover> <#F59E0B>is now <#F8FAFC>stopping<#F59E0B>.'
+    stopped: '<prefix> <#DC2626>Server <hover:show_text:''<notifications.hover.server>''><#F8FAFC><server></hover> <#DC2626>is now <#F8FAFC>stopped<#DC2626>.'
+
+  # Sent when a server group is created or deleted.
+  # Placeholders: <group>, <time>
+  group:
+    created: '<prefix> <#0EA5E9>Group <hover:show_text:''<notifications.hover.group>''><#F8FAFC><group></hover> <#0EA5E9>was created.'
+    deleted: '<prefix> <#DC2626>Group <hover:show_text:''<notifications.hover.group>''><#F8FAFC><group></hover> <#DC2626>was deleted.'
+
+  # Sent when a persistent server is created or deleted.
+  # Placeholders: <server>, <time>
+  persistent-server:
+    created: '<prefix> <#0EA5E9>Persistent server <hover:show_text:''<notifications.hover.persistent-server>''><#F8FAFC><server></hover> <#0EA5E9>was created.'
+    deleted: '<prefix> <#DC2626>Persistent server <hover:show_text:''<notifications.hover.persistent-server>''><#F8FAFC><server></hover> <#DC2626>was deleted.'

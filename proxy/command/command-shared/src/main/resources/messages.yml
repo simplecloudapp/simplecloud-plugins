@@ -1,0 +1,113 @@
+# The messages format version. Do not change this value.
+version: 1
+
+# ───────────────────────────────────────────────────────────────────────────────
+# Variables
+# Reusable variables that can be used throughout the messages.
+# Usage: <variable_name> will be replaced with the defined value.
+# ───────────────────────────────────────────────────────────────────────────────
+variables:
+  prefix: '<#0EA5E9><bold>SC</bold> <#475569>|'
+
+# ───────────────────────────────────────────────────────────────────────────────
+# Command Messages
+# Placeholders like <group>, <playername> or <reason> are filled in by the plugin.
+# ───────────────────────────────────────────────────────────────────────────────
+command:
+  # Shown on /cloud
+  help:
+    title: '<prefix> <#0EA5E9>SimpleCloud commands'
+    entry: '<#E2E8F0> <command>'
+    empty: '<prefix> <#F59E0B>No commands are available for you.'
+
+  # Shown when a command is used with wrong arguments
+  usage:
+    invalid: '<prefix> <#DC2626>Use <#F8FAFC><command> <#DC2626>instead.'
+    invalid-number: '<prefix> <#DC2626><#F8FAFC><value> <#DC2626>is not a valid number.'
+    number-too-small: '<prefix> <#DC2626>The number must be at least <#F8FAFC><min><#DC2626>.'
+    number-too-large: '<prefix> <#DC2626>The number must be at most <#F8FAFC><max><#DC2626>.'
+    invalid-target-type: '<prefix> <#DC2626>Use <#F8FAFC>group <#DC2626>or <#F8FAFC>ps <#DC2626>as target type.'
+
+  permission:
+    denied: '<prefix> <#DC2626>You do not have permission to use this command.'
+
+  # /cloud group ...
+  group:
+    list:
+      title: '<prefix> <#0EA5E9>Groups <#475569>(<#E2E8F0><count><#475569>)'
+      entry: '   <#475569>- <#F8FAFC><group> <#475569>(<#E2E8F0><online>/<total> online<#475569>)'
+      empty: '<prefix> <#F59E0B>No groups were found.'
+    info:
+      title: '<prefix> <#0EA5E9>Information about group <#F8FAFC><group>'
+      entry: '   <#94A3B8><key><#475569>: <#E2E8F0><value>'
+    start:
+      success: '<prefix> <#A3E635>Starting <#F8FAFC><count> servers <#A3E635>for group <#F8FAFC><group><#A3E635>.'
+      partial: '<prefix> <#F59E0B>Started only <#F8FAFC><count>/<total> servers <#F59E0B>for group <#F8FAFC><group> <#F59E0B>because <#F8FAFC><reason><#F59E0B>.'
+    stop:
+      success: '<prefix> <#A3E635>Stopping servers of group <#F8FAFC><group><#A3E635>.'
+      success-with-ids: '<prefix> <#A3E635>Stopping servers <#F8FAFC><ids> <#A3E635>of group <#F8FAFC><group><#A3E635>.'
+      partial: '<prefix> <#F59E0B>Stopped only <#F8FAFC><count>/<total> servers <#F59E0B>of group <#F8FAFC><group> <#F59E0B>because <#F8FAFC><reason><#F59E0B>.'
+    error:
+      not-found: '<prefix> <#DC2626>Group <#F8FAFC><group> <#DC2626>was not found.'
+      already-empty: '<prefix> <#F59E0B>Group <#F8FAFC><group> <#F59E0B>has no running servers.'
+      start-failed: '<prefix> <#DC2626>Could not start servers for group <#F8FAFC><group> <#DC2626>because <#F8FAFC><reason><#DC2626>.'
+      stop-failed: '<prefix> <#DC2626>Could not stop servers of group <#F8FAFC><group> <#DC2626>because <#F8FAFC><reason><#DC2626>.'
+
+  # /cloud server ...
+  server:
+    list:
+      title: '<prefix> <#0EA5E9>Servers <#475569>(<#E2E8F0><count><#475569>)'
+      entry: '   <#475569>- <#F8FAFC><server> <#475569>(<#E2E8F0><value><#475569>)'
+      empty: '<prefix> <#F59E0B>No running servers were found.'
+    info:
+      title: '<prefix> <#0EA5E9>Information about server <#F8FAFC><server>'
+      entry: '   <#94A3B8><key><#475569>: <#E2E8F0><value>'
+    start:
+      requested: '<prefix> <#A3E635>Queued a new server for group <#F8FAFC><group><#A3E635>.'
+    stop:
+      success: '<prefix> <#A3E635>Stopping server <#F8FAFC><group> <id><#A3E635>.'
+    error:
+      not-found: '<prefix> <#DC2626>Server <#F8FAFC><group> <id> <#DC2626>was not found.'
+      already-stopping: '<prefix> <#F59E0B>Server <#F8FAFC><group> <id> <#F59E0B>is already stopping.'
+      start-failed: '<prefix> <#DC2626>Could not queue a new server for group <#F8FAFC><group> <#DC2626>because <#F8FAFC><reason><#DC2626>.'
+      stop-failed: '<prefix> <#DC2626>Could not stop server <#F8FAFC><group> <id> <#DC2626>because <#F8FAFC><reason><#DC2626>.'
+
+  # /cloud player ...
+  # <head:<playername>:true> shows the head of the player
+  player:
+    list:
+      title: '<prefix> <#0EA5E9>Players <#475569>(<#E2E8F0><count><#475569>)'
+      entry: '   <#475569>- <white><head:<playername>:true> <#F8FAFC><displayname> <#475569>(<#E2E8F0><value><#475569>)'
+      empty: '<prefix> <#F59E0B>No players were found for this target.'
+    info:
+      title: '<prefix> <#0EA5E9>Information about <white><head:<playername>:true> <#F8FAFC><displayname>'
+      entry: '   <#94A3B8><key><#475569>: <#E2E8F0><value>'
+    send:
+      success: '<prefix> <#A3E635>Sent <white><head:<playername>:true> <#F8FAFC><displayname> <#A3E635>to <#F8FAFC><target><#A3E635>.'
+      success-all: '<prefix> <#A3E635>Sent <#F8FAFC><count> players <#A3E635>to <#F8FAFC><target><#A3E635>.'
+      success-from-server: '<prefix> <#A3E635>Sent <#F8FAFC><count> players <#A3E635>from <#F8FAFC><source> <#A3E635>to <#F8FAFC><target><#A3E635>.'
+    message:
+      success: '<prefix> <#A3E635>Message sent to <white><head:<playername>:true> <#F8FAFC><displayname><#A3E635>.'
+    error:
+      not-found: '<prefix> <#DC2626>Player <#F8FAFC><playername> <#DC2626>was not found.'
+      not-online: '<prefix> <#DC2626>Player <#F8FAFC><playername> <#DC2626>is not online.'
+      same-target: '<prefix> <#F59E0B><white><head:<playername>:true> <#F8FAFC><displayname> <#F59E0B>is already on <#F8FAFC><target><#F59E0B>.'
+      target-not-found: '<prefix> <#DC2626>Target <#F8FAFC><target> <#DC2626>was not found.'
+      source-not-found: '<prefix> <#DC2626>Source <#F8FAFC><source> <#DC2626>was not found.'
+      send-failed: '<prefix> <#DC2626>Could not send <white><head:<playername>:true> <#F8FAFC><displayname> <#DC2626>to <#F8FAFC><target><#DC2626>.'
+      send-all-failed: '<prefix> <#DC2626>Could not send players to <#F8FAFC><target><#DC2626>.'
+      group-target-unavailable: '<prefix> <#F59E0B>Sending players to a group is currently unavailable. Use <#F8FAFC>ps <#F59E0B>instead.'
+      no-online-players: '<prefix> <#F59E0B>No players are online.'
+      all-on-target: '<prefix> <#F59E0B>All players are already on <#F8FAFC><target><#F59E0B>.'
+      no-source-players: '<prefix> <#F59E0B>No players were found on <#F8FAFC><source><#F59E0B>.'
+      message-empty: '<prefix> <#DC2626>Write a message for <#F8FAFC><playername><#DC2626>.'
+      message-failed: '<prefix> <#DC2626>Could not send the message to <#F8FAFC><playername><#DC2626>.'
+
+  # /cloud reload
+  reload:
+    success: '<prefix> <#A3E635>SimpleCloud Command was reloaded.'
+    failed: '<prefix> <#DC2626>SimpleCloud Command could not be reloaded.'
+
+  # Shown when a command fails unexpectedly
+  error:
+    failed: '<prefix> <#DC2626>The command failed because <#F8FAFC><reason><#DC2626>.'

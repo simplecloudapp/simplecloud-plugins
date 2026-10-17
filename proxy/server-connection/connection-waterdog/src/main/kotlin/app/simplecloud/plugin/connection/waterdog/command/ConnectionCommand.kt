@@ -1,0 +1,49 @@
+package app.simplecloud.plugin.connection.waterdog.command
+
+import app.simplecloud.plugin.connection.waterdog.WaterdogConnectionPlugin
+import dev.waterdog.waterdogpe.command.Command
+import dev.waterdog.waterdogpe.command.CommandSender
+import dev.waterdog.waterdogpe.command.CommandSettings
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
+import org.slf4j.LoggerFactory
+
+class ConnectionCommand(
+    private val plugin: WaterdogConnectionPlugin,
+) : Command(
+    "connection",
+    CommandSettings.builder()
+        .setPermission("simplecloud.connection.reload")
+        .build()
+) {
+
+    private val logger = LoggerFactory.getLogger(ConnectionCommand::class.java)
+    private val serializer = PlainTextComponentSerializer.plainText()
+
+    override fun onExecute(sender: CommandSender, alias: String?, args: Array<out String>): Boolean {
+        val messages = plugin.connectionPlugin.messageConfig.get()
+
+        if (args.firstOrNull()?.equals("reload", ignoreCase = true) != true) {
+            sendMessage(sender, messages.command.commandUsage)
+            return true
+        }
+
+        sendMessage(sender, messages.command.configReloading)
+        try {
+            plugin.reload()
+            sendMessage(sender, messages.command.configReloadedSuccess)
+        } catch (exception: Exception) {
+            sendMessage(sender, messages.command.configReloadedFailed)
+            logger.error("Failed to reload config", exception)
+        }
+
+        return true
+    }
+
+    private fun sendMessage(sender: CommandSender, rawMessage: String) {
+        val messages = plugin.connectionPlugin.messageConfig.get()
+        val component = messages.msg(rawMessage)
+        val plain = serializer.serialize(component)
+        sender.sendMessage(plain)
+    }
+
+}

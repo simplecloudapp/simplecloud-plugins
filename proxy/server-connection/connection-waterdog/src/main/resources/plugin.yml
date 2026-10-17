@@ -1,0 +1,8 @@
+name: simplecloud-connection
+version: ${version}
+description: Central proxy plugin for SimpleCloud v3 that registers servers and manages player routing.
+author: InvalidJoker
+
+main: app.simplecloud.plugin.connection.waterdog.WaterdogConnectionPlugin
+
+depends: [simplecloud-api]

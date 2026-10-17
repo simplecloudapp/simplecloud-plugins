@@ -1,0 +1,42 @@
+package app.simplecloud.plugin.command.bungeecord
+
+import app.simplecloud.plugin.command.bungeecord.command.BungeeCloudSender
+import app.simplecloud.plugin.command.shared.CommandPlugin
+import app.simplecloud.plugin.command.shared.command.CloudCommandHandler
+import net.kyori.adventure.platform.bungeecord.BungeeAudiences
+import net.md_5.bungee.api.plugin.Plugin
+import org.incendo.cloud.SenderMapper
+import org.incendo.cloud.bungee.BungeeCommandManager
+import org.incendo.cloud.execution.ExecutionCoordinator
+
+/**
+ * @author Fynn Bauer in 2024
+ */
+class BungeeCordPlugin : Plugin() {
+
+    private val plugin = CommandPlugin(dataFolder)
+    private val adventure = BungeeAudiences.create(this)
+
+    override fun onEnable() {
+        plugin.startup()
+        CloudCommandHandler(createCommandManager(), plugin).register()
+    }
+
+    override fun onDisable() {
+        plugin.shutdown()
+        adventure.close()
+    }
+
+    fun adventure(): BungeeAudiences {
+        return this.adventure
+    }
+
+    private fun createCommandManager(): BungeeCommandManager<BungeeCloudSender> {
+        return BungeeCommandManager(
+            this,
+            ExecutionCoordinator.asyncCoordinator(),
+            SenderMapper.create({ BungeeCloudSender(it, this) }, BungeeCloudSender::getCommandSender)
+        )
+    }
+
+}

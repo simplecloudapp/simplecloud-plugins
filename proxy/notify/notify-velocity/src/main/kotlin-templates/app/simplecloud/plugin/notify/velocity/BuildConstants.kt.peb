@@ -1,0 +1,5 @@
+package app.simplecloud.plugin.notify.velocity
+
+object BuildConstants {
+    const val VERSION = "{{ version }}"
+}
