@@ -1,6 +1,7 @@
 [versions]
 kotlin = "2.4.21"
 kotlinx-coroutines = "1.11.0"
+shadow = "9.6.1"
 
 simplecloud-api = "0.1.0-platform.58-dev.5.1-fe01ce5"
 
@@ -21,6 +22,7 @@ cloud-minestom = "2.2.0-SNAPSHOT"
 
 [libraries]
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+shadow-gradle-plugin = { module = "com.gradleup.shadow:shadow-gradle-plugin", version.ref = "shadow" }
 kotlin-jvm = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
@@ -56,3 +58,4 @@ cloud = ["cloud-core", "cloud-coroutines"]
 
 [plugins]
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }

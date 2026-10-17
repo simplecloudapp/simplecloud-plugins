@@ -14,12 +14,6 @@ rootProject.name = "plugins"
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
-dependencyResolutionManagement {
-    repositories {
-        mavenCentral()
-    }
-}
-
 include(
     ":api:api-shared",
     ":api:api-paper",
