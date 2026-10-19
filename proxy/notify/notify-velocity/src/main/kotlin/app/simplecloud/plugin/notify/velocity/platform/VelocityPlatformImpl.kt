@@ -9,14 +9,10 @@ import java.nio.file.Path
 
 class VelocityPlatformImpl(
     private val dataDirectory: Path,
-    private val server: ProxyServer
+    private val server: ProxyServer,
 ) : NotifyPlatform {
 
-    override fun getDataDirectory(): File {
-        return dataDirectory.toFile()
-    }
+    override fun getDataDirectory(): File = dataDirectory.toFile()
 
-    override fun getOnlinePlayers(): Collection<CloudSender> {
-        return server.allPlayers.map(::VelocityCloudSender)
-    }
+    override fun getOnlinePlayers(): Collection<CloudSender> = server.allPlayers.map(::VelocityCloudSender)
 }

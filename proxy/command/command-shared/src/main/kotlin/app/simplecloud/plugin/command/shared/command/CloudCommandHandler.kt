@@ -1,13 +1,13 @@
 package app.simplecloud.plugin.command.shared.command
 
-import app.simplecloud.plugin.command.shared.utilities.CommandPermissions
 import app.simplecloud.plugin.command.shared.CommandPlugin
 import app.simplecloud.plugin.command.shared.command.commands.GroupCommand
 import app.simplecloud.plugin.command.shared.command.commands.PlayerCommand
 import app.simplecloud.plugin.command.shared.command.commands.ReloadCommand
 import app.simplecloud.plugin.command.shared.command.commands.ServerCommand
 import app.simplecloud.plugin.command.shared.utilities.ApiUtils
-import app.simplecloud.plugin.command.shared.utilities.tags
+import app.simplecloud.plugin.command.shared.utilities.CommandPermissions
+import app.simplecloud.plugin.core.shared.adventure.tags
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.incendo.cloud.CommandManager
 import org.incendo.cloud.exception.ArgumentParseException
@@ -19,7 +19,7 @@ import org.incendo.cloud.permission.Permission
 
 class CloudCommandHandler<C : CloudSender>(
     private val manager: CommandManager<C>,
-    private val plugin: CommandPlugin
+    private val plugin: CommandPlugin,
 ) {
     private val api = plugin.api
 
@@ -44,7 +44,7 @@ class CloudCommandHandler<C : CloudSender>(
                         "/cloud player sendall <group|ps> <target>" to CommandPermissions.PLAYER_SEND,
                         "/cloud player sendfrom <source> <group|ps> <target>" to CommandPermissions.PLAYER_SEND,
                         "/cloud player message <player> <message>" to CommandPermissions.PLAYER_MESSAGE,
-                        "/cloud reload" to CommandPermissions.RELOAD
+                        "/cloud reload" to CommandPermissions.RELOAD,
                     ).filter { (_, permission) -> context.sender().hasPermission(permission) }
 
                     if (entries.isEmpty()) {
@@ -54,11 +54,13 @@ class CloudCommandHandler<C : CloudSender>(
 
                     sender.sendMessage(messages.msg(messages.command.help.title))
                     entries.forEach { (command, _) ->
-                        sender.sendMessage(messages.msg(messages.command.help.entry, Placeholder.unparsed("command", command)))
+                        sender.sendMessage(
+                            messages.msg(messages.command.help.entry, Placeholder.unparsed("command", command)),
+                        )
                     }
                 }
                 .permission(Permission.permission(CommandPermissions.ROOT))
-                .build()
+                .build(),
         )
         GroupCommand(api, plugin, manager).register()
         ServerCommand(api, plugin, manager).register()
@@ -72,11 +74,18 @@ class CloudCommandHandler<C : CloudSender>(
             .registerHandler(CommandExecutionException::class.java) { context ->
                 val cause = context.exception().cause ?: context.exception()
                 val messages = plugin.messageConfiguration
-                context.context().sender().sendMessage(messages.msg(messages.command.error.failed, tags("reason" to ApiUtils.reason(cause))))
+                context.context().sender().sendMessage(
+                    messages.msg(messages.command.error.failed, tags("reason" to ApiUtils.reason(cause))),
+                )
             }
             .registerHandler(InvalidSyntaxException::class.java) { context ->
                 val messages = plugin.messageConfiguration
-                context.context().sender().sendMessage(messages.msg(messages.command.usage.invalid, tags("command" to "/${context.exception().correctSyntax()}")))
+                context.context().sender().sendMessage(
+                    messages.msg(
+                        messages.command.usage.invalid,
+                        tags("command" to "/${context.exception().correctSyntax()}"),
+                    ),
+                )
             }
             .registerHandler(NoPermissionException::class.java) { context ->
                 val messages = plugin.messageConfiguration
@@ -90,9 +99,21 @@ class CloudCommandHandler<C : CloudSender>(
                     val number = cause.input().toBigDecimalOrNull()
                     val range = cause.range()
                     when {
-                        number == null -> messages.msg(messages.command.usage.invalidNumber, tags("value" to cause.input()))
-                        number < range.min().toString().toBigDecimal() -> messages.msg(messages.command.usage.numberTooSmall, tags("min" to range.min()))
-                        number > range.max().toString().toBigDecimal() -> messages.msg(messages.command.usage.numberTooLarge, tags("max" to range.max()))
+                        number == null -> messages.msg(
+                            messages.command.usage.invalidNumber,
+                            tags("value" to cause.input()),
+                        )
+
+                        number < range.min().toString().toBigDecimal() -> messages.msg(
+                            messages.command.usage.numberTooSmall,
+                            tags("min" to range.min()),
+                        )
+
+                        number > range.max().toString().toBigDecimal() -> messages.msg(
+                            messages.command.usage.numberTooLarge,
+                            tags("max" to range.max()),
+                        )
+
                         else -> messages.msg(messages.command.usage.invalidNumber, tags("value" to cause.input()))
                     }
                 } else {

@@ -1,6 +1,5 @@
 plugins {
     id("simplecloud.base-conventions")
-    kotlin("kapt")
 }
 
 dependencies {
@@ -13,5 +12,4 @@ dependencies {
     compileOnly(projects.core.coreShared)
     compileOnly(libs.cloud.velocity)
     compileOnly(libs.velocity.api)
-    kapt(libs.velocity.api)
 }

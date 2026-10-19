@@ -11,7 +11,7 @@ import java.util.UUID
 import kotlin.jvm.optionals.getOrNull
 
 class ProxyPingListener(
-    private val essentials: ProxyEssentials
+    private val essentials: ProxyEssentials,
 ) {
 
     private val serverIconCache = ServerIconCache(essentials.serverIconDirectory)
@@ -39,12 +39,19 @@ class ProxyPingListener(
 
         if (!LocalPingSourceMatcher.isLocal(event.connection.remoteAddress.address)) {
             val onlinePlayers = essentials.playerCountService.getOnlinePlayers()
-            val maxPlayers = layout.version.slots.resolveMaxPlayers(onlinePlayers, essentials.playerCountService.getMaxPlayers())
+            val maxPlayers = layout.version.slots.resolveMaxPlayers(
+                onlinePlayers,
+                essentials.playerCountService.getMaxPlayers(),
+            )
             builder.onlinePlayers(onlinePlayers).maximumPlayers(maxPlayers)
 
             if (layout.playerList.enabled && layout.playerList.playerList.isNotEmpty()) {
                 builder.clearSamplePlayers()
-                builder.samplePlayers(*layout.playerList.playerList.map { ServerPing.SamplePlayer(it, UUID.randomUUID()) }.toTypedArray())
+                builder.samplePlayers(
+                    *layout.playerList.playerList.map {
+                        ServerPing.SamplePlayer(it, UUID.randomUUID())
+                    }.toTypedArray(),
+                )
             }
         }
 

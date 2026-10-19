@@ -1,9 +1,9 @@
 package app.simplecloud.plugin.connection.shared.config.migration
 
-import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
 import app.simplecloud.plugin.connection.shared.config.CommandConfig
 import app.simplecloud.plugin.connection.shared.config.ConnectionConfig
 import app.simplecloud.plugin.connection.shared.config.MessageConfig
+import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
 import kotlin.io.path.createTempDirectory
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -63,21 +63,21 @@ class LegacyConfigMigratorTest {
                 from:
                 - operation: STARTS_WITH
                   value: ignored-by-legacy
-            """.trimIndent()
+            """.trimIndent(),
         )
 
         val connectionConfig = ConfigurationFactory(
             configFile,
             ConnectionConfig::class.java,
-            LegacyConfigMigrator.create(dataDirectory)
+            LegacyConfigMigrator.create(dataDirectory),
         ).loadOrCreate(ConnectionConfig())
         val commandConfig = ConfigurationFactory(
             dataDirectory.resolve("commands.yml"),
-            CommandConfig::class.java
+            CommandConfig::class.java,
         ).loadOrCreate(CommandConfig())
         val messageConfig = ConfigurationFactory(
             dataDirectory.resolve("messages.yml"),
-            MessageConfig::class.java
+            MessageConfig::class.java,
         ).loadOrCreate(MessageConfig())
 
         assertEquals(2, connectionConfig.version)
@@ -106,5 +106,4 @@ class LegacyConfigMigratorTest {
         assertEquals("network join missing", messageConfig.kick.noTargetConnection)
         assertEquals("fallback missing", messageConfig.kick.noFallbackServers)
     }
-
 }

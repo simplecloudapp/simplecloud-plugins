@@ -34,7 +34,10 @@ class BungeeCordTargetResolver(
             if (target.from.isNotEmpty()) {
                 val isFromAllowed = target.from.any { connectionName ->
                     ConnectionResolver.isServerInConnection(
-                        kickedServerName, connectionName, config.connections, serverNames
+                        kickedServerName,
+                        connectionName,
+                        config.connections,
+                        serverNames,
                     )
                 }
                 if (!isFromAllowed) continue
@@ -66,5 +69,4 @@ class BungeeCordTargetResolver(
             .filter { server -> !server.name.equals(excludedServerName, ignoreCase = true) }
             .minByOrNull { server -> server.players.size }
     }
-
 }

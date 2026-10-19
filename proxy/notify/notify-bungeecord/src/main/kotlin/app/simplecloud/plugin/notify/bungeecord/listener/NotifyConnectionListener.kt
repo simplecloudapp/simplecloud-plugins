@@ -19,5 +19,4 @@ class NotifyConnectionListener(
     fun onDisconnect(event: PlayerDisconnectEvent) {
         notify.onPlayerQuit(event.player.uniqueId)
     }
-
 }

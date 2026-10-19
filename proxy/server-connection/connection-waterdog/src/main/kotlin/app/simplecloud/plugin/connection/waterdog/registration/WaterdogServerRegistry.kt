@@ -7,7 +7,7 @@ import dev.waterdog.waterdogpe.network.serverinfo.BedrockServerInfo
 import java.net.InetSocketAddress
 
 class WaterdogServerRegistry(
-    private val proxy: ProxyServer
+    private val proxy: ProxyServer,
 ) : ServerRegistry {
 
     override fun register(proxyName: String, server: RegisteredServer) {

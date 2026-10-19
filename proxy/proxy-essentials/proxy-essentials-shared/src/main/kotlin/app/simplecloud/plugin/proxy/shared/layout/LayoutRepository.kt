@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicReference
 import kotlin.io.path.*
 
 class LayoutRepository(
-    private val directory: Path
+    private val directory: Path,
 ) : YamlDirectoryRepository<LayoutConfig, String>(directory, LayoutConfig::class.java) {
 
     private val logger = LoggerFactory.getLogger(LayoutRepository::class.java)
@@ -17,9 +17,7 @@ class LayoutRepository(
 
     override fun find(identifier: String): LayoutConfig? = layouts.get()[identifier]
 
-    override fun save(entity: LayoutConfig) {
-        throw UnsupportedOperationException()
-    }
+    override fun save(entity: LayoutConfig): Unit = throw UnsupportedOperationException()
 
     fun getNames(): List<String> = layouts.get().keys.sorted()
 
@@ -30,17 +28,17 @@ class LayoutRepository(
             return
         }
 
-        val files = Files.list(directory).use { paths -> paths.filter { it.isRegularFile() && it.extension == "yml" }.toList() }
+        val files = Files.list(directory).use { paths ->
+            paths.filter { it.isRegularFile() && it.extension == "yml" }.toList()
+        }
         layouts.set(files.mapNotNull { loadLayout(it) }.toMap())
     }
 
-    private fun loadLayout(file: Path): Pair<String, LayoutConfig>? {
-        return try {
-            val layout = load(file.toFile()) ?: error("the file is empty")
-            file.nameWithoutExtension to layout
-        } catch (e: Exception) {
-            logger.error("Could not load the layout '${file.fileName}'", e)
-            null
-        }
+    private fun loadLayout(file: Path): Pair<String, LayoutConfig>? = try {
+        val layout = load(file.toFile()) ?: error("the file is empty")
+        file.nameWithoutExtension to layout
+    } catch (e: Exception) {
+        logger.error("Could not load the layout '${file.fileName}'", e)
+        null
     }
 }

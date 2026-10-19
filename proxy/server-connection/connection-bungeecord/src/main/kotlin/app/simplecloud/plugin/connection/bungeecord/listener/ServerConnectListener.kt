@@ -34,7 +34,9 @@ class ServerConnectListener(
         if (!config.networkJoinTargets.enabled) return
 
         event.isCancelled = true
-        event.player.disconnect(*BungeeComponentSerializer.get().serialize(messages.msg(messages.kick.noTargetConnection)))
+        event.player.disconnect(
+            *BungeeComponentSerializer.get().serialize(messages.msg(messages.kick.noTargetConnection)),
+        )
     }
 
     private fun handleLobbyFallback(event: ServerConnectEvent) {
@@ -62,7 +64,8 @@ class ServerConnectListener(
         }
 
         event.isCancelled = true
-        event.player.disconnect(*BungeeComponentSerializer.get().serialize(messages.msg(messages.kick.noFallbackServers)))
+        event.player.disconnect(
+            *BungeeComponentSerializer.get().serialize(messages.msg(messages.kick.noFallbackServers)),
+        )
     }
-
 }

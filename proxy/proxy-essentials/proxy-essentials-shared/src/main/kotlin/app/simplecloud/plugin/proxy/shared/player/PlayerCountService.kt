@@ -3,9 +3,9 @@ package app.simplecloud.plugin.proxy.shared.player
 import app.simplecloud.api.CloudApi
 import app.simplecloud.api.runtime.SimpleCloudRuntime
 import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
-import app.simplecloud.plugin.proxy.shared.platform.ProxyPlatform
 import app.simplecloud.plugin.proxy.shared.config.PlayerCountConfig
 import app.simplecloud.plugin.proxy.shared.config.ProxyEssentialsConfig
+import app.simplecloud.plugin.proxy.shared.platform.ProxyPlatform
 import kotlinx.coroutines.*
 import kotlinx.coroutines.future.await
 import org.slf4j.LoggerFactory
@@ -17,7 +17,7 @@ class PlayerCountService(
     private val api: CloudApi,
     private val platform: ProxyPlatform,
     private val config: ConfigurationFactory<ProxyEssentialsConfig>,
-    private val scope: CoroutineScope
+    private val scope: CoroutineScope,
 ) {
 
     private val logger = LoggerFactory.getLogger(PlayerCountService::class.java)
@@ -67,13 +67,19 @@ class PlayerCountService(
         val groupNames = (listOfNotNull(server.group?.name) + config.additionalGroups).distinct()
         val groups = groupNames.map { api.group().getGroupByName(it).await() }
         val groupServers = groupNames.flatMap { api.server().getServersByGroup(it).await() }
-        val persistentServers = api.server().allServers.await().filter { it.persistentServer?.name in config.additionalPersistentServers }
+        val persistentServers = api.server().allServers.await().filter {
+            it.persistentServer?.name in
+                config.additionalPersistentServers
+        }
 
         val ownMaxPlayers = if (server.group == null) server.maxPlayers ?: 0 else 0
         val otherServers = (groupServers + persistentServers).filter { it.serverId != server.serverId }
 
         otherOnlinePlayers.set(otherServers.sumOf { it.playerCount ?: 0 })
-        networkMaxPlayers.set(ownMaxPlayers + groups.sumOf { it.maxPlayers ?: 0 } + persistentServers.sumOf { it.maxPlayers ?: 0 })
+        networkMaxPlayers.set(
+            ownMaxPlayers + groups.sumOf {
+                it.maxPlayers ?: 0
+            } + persistentServers.sumOf { it.maxPlayers ?: 0 },
+        )
     }
-
 }

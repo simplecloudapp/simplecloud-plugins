@@ -29,7 +29,7 @@ object RegisteredServerResolver {
                 Placeholder.unparsed("id", serverId),
             ) + properties.map {
                 Placeholder.unparsed(it.key.toPlaceholderName(), it.value.toString())
-            }
+            },
         )
 
         val component = MiniMessage.miniMessage().deserialize(pattern, resolver)

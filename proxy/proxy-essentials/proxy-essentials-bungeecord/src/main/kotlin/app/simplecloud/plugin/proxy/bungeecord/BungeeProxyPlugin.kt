@@ -28,11 +28,9 @@ class BungeeProxyPlugin : Plugin() {
         essentials.stop()
     }
 
-    private fun createCommandManager(): BungeeCommandManager<BungeeCloudSender> {
-        return BungeeCommandManager(
-            this,
-            ExecutionCoordinator.asyncCoordinator(),
-            BungeeCloudSenderMapper()
-        )
-    }
+    private fun createCommandManager(): BungeeCommandManager<BungeeCloudSender> = BungeeCommandManager(
+        this,
+        ExecutionCoordinator.asyncCoordinator(),
+        BungeeCloudSenderMapper(),
+    )
 }

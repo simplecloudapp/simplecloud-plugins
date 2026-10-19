@@ -6,7 +6,7 @@ import java.nio.file.Path
 
 class BungeePlatformImpl(
     private val proxy: ProxyServer,
-    private val dataDirectory: Path
+    private val dataDirectory: Path,
 ) : ProxyPlatform {
 
     override fun getDataDirectory() = dataDirectory

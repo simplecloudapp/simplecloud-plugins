@@ -13,7 +13,7 @@ import net.md_5.bungee.event.EventHandler
 import net.md_5.bungee.event.EventPriority
 
 class ConnectionListener(
-    private val essentials: ProxyEssentials
+    private val essentials: ProxyEssentials,
 ) : Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -60,5 +60,4 @@ class ConnectionListener(
         val reason = event.reason ?: return
         event.player.disconnect(reason)
     }
-
 }

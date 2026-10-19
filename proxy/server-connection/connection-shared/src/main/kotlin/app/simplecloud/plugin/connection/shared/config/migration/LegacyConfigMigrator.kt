@@ -1,10 +1,5 @@
 package app.simplecloud.plugin.connection.shared.config.migration
 
-import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
-import app.simplecloud.plugin.core.shared.config.migration.ConfigMigration
-import app.simplecloud.plugin.core.shared.config.migration.ConfigMigrator
-import app.simplecloud.plugin.core.shared.matcher.OperationType
-import app.simplecloud.plugin.core.shared.matcher.ServerMatcherConfiguration
 import app.simplecloud.plugin.connection.shared.config.AddressConfig
 import app.simplecloud.plugin.connection.shared.config.CommandConfig
 import app.simplecloud.plugin.connection.shared.config.CommandEntry
@@ -21,21 +16,24 @@ import app.simplecloud.plugin.connection.shared.config.RegistrationConfig
 import app.simplecloud.plugin.connection.shared.config.RuleType
 import app.simplecloud.plugin.connection.shared.config.TargetConnection
 import app.simplecloud.plugin.connection.shared.utilities.config.ConfigVersion
+import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
+import app.simplecloud.plugin.core.shared.config.migration.ConfigMigration
+import app.simplecloud.plugin.core.shared.config.migration.ConfigMigrator
+import app.simplecloud.plugin.core.shared.matcher.OperationType
+import app.simplecloud.plugin.core.shared.matcher.ServerMatcherConfiguration
 import org.spongepowered.configurate.CommentedConfigurationNode
 import java.io.File
 import java.util.Locale
 
 object LegacyConfigMigrator {
 
-    fun create(dataDirectory: File): ConfigMigrator {
-        return ConfigMigrator.builder(ConfigVersion.VERSION)
-            .fallbackVersion(1)
-            .migrate(1, ConfigVersion.VERSION, LegacyConfigMigration(dataDirectory))
-            .build()
-    }
+    fun create(dataDirectory: File): ConfigMigrator = ConfigMigrator.builder(ConfigVersion.VERSION)
+        .fallbackVersion(1)
+        .migrate(1, ConfigVersion.VERSION, LegacyConfigMigration(dataDirectory))
+        .build()
 
     private class LegacyConfigMigration(
-        private val dataDirectory: File
+        private val dataDirectory: File,
     ) : ConfigMigration {
 
         override fun migrate(node: CommentedConfigurationNode) {
@@ -61,14 +59,14 @@ object LegacyConfigMigrator {
             node.set(ConnectionConfig::class.java, connectionConfig)
         }
 
-        private fun readConnections(root: CommentedConfigurationNode): List<ConnectionEntry> {
-            return root.child("connections").childrenList().map { connection ->
-                ConnectionEntry(
-                    name = connection.string("name"),
-                    serverNameMatcher = connection.child("server-name-matcher", "serverNameMatcher").matcher(),
-                    rules = connection.child("rules").childrenList().map { it.rule() },
-                )
-            }
+        private fun readConnections(root: CommentedConfigurationNode): List<ConnectionEntry> = root.child(
+            "connections",
+        ).childrenList().map { connection ->
+            ConnectionEntry(
+                name = connection.string("name"),
+                serverNameMatcher = connection.child("server-name-matcher", "serverNameMatcher").matcher(),
+                rules = connection.child("rules").childrenList().map { it.rule() },
+            )
         }
 
         private fun readNetworkJoinTargets(root: CommentedConfigurationNode): NetworkJoinTargetsConfig {
@@ -88,7 +86,7 @@ object LegacyConfigMigrator {
 
         private fun readFallback(
             root: CommentedConfigurationNode,
-            connections: MutableList<ConnectionEntry>
+            connections: MutableList<ConnectionEntry>,
         ): FallbackConfig {
             val legacyTargets = root.child("fallback-connections-config", "fallbackConnectionsConfig")
             val fromConnectionNames = LinkedHashMap<ServerMatcherConfiguration, String>()
@@ -111,35 +109,35 @@ object LegacyConfigMigrator {
             )
         }
 
-        private fun readCommands(root: CommentedConfigurationNode): List<CommandEntry> {
-            return root.child("commands").childrenList().map { command ->
-                CommandEntry(
-                    name = command.string("name"),
-                    aliases = command.child("aliases").childrenList().map { it.string() },
-                    permission = command.string("permission"),
-                    messages = CommandMessages(
-                        alreadyConnected = command.string(
-                            "already-connected-message",
-                            "alreadyConnectedMessage",
-                            default = CommandMessages().alreadyConnected
-                        ),
-                        noTargetConnectionFound = command.string(
-                            "no-target-connection-found",
-                            "noTargetConnectionFound",
-                            default = CommandMessages().noTargetConnectionFound
-                        ),
+        private fun readCommands(root: CommentedConfigurationNode): List<CommandEntry> = root.child(
+            "commands",
+        ).childrenList().map { command ->
+            CommandEntry(
+                name = command.string("name"),
+                aliases = command.child("aliases").childrenList().map { it.string() },
+                permission = command.string("permission"),
+                messages = CommandMessages(
+                    alreadyConnected = command.string(
+                        "already-connected-message",
+                        "alreadyConnectedMessage",
+                        default = CommandMessages().alreadyConnected,
                     ),
-                    targetConnections = command.child("target-connections", "targetConnections")
-                        .childrenList()
-                        .map { target ->
-                            FallbackTargetConnection(
-                                name = target.string("name"),
-                                priority = target.int("priority"),
-                                from = listOf(),
-                            )
-                        },
-                )
-            }
+                    noTargetConnectionFound = command.string(
+                        "no-target-connection-found",
+                        "noTargetConnectionFound",
+                        default = CommandMessages().noTargetConnectionFound,
+                    ),
+                ),
+                targetConnections = command.child("target-connections", "targetConnections")
+                    .childrenList()
+                    .map { target ->
+                        FallbackTargetConnection(
+                            name = target.string("name"),
+                            priority = target.int("priority"),
+                            from = listOf(),
+                        )
+                    },
+            )
         }
 
         private fun readMessages(root: CommentedConfigurationNode): MessageConfig {
@@ -153,12 +151,12 @@ object LegacyConfigMigrator {
                     noFallbackServers = fallback.string(
                         "no-target-connection-found-message",
                         "noTargetConnectionFoundMessage",
-                        default = defaults.kick.noFallbackServers
+                        default = defaults.kick.noFallbackServers,
                     ),
                     noTargetConnection = networkJoinTargets.string(
                         "no-target-connection-found-message",
                         "noTargetConnectionFoundMessage",
-                        default = defaults.kick.noTargetConnection
+                        default = defaults.kick.noTargetConnection,
                     ),
                 ),
             )
@@ -166,7 +164,7 @@ object LegacyConfigMigrator {
 
         private fun findOrCreateFromConnection(
             matcher: ServerMatcherConfiguration,
-            connections: MutableList<ConnectionEntry>
+            connections: MutableList<ConnectionEntry>,
         ): String {
             val existingConnection = connections.firstOrNull { it.serverNameMatcher == matcher }
             if (existingConnection != null) return existingConnection.name
@@ -194,7 +192,7 @@ object LegacyConfigMigrator {
 
         private fun uniqueConnectionName(
             preferredName: String,
-            connections: List<ConnectionEntry>
+            connections: List<ConnectionEntry>,
         ): String {
             val usedNames = connections.mapTo(mutableSetOf()) { it.name.lowercase(Locale.ROOT) }
             if (preferredName.lowercase(Locale.ROOT) !in usedNames) return preferredName
@@ -207,22 +205,18 @@ object LegacyConfigMigrator {
         private fun <E> writeSplitConfig(file: File, config: E, javaClass: Class<E>) {
             ConfigurationFactory(file, javaClass).save(config)
         }
-
     }
-
 }
 
-private fun CommentedConfigurationNode.child(vararg names: String): CommentedConfigurationNode {
-    return names
-        .asSequence()
-        .map { this.node(it) }
-        .firstOrNull { !it.virtual() }
-        ?: this.node(names.first())
-}
+private fun CommentedConfigurationNode.child(vararg names: String): CommentedConfigurationNode = names
+    .asSequence()
+    .map { this.node(it) }
+    .firstOrNull { !it.virtual() }
+    ?: this.node(names.first())
 
 private fun CommentedConfigurationNode.string(
     vararg names: String,
-    default: String = ""
+    default: String = "",
 ): String {
     if (names.isEmpty()) return getString(default)
     return child(*names).getString(default)
@@ -230,36 +224,28 @@ private fun CommentedConfigurationNode.string(
 
 private fun CommentedConfigurationNode.boolean(
     vararg names: String,
-    default: Boolean = false
-): Boolean {
-    return child(*names).getBoolean(default)
-}
+    default: Boolean = false,
+): Boolean = child(*names).getBoolean(default)
 
 private fun CommentedConfigurationNode.int(
     vararg names: String,
-    default: Int = 0
-): Int {
-    return child(*names).getInt(default)
-}
+    default: Int = 0,
+): Int = child(*names).getInt(default)
 
-private fun CommentedConfigurationNode.matcher(): ServerMatcherConfiguration {
-    return ServerMatcherConfiguration(
-        operation = enumValue(string("operation"), OperationType.STARTS_WITH),
-        value = string("value"),
-        negate = boolean("negate"),
-    )
-}
+private fun CommentedConfigurationNode.matcher(): ServerMatcherConfiguration = ServerMatcherConfiguration(
+    operation = enumValue(string("operation"), OperationType.STARTS_WITH),
+    value = string("value"),
+    negate = boolean("negate"),
+)
 
-private fun CommentedConfigurationNode.rule(): ConnectionRule {
-    return ConnectionRule(
-        type = enumValue(string("type"), RuleType.ENV),
-        name = string("name"),
-        value = string("value"),
-        operation = enumValue(string("operation"), OperationType.STARTS_WITH),
-        negate = boolean("negate"),
-        bypassPermission = string("bypass-permission", "bypassPermission"),
-    )
-}
+private fun CommentedConfigurationNode.rule(): ConnectionRule = ConnectionRule(
+    type = enumValue(string("type"), RuleType.ENV),
+    name = string("name"),
+    value = string("value"),
+    operation = enumValue(string("operation"), OperationType.STARTS_WITH),
+    negate = boolean("negate"),
+    bypassPermission = string("bypass-permission", "bypassPermission"),
+)
 
 private inline fun <reified E : Enum<E>> enumValue(rawValue: String, default: E): E {
     if (rawValue.isBlank()) return default

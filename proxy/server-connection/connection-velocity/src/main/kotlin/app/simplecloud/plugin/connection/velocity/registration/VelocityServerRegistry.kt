@@ -8,7 +8,7 @@ import java.net.InetSocketAddress
 import kotlin.jvm.optionals.getOrNull
 
 class VelocityServerRegistry(
-    private val proxy: ProxyServer
+    private val proxy: ProxyServer,
 ) : ServerRegistry {
 
     override fun register(proxyName: String, server: RegisteredServer) {

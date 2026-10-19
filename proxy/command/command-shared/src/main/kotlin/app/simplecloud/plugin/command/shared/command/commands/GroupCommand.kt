@@ -2,12 +2,12 @@ package app.simplecloud.plugin.command.shared.command.commands
 
 import app.simplecloud.api.CloudApi
 import app.simplecloud.api.server.ServerState
-import app.simplecloud.plugin.command.shared.command.CloudSender
-import app.simplecloud.plugin.command.shared.utilities.CommandPermissions
 import app.simplecloud.plugin.command.shared.CommandPlugin
+import app.simplecloud.plugin.command.shared.command.CloudSender
 import app.simplecloud.plugin.command.shared.command.CloudSuggestions
 import app.simplecloud.plugin.command.shared.utilities.ApiUtils
-import app.simplecloud.plugin.command.shared.utilities.tags
+import app.simplecloud.plugin.command.shared.utilities.CommandPermissions
+import app.simplecloud.plugin.core.shared.adventure.tags
 import kotlinx.coroutines.*
 import kotlinx.coroutines.future.await
 import org.incendo.cloud.CommandManager
@@ -19,7 +19,7 @@ import org.incendo.cloud.permission.Permission
 class GroupCommand<C : CloudSender>(
     private val api: CloudApi,
     private val plugin: CommandPlugin,
-    private val manager: CommandManager<C>
+    private val manager: CommandManager<C>,
 ) {
 
     fun register() {
@@ -47,14 +47,16 @@ class GroupCommand<C : CloudSender>(
                     groups.forEach { group ->
                         val servers = serversByGroup[group.serverGroupId].orEmpty()
                         val online = servers.count { it.state == ServerState.AVAILABLE || it.state == ServerState.INGAME }
-                        sender.sendMessage(messages.msg(
-                            messages.command.group.list.entry,
-                            tags("group" to group.name, "online" to online, "total" to servers.size)
-                        ))
+                        sender.sendMessage(
+                            messages.msg(
+                                messages.command.group.list.entry,
+                                tags("group" to group.name, "online" to online, "total" to servers.size),
+                            ),
+                        )
                     }
                 }
                 .permission(Permission.permission(CommandPermissions.GROUP_LIST))
-                .build()
+                .build(),
         )
     }
 
@@ -81,7 +83,7 @@ class GroupCommand<C : CloudSender>(
                     sender.sendMessage(messages.msg(messages.command.group.info.entry, tags("key" to "Running Servers", "value" to servers.size)))
                 }
                 .permission(Permission.permission(CommandPermissions.GROUP_INFO))
-                .build()
+                .build(),
         )
     }
 
@@ -109,15 +111,19 @@ class GroupCommand<C : CloudSender>(
                     val started = results.count { it.isSuccess }
                     when {
                         failure == null -> sender.sendMessage(messages.msg(messages.command.group.start.success, tags("count" to count, "group" to group.name)))
+
                         started == 0 -> sender.sendMessage(messages.msg(messages.command.group.error.startFailed, tags("group" to group.name, "reason" to ApiUtils.reason(failure))))
-                        else -> sender.sendMessage(messages.msg(
-                            messages.command.group.start.partial,
-                            tags("count" to started, "total" to count, "group" to group.name, "reason" to ApiUtils.reason(failure))
-                        ))
+
+                        else -> sender.sendMessage(
+                            messages.msg(
+                                messages.command.group.start.partial,
+                                tags("count" to started, "total" to count, "group" to group.name, "reason" to ApiUtils.reason(failure)),
+                            ),
+                        )
                     }
                 }
                 .permission(Permission.permission(CommandPermissions.GROUP_START))
-                .build()
+                .build(),
         )
     }
 
@@ -144,7 +150,7 @@ class GroupCommand<C : CloudSender>(
                         sender.sendMessage(messages.msg(messages.command.server.error.notFound, tags("group" to group.name, "id" to id)))
                         return@suspendingHandler
                     }
-                    val targets = matching.filter { it.state != ServerState.STOPPING && it.state != ServerState.CLEANUP /*&& it.state != ServerState.STOPPED*/ }
+                    val targets = matching.filter { it.state != ServerState.STOPPING && it.state != ServerState.CLEANUP } // && it.state != ServerState.STOPPED
                     if (targets.isEmpty()) {
                         if (id == null) {
                             sender.sendMessage(messages.msg(messages.command.group.error.alreadyEmpty, tags("group" to group.name)))
@@ -166,7 +172,7 @@ class GroupCommand<C : CloudSender>(
                     }
                 }
                 .permission(Permission.permission(CommandPermissions.GROUP_STOP))
-                .build()
+                .build(),
         )
     }
 

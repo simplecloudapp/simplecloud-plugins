@@ -6,7 +6,7 @@ import java.nio.file.Path
 
 class VelocityPlatformImpl(
     private val server: ProxyServer,
-    private val dataDirectory: Path
+    private val dataDirectory: Path,
 ) : ProxyPlatform {
 
     override fun getDataDirectory() = dataDirectory

@@ -25,7 +25,7 @@ class NotificationCache(
     }
 
     suspend fun fetchDisabledTypes(id: UUID): Set<NotificationType> {
-        val properties = api.get(id).await()?.properties ?: emptyMap()
+        val properties = api.get(id).await()?.properties.orEmpty()
 
         return NotificationType.entries
             .filter { type -> properties[propertyOf(type)]?.toBooleanStrictOrNull() == false }
@@ -41,8 +41,5 @@ class NotificationCache(
         disabledTypes.clear()
     }
 
-    private fun propertyOf(type: NotificationType): String {
-        return "notify.${type.key}.enabled"
-    }
-
+    private fun propertyOf(type: NotificationType): String = "notify.${type.key}.enabled"
 }

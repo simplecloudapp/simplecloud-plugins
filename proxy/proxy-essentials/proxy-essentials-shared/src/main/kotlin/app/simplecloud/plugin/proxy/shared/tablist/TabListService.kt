@@ -14,7 +14,7 @@ class TabListService(
     private val platform: ProxyPlatform,
     private val config: ConfigurationFactory<ProxyEssentialsConfig>,
     private val formatter: MessageFormatter,
-    private val scope: CoroutineScope
+    private val scope: CoroutineScope,
 ) {
 
     private val logger = LoggerFactory.getLogger(TabListService::class.java)
@@ -41,7 +41,7 @@ class TabListService(
 
         player.sendPlayerListHeaderAndFooter(
             formatter.formatForPlayer(tabList.header, serverName, player.getPing()),
-            formatter.formatForPlayer(tabList.footer, serverName, player.getPing())
+            formatter.formatForPlayer(tabList.footer, serverName, player.getPing()),
         )
     }
 
@@ -63,5 +63,4 @@ class TabListService(
         val updateTime = config.get().tablist.map { it.updateTime }.filter { it > 0 }.minOrNull() ?: return null
         return updateTime * 50L
     }
-
 }

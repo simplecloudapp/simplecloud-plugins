@@ -5,10 +5,9 @@ import app.simplecloud.api.event.Subscription
 import app.simplecloud.api.group.GroupServerType
 import app.simplecloud.api.server.Server
 import app.simplecloud.api.server.ServerState
-//import app.simplecloud.api.internal.integration.player.ServerNameRegistry
-import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
 import app.simplecloud.plugin.connection.shared.config.ConnectionConfig
 import app.simplecloud.plugin.connection.shared.utilities.RegisteredServerResolver
+import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
 import kotlinx.coroutines.*
 import org.slf4j.LoggerFactory
 import java.util.Optional
@@ -25,10 +24,12 @@ class ServerRegisterer(
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private val subscriptions: MutableList<Subscription> = mutableListOf()
     private val registeredServers = ConcurrentHashMap<String, RegisteredServer>()
-    private val serverNames = Function<String, Optional<String>> { id -> Optional.ofNullable(registeredServers[id]?.proxyName) }
+    // only used by the ServerNameRegistry integration that is commented out below
+    @Suppress("UnusedPrivateProperty")
+    private val serverNames =Function<String, Optional<String>> { id -> Optional.ofNullable(registeredServers[id]?.proxyName) }
 
     fun start() {
-        //ServerNameRegistry.register(serverNames)
+        // app.simplecloud.api.internal.integration.player.ServerNameRegistry.register(serverNames)
         subscriptions.add(
             api.event().server().onStateChanged { event ->
                 val server = event.server ?: return@onStateChanged
@@ -38,7 +39,7 @@ class ServerRegisterer(
                         register(server)
                     }
                 }
-            }
+            },
         )
 
         subscriptions.add(
@@ -47,12 +48,12 @@ class ServerRegisterer(
                 scope.launch {
                     unregister(server.serverId)
                 }
-            }
+            },
         )
     }
 
     fun stop() {
-        //ServerNameRegistry.unregister(serverNames)
+        // app.simplecloud.api.internal.integration.player.ServerNameRegistry.unregister(serverNames)
         subscriptions.forEach { subscription -> subscription.close() }
         subscriptions.clear()
         scope.cancel()
@@ -118,19 +119,17 @@ class ServerRegisterer(
             proxyName = "",
             properties = server.properties ?: emptyMap(),
             blueprintConfigurator = server.blueprint?.configurator,
-            persistent = server.isFromPersistentServer
+            persistent = server.isFromPersistentServer,
         )
         return registeredServer.copy(proxyName = resolveProxyName(registeredServer))
     }
 
-    private fun resolveProxyName(server: RegisteredServer): String {
-        return RegisteredServerResolver.resolve(
-            serverId = server.serverId,
-            numericalId = server.numericalId,
-            serverBaseName = server.serverBaseName,
-            properties = server.properties,
-            persistent = server.persistent,
-            config = config.get().registration,
-        )
-    }
+    private fun resolveProxyName(server: RegisteredServer): String = RegisteredServerResolver.resolve(
+        serverId = server.serverId,
+        numericalId = server.numericalId,
+        serverBaseName = server.serverBaseName,
+        properties = server.properties,
+        persistent = server.persistent,
+        config = config.get().registration,
+    )
 }

@@ -4,7 +4,6 @@ import app.simplecloud.api.CloudApi
 import app.simplecloud.api.group.GroupServerType
 import app.simplecloud.api.server.ServerQuery
 import app.simplecloud.api.server.ServerState
-import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
 import app.simplecloud.plugin.connection.shared.config.CommandConfig
 import app.simplecloud.plugin.connection.shared.config.ConnectionConfig
 import app.simplecloud.plugin.connection.shared.config.DefaultConfigInstaller
@@ -15,6 +14,7 @@ import app.simplecloud.plugin.connection.shared.connection.ConnectionResolver
 import app.simplecloud.plugin.connection.shared.registration.RegisteredServer
 import app.simplecloud.plugin.connection.shared.registration.ServerRegisterer
 import app.simplecloud.plugin.connection.shared.registration.ServerRegistry
+import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
 import kotlinx.coroutines.*
 import kotlinx.coroutines.future.await
 import org.slf4j.LoggerFactory
@@ -100,7 +100,7 @@ class ConnectionPlugin(
         val servers = api.server().getAllServers(
             ServerQuery.create()
                 .filterByState(ServerState.AVAILABLE)
-                .filterByServerGroupType(GroupServerType.SERVER)
+                .filterByServerGroupType(GroupServerType.SERVER),
         ).await()
 
         logger.info("Found ${servers.size} servers")
@@ -121,19 +121,17 @@ class ConnectionPlugin(
         additionalServers.clear()
     }
 
-    private fun toRegisteredServer(server: RegistrationServer): RegisteredServer {
-        return RegisteredServer(
-            serverId = server.name,
-            numericalId = 0,
-            ip = server.address,
-            port = server.port,
-            serverBaseName = server.name,
-            proxyName = server.name,
-            properties = emptyMap(),
-            blueprintConfigurator = null,
-            persistent = true,
-        )
-    }
+    private fun toRegisteredServer(server: RegistrationServer): RegisteredServer = RegisteredServer(
+        serverId = server.name,
+        numericalId = 0,
+        ip = server.address,
+        port = server.port,
+        serverBaseName = server.name,
+        proxyName = server.name,
+        properties = emptyMap(),
+        blueprintConfigurator = null,
+        persistent = true,
+    )
 
     private fun createConnectionConfig(): ConfigurationFactory<ConnectionConfig> {
         val file = File(dir, "config.yml")

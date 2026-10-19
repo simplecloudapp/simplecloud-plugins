@@ -7,7 +7,7 @@ import net.md_5.bungee.api.connection.ProxiedPlayer
 import java.util.UUID
 
 class BungeeProxyPlayer(
-    private val player: ProxiedPlayer
+    private val player: ProxiedPlayer,
 ) : ProxyPlayer {
 
     override fun getName(): String = player.name

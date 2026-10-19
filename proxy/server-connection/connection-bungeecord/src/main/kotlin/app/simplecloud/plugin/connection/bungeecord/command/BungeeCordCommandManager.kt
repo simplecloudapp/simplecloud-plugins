@@ -6,6 +6,7 @@ import app.simplecloud.plugin.connection.shared.connection.ConnectionResolver
 import net.kyori.adventure.platform.bungeecord.BungeeAudiences
 import net.md_5.bungee.api.CommandSender
 import net.md_5.bungee.api.ServerConnectRequest
+import net.md_5.bungee.api.config.ServerInfo
 import net.md_5.bungee.api.connection.ProxiedPlayer
 import net.md_5.bungee.api.event.ServerConnectEvent
 import net.md_5.bungee.api.plugin.Command
@@ -32,11 +33,9 @@ class BungeeCordCommandManager(
         commands.clear()
     }
 
-    private fun findCommand(name: String): Command? {
-        return plugin.proxy.pluginManager.commands.firstOrNull {
-            it.value.name.equals(name, ignoreCase = true)
-        }?.value
-    }
+    private fun findCommand(name: String): Command? = plugin.proxy.pluginManager.commands.firstOrNull {
+        it.value.name.equals(name, ignoreCase = true)
+    }?.value
 
     private fun registerCommand(command: CommandEntry) {
         val permission = command.permission.ifEmpty { null }
@@ -44,7 +43,7 @@ class BungeeCordCommandManager(
         val connectionCommand = object : Command(
             command.name,
             permission,
-            *command.aliases.toTypedArray()
+            *command.aliases.toTypedArray(),
         ) {
             override fun execute(sender: CommandSender, args: Array<out String>) {
                 val player = sender as? ProxiedPlayer ?: return
@@ -64,58 +63,44 @@ class BungeeCordCommandManager(
         if (command.permission.isNotEmpty() && !player.hasPermission(command.permission)) return
 
         val currentServerName = player.server?.info?.name
-        val serverNames = plugin.proxy.servers.keys.toList()
-        val sortedTargets = command.targetConnections.sortedByDescending { it.priority }
+        val targets = ConnectionResolver.matchingTargets(
+            command.targetConnections,
+            config.connections,
+            plugin.proxy.servers.keys.toList(),
+            currentServerName,
+            player::hasPermission,
+        )
 
-        for (target in sortedTargets) {
-            if (target.from.isNotEmpty() && currentServerName != null) {
-                val isFromAllowed = target.from.any { connectionName ->
-                    ConnectionResolver.isServerInConnection(
-                        currentServerName, connectionName, config.connections, serverNames
-                    )
-                }
-                if (!isFromAllowed) continue
-            }
-
-            val connection = ConnectionResolver.findConnection(target.name, config.connections) ?: continue
-
-            val failedRule = ConnectionResolver.checkRules(connection) { permission ->
-                player.hasPermission(permission)
-            }
-            if (failedRule != null) continue
-
-            val matchingNames = ConnectionResolver.findMatchingServerNames(connection, serverNames)
-            if (matchingNames.isEmpty()) continue
-
-            if (currentServerName != null && matchingNames.any { name -> name.equals(currentServerName, ignoreCase = true) }) {
+        for (names in targets) {
+            if (names.any { name -> name.equals(currentServerName, ignoreCase = true) }) {
                 audience.sendMessage(messages.msg(command.messages.alreadyConnected))
                 return
             }
-
-            val targetServer = matchingNames
-                .mapNotNull { name -> plugin.proxy.servers[name] }
-                .minByOrNull { it.players.size }
-                ?: continue
-
-            player.connect(
-                ServerConnectRequest.builder()
-                    .target(targetServer)
-                    .reason(ServerConnectEvent.Reason.COMMAND)
-                    .callback { result: ServerConnectRequest.Result?, error: Throwable? ->
-                        if (error != null) {
-                            logger.warn("Failed to send player ${player.name} to ${targetServer.name}", error)
-                            return@callback
-                        }
-                        if (result == ServerConnectRequest.Result.SUCCESS) return@callback
-
-                        logger.warn("Could not send player ${player.name} to ${targetServer.name} ($result)")
-                    }
-                    .build()
-            )
-            return
+            val targetServer = names.mapNotNull { name -> plugin.proxy.servers[name] }.minByOrNull { it.players.size }
+            if (targetServer != null) {
+                connect(player, targetServer)
+                return
+            }
         }
 
         audience.sendMessage(messages.msg(command.messages.noTargetConnectionFound))
     }
 
+    private fun connect(player: ProxiedPlayer, targetServer: ServerInfo) {
+        player.connect(
+            ServerConnectRequest.builder()
+                .target(targetServer)
+                .reason(ServerConnectEvent.Reason.COMMAND)
+                .callback { result: ServerConnectRequest.Result?, error: Throwable? ->
+                    if (error != null) {
+                        logger.warn("Failed to send player ${player.name} to ${targetServer.name}", error)
+                        return@callback
+                    }
+                    if (result == ServerConnectRequest.Result.SUCCESS) return@callback
+
+                    logger.warn("Could not send player ${player.name} to ${targetServer.name} ($result)")
+                }
+                .build(),
+        )
+    }
 }

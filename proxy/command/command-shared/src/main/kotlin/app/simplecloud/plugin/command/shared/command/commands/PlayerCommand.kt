@@ -5,11 +5,11 @@ import app.simplecloud.api.persistentserver.PersistentServer
 import app.simplecloud.api.player.CloudPlayer
 import app.simplecloud.api.player.CloudPlayer.ConnectResult
 import app.simplecloud.api.server.Server
-import app.simplecloud.plugin.command.shared.command.CloudSender
-import app.simplecloud.plugin.command.shared.utilities.CommandPermissions
 import app.simplecloud.plugin.command.shared.CommandPlugin
+import app.simplecloud.plugin.command.shared.command.CloudSender
 import app.simplecloud.plugin.command.shared.command.CloudSuggestions
-import app.simplecloud.plugin.command.shared.utilities.tags
+import app.simplecloud.plugin.command.shared.utilities.CommandPermissions
+import app.simplecloud.plugin.core.shared.adventure.tags
 import kotlinx.coroutines.*
 import kotlinx.coroutines.future.*
 import net.kyori.adventure.text.Component
@@ -22,7 +22,7 @@ import org.incendo.cloud.permission.Permission
 class PlayerCommand<C : CloudSender>(
     private val api: CloudApi,
     private val plugin: CommandPlugin,
-    private val manager: CommandManager<C>
+    private val manager: CommandManager<C>,
 ) {
 
     fun register() {
@@ -52,7 +52,9 @@ class PlayerCommand<C : CloudSender>(
                     }
                     val targetName = resolveTarget(targetType, target)
                     if (targetName == null) {
-                        sender.sendMessage(messages.msg(messages.command.player.error.targetNotFound, tags("target" to target)))
+                        sender.sendMessage(
+                            messages.msg(messages.command.player.error.targetNotFound, tags("target" to target)),
+                        )
                         return@suspendingHandler
                     }
                     val players = playersForTarget(targetType, targetName)
@@ -68,14 +70,14 @@ class PlayerCommand<C : CloudSender>(
                                 tags(
                                     "playername" to player.name,
                                     "displayname" to player.displayName,
-                                    "value" to player.connectedServerName
-                                )
-                            )
+                                    "value" to player.connectedServerName,
+                                ),
+                            ),
                         )
                     }
                 }
                 .permission(Permission.permission(CommandPermissions.PLAYER_LIST))
-                .build()
+                .build(),
         )
     }
 
@@ -91,18 +93,68 @@ class PlayerCommand<C : CloudSender>(
                     val messages = plugin.messageConfiguration
                     val player = api.player().get(playerName).await()
                     if (player == null) {
-                        sender.sendMessage(messages.msg(messages.command.player.error.notFound, tags("playername" to playerName)))
+                        sender.sendMessage(
+                            messages.msg(messages.command.player.error.notFound, tags("playername" to playerName)),
+                        )
                         return@suspendingHandler
                     }
-                    sender.sendMessage(messages.msg(messages.command.player.info.title, tags("playername" to player.name, "displayname" to player.displayName)))
-                    sender.sendMessage(messages.msg(messages.command.player.info.entry, tags("key" to "Name", "value" to player.name)))
-                    sender.sendMessage(messages.msg(messages.command.player.info.entry, tags("key" to "Display Name", "value" to player.displayName)))
-                    sender.sendMessage(messages.msg(messages.command.player.info.entry, tags("key" to "Online", "value" to player.isOnline)))
-                    sender.sendMessage(messages.msg(messages.command.player.info.entry, tags("key" to "Server", "value" to player.connectedServerName)))
-                    sender.sendMessage(messages.msg(messages.command.player.info.entry, tags("key" to "Proxy", "value" to player.connectedProxyName)))
+                    sender.sendMessage(
+                        messages.msg(
+                            messages.command.player.info.title,
+                            tags(
+                                "playername" to player.name,
+                                "displayname" to player.displayName,
+                            ),
+                        ),
+                    )
+                    sender.sendMessage(
+                        messages.msg(
+                            messages.command.player.info.entry,
+                            tags(
+                                "key" to "Name",
+                                "value" to player.name,
+                            ),
+                        ),
+                    )
+                    sender.sendMessage(
+                        messages.msg(
+                            messages.command.player.info.entry,
+                            tags(
+                                "key" to "Display Name",
+                                "value" to player.displayName,
+                            ),
+                        ),
+                    )
+                    sender.sendMessage(
+                        messages.msg(
+                            messages.command.player.info.entry,
+                            tags(
+                                "key" to "Online",
+                                "value" to player.isOnline,
+                            ),
+                        ),
+                    )
+                    sender.sendMessage(
+                        messages.msg(
+                            messages.command.player.info.entry,
+                            tags(
+                                "key" to "Server",
+                                "value" to player.connectedServerName,
+                            ),
+                        ),
+                    )
+                    sender.sendMessage(
+                        messages.msg(
+                            messages.command.player.info.entry,
+                            tags(
+                                "key" to "Proxy",
+                                "value" to player.connectedProxyName,
+                            ),
+                        ),
+                    )
                 }
                 .permission(Permission.permission(CommandPermissions.PLAYER_INFO))
-                .build()
+                .build(),
         )
     }
 
@@ -131,53 +183,48 @@ class PlayerCommand<C : CloudSender>(
                     }
                     val player = api.player().get(playerName).await()
                     if (player == null) {
-                        sender.sendMessage(messages.msg(messages.command.player.error.notFound, tags("playername" to playerName)))
+                        sender.sendMessage(
+                            messages.msg(messages.command.player.error.notFound, tags("playername" to playerName)),
+                        )
                         return@suspendingHandler
                     }
                     if (!player.isOnline) {
-                        sender.sendMessage(messages.msg(messages.command.player.error.notOnline, tags("playername" to player.name)))
+                        sender.sendMessage(
+                            messages.msg(messages.command.player.error.notOnline, tags("playername" to player.name)),
+                        )
                         return@suspendingHandler
                     }
                     val targetName = resolveTarget(targetType, target)
                     if (targetName == null) {
-                        sender.sendMessage(messages.msg(messages.command.player.error.targetNotFound, tags("target" to target)))
+                        sender.sendMessage(
+                            messages.msg(messages.command.player.error.targetNotFound, tags("target" to target)),
+                        )
                         return@suspendingHandler
                     }
-                    val result = player.connect(targetName).await()
-                    when (result) {
-                        ConnectResult.SUCCESS -> sender.sendMessage(
-                            messages.msg(
-                                messages.command.player.send.success,
-                                tags("playername" to player.name, "displayname" to player.displayName, "target" to targetName)
-                            )
-                        )
-
-                        ConnectResult.ALREADY_CONNECTED -> sender.sendMessage(
-                            messages.msg(
-                                messages.command.player.error.sameTarget,
-                                tags("playername" to player.name, "displayname" to player.displayName, "target" to targetName)
-                            )
-                        )
-
-                        ConnectResult.SERVER_NOT_FOUND -> sender.sendMessage(
-                            messages.msg(messages.command.player.error.targetNotFound, tags("target" to targetName))
-                        )
-
-                        ConnectResult.PLAYER_NOT_FOUND -> sender.sendMessage(
-                            messages.msg(messages.command.player.error.notOnline, tags("playername" to player.name))
-                        )
-
-                        else -> sender.sendMessage(
-                            messages.msg(
-                                messages.command.player.error.sendFailed,
-                                tags("playername" to player.name, "displayname" to player.displayName, "target" to targetName)
-                            )
-                        )
-                    }
+                    sendConnectResult(sender, player, targetName, player.connect(targetName).await())
                 }
                 .permission(Permission.permission(CommandPermissions.PLAYER_SEND))
-                .build()
+                .build(),
         )
+    }
+
+    private fun sendConnectResult(sender: C, player: CloudPlayer, targetName: String, result: ConnectResult?) {
+        val messages = plugin.messageConfiguration
+        val playerTags = tags(
+            "playername" to player.name,
+            "displayname" to player.displayName,
+            "target" to targetName,
+        )
+        val message = when (result) {
+            ConnectResult.SUCCESS -> messages.msg(messages.command.player.send.success, playerTags)
+            ConnectResult.ALREADY_CONNECTED -> messages.msg(messages.command.player.error.sameTarget, playerTags)
+            ConnectResult.SERVER_NOT_FOUND ->
+                messages.msg(messages.command.player.error.targetNotFound, tags("target" to targetName))
+            ConnectResult.PLAYER_NOT_FOUND ->
+                messages.msg(messages.command.player.error.notOnline, tags("playername" to player.name))
+            else -> messages.msg(messages.command.player.error.sendFailed, playerTags)
+        }
+        sender.sendMessage(message)
     }
 
     private fun registerSendAll() {
@@ -203,7 +250,9 @@ class PlayerCommand<C : CloudSender>(
                     }
                     val targetName = resolveTarget(targetType, target)
                     if (targetName == null) {
-                        sender.sendMessage(messages.msg(messages.command.player.error.targetNotFound, tags("target" to target)))
+                        sender.sendMessage(
+                            messages.msg(messages.command.player.error.targetNotFound, tags("target" to target)),
+                        )
                         return@suspendingHandler
                     }
                     val players = api.player().onlinePlayers.await()
@@ -214,13 +263,26 @@ class PlayerCommand<C : CloudSender>(
                     val results = connectAll(players, targetName)
                     val sent = results.count { it == ConnectResult.SUCCESS }
                     when {
-                        sent > 0 -> sender.sendMessage(messages.msg(messages.command.player.send.successAll, tags("count" to sent, "target" to targetName)))
-                        results.all { it == ConnectResult.ALREADY_CONNECTED } -> sender.sendMessage(messages.msg(messages.command.player.error.allOnTarget, tags("target" to targetName)))
-                        else -> sender.sendMessage(messages.msg(messages.command.player.error.sendAllFailed, tags("target" to targetName)))
+                        sent > 0 -> sender.sendMessage(
+                            messages.msg(
+                                messages.command.player.send.successAll,
+                                tags("count" to sent, "target" to targetName),
+                            ),
+                        )
+
+                        results.all {
+                            it == ConnectResult.ALREADY_CONNECTED
+                        } -> sender.sendMessage(
+                            messages.msg(messages.command.player.error.allOnTarget, tags("target" to targetName)),
+                        )
+
+                        else -> sender.sendMessage(
+                            messages.msg(messages.command.player.error.sendAllFailed, tags("target" to targetName)),
+                        )
                     }
                 }
                 .permission(Permission.permission(CommandPermissions.PLAYER_SEND))
-                .build()
+                .build(),
         )
     }
 
@@ -249,36 +311,58 @@ class PlayerCommand<C : CloudSender>(
                     }
                     val targetName = resolveTarget(targetType, target)
                     if (targetName == null) {
-                        sender.sendMessage(messages.msg(messages.command.player.error.targetNotFound, tags("target" to target)))
+                        sender.sendMessage(
+                            messages.msg(messages.command.player.error.targetNotFound, tags("target" to target)),
+                        )
                         return@suspendingHandler
                     }
                     val sourceKey = source.lowercase()
                     val serverSources = api.server().allServers.await()
-                        .filter { sourceKey in serverIdentifiers(it) || (it.group?.name ?: it.serverGroupId).equals(source, true) }
+                        .filter {
+                            sourceKey in serverIdentifiers(it) ||
+                                (it.group?.name ?: it.serverGroupId).equals(source, true)
+                        }
                         .map { serverIdentifiers(it) }
                     val persistentServerSources = api.persistentServer().allPersistentServers.await()
                         .map { serverIdentifiers(it) }
                         .filter { sourceKey in it }
                     val sourceIdentifiers = (serverSources + persistentServerSources).flatten().toSet()
                     if (sourceIdentifiers.isEmpty()) {
-                        sender.sendMessage(messages.msg(messages.command.player.error.sourceNotFound, tags("source" to source)))
+                        sender.sendMessage(
+                            messages.msg(messages.command.player.error.sourceNotFound, tags("source" to source)),
+                        )
                         return@suspendingHandler
                     }
                     val players = playersOn(sourceIdentifiers)
                     if (players.isEmpty()) {
-                        sender.sendMessage(messages.msg(messages.command.player.error.noSourcePlayers, tags("source" to source)))
+                        sender.sendMessage(
+                            messages.msg(messages.command.player.error.noSourcePlayers, tags("source" to source)),
+                        )
                         return@suspendingHandler
                     }
                     val results = connectAll(players, targetName)
                     val sent = results.count { it == ConnectResult.SUCCESS }
                     when {
-                        sent > 0 -> sender.sendMessage(messages.msg(messages.command.player.send.successFromServer, tags("count" to sent, "source" to source, "target" to targetName)))
-                        results.all { it == ConnectResult.ALREADY_CONNECTED } -> sender.sendMessage(messages.msg(messages.command.player.error.allOnTarget, tags("target" to targetName)))
-                        else -> sender.sendMessage(messages.msg(messages.command.player.error.sendAllFailed, tags("target" to targetName)))
+                        sent > 0 -> sender.sendMessage(
+                            messages.msg(
+                                messages.command.player.send.successFromServer,
+                                tags("count" to sent, "source" to source, "target" to targetName),
+                            ),
+                        )
+
+                        results.all {
+                            it == ConnectResult.ALREADY_CONNECTED
+                        } -> sender.sendMessage(
+                            messages.msg(messages.command.player.error.allOnTarget, tags("target" to targetName)),
+                        )
+
+                        else -> sender.sendMessage(
+                            messages.msg(messages.command.player.error.sendAllFailed, tags("target" to targetName)),
+                        )
                     }
                 }
                 .permission(Permission.permission(CommandPermissions.PLAYER_SEND))
-                .build()
+                .build(),
         )
     }
 
@@ -295,40 +379,69 @@ class PlayerCommand<C : CloudSender>(
                     val message = context.get<String>("message")
                     val messages = plugin.messageConfiguration
                     if (message.isBlank()) {
-                        sender.sendMessage(messages.msg(messages.command.player.error.messageEmpty, tags("playername" to playerName)))
+                        sender.sendMessage(
+                            messages.msg(messages.command.player.error.messageEmpty, tags("playername" to playerName)),
+                        )
                         return@suspendingHandler
                     }
                     val player = api.player().get(playerName).await()
                     if (player == null || !player.isOnline) {
-                        sender.sendMessage(messages.msg(messages.command.player.error.notOnline, tags("playername" to playerName)))
+                        sender.sendMessage(
+                            messages.msg(messages.command.player.error.notOnline, tags("playername" to playerName)),
+                        )
                         return@suspendingHandler
                     }
                     runCatching { player.sendMessage(Component.text(message)) }
-                        .onSuccess { sender.sendMessage(messages.msg(messages.command.player.message.success, tags("playername" to player.name, "displayname" to player.displayName))) }
-                        .onFailure { sender.sendMessage(messages.msg(messages.command.player.error.messageFailed, tags("playername" to player.name))) }
+                        .onSuccess {
+                            sender.sendMessage(
+                                messages.msg(
+                                    messages.command.player.message.success,
+                                    tags("playername" to player.name, "displayname" to player.displayName),
+                                ),
+                            )
+                        }
+                        .onFailure {
+                            sender.sendMessage(
+                                messages.msg(
+                                    messages.command.player.error.messageFailed,
+                                    tags("playername" to player.name),
+                                ),
+                            )
+                        }
                 }
                 .permission(Permission.permission(CommandPermissions.PLAYER_MESSAGE))
-                .build()
+                .build(),
         )
     }
 
-    private fun isTargetTypeValid(targetType: String): Boolean {
-        return targetType.equals("group", true) || targetType.equals("ps", true)
-    }
+    private fun isTargetTypeValid(targetType: String): Boolean = targetType.equals(
+        "group",
+        true,
+    ) || targetType.equals("ps", true)
 
-    private suspend fun resolveTarget(targetType: String, target: String): String? {
-        return when {
-            targetType.equals("group", true) -> api.group().allGroups.await().firstOrNull { it.name.equals(target, true) }?.name
-            targetType.equals("ps", true) -> api.persistentServer().allPersistentServers.await().firstOrNull { it.name.equals(target, true) }?.name
-            else -> null
-        }
+    private suspend fun resolveTarget(targetType: String, target: String): String? = when {
+        targetType.equals("group", true) -> api.group().allGroups.await().firstOrNull {
+            it.name.equals(target, true)
+        }?.name
+
+        targetType.equals("ps", true) -> api.persistentServer().allPersistentServers.await().firstOrNull {
+            it.name.equals(target, true)
+        }?.name
+
+        else -> null
     }
 
     private suspend fun playersForTarget(targetType: String, targetName: String): List<CloudPlayer> {
         if (targetType.equals("group", true)) {
-            return playersOn(api.server().getServersByGroup(targetName).await().flatMap { serverIdentifiers(it) }.toSet())
+            return playersOn(
+                api.server().getServersByGroup(targetName).await().flatMap {
+                    serverIdentifiers(it)
+                }.toSet(),
+            )
         }
-        val persistentServer = api.persistentServer().allPersistentServers.await().firstOrNull { it.name == targetName } ?: return emptyList()
+        val persistentServer =
+            api.persistentServer().allPersistentServers.await().firstOrNull { it.name == targetName }
+                ?: return emptyList()
         return playersOn(serverIdentifiers(persistentServer))
     }
 

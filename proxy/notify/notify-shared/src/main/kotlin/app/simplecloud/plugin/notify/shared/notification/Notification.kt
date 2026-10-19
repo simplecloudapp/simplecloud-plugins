@@ -5,7 +5,7 @@ import net.kyori.adventure.text.Component
 
 class Notification(
     val message: Component,
-    val type: NotificationType
+    val type: NotificationType,
 ) {
 
     fun sendTo(sender: CloudSender) {

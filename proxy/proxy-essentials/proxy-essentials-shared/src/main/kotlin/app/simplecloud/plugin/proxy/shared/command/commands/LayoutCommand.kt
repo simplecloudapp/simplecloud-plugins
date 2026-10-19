@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory
 class LayoutCommand<C : CloudSender>(
     private val api: CloudApi,
     private val plugin: ProxyEssentials,
-    private val manager: CommandManager<C>
+    private val manager: CommandManager<C>,
 ) {
 
     private val logger = LoggerFactory.getLogger(LayoutCommand::class.java)
@@ -35,7 +35,7 @@ class LayoutCommand<C : CloudSender>(
                 .literal("layout")
                 .handler { context -> sendHelp(context) }
                 .permission(Permission.permission(CommandPermissions.LAYOUT_HELP))
-                .build()
+                .build(),
         )
         manager.command(
             manager.commandBuilder("scproxy")
@@ -43,7 +43,7 @@ class LayoutCommand<C : CloudSender>(
                 .literal("help")
                 .handler { context -> sendHelp(context) }
                 .permission(Permission.permission(CommandPermissions.LAYOUT_HELP))
-                .build()
+                .build(),
         )
     }
 
@@ -54,7 +54,7 @@ class LayoutCommand<C : CloudSender>(
                 .literal("info")
                 .handler { context -> sendInfo(context.sender(), "default", plugin.config.get().initialLayout) }
                 .permission(Permission.permission(CommandPermissions.LAYOUT_INFO))
-                .build()
+                .build(),
         )
         manager.command(
             manager.commandBuilder("scproxy")
@@ -68,7 +68,8 @@ class LayoutCommand<C : CloudSender>(
                         val config = plugin.config.get()
                         val state = plugin.joinStateService.getGroupState(groupName)
                         val forcedLayout = config.joinstates.find { it.name == state }?.forcedMotdLayout
-                        val layout = forcedLayout ?: plugin.layoutService.getGroupLayout(groupName) ?: config.initialLayout
+                        val layout =
+                            forcedLayout ?: plugin.layoutService.getGroupLayout(groupName) ?: config.initialLayout
                         sendInfo(sender, groupName, layout)
                     } catch (e: Exception) {
                         logger.error("Could not load the layout of group '$groupName'", e)
@@ -76,7 +77,7 @@ class LayoutCommand<C : CloudSender>(
                     }
                 }
                 .permission(Permission.permission(CommandPermissions.LAYOUT_INFO))
-                .build()
+                .build(),
         )
     }
 
@@ -86,9 +87,13 @@ class LayoutCommand<C : CloudSender>(
                 .literal("layout")
                 .literal("set")
                 .required("group", stringParser(), CloudSuggestions.groups(api))
-                .required("layout", stringParser(), SuggestionProvider.blocking { _, _ ->
-                    plugin.layoutRepository.getNames().map { Suggestion.suggestion(it) }
-                })
+                .required(
+                    "layout",
+                    stringParser(),
+                    SuggestionProvider.blocking { _, _ ->
+                        plugin.layoutRepository.getNames().map { Suggestion.suggestion(it) }
+                    },
+                )
                 .suspendingHandler { context ->
                     val sender = context.sender()
                     val groupName = context.get<String>("group")
@@ -114,7 +119,7 @@ class LayoutCommand<C : CloudSender>(
                     }
                 }
                 .permission(Permission.permission(CommandPermissions.LAYOUT_SET))
-                .build()
+                .build(),
         )
     }
 
@@ -124,11 +129,13 @@ class LayoutCommand<C : CloudSender>(
         val commands = listOf(
             "/scproxy layout help",
             "/scproxy layout info [group]",
-            "/scproxy layout set <group> <layout>"
+            "/scproxy layout set <group> <layout>",
         )
 
         sender.sendMessage(plugin.messageFormatter.format(help.header))
-        commands.forEach { sender.sendMessage(plugin.messageFormatter.format(help.entry, Placeholder.unparsed("command", it))) }
+        commands.forEach {
+            sender.sendMessage(plugin.messageFormatter.format(help.entry, Placeholder.unparsed("command", it)))
+        }
     }
 
     private fun sendInfo(sender: C, groupName: String, layout: String) {

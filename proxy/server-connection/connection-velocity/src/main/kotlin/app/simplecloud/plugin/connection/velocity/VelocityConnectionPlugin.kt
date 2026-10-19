@@ -24,8 +24,8 @@ import java.nio.file.Path
     description = "Central proxy plugin for SimpleCloud v3 that registers servers and manages player routing.",
     url = "https://github.com/simplecloudapp/server-connection-plugin",
     dependencies = [
-        Dependency("simplecloud-api")
-    ]
+        Dependency("simplecloud-api"),
+    ],
 )
 class VelocityConnectionPlugin @Inject constructor(
     @DataDirectory val dataDirectory: Path,

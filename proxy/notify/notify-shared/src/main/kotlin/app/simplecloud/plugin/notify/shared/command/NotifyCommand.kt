@@ -18,7 +18,7 @@ import java.util.UUID
 
 class NotifyCommand<C : CloudSender>(
     private val manager: CommandManager<C>,
-    private val notify: NotifyPlugin
+    private val notify: NotifyPlugin,
 ) {
 
     private val logger = LoggerFactory.getLogger(NotifyCommand::class.java)
@@ -54,9 +54,10 @@ class NotifyCommand<C : CloudSender>(
                 .literal("reload").literal("config")
                 .permission(NotifyPermissions.COMMAND_RELOAD_CONFIG)
                 .handler { context ->
-                    val message = if (notify.reload()) messages.command.reload.config.success else messages.command.reload.config.failed
+                    val reload = messages.command.reload.config
+                    val message = if (notify.reload()) reload.success else reload.failed
                     context.sender().sendMessage(formatter.message(message))
-                }
+                },
         )
     }
 
@@ -65,7 +66,7 @@ class NotifyCommand<C : CloudSender>(
             manager.commandBuilder("scnotify")
                 .literal("list")
                 .permission(NotifyPermissions.COMMAND_TOGGLE_SELF)
-                .suspendingHandler(notify.scope) { context -> sendList(context.sender()) }
+                .suspendingHandler(notify.scope) { context -> sendList(context.sender()) },
         )
     }
 
@@ -77,7 +78,7 @@ class NotifyCommand<C : CloudSender>(
                 .optional("type", StringParser.stringParser(), NotifySuggestions.receivableTypes())
                 .suspendingHandler(notify.scope) { context ->
                     toggleSelf(context.sender(), true, context.optional<String>("type").orElse(null))
-                }
+                },
         )
 
         manager.command(
@@ -85,7 +86,7 @@ class NotifyCommand<C : CloudSender>(
                 .optional("type", StringParser.stringParser(), NotifySuggestions.receivableTypes())
                 .suspendingHandler(notify.scope) { context ->
                     toggleSelf(context.sender(), false, context.optional<String>("type").orElse(null))
-                }
+                },
         )
     }
 
@@ -102,9 +103,9 @@ class NotifyCommand<C : CloudSender>(
                         context.sender(),
                         context.get("player"),
                         context.get("value"),
-                        context.optional<String>("type").orElse(null)
+                        context.optional<String>("type").orElse(null),
                     )
-                }
+                },
         )
     }
 
@@ -153,7 +154,7 @@ class NotifyCommand<C : CloudSender>(
             listMessages.entry,
             typePlaceholder(type),
             Placeholder.parsed("state", if (enabled) listMessages.enabled else listMessages.disabled),
-            Placeholder.styling("toggle", ClickEvent.runCommand(command))
+            Placeholder.styling("toggle", ClickEvent.runCommand(command)),
         )
     }
 
@@ -229,9 +230,7 @@ class NotifyCommand<C : CloudSender>(
         return listOf(type)
     }
 
-    private fun isAlreadySet(types: List<NotificationType>, disabled: Set<NotificationType>, value: Boolean): Boolean {
-        return types.all { type -> (type !in disabled) == value }
-    }
+    private fun isAlreadySet(types: List<NotificationType>, disabled: Set<NotificationType>, value: Boolean): Boolean = types.all { type -> (type !in disabled) == value }
 
     private suspend fun fetchDisabledTypes(sender: C, id: UUID): Set<NotificationType>? {
         try {
@@ -263,7 +262,7 @@ class NotifyCommand<C : CloudSender>(
                     already -> notifyMessages.alreadyDisabled
                     value -> notifyMessages.enabled
                     else -> notifyMessages.disabled
-                }
+                },
             )
         }
 
@@ -275,7 +274,7 @@ class NotifyCommand<C : CloudSender>(
                 value -> typeMessages.enabled
                 else -> typeMessages.disabled
             },
-            typePlaceholder(type)
+            typePlaceholder(type),
         )
     }
 
@@ -289,7 +288,7 @@ class NotifyCommand<C : CloudSender>(
                     value -> setMessages.enabled
                     else -> setMessages.disabled
                 },
-                target
+                target,
             )
         }
 
@@ -302,29 +301,26 @@ class NotifyCommand<C : CloudSender>(
                 else -> typeMessages.disabled
             },
             target,
-            typePlaceholder(type)
+            typePlaceholder(type),
         )
     }
 
-    private fun typePlaceholder(type: NotificationType): TagResolver {
-        return Placeholder.parsed("type", messages.notifications.types[type.key] ?: type.key)
-    }
+    private fun typePlaceholder(type: NotificationType): TagResolver = Placeholder.parsed("type", messages.notifications.types[type.key] ?: type.key)
 
     private fun unknownType(input: String) = formatter.message(
         messages.command.error.unknownType,
-        Placeholder.unparsed("type", input)
+        Placeholder.unparsed("type", input),
     )
 
     private fun playerMessage(message: String, target: CloudPlayer, vararg tagResolver: TagResolver) = formatter.message(
         message,
         Placeholder.parsed("playername", target.name),
         Placeholder.unparsed("displayname", target.displayName ?: target.name),
-        *tagResolver
+        *tagResolver,
     )
 
     private fun playerError(message: String, playerName: String) = formatter.message(
         message,
-        Placeholder.unparsed("playername", playerName)
+        Placeholder.unparsed("playername", playerName),
     )
-
 }

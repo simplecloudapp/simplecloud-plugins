@@ -6,11 +6,11 @@ import app.simplecloud.api.server.ServerState
 import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
 import app.simplecloud.plugin.notify.shared.command.CloudSender
 import app.simplecloud.plugin.notify.shared.config.MessageConfig
-import app.simplecloud.plugin.notify.shared.utilities.MessageFormatter
 import app.simplecloud.plugin.notify.shared.notification.Notification
 import app.simplecloud.plugin.notify.shared.notification.NotificationCache
 import app.simplecloud.plugin.notify.shared.notification.NotificationType
 import app.simplecloud.plugin.notify.shared.platform.NotifyPlatform
+import app.simplecloud.plugin.notify.shared.utilities.MessageFormatter
 import kotlinx.coroutines.*
 import kotlinx.coroutines.future.await
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
@@ -21,7 +21,7 @@ class NotificationListener(
     private val messages: ConfigurationFactory<MessageConfig>,
     private val platform: NotifyPlatform,
     private val formatter: MessageFormatter,
-    private val cache: NotificationCache
+    private val cache: NotificationCache,
 ) {
 
     private val scope = CoroutineScope(Dispatchers.IO.limitedParallelism(1) + SupervisorJob())
@@ -29,6 +29,19 @@ class NotificationListener(
     private val lastSentState: MutableMap<String, ServerState> = ConcurrentHashMap()
 
     fun start() {
+        subscribeServerEvents()
+        subscribeGroupEvents()
+        subscribePersistentServerEvents()
+    }
+
+    fun stop() {
+        subscriptions.forEach { subscription -> subscription.close() }
+        subscriptions.clear()
+        lastSentState.clear()
+        scope.cancel()
+    }
+
+    private fun subscribeServerEvents() {
         subscriptions.add(
             api.event().server().onStateChanged { event ->
                 if (event.oldState == event.newState) {
@@ -46,11 +59,11 @@ class NotificationListener(
                     broadcast(
                         Notification(
                             formatter.server(server, message, Placeholder.unparsed("state", state.name)),
-                            type
-                        )
+                            type,
+                        ),
                     )
                 }
-            }
+            },
         )
 
         subscriptions.add(
@@ -63,13 +76,15 @@ class NotificationListener(
                     broadcast(
                         Notification(
                             formatter.server(server, message, Placeholder.unparsed("state", "STOPPED")),
-                            NotificationType.SERVER_STOPPED
-                        )
+                            NotificationType.SERVER_STOPPED,
+                        ),
                     )
                 }
-            }
+            },
         )
+    }
 
+    private fun subscribeGroupEvents() {
         subscriptions.add(
             api.event().group().onCreated { event ->
                 val serverGroupId = event.serverGroupId
@@ -82,11 +97,11 @@ class NotificationListener(
                     broadcast(
                         Notification(
                             formatter.group(message, name),
-                            NotificationType.GROUP_CREATED
-                        )
+                            NotificationType.GROUP_CREATED,
+                        ),
                     )
                 }
-            }
+            },
         )
 
         subscriptions.add(
@@ -98,13 +113,15 @@ class NotificationListener(
                     broadcast(
                         Notification(
                             formatter.group(message, name),
-                            NotificationType.GROUP_DELETED
-                        )
+                            NotificationType.GROUP_DELETED,
+                        ),
                     )
                 }
-            }
+            },
         )
+    }
 
+    private fun subscribePersistentServerEvents() {
         subscriptions.add(
             api.event().persistentServer().onCreated { event ->
                 val name = event.name ?: event.persistentServerId
@@ -114,11 +131,11 @@ class NotificationListener(
                     broadcast(
                         Notification(
                             formatter.persistentServer(message, name),
-                            NotificationType.PERSISTENT_SERVER_CREATED
-                        )
+                            NotificationType.PERSISTENT_SERVER_CREATED,
+                        ),
                     )
                 }
-            }
+            },
         )
 
         subscriptions.add(
@@ -130,19 +147,12 @@ class NotificationListener(
                     broadcast(
                         Notification(
                             formatter.persistentServer(message, name),
-                            NotificationType.PERSISTENT_SERVER_DELETED
-                        )
+                            NotificationType.PERSISTENT_SERVER_DELETED,
+                        ),
                     )
                 }
-            }
+            },
         )
-    }
-
-    fun stop() {
-        subscriptions.forEach { subscription -> subscription.close() }
-        subscriptions.clear()
-        lastSentState.clear()
-        scope.cancel()
     }
 
     private fun broadcast(notification: Notification) {
@@ -155,5 +165,4 @@ class NotificationListener(
         val id = sender.getUniqueId() ?: return true
         return cache.isEnabled(id, type)
     }
-
 }

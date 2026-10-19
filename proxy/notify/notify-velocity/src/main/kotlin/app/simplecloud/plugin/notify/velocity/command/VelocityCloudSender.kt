@@ -10,15 +10,11 @@ class VelocityCloudSender(
     val source: CommandSource,
 ) : CloudSender {
 
-    override fun getUniqueId(): UUID? {
-        return (source as? Player)?.uniqueId
-    }
+    override fun getUniqueId(): UUID? = (source as? Player)?.uniqueId
 
     override fun sendMessage(message: Component) {
         source.sendMessage(message)
     }
 
-    override fun hasPermission(permission: String): Boolean {
-        return source.hasPermission(permission)
-    }
+    override fun hasPermission(permission: String): Boolean = source.hasPermission(permission)
 }

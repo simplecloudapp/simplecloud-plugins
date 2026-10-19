@@ -13,7 +13,7 @@ class ConnectionCommand(
     "connection",
     CommandSettings.builder()
         .setPermission("simplecloud.connection.reload")
-        .build()
+        .build(),
 ) {
 
     private val logger = LoggerFactory.getLogger(ConnectionCommand::class.java)
@@ -45,5 +45,4 @@ class ConnectionCommand(
         val plain = serializer.serialize(component)
         sender.sendMessage(plain)
     }
-
 }

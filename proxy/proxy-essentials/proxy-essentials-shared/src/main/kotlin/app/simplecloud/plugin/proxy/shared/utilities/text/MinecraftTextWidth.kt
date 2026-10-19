@@ -61,15 +61,13 @@ object MinecraftTextWidth {
         return metrics.advance + metrics.boldOffset
     }
 
-    private fun metricsOf(codePoint: Int, font: Key?): GlyphMetrics? {
-        return when {
-            codePoint == ' '.code -> GlyphMetrics(SPACE_WIDTH, BITMAP_BOLD_OFFSET)
-            codePoint == ZERO_WIDTH_NON_JOINER -> GlyphMetrics(0f, BITMAP_BOLD_OFFSET)
-            font == null || font == defaultFont -> bitmapMetrics(defaultWidths, codePoint) ?: unihexMetrics(codePoint)
-            font == altFont -> bitmapMetrics(altWidths, codePoint)
-            font == uniformFont -> unihexMetrics(codePoint)
-            else -> null
-        }
+    private fun metricsOf(codePoint: Int, font: Key?): GlyphMetrics? = when {
+        codePoint == ' '.code -> GlyphMetrics(SPACE_WIDTH, BITMAP_BOLD_OFFSET)
+        codePoint == ZERO_WIDTH_NON_JOINER -> GlyphMetrics(0f, BITMAP_BOLD_OFFSET)
+        font == null || font == defaultFont -> bitmapMetrics(defaultWidths, codePoint) ?: unihexMetrics(codePoint)
+        font == altFont -> bitmapMetrics(altWidths, codePoint)
+        font == uniformFont -> unihexMetrics(codePoint)
+        else -> null
     }
 
     private fun bitmapMetrics(widths: Map<Int, Float>, codePoint: Int): GlyphMetrics? {
@@ -86,15 +84,15 @@ object MinecraftTextWidth {
         return GlyphMetrics(encodedAdvance / 2f, UNIHEX_BOLD_OFFSET)
     }
 
-    private fun loadWidths(resourceName: String): Map<Int, Float> {
-        return openResource(resourceName).bufferedReader().useLines { lines ->
-            lines
-                .filterNot { it.isBlank() || it.startsWith('#') }
-                .associate { line ->
-                    val (codePoint, width) = line.split('=', limit = 2)
-                    codePoint.toInt(16) to width.toFloat()
-                }
-        }
+    private fun loadWidths(resourceName: String): Map<Int, Float> = openResource(
+        resourceName,
+    ).bufferedReader().useLines { lines ->
+        lines
+            .filterNot { it.isBlank() || it.startsWith('#') }
+            .associate { line ->
+                val (codePoint, width) = line.split('=', limit = 2)
+                codePoint.toInt(16) to width.toFloat()
+            }
     }
 
     private fun loadAdvances(): ByteArray {

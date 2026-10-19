@@ -7,7 +7,7 @@ import net.md_5.bungee.api.config.ServerInfo
 import java.net.InetSocketAddress
 
 class BungeeCordServerRegistry(
-    private val proxy: ProxyServer
+    private val proxy: ProxyServer,
 ) : ServerRegistry {
 
     private val lock = Any()
@@ -18,7 +18,7 @@ class BungeeCordServerRegistry(
             proxyName,
             address,
             server.serverId,
-            server.properties.getOrDefault("proxy-restricted", "false").toString().toBoolean()
+            server.properties.getOrDefault("proxy-restricted", "false").toString().toBoolean(),
         )
 
         synchronized(lock) {
@@ -45,7 +45,9 @@ class BungeeCordServerRegistry(
     private fun refreshServerPriorities() {
         val serverNames = proxy.servers.keys.toList()
         proxy.config.listeners.forEach { listener ->
-            listener.serverPriority.removeIf { priority -> serverNames.none { name -> name.equals(priority, ignoreCase = true) } }
+            listener.serverPriority.removeIf { priority ->
+                serverNames.none { name -> name.equals(priority, ignoreCase = true) }
+            }
             serverNames.forEach { serverName ->
                 if (listener.serverPriority.none { priority -> priority.equals(serverName, ignoreCase = true) }) {
                     listener.serverPriority.add(serverName)

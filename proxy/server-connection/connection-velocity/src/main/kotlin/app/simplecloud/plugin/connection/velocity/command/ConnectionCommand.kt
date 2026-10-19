@@ -31,8 +31,7 @@ class ConnectionCommand(
         }
     }
 
-    override fun hasPermission(invocation: SimpleCommand.Invocation): Boolean {
-        return invocation.source().hasPermission("simplecloud.connection.reload")
-    }
-
+    override fun hasPermission(invocation: SimpleCommand.Invocation): Boolean = invocation.source().hasPermission(
+        "simplecloud.connection.reload",
+    )
 }

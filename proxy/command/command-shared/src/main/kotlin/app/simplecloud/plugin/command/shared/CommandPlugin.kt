@@ -1,9 +1,9 @@
 package app.simplecloud.plugin.command.shared
 
 import app.simplecloud.api.CloudApi
-import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
 import app.simplecloud.plugin.command.shared.config.DefaultConfigInstaller
 import app.simplecloud.plugin.command.shared.config.MessageConfig
+import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
 import kotlinx.coroutines.*
 import org.slf4j.LoggerFactory
 import java.io.File
@@ -23,11 +23,11 @@ class CommandPlugin(private val dir: File) {
     // coroutine scope used for commands
     val scope = CoroutineScope(
         CoroutineName("simplecloud-command") +
-                SupervisorJob() +
-                Dispatchers.IO +
-                CoroutineExceptionHandler { context, exception ->
-                    logger.error("An error occurred in coroutine ${context[CoroutineName]?.name}", exception)
-                }
+            SupervisorJob() +
+            Dispatchers.IO +
+            CoroutineExceptionHandler { context, exception ->
+                logger.error("An error occurred in coroutine ${context[CoroutineName]?.name}", exception)
+            },
     )
 
     fun startup() {
@@ -39,5 +39,4 @@ class CommandPlugin(private val dir: File) {
         scope.cancel()
         api.close()
     }
-
 }

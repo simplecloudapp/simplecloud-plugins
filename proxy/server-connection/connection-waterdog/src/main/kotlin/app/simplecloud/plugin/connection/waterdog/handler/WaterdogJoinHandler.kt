@@ -48,5 +48,4 @@ class WaterdogJoinHandler(
             .mapNotNull { name -> plugin.proxy.getServerInfo(name) }
             .minByOrNull { it.players.size }
     }
-
 }

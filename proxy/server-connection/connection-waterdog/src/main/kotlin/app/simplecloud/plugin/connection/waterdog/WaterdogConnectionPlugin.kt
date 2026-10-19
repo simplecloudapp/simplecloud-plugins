@@ -49,5 +49,4 @@ class WaterdogConnectionPlugin : Plugin() {
         commandManager.registerCommands()
         proxy.commandMap.registerCommand(ConnectionCommand(this))
     }
-
 }

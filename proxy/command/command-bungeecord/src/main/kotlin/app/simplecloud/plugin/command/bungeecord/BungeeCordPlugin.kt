@@ -27,16 +27,11 @@ class BungeeCordPlugin : Plugin() {
         adventure.close()
     }
 
-    fun adventure(): BungeeAudiences {
-        return this.adventure
-    }
+    fun adventure(): BungeeAudiences = this.adventure
 
-    private fun createCommandManager(): BungeeCommandManager<BungeeCloudSender> {
-        return BungeeCommandManager(
-            this,
-            ExecutionCoordinator.asyncCoordinator(),
-            SenderMapper.create({ BungeeCloudSender(it, this) }, BungeeCloudSender::getCommandSender)
-        )
-    }
-
+    private fun createCommandManager(): BungeeCommandManager<BungeeCloudSender> = BungeeCommandManager(
+        this,
+        ExecutionCoordinator.asyncCoordinator(),
+        SenderMapper.create({ BungeeCloudSender(it, this) }, BungeeCloudSender::getCommandSender),
+    )
 }

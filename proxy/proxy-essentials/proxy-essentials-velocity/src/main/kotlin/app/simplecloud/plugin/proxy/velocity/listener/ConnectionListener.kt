@@ -13,7 +13,7 @@ import com.velocitypowered.api.event.player.ServerPreConnectEvent
 import kotlin.jvm.optionals.getOrNull
 
 class ConnectionListener(
-    private val essentials: ProxyEssentials
+    private val essentials: ProxyEssentials,
 ) {
 
     @Subscribe(order = PostOrder.EARLY)

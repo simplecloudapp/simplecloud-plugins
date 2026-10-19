@@ -9,15 +9,11 @@ import net.kyori.adventure.text.Component
  */
 class VelocityCloudSender(private val commandSource: CommandSource) : CloudSender {
 
-    fun getCommandSource(): CommandSource {
-        return commandSource
-    }
+    fun getCommandSource(): CommandSource = commandSource
 
     override fun sendMessage(message: Component) {
         commandSource.sendMessage(message)
     }
 
-    override fun hasPermission(permission: String): Boolean {
-        return commandSource.hasPermission(permission)
-    }
+    override fun hasPermission(permission: String): Boolean = commandSource.hasPermission(permission)
 }

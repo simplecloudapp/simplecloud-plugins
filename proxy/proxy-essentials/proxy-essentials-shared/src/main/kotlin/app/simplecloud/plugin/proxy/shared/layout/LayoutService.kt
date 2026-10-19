@@ -23,7 +23,7 @@ class LayoutService(
     private val repository: LayoutRepository,
     private val service: JoinStateService,
     private val config: ConfigurationFactory<ProxyEssentialsConfig>,
-    private val scope: CoroutineScope
+    private val scope: CoroutineScope,
 ) {
 
     private val logger = LoggerFactory.getLogger(LayoutService::class.java)
@@ -75,7 +75,8 @@ class LayoutService(
         val motd = layout.motd
         if (motd.layouts.isEmpty()) return null
 
-        val updateTime = motd.updateTime ?: return motd.layouts[getPingIndex(layoutName, motd.updateType, motd.layouts.size)]
+        val updateTime =
+            motd.updateTime ?: return motd.layouts[getPingIndex(layoutName, motd.updateType, motd.layouts.size)]
         if (updateTime <= 0) return motd.layouts.first()
 
         val timeSlot = System.currentTimeMillis() / (updateTime * 50L)
@@ -116,17 +117,18 @@ class LayoutService(
         val candidates = listOf(
             route.rules.find { it.state == state }?.layout,
             config.joinstates.find { it.name == state }?.forcedMotdLayout,
-            config.initialLayout
+            config.initialLayout,
         )
 
         return candidates.filterNotNull().firstOrNull { repository.find(it) != null }
     }
 
-    private fun getPingIndex(layoutName: String, updateType: MotdUpdateType, size: Int): Int {
-        return when (updateType) {
-            MotdUpdateType.RANDOM -> Random.nextInt(size)
-            MotdUpdateType.QUEUE -> pingCounters.computeIfAbsent(layoutName) { AtomicInteger() }.getAndIncrement().mod(size)
-        }
+    private fun getPingIndex(layoutName: String, updateType: MotdUpdateType, size: Int): Int = when (updateType) {
+        MotdUpdateType.RANDOM -> Random.nextInt(size)
+
+        MotdUpdateType.QUEUE -> pingCounters.computeIfAbsent(layoutName) {
+            AtomicInteger()
+        }.getAndIncrement().mod(size)
     }
 
     private fun readLayout(properties: Map<String, Any>?): String? {

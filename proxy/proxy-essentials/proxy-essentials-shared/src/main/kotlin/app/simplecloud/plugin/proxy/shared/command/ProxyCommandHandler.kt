@@ -13,7 +13,7 @@ import org.incendo.cloud.permission.Permission
 
 class ProxyCommandHandler<C : CloudSender>(
     private val manager: CommandManager<C>,
-    private val plugin: ProxyEssentials
+    private val plugin: ProxyEssentials,
 ) {
 
     fun register() {
@@ -21,14 +21,14 @@ class ProxyCommandHandler<C : CloudSender>(
             manager.commandBuilder("scproxy")
                 .handler { context -> sendHelp(context) }
                 .permission(Permission.permission(CommandPermissions.HELP))
-                .build()
+                .build(),
         )
         manager.command(
             manager.commandBuilder("scproxy")
                 .literal("help")
                 .handler { context -> sendHelp(context) }
                 .permission(Permission.permission(CommandPermissions.HELP))
-                .build()
+                .build(),
         )
         JoinStateCommand(plugin.api, plugin, manager).register()
         LayoutCommand(plugin.api, plugin, manager).register()
@@ -48,7 +48,7 @@ class ProxyCommandHandler<C : CloudSender>(
             "/scproxy joinstate set <group|ps> <target> <joinstate> [id]" to CommandPermissions.JOINSTATE_SET,
             "/scproxy layout help" to CommandPermissions.LAYOUT_HELP,
             "/scproxy layout info [group]" to CommandPermissions.LAYOUT_INFO,
-            "/scproxy layout set <group> <layout>" to CommandPermissions.LAYOUT_SET
+            "/scproxy layout set <group> <layout>" to CommandPermissions.LAYOUT_SET,
         ).filter { (_, permission) -> sender.hasPermission(permission) }
 
         sender.sendMessage(formatter.format(help.header))

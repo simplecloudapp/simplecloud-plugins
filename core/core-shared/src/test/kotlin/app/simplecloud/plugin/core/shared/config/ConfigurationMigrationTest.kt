@@ -1,5 +1,6 @@
 package app.simplecloud.plugin.core.shared.config
 
+import app.simplecloud.plugin.core.shared.config.migration.ConfigMigrator
 import org.spongepowered.configurate.objectmapping.ConfigSerializable
 import java.nio.file.Files
 import java.nio.file.Path

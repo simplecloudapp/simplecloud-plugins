@@ -25,54 +25,49 @@ class MessageFormatter(
     private val dateFormatter: DateTimeFormatter
         get() = DateTimeFormatter.ofPattern(messages.get().format.date, Locale.getDefault()).withZone(zone)
 
-    fun server(server: Server, message: String, vararg tagResolver: TagResolver): Component {
-        return parse(
-            replaceHover(message, serverHoverPlaceholder, messages.get().notifications.hover.server),
-            Placeholder.unparsed("ip", server.ip ?: "N/A"),
-            Placeholder.unparsed("port", server.port.toString()),
-            Placeholder.unparsed("group", server.serverBase.name ?: "N/A"),
-            Placeholder.unparsed("server", server.serverBase.name ?: "N/A"),
-            Placeholder.unparsed("uuid", server.serverId),
-            Placeholder.unparsed("id", formatNumericalId(server.numericalId)),
-            Placeholder.unparsed("create_date", formatTimestamp(runCatching { server.createdAt }.getOrNull())),
-            Placeholder.unparsed("time", formatTimestamp(Instant.now())),
-            Placeholder.unparsed("updated", formatTimestamp(runCatching { server.updatedAt }.getOrNull())),
-            Placeholder.unparsed("players", server.playerCount.toString()),
-            Placeholder.unparsed("max", server.maxPlayers.toString()),
-            *tagResolver
-        )
-    }
+    fun server(server: Server, message: String, vararg tagResolver: TagResolver): Component = parse(
+        replaceHover(message, serverHoverPlaceholder, messages.get().notifications.hover.server),
+        Placeholder.unparsed("ip", server.ip ?: "N/A"),
+        Placeholder.unparsed("port", server.port.toString()),
+        Placeholder.unparsed("group", server.serverBase.name ?: "N/A"),
+        Placeholder.unparsed("server", server.serverBase.name ?: "N/A"),
+        Placeholder.unparsed("uuid", server.serverId),
+        Placeholder.unparsed("id", formatNumericalId(server.numericalId)),
+        Placeholder.unparsed("create_date", formatTimestamp(runCatching { server.createdAt }.getOrNull())),
+        Placeholder.unparsed("time", formatTimestamp(Instant.now())),
+        Placeholder.unparsed("updated", formatTimestamp(runCatching { server.updatedAt }.getOrNull())),
+        Placeholder.unparsed("players", server.playerCount.toString()),
+        Placeholder.unparsed("max", server.maxPlayers.toString()),
+        *tagResolver,
+    )
 
-    fun group(message: String, groupName: String?): Component {
-        return parse(
-            replaceHover(message, groupHoverPlaceholder, messages.get().notifications.hover.group),
-            Placeholder.unparsed("group", groupName ?: "N/A"),
-            Placeholder.unparsed("time", formatTimestamp(Instant.now()))
-        )
-    }
+    fun group(message: String, groupName: String?): Component = parse(
+        replaceHover(message, groupHoverPlaceholder, messages.get().notifications.hover.group),
+        Placeholder.unparsed("group", groupName ?: "N/A"),
+        Placeholder.unparsed("time", formatTimestamp(Instant.now())),
+    )
 
-    fun persistentServer(message: String, serverName: String?): Component {
-        return parse(
-            replaceHover(message, persistentServerHoverPlaceholder, messages.get().notifications.hover.persistentServer),
-            Placeholder.unparsed("server", serverName ?: "N/A"),
-            Placeholder.unparsed("time", formatTimestamp(Instant.now()))
-        )
-    }
+    fun persistentServer(message: String, serverName: String?): Component = parse(
+        replaceHover(
+            message,
+            persistentServerHoverPlaceholder,
+            messages.get().notifications.hover.persistentServer,
+        ),
+        Placeholder.unparsed("server", serverName ?: "N/A"),
+        Placeholder.unparsed("time", formatTimestamp(Instant.now())),
+    )
 
-    fun message(message: String, vararg tagResolver: TagResolver): Component {
-        return parse(message, *tagResolver)
-    }
+    fun message(message: String, vararg tagResolver: TagResolver): Component = parse(message, *tagResolver)
 
-    private fun parse(message: String, vararg tagResolver: TagResolver): Component {
-        return messages.get().msg(message, *tagResolver)
-    }
+    private fun parse(message: String, vararg tagResolver: TagResolver): Component = messages.get().msg(
+        message,
+        *tagResolver,
+    )
 
-    private fun replaceHover(message: String, placeholder: String, hoverMessage: String): String {
-        return message.replace(
-            "<hover:show_text:'<$placeholder>'>",
-            "<hover:show_text:'$hoverMessage'>"
-        )
-    }
+    private fun replaceHover(message: String, placeholder: String, hoverMessage: String): String = message.replace(
+        "<hover:show_text:'<$placeholder>'>",
+        "<hover:show_text:'$hoverMessage'>",
+    )
 
     private fun formatNumericalId(id: Int): String {
         if (id == -1) return ""
@@ -90,5 +85,4 @@ class MessageFormatter(
 
         return dateFormatter.format(instant)
     }
-
 }

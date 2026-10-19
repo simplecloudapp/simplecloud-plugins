@@ -13,13 +13,17 @@ object ApiUtils {
         val causes = generateSequence(throwable) { it.cause }
         val apiException = causes.filterIsInstance<ApiException>().firstOrNull()
 
-        if (apiException == null) {
-            if (causes.any { it is TimeoutException }) return "the controller did not respond in time"
-            logger.error("An unexpected error occurred while executing a command", throwable)
-            return "an internal error occurred"
+        return when {
+            apiException == null -> nonApiReason(throwable, causes)
+            apiException.code == 0 -> "the controller is not reachable"
+            else -> parseErrorMessage(apiException.responseBody)
         }
-        if (apiException.code == 0) return "the controller is not reachable"
-        return parseErrorMessage(apiException.responseBody)
+    }
+
+    private fun nonApiReason(throwable: Throwable, causes: Sequence<Throwable>): String {
+        if (causes.any { it is TimeoutException }) return "the controller did not respond in time"
+        logger.error("An unexpected error occurred while executing a command", throwable)
+        return "an internal error occurred"
     }
 
     private fun parseErrorMessage(body: String?): String {

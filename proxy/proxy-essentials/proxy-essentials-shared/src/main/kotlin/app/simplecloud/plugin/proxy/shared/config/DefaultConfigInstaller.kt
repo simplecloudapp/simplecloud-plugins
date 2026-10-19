@@ -11,7 +11,7 @@ object DefaultConfigInstaller {
         "layout/public.yml",
         "layout/maintenance.yml",
         "layout/server-icons/simplecloud.png",
-        "layout/server-icons/simplecloud-gray.png"
+        "layout/server-icons/simplecloud-gray.png",
     )
 
     fun install(dataDirectory: Path, classLoader: ClassLoader) {

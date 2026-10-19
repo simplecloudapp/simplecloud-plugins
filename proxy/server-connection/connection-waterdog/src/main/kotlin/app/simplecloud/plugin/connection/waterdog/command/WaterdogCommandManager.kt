@@ -6,6 +6,7 @@ import app.simplecloud.plugin.connection.waterdog.WaterdogConnectionPlugin
 import dev.waterdog.waterdogpe.command.Command
 import dev.waterdog.waterdogpe.command.CommandSender
 import dev.waterdog.waterdogpe.command.CommandSettings
+import dev.waterdog.waterdogpe.network.serverinfo.ServerInfo
 import dev.waterdog.waterdogpe.player.ProxiedPlayer
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import org.slf4j.LoggerFactory
@@ -61,48 +62,35 @@ class WaterdogCommandManager(
 
         val config = plugin.connectionPlugin.connectionConfig.get()
         val currentServerName = player.serverInfo?.serverName
-        val serverNames = plugin.proxy.servers.map { it.serverName }
-        val sortedTargets = command.targetConnections.sortedByDescending { it.priority }
+        val targets = ConnectionResolver.matchingTargets(
+            command.targetConnections,
+            config.connections,
+            plugin.proxy.servers.map { it.serverName },
+            currentServerName,
+            player::hasPermission,
+        )
 
-        for (target in sortedTargets) {
-            if (target.from.isNotEmpty() && currentServerName != null) {
-                val isFromAllowed = target.from.any { connectionName ->
-                    ConnectionResolver.isServerInConnection(
-                        currentServerName, connectionName, config.connections, serverNames
-                    )
-                }
-                if (!isFromAllowed) continue
-            }
-
-            val connection = ConnectionResolver.findConnection(target.name, config.connections) ?: continue
-
-            val failedRule = ConnectionResolver.checkRules(connection) { permission ->
-                player.hasPermission(permission)
-            }
-            if (failedRule != null) continue
-
-            val matchingNames = ConnectionResolver.findMatchingServerNames(connection, serverNames)
-            if (matchingNames.isEmpty()) continue
-
-            if (currentServerName != null && matchingNames.any { name -> name.equals(currentServerName, ignoreCase = true) }) {
+        for (names in targets) {
+            if (names.any { name -> name.equals(currentServerName, ignoreCase = true) }) {
                 sendMessage(player, command.messages.alreadyConnected)
                 return
             }
-
-            val serverInfo = matchingNames
-                .mapNotNull { name -> plugin.proxy.getServerInfo(name) }
-                .minByOrNull { it.players.size }
-                ?: continue
-
-            try {
-                player.connect(serverInfo)
-            } catch (exception: Exception) {
-                logger.warn("Failed to send player ${player.name} to ${serverInfo.serverName}", exception)
+            val serverInfo = names.mapNotNull { name -> plugin.proxy.getServerInfo(name) }.minByOrNull { it.players.size }
+            if (serverInfo != null) {
+                connect(player, serverInfo)
+                return
             }
-            return
         }
 
         sendMessage(player, command.messages.noTargetConnectionFound)
+    }
+
+    private fun connect(player: ProxiedPlayer, serverInfo: ServerInfo) {
+        try {
+            player.connect(serverInfo)
+        } catch (exception: Exception) {
+            logger.warn("Failed to send player ${player.name} to ${serverInfo.serverName}", exception)
+        }
     }
 
     private fun sendMessage(player: ProxiedPlayer, rawMessage: String) {
@@ -110,5 +98,4 @@ class WaterdogCommandManager(
         val plain = serializer.serialize(messages.msg(rawMessage))
         player.sendMessage(plain)
     }
-
 }

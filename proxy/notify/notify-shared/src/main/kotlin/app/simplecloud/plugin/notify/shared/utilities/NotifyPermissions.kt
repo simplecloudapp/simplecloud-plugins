@@ -17,5 +17,4 @@ object NotifyPermissions {
     const val COMMAND_RELOAD_CONFIG = "simplecloud.command.notify.reload.config"
     const val COMMAND_TOGGLE_SELF = "simplecloud.command.notify.toggle.self"
     const val COMMAND_TOGGLE_OTHER = "simplecloud.command.notify.toggle.other"
-
 }

@@ -5,9 +5,9 @@ import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
 import app.simplecloud.plugin.notify.shared.config.DefaultConfigInstaller
 import app.simplecloud.plugin.notify.shared.config.MessageConfig
 import app.simplecloud.plugin.notify.shared.listener.NotificationListener
-import app.simplecloud.plugin.notify.shared.utilities.MessageFormatter
 import app.simplecloud.plugin.notify.shared.notification.NotificationCache
 import app.simplecloud.plugin.notify.shared.platform.NotifyPlatform
+import app.simplecloud.plugin.notify.shared.utilities.MessageFormatter
 import kotlinx.coroutines.*
 import org.slf4j.LoggerFactory
 import java.io.File
@@ -18,7 +18,7 @@ class NotifyPlugin(private val platform: NotifyPlatform) {
     private val logger = LoggerFactory.getLogger(NotifyPlugin::class.java)
 
     val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
-    val api = CloudApi.create()
+    val api: CloudApi = CloudApi.create()
     val messages = createMessages()
 
     val formatter = MessageFormatter(messages)
@@ -45,16 +45,14 @@ class NotifyPlugin(private val platform: NotifyPlatform) {
         cache.unload(id)
     }
 
-    fun reload(): Boolean {
-        return runCatching {
-            logger.info("Reloading simplecloud notify...")
-            messages.reload()
-        }.onSuccess {
-            logger.info("Successfully reloaded simplecloud notify")
-        }.onFailure { throwable ->
-            logger.error("Failed to reload simplecloud notify", throwable)
-        }.isSuccess
-    }
+    fun reload(): Boolean = runCatching {
+        logger.info("Reloading simplecloud notify...")
+        messages.reload()
+    }.onSuccess {
+        logger.info("Successfully reloaded simplecloud notify")
+    }.onFailure { throwable ->
+        logger.error("Failed to reload simplecloud notify", throwable)
+    }.isSuccess
 
     private fun createMessages(): ConfigurationFactory<MessageConfig> {
         val file = File(platform.getDataDirectory(), "messages.yml")
@@ -64,5 +62,4 @@ class NotifyPlugin(private val platform: NotifyPlatform) {
         factory.loadOrCreate(MessageConfig())
         return factory
     }
-
 }

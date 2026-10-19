@@ -8,17 +8,13 @@ import net.md_5.bungee.api.CommandSender
 /**
  * @author Fynn Bauer in 2024
  */
-class BungeeCloudSender(private val commandSender: CommandSender, private val plugin: BungeeCordPlugin): CloudSender {
+class BungeeCloudSender(private val commandSender: CommandSender, private val plugin: BungeeCordPlugin) : CloudSender {
 
-    fun getCommandSender(): CommandSender {
-        return commandSender
-    }
+    fun getCommandSender(): CommandSender = commandSender
 
     override fun sendMessage(message: Component) {
         plugin.adventure().sender(commandSender).sendMessage(message)
     }
 
-    override fun hasPermission(permission: String): Boolean {
-        return commandSender.hasPermission(permission)
-    }
+    override fun hasPermission(permission: String): Boolean = commandSender.hasPermission(permission)
 }

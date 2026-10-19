@@ -18,7 +18,7 @@ class BungeeCordConnectionPlugin : Plugin() {
 
     val connectionPlugin = ConnectionPlugin(
         dataFolder,
-        serverRegistry
+        serverRegistry,
     )
 
     override fun onEnable() {
@@ -56,5 +56,4 @@ class BungeeCordConnectionPlugin : Plugin() {
         commandManager.registerCommands()
         proxy.pluginManager.registerCommand(this, ConnectionCommand(this, audiences))
     }
-
 }

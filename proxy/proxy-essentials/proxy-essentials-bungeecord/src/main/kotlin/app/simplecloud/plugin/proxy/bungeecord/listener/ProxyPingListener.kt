@@ -16,7 +16,7 @@ import java.util.UUID
 import javax.imageio.ImageIO
 
 class ProxyPingListener(
-    private val essentials: ProxyEssentials
+    private val essentials: ProxyEssentials,
 ) : Listener {
 
     private val serverIconCache = ServerIconCache(essentials.serverIconDirectory)
@@ -41,13 +41,17 @@ class ProxyPingListener(
         }
 
         if (layout.version.name.enabled) {
-            response.version = ServerPing.Protocol(essentials.messageFormatter.formatLegacy(layout.version.name.text), -1)
+            response.version =
+                ServerPing.Protocol(essentials.messageFormatter.formatLegacy(layout.version.name.text), -1)
         }
 
         val address = event.connection.socketAddress as? InetSocketAddress
         if (!LocalPingSourceMatcher.isLocal(address?.address)) {
             val onlinePlayers = essentials.playerCountService.getOnlinePlayers()
-            val maxPlayers = layout.version.slots.resolveMaxPlayers(onlinePlayers, essentials.playerCountService.getMaxPlayers())
+            val maxPlayers = layout.version.slots.resolveMaxPlayers(
+                onlinePlayers,
+                essentials.playerCountService.getMaxPlayers(),
+            )
             val samplePlayers = if (layout.playerList.enabled && layout.playerList.playerList.isNotEmpty()) {
                 layout.playerList.playerList.map { ServerPing.PlayerInfo(it, UUID.randomUUID()) }.toTypedArray()
             } else {

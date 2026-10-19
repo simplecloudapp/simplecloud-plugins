@@ -1,7 +1,7 @@
 package app.simplecloud.plugin.command.velocity
 
-import app.simplecloud.plugin.command.shared.command.CloudCommandHandler
 import app.simplecloud.plugin.command.shared.CommandPlugin
+import app.simplecloud.plugin.command.shared.command.CloudCommandHandler
 import app.simplecloud.plugin.command.velocity.command.VelocityCloudSender
 import com.google.inject.Inject
 import com.velocitypowered.api.event.Subscribe
@@ -28,8 +28,8 @@ import java.nio.file.Path
     description = "Proxy commands for managing groups, servers, and players across the network",
     url = "https://github.com/simplecloudapp/command-plugin",
     dependencies = [
-        Dependency(id = "simplecloud-api")
-    ]
+        Dependency(id = "simplecloud-api"),
+    ],
 )
 class VelocityPlugin @Inject constructor(
     private val server: ProxyServer,
@@ -49,13 +49,10 @@ class VelocityPlugin @Inject constructor(
         plugin.shutdown()
     }
 
-    private fun createCommandManager(): VelocityCommandManager<VelocityCloudSender> {
-        return VelocityCommandManager(
-            server.pluginManager.ensurePluginContainer(this),
-            server,
-            ExecutionCoordinator.asyncCoordinator(),
-            SenderMapper.create(::VelocityCloudSender, VelocityCloudSender::getCommandSource)
-        )
-    }
-
+    private fun createCommandManager(): VelocityCommandManager<VelocityCloudSender> = VelocityCommandManager(
+        server.pluginManager.ensurePluginContainer(this),
+        server,
+        ExecutionCoordinator.asyncCoordinator(),
+        SenderMapper.create(::VelocityCloudSender, VelocityCloudSender::getCommandSource),
+    )
 }

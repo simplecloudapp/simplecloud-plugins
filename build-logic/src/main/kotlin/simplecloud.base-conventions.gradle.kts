@@ -52,10 +52,15 @@ tasks.shadowJar {
     archiveFileName.set("${project.name}.jar")
 }
 
+// idea shit
+val ideaSyncActive = providers.systemProperty("idea.sync.active").isPresent
+
 tasks.processResources {
     val properties = mapOf("version" to project.version.toString())
     inputs.properties(properties)
-    filesMatching(listOf("plugin.yml", "paper-plugin.yml")) {
-        expand(properties)
+    if (!ideaSyncActive) {
+        filesMatching(listOf("plugin.yml", "paper-plugin.yml")) {
+            expand(properties)
+        }
     }
 }

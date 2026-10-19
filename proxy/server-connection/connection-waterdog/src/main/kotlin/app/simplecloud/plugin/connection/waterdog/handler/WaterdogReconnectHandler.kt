@@ -16,7 +16,7 @@ class WaterdogReconnectHandler(
         player: ProxiedPlayer?,
         oldServer: ServerInfo?,
         reason: ReconnectReason?,
-        kickMessage: String?
+        kickMessage: String?,
     ): ServerInfo? {
         if (player == null) return null
 
@@ -24,38 +24,17 @@ class WaterdogReconnectHandler(
         if (!config.fallback.enabled) return defaultHandler.getFallbackServer(player, oldServer, reason, kickMessage)
 
         val kickedServerName = oldServer?.serverName
-        val serverNames = plugin.proxy.servers.map { it.serverName }
-        val sortedTargets = config.fallback.targetConnections.sortedByDescending { it.priority }
-
-        for (target in sortedTargets) {
-            if (target.from.isNotEmpty() && kickedServerName != null) {
-                val isFromAllowed = target.from.any { connectionName ->
-                    ConnectionResolver.isServerInConnection(
-                        kickedServerName, connectionName, config.connections, serverNames
-                    )
-                }
-                if (!isFromAllowed) continue
-            }
-
-            val connection = ConnectionResolver.findConnection(target.name, config.connections) ?: continue
-
-            val failedRule = ConnectionResolver.checkRules(connection) { permission ->
-                player.hasPermission(permission)
-            }
-            if (failedRule != null) continue
-
-            val matchingNames = ConnectionResolver.findMatchingServerNames(connection, serverNames)
-            if (matchingNames.isEmpty()) continue
-
-            val serverInfo = matchingNames
+        return ConnectionResolver.matchingTargets(
+            config.fallback.targetConnections,
+            config.connections,
+            plugin.proxy.servers.map { it.serverName },
+            kickedServerName,
+            player::hasPermission,
+        ).firstNotNullOfOrNull { names ->
+            names
                 .mapNotNull { name -> plugin.proxy.getServerInfo(name) }
                 .filter { it.serverName != kickedServerName }
                 .minByOrNull { it.players.size }
-
-            if (serverInfo != null) return serverInfo
         }
-
-        return null
     }
-
 }

@@ -27,12 +27,12 @@ import java.nio.file.Path
     description = "Essential proxy features for your SimpleCloud network",
     url = "https://github.com/simplecloudapp/proxy-essentials-plugin",
     dependencies = [
-        Dependency("simplecloud-api")
-    ]
+        Dependency("simplecloud-api"),
+    ],
 )
 class VelocityProxyPlugin @Inject constructor(
     private val server: ProxyServer,
-    @DataDirectory dataDirectory: Path
+    @DataDirectory dataDirectory: Path,
 ) {
 
     private val essentials = ProxyEssentials(VelocityPlatformImpl(server, dataDirectory))
@@ -52,12 +52,10 @@ class VelocityProxyPlugin @Inject constructor(
         essentials.stop()
     }
 
-    private fun createCommandManager(): VelocityCommandManager<VelocityCloudSender> {
-        return VelocityCommandManager(
-            server.pluginManager.ensurePluginContainer(this),
-            server,
-            ExecutionCoordinator.asyncCoordinator(),
-            VelocityCloudSenderMapper
-        )
-    }
+    private fun createCommandManager(): VelocityCommandManager<VelocityCloudSender> = VelocityCommandManager(
+        server.pluginManager.ensurePluginContainer(this),
+        server,
+        ExecutionCoordinator.asyncCoordinator(),
+        VelocityCloudSenderMapper,
+    )
 }

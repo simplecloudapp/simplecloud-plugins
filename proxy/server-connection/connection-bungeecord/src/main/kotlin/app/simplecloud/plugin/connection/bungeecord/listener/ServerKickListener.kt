@@ -30,9 +30,8 @@ class ServerKickListener(
 
         event.reason = TextComponent.fromArray(
             *BungeeComponentSerializer.get().serialize(
-                messageConfig.msg(messageConfig.kick.noFallbackServers)
-            )
+                messageConfig.msg(messageConfig.kick.noFallbackServers),
+            ),
         )
     }
-
 }

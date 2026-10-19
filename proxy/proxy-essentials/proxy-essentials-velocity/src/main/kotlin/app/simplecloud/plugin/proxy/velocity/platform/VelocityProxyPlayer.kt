@@ -7,7 +7,7 @@ import java.util.UUID
 import kotlin.jvm.optionals.getOrNull
 
 class VelocityProxyPlayer(
-    private val player: Player
+    private val player: Player,
 ) : ProxyPlayer {
 
     override fun getName(): String = player.username

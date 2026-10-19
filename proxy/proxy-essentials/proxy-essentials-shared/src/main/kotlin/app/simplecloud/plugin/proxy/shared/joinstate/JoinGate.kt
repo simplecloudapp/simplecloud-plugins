@@ -18,7 +18,7 @@ class JoinGate(
     private val service: JoinStateService,
     private val config: ConfigurationFactory<ProxyEssentialsConfig>,
     private val messages: ConfigurationFactory<MessageConfig>,
-    private val scope: CoroutineScope
+    private val scope: CoroutineScope,
 ) {
 
     private val logger = LoggerFactory.getLogger(JoinGate::class.java)
@@ -43,11 +43,17 @@ class JoinGate(
         val kick = messages.get().kick
         val joinState = findJoinState(service.getLocalState()) ?: return JoinResult.Denied(kick.noJoinState)
         if (!hasJoinPermission(joinState, player)) {
-            logger.info("${player.getName()} is missing the permission '${joinState.permission.join}' to join the proxy")
+            logger.info(
+                "${player.getName()} is missing the permission '${joinState.permission.join}' to join the proxy",
+            )
             return JoinResult.Denied(kick.noPermission)
         }
 
-        if (proxyFull.get() && !player.hasPermission(joinState.permission.full)) return JoinResult.Denied(kick.networkFull)
+        if (proxyFull.get() &&
+            !player.hasPermission(joinState.permission.full)
+        ) {
+            return JoinResult.Denied(kick.networkFull)
+        }
         return JoinResult.Allowed
     }
 
@@ -57,13 +63,17 @@ class JoinGate(
         val kick = messages.get().kick
         val state = service.getServerState(serverName)
         if (state == null) {
-            logger.warn("The join states of the servers are not loaded yet, so ${player.getName()} cannot join '$serverName'")
+            logger.warn(
+                "The join states of the servers are not loaded yet, so ${player.getName()} cannot join '$serverName'",
+            )
             return JoinResult.Denied(kick.noJoinState)
         }
 
         val joinState = findJoinState(state) ?: return JoinResult.Denied(kick.noJoinState)
         if (!hasJoinPermission(joinState, player)) {
-            logger.info("${player.getName()} is missing the permission '${joinState.permission.join}' to join '$serverName'")
+            logger.info(
+                "${player.getName()} is missing the permission '${joinState.permission.join}' to join '$serverName'",
+            )
             return JoinResult.Denied(kick.noPermission)
         }
 
@@ -73,7 +83,9 @@ class JoinGate(
     private fun findJoinState(name: String): JoinStateConfig? {
         val joinState = config.get().joinstates.find { it.name == name }
         if (joinState == null) {
-            logger.error("The join state '$name' does not exist in config.yml, so nobody can join until it is added or the join state is changed.")
+            logger.error(
+                "The join state '$name' does not exist in config.yml, so nobody can join until it is added or the join state is changed.",
+            )
         }
         return joinState
     }

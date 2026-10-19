@@ -3,12 +3,12 @@ package app.simplecloud.plugin.command.shared.command.commands
 import app.simplecloud.api.CloudApi
 import app.simplecloud.api.server.Server
 import app.simplecloud.api.server.ServerState
-import app.simplecloud.plugin.command.shared.command.CloudSender
-import app.simplecloud.plugin.command.shared.utilities.CommandPermissions
 import app.simplecloud.plugin.command.shared.CommandPlugin
+import app.simplecloud.plugin.command.shared.command.CloudSender
 import app.simplecloud.plugin.command.shared.command.CloudSuggestions
 import app.simplecloud.plugin.command.shared.utilities.ApiUtils
-import app.simplecloud.plugin.command.shared.utilities.tags
+import app.simplecloud.plugin.command.shared.utilities.CommandPermissions
+import app.simplecloud.plugin.core.shared.adventure.tags
 import kotlinx.coroutines.future.await
 import org.incendo.cloud.CommandManager
 import org.incendo.cloud.kotlin.coroutines.extension.suspendingHandler
@@ -19,7 +19,7 @@ import org.incendo.cloud.permission.Permission
 class ServerCommand<C : CloudSender>(
     private val api: CloudApi,
     private val plugin: CommandPlugin,
-    private val manager: CommandManager<C>
+    private val manager: CommandManager<C>,
 ) {
 
     fun register() {
@@ -61,7 +61,7 @@ class ServerCommand<C : CloudSender>(
                     }
                 }
                 .permission(Permission.permission(CommandPermissions.SERVER_LIST))
-                .build()
+                .build(),
         )
     }
 
@@ -106,7 +106,7 @@ class ServerCommand<C : CloudSender>(
                     sender.sendMessage(messages.msg(messages.command.server.info.entry, tags("key" to "Players", "value" to "${server.playerCount ?: 0}/${server.maxPlayers}")))
                 }
                 .permission(Permission.permission(CommandPermissions.SERVER_INFO))
-                .build()
+                .build(),
         )
     }
 
@@ -128,14 +128,16 @@ class ServerCommand<C : CloudSender>(
                     runCatching { api.group().requestServerStart(group).await() }
                         .onSuccess { sender.sendMessage(messages.msg(messages.command.server.start.requested, tags("group" to group.name))) }
                         .onFailure {
-                            sender.sendMessage(messages.msg(
-                                messages.command.server.error.startFailed,
-                                tags("group" to group.name, "reason" to ApiUtils.reason(it))
-                            ))
+                            sender.sendMessage(
+                                messages.msg(
+                                    messages.command.server.error.startFailed,
+                                    tags("group" to group.name, "reason" to ApiUtils.reason(it)),
+                                ),
+                            )
                         }
                 }
                 .permission(Permission.permission(CommandPermissions.SERVER_START))
-                .build()
+                .build(),
         )
     }
 
@@ -161,21 +163,23 @@ class ServerCommand<C : CloudSender>(
                         sender.sendMessage(messages.msg(messages.command.server.error.notFound, tags("group" to group.name, "id" to id)))
                         return@suspendingHandler
                     }
-                    if (server.state == ServerState.STOPPING || server.state == ServerState.CLEANUP /*|| server.state == ServerState.STOPPED*/) {
+                    if (server.state == ServerState.STOPPING || server.state == ServerState.CLEANUP) { // || server.state == ServerState.STOPPED
                         sender.sendMessage(messages.msg(messages.command.server.error.alreadyStopping, tags("group" to group.name, "id" to id)))
                         return@suspendingHandler
                     }
                     runCatching { api.server().stopServer(server.serverId).await() }
                         .onSuccess { sender.sendMessage(messages.msg(messages.command.server.stop.success, tags("group" to group.name, "id" to id))) }
                         .onFailure {
-                            sender.sendMessage(messages.msg(
-                                messages.command.server.error.stopFailed,
-                                tags("group" to group.name, "id" to id, "reason" to ApiUtils.reason(it))
-                            ))
+                            sender.sendMessage(
+                                messages.msg(
+                                    messages.command.server.error.stopFailed,
+                                    tags("group" to group.name, "id" to id, "reason" to ApiUtils.reason(it)),
+                                ),
+                            )
                         }
                 }
                 .permission(Permission.permission(CommandPermissions.SERVER_STOP))
-                .build()
+                .build(),
         )
     }
 }

@@ -31,5 +31,4 @@ class ConnectionCommand(
             logger.error("Failed to reload config", exception)
         }
     }
-
 }

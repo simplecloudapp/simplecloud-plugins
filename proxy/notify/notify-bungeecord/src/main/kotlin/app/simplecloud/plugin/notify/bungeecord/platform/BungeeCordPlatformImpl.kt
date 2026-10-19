@@ -9,14 +9,12 @@ import java.io.File
 
 class BungeeCordPlatformImpl(
     private val plugin: Plugin,
-    private val adventure: BungeeAudiences
+    private val adventure: BungeeAudiences,
 ) : NotifyPlatform {
 
-    override fun getDataDirectory(): File {
-        return plugin.dataFolder
-    }
+    override fun getDataDirectory(): File = plugin.dataFolder
 
-    override fun getOnlinePlayers(): Collection<CloudSender> {
-        return plugin.proxy.players.map { player -> BungeeCloudSender(player, adventure) }
+    override fun getOnlinePlayers(): Collection<CloudSender> = plugin.proxy.players.map { player ->
+        BungeeCloudSender(player, adventure)
     }
 }

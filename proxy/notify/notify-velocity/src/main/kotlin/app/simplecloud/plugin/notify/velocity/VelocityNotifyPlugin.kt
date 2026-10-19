@@ -26,8 +26,8 @@ import java.nio.file.Path
     description = "An ingame plugin that notifies about v3 server changes",
     url = "https://github.com/simplecloudapp/notify-plugin",
     dependencies = [
-        Dependency("simplecloud-api")
-    ]
+        Dependency("simplecloud-api"),
+    ],
 )
 class VelocityNotifyPlugin @Inject constructor(
     @DataDirectory private val dataDirectory: Path,
@@ -58,10 +58,9 @@ class VelocityNotifyPlugin @Inject constructor(
             server.pluginManager.ensurePluginContainer(this),
             server,
             ExecutionCoordinator.asyncCoordinator(),
-            SenderMapper.create(::VelocityCloudSender, VelocityCloudSender::source)
+            SenderMapper.create(::VelocityCloudSender, VelocityCloudSender::source),
         )
 
         NotifyCommand(manager, notify).register()
     }
-
 }

@@ -12,7 +12,7 @@ import javax.imageio.ImageIO
 import kotlin.math.roundToInt
 
 class ServerIconCache(
-    directory: Path
+    directory: Path,
 ) {
 
     private val logger = LoggerFactory.getLogger(ServerIconCache::class.java)

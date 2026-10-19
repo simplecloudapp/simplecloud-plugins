@@ -16,7 +16,7 @@ import java.time.format.DateTimeFormatter
 class MessageFormatter(
     private val messages: ConfigurationFactory<MessageConfig>,
     private val playerCountService: PlayerCountService,
-    private val layoutService: LayoutService
+    private val layoutService: LayoutService,
 ) {
 
     private val miniMessage = MiniMessage.miniMessage()
@@ -43,10 +43,13 @@ class MessageFormatter(
             Placeholder.unparsed("server_name", serverName),
             Placeholder.parsed("ping", getPingColor(ping) + ping),
             Placeholder.unparsed("online_players", onlinePlayers.toString()),
-            Placeholder.unparsed("max_players", slots.resolveMaxPlayers(onlinePlayers, playerCountService.getMaxPlayers()).toString()),
+            Placeholder.unparsed(
+                "max_players",
+                slots.resolveMaxPlayers(onlinePlayers, playerCountService.getMaxPlayers()).toString(),
+            ),
             getDateTimeResolver("date", format.date),
             getDateTimeResolver("time", format.time),
-            getEnvironmentResolver()
+            getEnvironmentResolver(),
         )
     }
 
@@ -56,18 +59,17 @@ class MessageFormatter(
         return pingColor.color
     }
 
-    private fun getDateTimeResolver(name: String, defaultPattern: String): TagResolver {
-        return TagResolver.resolver(name) { arguments, _ ->
-            val pattern = if (arguments.hasNext()) arguments.pop().value() else defaultPattern
-            Tag.selfClosingInserting(Component.text(LocalDateTime.now().format(DateTimeFormatter.ofPattern(pattern))))
-        }
+    private fun getDateTimeResolver(name: String, defaultPattern: String): TagResolver = TagResolver.resolver(name) {
+            arguments,
+            _,
+        ->
+        val pattern = if (arguments.hasNext()) arguments.pop().value() else defaultPattern
+        Tag.selfClosingInserting(Component.text(LocalDateTime.now().format(DateTimeFormatter.ofPattern(pattern))))
     }
 
-    private fun getEnvironmentResolver(): TagResolver {
-        return TagResolver.resolver("env") { arguments, _ ->
-            val name = arguments.popOr("env name expected").value()
-            val default = if (arguments.hasNext()) arguments.pop().value() else ""
-            Tag.preProcessParsed(System.getenv(name) ?: default)
-        }
+    private fun getEnvironmentResolver(): TagResolver = TagResolver.resolver("env") { arguments, _ ->
+        val name = arguments.popOr("env name expected").value()
+        val default = if (arguments.hasNext()) arguments.pop().value() else ""
+        Tag.preProcessParsed(System.getenv(name) ?: default)
     }
 }

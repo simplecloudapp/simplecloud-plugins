@@ -14,7 +14,7 @@ import kotlin.time.Duration.Companion.seconds
 class JoinStateService(
     private val api: CloudApi,
     private val config: ConfigurationFactory<ProxyEssentialsConfig>,
-    private val scope: CoroutineScope
+    private val scope: CoroutineScope,
 ) {
 
     private val logger = LoggerFactory.getLogger(JoinStateService::class.java)

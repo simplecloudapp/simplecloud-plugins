@@ -70,5 +70,4 @@ class PlayerChooseInitialServerListener(
             .mapNotNull { name -> proxy.getServer(name).getOrNull() }
             .minByOrNull { it.playersConnected.size }
     }
-
 }

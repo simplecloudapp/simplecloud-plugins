@@ -4,9 +4,9 @@ import app.simplecloud.api.CloudApi
 import app.simplecloud.api.CloudApiOptions
 import app.simplecloud.api.runtime.SimpleCloudRuntime
 import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
+import app.simplecloud.plugin.proxy.shared.config.DefaultConfigInstaller
 import app.simplecloud.plugin.proxy.shared.config.MessageConfig
 import app.simplecloud.plugin.proxy.shared.config.ProxyEssentialsConfig
-import app.simplecloud.plugin.proxy.shared.config.DefaultConfigInstaller
 import app.simplecloud.plugin.proxy.shared.config.migration.LegacyDirectoryMigrator
 import app.simplecloud.plugin.proxy.shared.joinstate.JoinGate
 import app.simplecloud.plugin.proxy.shared.joinstate.JoinStateService
@@ -22,7 +22,7 @@ import java.nio.file.Path
 import kotlin.time.Duration.Companion.seconds
 
 class ProxyEssentials(
-    platform: ProxyPlatform
+    platform: ProxyPlatform,
 ) {
 
     private val logger = LoggerFactory.getLogger(ProxyEssentials::class.java)
@@ -73,7 +73,10 @@ class ProxyEssentials(
                     joinStateService.start()
                     return@launch
                 } catch (e: Exception) {
-                    logger.error("Failed to load the join state of this server from the controller, using the initial join state and retrying in 5 seconds", e)
+                    logger.error(
+                        "Failed to load the join state of this server from the controller, using the initial join state and retrying in 5 seconds",
+                        e,
+                    )
                 }
                 delay(5.seconds)
             }
@@ -87,7 +90,10 @@ class ProxyEssentials(
                     layoutService.start()
                     return@launch
                 } catch (e: Exception) {
-                    logger.error("Failed to load the layout of this server from the controller, using the initial layout and retrying in 5 seconds", e)
+                    logger.error(
+                        "Failed to load the layout of this server from the controller, using the initial layout and retrying in 5 seconds",
+                        e,
+                    )
                 }
                 delay(5.seconds)
             }

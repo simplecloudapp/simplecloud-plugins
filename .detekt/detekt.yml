@@ -7,10 +7,33 @@ complexity:
     ignoreDefaultParameters: true
   LongMethod:
     allowedLines: 80
+    excludes: ['**/test/**']
   CyclomaticComplexMethod:
     ignoreSimpleWhenEntries: true
 
+coroutines:
+  # plugins have no dependency injection, the dispatcher is part of the plugin scope
+  InjectDispatcher:
+    active: false
+
+exceptions:
+  # plugins must not crash the proxy/server, catching broadly at the edges is intended
+  TooGenericExceptionCaught:
+    active: false
+
+performance:
+  # adventure/minimessage apis are vararg based, the copy is negligible
+  SpreadOperator:
+    active: false
+
 style:
+  ForbiddenComment:
+    active: false
+  LoopWithTooManyJumpStatements:
+    active: false
+  UnusedParameter:
+    # event parameters are required by the platform listener signatures
+    allowedNames: '^(ignored|expected|event|_)$'
   ForbiddenMethodCall:
     active: true
     methods:

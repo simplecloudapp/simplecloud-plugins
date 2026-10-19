@@ -1,9 +1,9 @@
 package app.simplecloud.plugin.connection.shared.config
 
+import app.simplecloud.plugin.connection.shared.utilities.config.ConfigVersion
 import app.simplecloud.plugin.core.shared.config.VersionedConfig
 import app.simplecloud.plugin.core.shared.matcher.OperationType
 import app.simplecloud.plugin.core.shared.matcher.ServerMatcherConfiguration
-import app.simplecloud.plugin.connection.shared.utilities.config.ConfigVersion
 import org.spongepowered.configurate.objectmapping.ConfigSerializable
 
 @ConfigSerializable
@@ -22,25 +22,25 @@ data class RegistrationConfig(
     val serverNamePattern: String = "<group>-<numerical_id>",
     val persistentServerNamePattern: String = "<name>",
     val ignoreServerGroupsAndPersistentServers: List<String> = listOf(),
-    val additionalServers: List<RegistrationServer> = listOf()
+    val additionalServers: List<RegistrationServer> = listOf(),
 )
 
 @ConfigSerializable
 data class RegistrationServer(
     val name: String = "",
     val address: String = "",
-    val port: Int = 0
+    val port: Int = 0,
 )
 
 @ConfigSerializable
 data class AddressConfig(
-    val routes: List<SubdomainRoute> = listOf()
+    val routes: List<SubdomainRoute> = listOf(),
 )
 
 @ConfigSerializable
 data class SubdomainRoute(
     val subdomain: String = "",
-    val targetConnection: String = ""
+    val targetConnection: String = "",
 )
 
 @ConfigSerializable
@@ -62,7 +62,7 @@ data class ConnectionRule(
 
 enum class RuleType {
     PERMISSION,
-    ENV
+    ENV,
 }
 
 @ConfigSerializable

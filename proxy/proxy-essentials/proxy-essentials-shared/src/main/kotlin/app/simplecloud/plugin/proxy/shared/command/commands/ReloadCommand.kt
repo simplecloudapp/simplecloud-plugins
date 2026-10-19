@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory
 
 class ReloadCommand<C : CloudSender>(
     private val plugin: ProxyEssentials,
-    private val manager: CommandManager<C>
+    private val manager: CommandManager<C>,
 ) {
 
     private val logger = LoggerFactory.getLogger(ReloadCommand::class.java)
@@ -34,7 +34,7 @@ class ReloadCommand<C : CloudSender>(
                     }
                 }
                 .permission(Permission.permission(CommandPermissions.RELOAD))
-                .build()
+                .build(),
         )
     }
 }

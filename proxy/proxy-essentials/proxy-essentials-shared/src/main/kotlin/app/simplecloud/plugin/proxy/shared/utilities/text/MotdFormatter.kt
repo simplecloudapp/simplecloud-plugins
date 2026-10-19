@@ -22,13 +22,15 @@ object MotdFormatter {
     private val pixelPaddingCharacter = Character.toString(MinecraftTextWidth.ZERO_WIDTH_NON_JOINER)
     private val defaultFont = Key.key("minecraft", "default")
     private val mergesWithoutInsertion = Style.Merge.all().minus(Style.Merge.INSERTION)
-    private val centerTagResolver = TagResolver.resolver(CENTER_TAG) { _, _ -> Tag.inserting(Component.empty().insertion(CENTER_MARKER)) }
+    private val centerTagResolver = TagResolver.resolver(CENTER_TAG) { _, _ ->
+        Tag.inserting(Component.empty().insertion(CENTER_MARKER))
+    }
 
     fun deserialize(
         miniMessage: MiniMessage,
         line1: String,
         line2: String,
-        tagResolvers: List<TagResolver> = emptyList()
+        tagResolvers: List<TagResolver> = emptyList(),
     ): Component {
         val resolvers = arrayOf(centerTagResolver, *tagResolvers.toTypedArray())
         return Component.empty()
@@ -56,16 +58,22 @@ object MotdFormatter {
             .coerceAtLeast(0)
     }
 
-    private fun createPadding(paddingWidth: Int): Component {
-        return Component.text()
-            .append(Component.text(" ".repeat(paddingWidth / SPACE_WIDTH)).font(defaultFont).decoration(TextDecoration.BOLD, false))
-            .append(
-                Component.text(pixelPaddingCharacter.repeat(paddingWidth % SPACE_WIDTH)).font(defaultFont).decoration(
-                    TextDecoration.BOLD, true))
-            .build()
-    }
+    private fun createPadding(paddingWidth: Int): Component = Component.text()
+        .append(
+            Component.text(
+                " ".repeat(paddingWidth / SPACE_WIDTH),
+            ).font(defaultFont).decoration(TextDecoration.BOLD, false),
+        )
+        .append(
+            Component.text(
+                pixelPaddingCharacter.repeat(paddingWidth % SPACE_WIDTH),
+            ).font(defaultFont).decoration(TextDecoration.BOLD, true),
+        )
+        .build()
 
-    private fun clearInsertion(style: Style): Style {
-        return Style.empty().merge(style, Style.Merge.Strategy.ALWAYS, mergesWithoutInsertion)
-    }
+    private fun clearInsertion(style: Style): Style = Style.empty().merge(
+        style,
+        Style.Merge.Strategy.ALWAYS,
+        mergesWithoutInsertion,
+    )
 }

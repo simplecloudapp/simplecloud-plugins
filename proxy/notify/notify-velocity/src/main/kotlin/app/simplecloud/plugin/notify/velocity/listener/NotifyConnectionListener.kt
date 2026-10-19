@@ -6,7 +6,7 @@ import com.velocitypowered.api.event.connection.DisconnectEvent
 import com.velocitypowered.api.event.connection.PostLoginEvent
 
 class NotifyConnectionListener(
-    private val notify: NotifyPlugin
+    private val notify: NotifyPlugin,
 ) {
 
     @Subscribe
@@ -18,5 +18,4 @@ class NotifyConnectionListener(
     fun onDisconnect(event: DisconnectEvent) {
         notify.onPlayerQuit(event.player.uniqueId)
     }
-
 }

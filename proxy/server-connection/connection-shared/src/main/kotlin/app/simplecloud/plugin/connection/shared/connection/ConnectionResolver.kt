@@ -2,22 +2,17 @@ package app.simplecloud.plugin.connection.shared.connection
 
 import app.simplecloud.plugin.connection.shared.config.ConnectionEntry
 import app.simplecloud.plugin.connection.shared.config.ConnectionRule
+import app.simplecloud.plugin.connection.shared.config.FallbackTargetConnection
 import app.simplecloud.plugin.connection.shared.config.RuleType
 import app.simplecloud.plugin.connection.shared.config.SubdomainRoute
 
 object ConnectionResolver {
 
-    fun findConnection(name: String, connections: List<ConnectionEntry>): ConnectionEntry? {
-        return connections.find { it.name.equals(name, ignoreCase = true) }
-    }
+    fun findConnection(name: String, connections: List<ConnectionEntry>): ConnectionEntry? = connections.find { it.name.equals(name, ignoreCase = true) }
 
-    fun findRoute(host: String, routes: List<SubdomainRoute>): SubdomainRoute? {
-        return routes.find { route -> route.subdomain.equals(host, ignoreCase = true) }
-    }
+    fun findRoute(host: String, routes: List<SubdomainRoute>): SubdomainRoute? = routes.find { route -> route.subdomain.equals(host, ignoreCase = true) }
 
-    fun findMatchingServerNames(connection: ConnectionEntry, servers: List<String>): List<String> {
-        return servers.filter { connection.serverNameMatcher.matches(it) }
-    }
+    fun findMatchingServerNames(connection: ConnectionEntry, servers: List<String>): List<String> = servers.filter { connection.serverNameMatcher.matches(it) }
 
     fun checkRules(connection: ConnectionEntry, permissionChecker: (String) -> Boolean): ConnectionRule? {
         for (rule in connection.rules) {
@@ -50,4 +45,29 @@ object ConnectionResolver {
         return matchingNames.any { it.equals(serverName, ignoreCase = true) }
     }
 
+    fun matchingTargets(
+        targets: List<FallbackTargetConnection>,
+        connections: List<ConnectionEntry>,
+        serverNames: List<String>,
+        fromServerName: String?,
+        hasPermission: (String) -> Boolean,
+    ): Sequence<List<String>> = targets
+        .sortedByDescending { it.priority }
+        .asSequence()
+        .mapNotNull { target -> matchingServerNames(target, connections, serverNames, fromServerName, hasPermission) }
+
+    private fun matchingServerNames(
+        target: FallbackTargetConnection,
+        connections: List<ConnectionEntry>,
+        serverNames: List<String>,
+        fromServerName: String?,
+        hasPermission: (String) -> Boolean,
+    ): List<String>? {
+        val isFromAllowed = fromServerName == null ||
+            target.from.isEmpty() ||
+            target.from.any { isServerInConnection(fromServerName, it, connections, serverNames) }
+        val connection = findConnection(target.name, connections)
+        if (!isFromAllowed || connection == null || checkRules(connection, hasPermission) != null) return null
+        return findMatchingServerNames(connection, serverNames).ifEmpty { null }
+    }
 }

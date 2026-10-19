@@ -1,7 +1,7 @@
 package app.simplecloud.plugin.connection.shared.config
 
-import app.simplecloud.plugin.core.shared.config.VersionedConfig
 import app.simplecloud.plugin.connection.shared.utilities.config.ConfigVersion
+import app.simplecloud.plugin.core.shared.config.VersionedConfig
 import org.spongepowered.configurate.objectmapping.ConfigSerializable
 
 @ConfigSerializable
