@@ -4,6 +4,8 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 plugins {
     id("org.jetbrains.kotlin.jvm")
     id("com.gradleup.shadow")
+    id("simplecloud.spotless-conventions")
+    id("simplecloud.detekt-conventions")
 }
 
 group = "app.simplecloud.plugin"
@@ -51,9 +53,9 @@ tasks.shadowJar {
 }
 
 tasks.processResources {
-    filesMatching("plugin.yml") {
-        expand(
-            "version" to project.version
-        )
+    val properties = mapOf("version" to project.version.toString())
+    inputs.properties(properties)
+    filesMatching(listOf("plugin.yml", "paper-plugin.yml")) {
+        expand(properties)
     }
 }

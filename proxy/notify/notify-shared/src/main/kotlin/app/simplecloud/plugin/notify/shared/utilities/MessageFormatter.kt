@@ -1,7 +1,7 @@
 package app.simplecloud.plugin.notify.shared.utilities
 
 import app.simplecloud.api.server.Server
-import app.simplecloud.plugin.api.shared.config.ConfigurationFactory
+import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
 import app.simplecloud.plugin.notify.shared.config.MessageConfig
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder

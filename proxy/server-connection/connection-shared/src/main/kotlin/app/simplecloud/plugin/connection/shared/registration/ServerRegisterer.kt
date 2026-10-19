@@ -6,7 +6,7 @@ import app.simplecloud.api.group.GroupServerType
 import app.simplecloud.api.server.Server
 import app.simplecloud.api.server.ServerState
 //import app.simplecloud.api.internal.integration.player.ServerNameRegistry
-import app.simplecloud.plugin.api.shared.config.ConfigurationFactory
+import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
 import app.simplecloud.plugin.connection.shared.config.ConnectionConfig
 import app.simplecloud.plugin.connection.shared.utilities.RegisteredServerResolver
 import kotlinx.coroutines.*

@@ -1,7 +1,7 @@
 package app.simplecloud.plugin.command.shared
 
 import app.simplecloud.api.CloudApi
-import app.simplecloud.plugin.api.shared.config.ConfigurationFactory
+import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
 import app.simplecloud.plugin.command.shared.config.DefaultConfigInstaller
 import app.simplecloud.plugin.command.shared.config.MessageConfig
 import kotlinx.coroutines.*

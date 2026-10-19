@@ -2,7 +2,7 @@ package app.simplecloud.plugin.proxy.shared.player
 
 import app.simplecloud.api.CloudApi
 import app.simplecloud.api.runtime.SimpleCloudRuntime
-import app.simplecloud.plugin.api.shared.config.ConfigurationFactory
+import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
 import app.simplecloud.plugin.proxy.shared.platform.ProxyPlatform
 import app.simplecloud.plugin.proxy.shared.config.PlayerCountConfig
 import app.simplecloud.plugin.proxy.shared.config.ProxyEssentialsConfig

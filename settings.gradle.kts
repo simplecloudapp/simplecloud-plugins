@@ -15,11 +15,11 @@ rootProject.name = "plugins"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 include(
-    ":api:api-shared",
-    ":api:api-paper",
-    ":api:api-minestom",
-    ":api:api-velocity",
-    ":api:api-bungeecord",
+    ":core:core-shared",
+    ":core:core-paper",
+    ":core:core-minestom",
+    ":core:core-velocity",
+    ":core:core-bungeecord",
 )
 
 include(

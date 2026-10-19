@@ -11,8 +11,3 @@ dependencies {
     compileOnly(libs.waterdog.api)
     compileOnly(libs.slf4j.api)
 }
-
-tasks.shadowJar {
-    relocate("org.spongepowered", "app.simplecloud.plugin.connection.shaded.spongepowered")
-    relocate("app.simplecloud.plugin.api", "app.simplecloud.plugin.connection.shaded.plugin.api")
-}

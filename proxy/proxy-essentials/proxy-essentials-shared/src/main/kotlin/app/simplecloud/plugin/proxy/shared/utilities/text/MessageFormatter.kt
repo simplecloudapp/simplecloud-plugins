@@ -1,6 +1,6 @@
 package app.simplecloud.plugin.proxy.shared.utilities.text
 
-import app.simplecloud.plugin.api.shared.config.ConfigurationFactory
+import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
 import app.simplecloud.plugin.proxy.shared.config.MessageConfig
 import app.simplecloud.plugin.proxy.shared.layout.LayoutService
 import app.simplecloud.plugin.proxy.shared.player.PlayerCountService

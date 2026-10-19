@@ -1,6 +1,6 @@
 package app.simplecloud.plugin.proxy.shared.config
 
-import app.simplecloud.plugin.api.shared.config.VersionedConfig
+import app.simplecloud.plugin.core.shared.config.VersionedConfig
 import app.simplecloud.plugin.proxy.shared.utilities.ConfigVersion
 import org.spongepowered.configurate.objectmapping.ConfigSerializable
 import java.util.UUID

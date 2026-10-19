@@ -1,7 +1,7 @@
 package app.simplecloud.plugin.proxy.bungeecord
 
-import app.simplecloud.plugin.api.bungeecord.command.BungeeCloudSender
-import app.simplecloud.plugin.api.bungeecord.command.BungeeCloudSenderMapper
+import app.simplecloud.plugin.core.bungeecord.command.BungeeCloudSender
+import app.simplecloud.plugin.core.bungeecord.command.BungeeCloudSenderMapper
 import app.simplecloud.plugin.proxy.bungeecord.listener.ConnectionListener
 import app.simplecloud.plugin.proxy.bungeecord.listener.ProxyPingListener
 import app.simplecloud.plugin.proxy.bungeecord.platform.BungeePlatformImpl

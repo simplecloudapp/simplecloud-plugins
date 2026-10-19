@@ -1,7 +1,7 @@
 package app.simplecloud.plugin.proxy.velocity
 
-import app.simplecloud.plugin.api.velocity.command.VelocityCloudSender
-import app.simplecloud.plugin.api.velocity.command.VelocityCloudSenderMapper
+import app.simplecloud.plugin.core.velocity.command.VelocityCloudSender
+import app.simplecloud.plugin.core.velocity.command.VelocityCloudSenderMapper
 import app.simplecloud.plugin.proxy.shared.ProxyEssentials
 import app.simplecloud.plugin.proxy.shared.command.ProxyCommandHandler
 import app.simplecloud.plugin.proxy.velocity.listener.ConnectionListener

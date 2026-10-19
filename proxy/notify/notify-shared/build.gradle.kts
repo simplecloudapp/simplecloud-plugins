@@ -6,7 +6,7 @@ version = "1.0.0"
 
 dependencies {
     api(libs.bundles.cloud)
-    api(projects.api.apiShared)
+    api(projects.core.coreShared)
     api(libs.bundles.configurate)
     compileOnly(libs.simplecloud.api)
     compileOnly(libs.adventure)

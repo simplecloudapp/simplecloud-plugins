@@ -1,6 +1,6 @@
 package app.simplecloud.plugin.proxy.shared.command.commands
 
-import app.simplecloud.plugin.api.shared.command.CloudSender
+import app.simplecloud.plugin.core.shared.command.CloudSender
 import app.simplecloud.plugin.proxy.shared.ProxyEssentials
 import app.simplecloud.plugin.proxy.shared.utilities.CommandPermissions
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder

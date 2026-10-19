@@ -1,6 +1,6 @@
 package app.simplecloud.plugin.proxy.shared.tablist
 
-import app.simplecloud.plugin.api.shared.config.ConfigurationFactory
+import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
 import app.simplecloud.plugin.proxy.shared.config.ProxyEssentialsConfig
 import app.simplecloud.plugin.proxy.shared.config.TabListEntry
 import app.simplecloud.plugin.proxy.shared.platform.ProxyPlatform

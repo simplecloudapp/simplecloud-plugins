@@ -4,6 +4,8 @@ kotlinx-coroutines = "1.11.0"
 shadow = "9.6.1"
 minotaur = "2.10.0"
 blossom = "2.2.0"
+spotless = "8.10.4"
+detekt = "2.0.0-alpha.6"
 
 simplecloud-api = "0.1.0-platform.58-dev.5.1-fe01ce5"
 
@@ -27,6 +29,8 @@ cloud-minestom = "2.2.0-SNAPSHOT"
 [libraries]
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 shadow-gradle-plugin = { module = "com.gradleup.shadow:shadow-gradle-plugin", version.ref = "shadow" }
+spotless-gradle-plugin = { module = "com.diffplug.spotless:spotless-plugin-gradle", version.ref = "spotless" }
+detekt-gradle-plugin = { module = "dev.detekt:detekt-gradle-plugin", version.ref = "detekt" }
 kotlin-jvm = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }

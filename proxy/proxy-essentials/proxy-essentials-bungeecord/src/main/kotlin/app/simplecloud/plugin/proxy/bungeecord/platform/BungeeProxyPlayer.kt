@@ -1,6 +1,6 @@
 package app.simplecloud.plugin.proxy.bungeecord.platform
 
-import app.simplecloud.plugin.api.bungeecord.text.BungeeComponentConverter
+import app.simplecloud.plugin.core.bungeecord.text.BungeeComponentConverter
 import app.simplecloud.plugin.proxy.shared.platform.ProxyPlayer
 import net.kyori.adventure.text.Component
 import net.md_5.bungee.api.connection.ProxiedPlayer

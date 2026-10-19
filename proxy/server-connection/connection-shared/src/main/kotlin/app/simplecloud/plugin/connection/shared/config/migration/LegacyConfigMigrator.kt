@@ -1,10 +1,10 @@
 package app.simplecloud.plugin.connection.shared.config.migration
 
-import app.simplecloud.plugin.api.shared.config.ConfigMigration
-import app.simplecloud.plugin.api.shared.config.ConfigMigrator
-import app.simplecloud.plugin.api.shared.config.ConfigurationFactory
-import app.simplecloud.plugin.api.shared.matcher.OperationType
-import app.simplecloud.plugin.api.shared.matcher.ServerMatcherConfiguration
+import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
+import app.simplecloud.plugin.core.shared.config.migration.ConfigMigration
+import app.simplecloud.plugin.core.shared.config.migration.ConfigMigrator
+import app.simplecloud.plugin.core.shared.matcher.OperationType
+import app.simplecloud.plugin.core.shared.matcher.ServerMatcherConfiguration
 import app.simplecloud.plugin.connection.shared.config.AddressConfig
 import app.simplecloud.plugin.connection.shared.config.CommandConfig
 import app.simplecloud.plugin.connection.shared.config.CommandEntry

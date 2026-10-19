@@ -4,7 +4,7 @@ import app.simplecloud.api.CloudApi
 import app.simplecloud.api.group.GroupServerType
 import app.simplecloud.api.server.ServerQuery
 import app.simplecloud.api.server.ServerState
-import app.simplecloud.plugin.api.shared.config.ConfigurationFactory
+import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
 import app.simplecloud.plugin.connection.shared.config.CommandConfig
 import app.simplecloud.plugin.connection.shared.config.ConnectionConfig
 import app.simplecloud.plugin.connection.shared.config.DefaultConfigInstaller

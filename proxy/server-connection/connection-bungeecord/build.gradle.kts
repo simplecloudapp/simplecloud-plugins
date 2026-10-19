@@ -14,11 +14,6 @@ dependencies {
     compileOnly(libs.slf4j.api)
 }
 
-tasks.shadowJar {
-    relocate("org.spongepowered", "app.simplecloud.plugin.connection.shaded.spongepowered")
-    relocate("app.simplecloud.plugin.api", "app.simplecloud.plugin.connection.shaded.plugin.api")
-}
-
 modrinth {
     token.set(project.findProperty("modrinthToken") as String? ?: System.getenv("MODRINTH_TOKEN"))
     projectId.set("4Vw4Mgla")

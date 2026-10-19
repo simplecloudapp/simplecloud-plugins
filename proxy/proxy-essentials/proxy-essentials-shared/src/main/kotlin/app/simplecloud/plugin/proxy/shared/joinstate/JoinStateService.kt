@@ -3,7 +3,7 @@ package app.simplecloud.plugin.proxy.shared.joinstate
 import app.simplecloud.api.CloudApi
 import app.simplecloud.api.runtime.SimpleCloudRuntime
 import app.simplecloud.api.server.Server
-import app.simplecloud.plugin.api.shared.config.ConfigurationFactory
+import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
 import app.simplecloud.plugin.proxy.shared.config.ProxyEssentialsConfig
 import kotlinx.coroutines.*
 import kotlinx.coroutines.future.await

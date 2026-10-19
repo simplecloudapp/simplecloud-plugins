@@ -1,6 +1,6 @@
 package app.simplecloud.plugin.proxy.bungeecord.listener
 
-import app.simplecloud.plugin.api.bungeecord.text.BungeeComponentConverter
+import app.simplecloud.plugin.core.bungeecord.text.BungeeComponentConverter
 import app.simplecloud.plugin.proxy.bungeecord.platform.BungeeProxyPlayer
 import app.simplecloud.plugin.proxy.shared.ProxyEssentials
 import app.simplecloud.plugin.proxy.shared.joinstate.JoinResult

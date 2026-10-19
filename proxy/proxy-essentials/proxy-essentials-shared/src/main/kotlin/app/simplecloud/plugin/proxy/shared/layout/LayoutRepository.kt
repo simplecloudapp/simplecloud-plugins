@@ -1,6 +1,6 @@
 package app.simplecloud.plugin.proxy.shared.layout
 
-import app.simplecloud.plugin.api.shared.config.YamlDirectoryRepository
+import app.simplecloud.plugin.core.shared.config.YamlDirectoryRepository
 import app.simplecloud.plugin.proxy.shared.config.LayoutConfig
 import org.slf4j.LoggerFactory
 import java.nio.file.Files
