@@ -5,7 +5,7 @@ plugins {
 detekt {
     buildUponDefaultConfig = true
     parallel = true
-    config.setFrom(isolated.rootProject.projectDirectory.file("config/detekt/detekt.yml"))
+    config.setFrom(isolated.rootProject.projectDirectory.file(".detekt/detekt.yml"))
 }
 
 pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
