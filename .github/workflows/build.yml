@@ -38,13 +38,15 @@ jobs:
       - name: setup gradle
         uses: gradle/actions/setup-gradle@v6
 
-      - name: build & test
-        run: ./gradlew build -x spotlessCheck -x detektMain -x detektTest --continue
+      - name: build, test & lint
+        run: ./gradlew build --continue
 
-      - name: upload test reports
+      - name: upload reports
         if: failure()
         uses: actions/upload-artifact@v5
         with:
-          name: test-reports
-          path: '**/build/reports/tests/'
+          name: reports
+          path: |
+            **/build/reports/tests/
+            **/build/reports/detekt/
           retention-days: 7

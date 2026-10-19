@@ -1,3 +1,5 @@
+import dev.detekt.gradle.Detekt
+
 plugins {
     id("dev.detekt")
 }
@@ -8,8 +10,7 @@ detekt {
     config.setFrom(isolated.rootProject.projectDirectory.file(".detekt/detekt.yml"))
 }
 
-// generated sources (e.g. blossom templates) are not ours to lint
-tasks.withType<dev.detekt.gradle.Detekt>().configureEach {
+tasks.withType<Detekt>().configureEach {
     exclude { it.file.invariantSeparatorsPath.contains("/build/generated/") }
 }
 

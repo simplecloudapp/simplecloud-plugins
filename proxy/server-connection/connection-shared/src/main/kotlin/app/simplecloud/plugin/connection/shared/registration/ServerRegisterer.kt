@@ -24,9 +24,10 @@ class ServerRegisterer(
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private val subscriptions: MutableList<Subscription> = mutableListOf()
     private val registeredServers = ConcurrentHashMap<String, RegisteredServer>()
+
     // only used by the ServerNameRegistry integration that is commented out below
     @Suppress("UnusedPrivateProperty")
-    private val serverNames =Function<String, Optional<String>> { id -> Optional.ofNullable(registeredServers[id]?.proxyName) }
+    private val serverNames = Function<String, Optional<String>> { id -> Optional.ofNullable(registeredServers[id]?.proxyName) }
 
     fun start() {
         // app.simplecloud.api.internal.integration.player.ServerNameRegistry.register(serverNames)

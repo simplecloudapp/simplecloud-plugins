@@ -217,11 +217,15 @@ class PlayerCommand<C : CloudSender>(
         )
         val message = when (result) {
             ConnectResult.SUCCESS -> messages.msg(messages.command.player.send.success, playerTags)
+
             ConnectResult.ALREADY_CONNECTED -> messages.msg(messages.command.player.error.sameTarget, playerTags)
+
             ConnectResult.SERVER_NOT_FOUND ->
                 messages.msg(messages.command.player.error.targetNotFound, tags("target" to targetName))
+
             ConnectResult.PLAYER_NOT_FOUND ->
                 messages.msg(messages.command.player.error.notOnline, tags("playername" to player.name))
+
             else -> messages.msg(messages.command.player.error.sendFailed, playerTags)
         }
         sender.sendMessage(message)
