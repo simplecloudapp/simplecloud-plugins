@@ -1,4 +1,36 @@
+# OS
+.DS_Store
+
+# Gradle
 .gradle/
 build/
-.idea/
+local.properties
+
+# Kotlin
 .kotlin/
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+
+# Eclipse
+.classpath
+.project
+.settings/
+bin/
+
+# VS Code
+.vscode/
+
+# Java
+*.class
+*.log
+hs_err_pid*
+replay_pid*
+
+# Minecraft
+run/
+runs/
