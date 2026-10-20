@@ -15,14 +15,13 @@ class PaperPlaceholdersPlugin : JavaPlugin() {
     override fun onEnable() {
         placeholders.start()
 
-        val version = pluginMeta.version
         if (server.pluginManager.isPluginEnabled("PlaceholderAPI")) {
             val expansion = PlaceholderApiExpansion(placeholders.resolver)
             expansion.register()
             placeholderApiExpansion = expansion
         }
         if (server.pluginManager.isPluginEnabled("MiniPlaceholders")) {
-            val expansion = MiniPlaceholdersExpansion(placeholders.resolver, placeholders.types, version)
+            val expansion = MiniPlaceholdersExpansion(placeholders.resolver, placeholders.types)
             expansion.register()
             miniPlaceholdersExpansion = expansion
         }

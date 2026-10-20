@@ -16,10 +16,11 @@ import kotlin.time.toJavaDuration
 
 class PlaceholderResolver(
     private val api: CloudApi,
-    private val scope: CoroutineScope,
     private val parser: PlaceholderQueryParser = PlaceholderQueryParser(),
     private val loadingValue: String = "...",
 ) {
+
+    private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
     private val logger = LoggerFactory.getLogger(PlaceholderResolver::class.java)
 
@@ -45,8 +46,13 @@ class PlaceholderResolver(
         return type.getValue(resource, query.property)?.toString().orEmpty()
     }
 
+    @Suppress("IgnoredReturnValue")
     fun preloadCurrent(types: List<PlaceholderType<*>>) {
         types.forEach { cache.get(ResourceKey(it, null)) }
+    }
+
+    fun shutdown() {
+        scope.cancel()
     }
 
     private suspend fun load(key: ResourceKey): Any? = try {
@@ -61,5 +67,4 @@ class PlaceholderResolver(
     private data class ResourceKey(val type: PlaceholderType<*>, val target: String?)
 
     private class CachedResource(val resource: Any?)
-
 }

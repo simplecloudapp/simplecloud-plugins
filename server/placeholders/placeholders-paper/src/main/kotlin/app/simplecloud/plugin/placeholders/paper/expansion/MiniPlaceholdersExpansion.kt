@@ -1,5 +1,6 @@
 package app.simplecloud.plugin.placeholders.paper.expansion
 
+import app.simplecloud.plugin.placeholders.BuildConstants
 import app.simplecloud.plugin.placeholders.shared.placeholder.PlaceholderType
 import app.simplecloud.plugin.placeholders.shared.query.PlaceholderQuery
 import app.simplecloud.plugin.placeholders.shared.resolve.PlaceholderResolver
@@ -11,13 +12,12 @@ import net.kyori.adventure.text.minimessage.tag.resolver.ArgumentQueue
 class MiniPlaceholdersExpansion(
     private val resolver: PlaceholderResolver,
     types: List<PlaceholderType<*>>,
-    version: String,
 ) {
 
     private val expansion: Expansion
 
     init {
-        val builder = Expansion.builder("simplecloud").author("SimpleCloud").version(version)
+        val builder = Expansion.builder("simplecloud").author("SimpleCloud").version(BuildConstants.VERSION)
         types.forEach { type ->
             type.properties.forEach { property ->
                 builder.globalPlaceholder("${type.prefix}_$property") { queue, _ -> resolve(type, property, queue) }
