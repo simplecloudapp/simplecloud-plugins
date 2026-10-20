@@ -1,0 +1,5 @@
+package app.simplecloud.plugin.placeholders
+
+object BuildConstants {
+    const val VERSION = "{{ version }}"
+}

@@ -31,6 +31,7 @@ repositories {
     maven("https://repo.waterdog.dev/snapshots/")
     maven("https://repo.opencollab.dev/maven-releases/")
     maven("https://repo.opencollab.dev/maven-snapshots/")
+    maven("https://repo.extendedclip.com/releases/")
 }
 
 dependencies {
