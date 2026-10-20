@@ -37,6 +37,7 @@ class PaperDisplayManager(
 
     private val teams = ConcurrentHashMap<ViewerKey, PaperPlayerTeam>()
     private val entries = ConcurrentHashMap<UUID, TablistEntry>()
+    private val vanished = ConcurrentHashMap.newKeySet<UUID>()
 
     fun updatePlayer(player: Player) {
         PrefixesConstants.SCOPE.launch(PrefixesCoroutineDetails("${player.name} (${player.uniqueId})", "update player")) {
@@ -51,6 +52,7 @@ class PaperDisplayManager(
     fun removePlayer(player: Player) {
         val id = player.uniqueId
         registry.remove(id)
+        vanished.remove(id)
         teams.keys.filter { key -> key.target == id || key.viewer == id }.forEach { key ->
             if (key.viewer == id) teams.remove(key) else removeTeam(key)
         }
@@ -94,11 +96,8 @@ class PaperDisplayManager(
     }
 
     fun refreshVanished() {
-        if (!prefixes.config.get().isTablistSynced()) return
         Bukkit.getOnlinePlayers().forEach { player ->
-            player.scheduler.run(plugin, {
-                if (prefixes.api.isVanished(player.uniqueId) == entries.containsKey(player.uniqueId)) publish(player)
-            }, null)
+            player.scheduler.run(plugin, { refreshVanished(player) }, null)
         }
     }
 
@@ -106,7 +105,20 @@ class PaperDisplayManager(
         entries.keys.forEach(::unpublish)
     }
 
+    private fun refreshVanished(player: Player) {
+        val id = player.uniqueId
+        val isVanished = prefixes.api.isVanished(id)
+        val changed = if (isVanished) vanished.add(id) else vanished.remove(id)
+
+        when {
+            changed -> show(player)
+            isVanished == entries.containsKey(id) -> publish(player)
+        }
+    }
+
     private fun showTo(player: Player, viewer: Player, team: PaperPlayerTeam?) {
+        if (!viewer.canSee(player)) return updateTeam(player, viewer, null)
+
         val viewerData = registry.getViewerData(player.uniqueId, viewer.uniqueId)
         if (viewerData == null) {
             updateTeam(player, viewer, team)
