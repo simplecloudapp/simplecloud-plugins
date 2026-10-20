@@ -8,6 +8,8 @@ interface PlaceholderType<T : Any> {
 
     val properties: Set<String>
 
+    fun isViewerScoped(): Boolean = false
+
     fun getValue(resource: T, property: String): Any?
 
     suspend fun loadCurrent(api: CloudApi): T?

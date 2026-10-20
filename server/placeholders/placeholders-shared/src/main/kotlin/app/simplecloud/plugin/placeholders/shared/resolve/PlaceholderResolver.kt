@@ -10,6 +10,7 @@ import com.github.benmanes.caffeine.cache.Caffeine
 import kotlinx.coroutines.*
 import kotlinx.coroutines.future.future
 import org.slf4j.LoggerFactory
+import java.util.UUID
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.toJavaDuration
@@ -30,13 +31,16 @@ class PlaceholderResolver(
         .expireAfterAccess(5.minutes.toJavaDuration())
         .buildAsync(AsyncCacheLoader { key, _ -> scope.future { CachedResource(load(key)) } })
 
-    fun resolve(params: String): String? {
+    fun resolve(params: String, viewer: UUID? = null): String? {
         val query = parser.parse(params) ?: return null
-        return resolve(query)
+        return resolve(query, viewer)
     }
 
-    fun resolve(query: PlaceholderQuery): String {
-        val future = cache.get(ResourceKey(query.type, query.target))
+    fun resolve(query: PlaceholderQuery, viewer: UUID? = null): String {
+        val target = query.target ?: viewerTarget(query.type, viewer)
+        if (target == null && query.type.isViewerScoped()) return ""
+
+        val future = cache.get(ResourceKey(query.type, target))
         if (!future.isDone) return loadingValue
 
         val resource = future.exceptionally { null }.getNow(null)?.resource ?: return ""
@@ -48,7 +52,12 @@ class PlaceholderResolver(
 
     @Suppress("IgnoredReturnValue")
     fun preloadCurrent(types: List<PlaceholderType<*>>) {
-        types.forEach { cache.get(ResourceKey(it, null)) }
+        types.filterNot { it.isViewerScoped() }.forEach { cache.get(ResourceKey(it, null)) }
+    }
+
+    private fun viewerTarget(type: PlaceholderType<*>, viewer: UUID?): String? {
+        if (!type.isViewerScoped() || viewer == null) return null
+        return viewer.toString()
     }
 
     fun shutdown() {

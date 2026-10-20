@@ -17,5 +17,5 @@ class PlaceholderApiExpansion(
 
     override fun persist() = true
 
-    override fun onRequest(player: OfflinePlayer?, params: String): String? = resolver.resolve(params)
+    override fun onRequest(player: OfflinePlayer?, params: String): String? = resolver.resolve(params, player?.uniqueId)
 }
