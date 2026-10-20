@@ -1,5 +1,5 @@
 plugins {
-    id("simplecloud.publishing-conventions")
+    id("simplecloud.api-conventions")
 }
 
 version = "1.1.1"

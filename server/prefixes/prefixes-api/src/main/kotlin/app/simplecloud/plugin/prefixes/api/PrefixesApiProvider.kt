@@ -2,13 +2,13 @@ package app.simplecloud.plugin.prefixes.api
 
 import org.jetbrains.annotations.ApiStatus
 
-object PrefixesApiProvider {
+public object PrefixesApiProvider {
 
     @Volatile
     private var instance: PrefixesApi? = null
 
     @JvmStatic
-    fun get(): PrefixesApi = instance ?: error(
+    public fun get(): PrefixesApi = instance ?: error(
         """
         The Prefixes API isn't loaded yet!
         This could be because:
@@ -22,13 +22,13 @@ object PrefixesApiProvider {
 
     @ApiStatus.Internal
     @JvmStatic
-    fun register(api: PrefixesApi) {
+    public fun register(api: PrefixesApi) {
         instance = api
     }
 
     @ApiStatus.Internal
     @JvmStatic
-    fun unregister() {
+    public fun unregister() {
         instance = null
     }
 }

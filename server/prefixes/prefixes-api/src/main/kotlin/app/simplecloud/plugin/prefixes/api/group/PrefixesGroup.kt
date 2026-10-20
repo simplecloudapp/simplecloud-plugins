@@ -5,23 +5,23 @@ import net.kyori.adventure.text.format.TextColor
 import java.util.UUID
 import java.util.concurrent.CompletableFuture
 
-interface PrefixesGroup {
+public interface PrefixesGroup {
 
-    val name: String
+    public val name: String
 
-    val priority: Int
+    public val priority: Int
 
-    val permission: String
+    public val permission: String
 
-    val prefix: Component
+    public val prefix: Component
 
-    val suffix: Component
+    public val suffix: Component
 
-    val color: TextColor
+    public val color: TextColor
 
-    val displayName: String
+    public val displayName: String
 
-    val chatFormat: String
+    public val chatFormat: String
 
-    fun containsPlayer(id: UUID): CompletableFuture<Boolean>
+    public fun containsPlayer(id: UUID): CompletableFuture<Boolean>
 }

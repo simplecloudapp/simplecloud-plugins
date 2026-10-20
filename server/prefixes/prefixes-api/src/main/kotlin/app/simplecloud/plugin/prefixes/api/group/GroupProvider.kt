@@ -3,13 +3,13 @@ package app.simplecloud.plugin.prefixes.api.group
 import java.util.UUID
 import java.util.concurrent.CompletableFuture
 
-interface GroupProvider {
+public interface GroupProvider {
 
-    fun getName(): String
+    public fun getName(): String
 
-    fun getGroups(): CompletableFuture<Collection<PrefixesGroup>>
+    public fun getGroups(): CompletableFuture<Collection<PrefixesGroup>>
 
-    fun getGroup(id: UUID): CompletableFuture<PrefixesGroup?>
+    public fun getGroup(id: UUID): CompletableFuture<PrefixesGroup?>
 
-    fun addGroup(group: PrefixesGroup): CompletableFuture<Boolean>
+    public fun addGroup(group: PrefixesGroup): CompletableFuture<Boolean>
 }

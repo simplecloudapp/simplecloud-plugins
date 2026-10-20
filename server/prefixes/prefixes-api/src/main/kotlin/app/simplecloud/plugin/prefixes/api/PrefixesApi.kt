@@ -9,69 +9,69 @@ import net.kyori.adventure.text.format.TextColor
 import java.util.UUID
 import java.util.concurrent.CompletableFuture
 
-interface PrefixesApi {
+public interface PrefixesApi {
 
-    fun getGroups(): CompletableFuture<Collection<PrefixesGroup>>
+    public fun getGroups(): CompletableFuture<Collection<PrefixesGroup>>
 
-    fun getPrimaryGroup(id: UUID): CompletableFuture<PrefixesGroup?>
+    public fun getPrimaryGroup(id: UUID): CompletableFuture<PrefixesGroup?>
 
-    fun getPrefixData(id: UUID): CompletableFuture<PrefixesPlayerData>
+    public fun getPrefixData(id: UUID): CompletableFuture<PrefixesPlayerData>
 
-    fun getPrefixData(id: UUID, viewer: Audience): CompletableFuture<PrefixesPlayerData>
+    public fun getPrefixData(id: UUID, viewer: Audience): CompletableFuture<PrefixesPlayerData>
 
-    fun setPrefix(id: UUID, prefix: Component)
+    public fun setPrefix(id: UUID, prefix: Component)
 
-    fun setPrefix(id: UUID, prefix: Component, viewers: Audience)
+    public fun setPrefix(id: UUID, prefix: Component, viewers: Audience)
 
-    fun setSuffix(id: UUID, suffix: Component)
+    public fun setSuffix(id: UUID, suffix: Component)
 
-    fun setSuffix(id: UUID, suffix: Component, viewers: Audience)
+    public fun setSuffix(id: UUID, suffix: Component, viewers: Audience)
 
-    fun setColor(id: UUID, color: TextColor)
+    public fun setColor(id: UUID, color: TextColor)
 
-    fun setColor(id: UUID, color: TextColor, viewers: Audience)
+    public fun setColor(id: UUID, color: TextColor, viewers: Audience)
 
-    fun setPriority(id: UUID, priority: Int)
+    public fun setPriority(id: UUID, priority: Int)
 
-    fun setPriority(id: UUID, priority: Int, viewers: Audience)
+    public fun setPriority(id: UUID, priority: Int, viewers: Audience)
 
-    fun setGroup(id: UUID, group: String): CompletableFuture<Boolean>
+    public fun setGroup(id: UUID, group: String): CompletableFuture<Boolean>
 
-    fun setGroup(id: UUID, group: String, viewers: Audience): CompletableFuture<Boolean>
+    public fun setGroup(id: UUID, group: String, viewers: Audience): CompletableFuture<Boolean>
 
-    fun setGroup(targets: Audience, group: String): CompletableFuture<Boolean>
+    public fun setGroup(targets: Audience, group: String): CompletableFuture<Boolean>
 
-    fun setGroup(targets: Audience, group: String, viewers: Audience): CompletableFuture<Boolean>
+    public fun setGroup(targets: Audience, group: String, viewers: Audience): CompletableFuture<Boolean>
 
-    fun setGroup(id: UUID, group: PrefixesGroup)
+    public fun setGroup(id: UUID, group: PrefixesGroup)
 
-    fun setGroup(id: UUID, group: PrefixesGroup, viewers: Audience)
+    public fun setGroup(id: UUID, group: PrefixesGroup, viewers: Audience)
 
-    fun setGroup(targets: Audience, group: PrefixesGroup)
+    public fun setGroup(targets: Audience, group: PrefixesGroup)
 
-    fun setGroup(targets: Audience, group: PrefixesGroup, viewers: Audience)
+    public fun setGroup(targets: Audience, group: PrefixesGroup, viewers: Audience)
 
-    fun reset(id: UUID)
+    public fun reset(id: UUID)
 
-    fun reset(targets: Audience)
+    public fun reset(targets: Audience)
 
-    fun reset(targets: Audience, viewers: Audience)
+    public fun reset(targets: Audience, viewers: Audience)
 
-    fun setVanished(id: UUID, vanished: Boolean)
+    public fun setVanished(id: UUID, vanished: Boolean)
 
-    fun isVanished(id: UUID): Boolean
+    public fun isVanished(id: UUID): Boolean
 
-    fun addGroup(group: PrefixesGroup): CompletableFuture<Boolean>
+    public fun addGroup(group: PrefixesGroup): CompletableFuture<Boolean>
 
-    fun registerGroupProvider(provider: GroupProvider)
+    public fun registerGroupProvider(provider: GroupProvider)
 
-    fun unregisterGroupProvider(name: String)
+    public fun unregisterGroupProvider(name: String)
 
-    fun getGroupProvider(): GroupProvider
+    public fun getGroupProvider(): GroupProvider
 
-    fun getGroupProviders(): Collection<GroupProvider>
+    public fun getGroupProviders(): Collection<GroupProvider>
 
-    fun refreshPlayer(id: UUID)
+    public fun refreshPlayer(id: UUID)
 
-    fun refreshAll()
+    public fun refreshAll()
 }

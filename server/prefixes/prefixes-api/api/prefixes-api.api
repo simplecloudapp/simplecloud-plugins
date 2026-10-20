@@ -1,0 +1,82 @@
+public abstract interface class app/simplecloud/plugin/prefixes/api/PrefixesApi {
+	public abstract fun addGroup (Lapp/simplecloud/plugin/prefixes/api/group/PrefixesGroup;)Ljava/util/concurrent/CompletableFuture;
+	public abstract fun getGroupProvider ()Lapp/simplecloud/plugin/prefixes/api/group/GroupProvider;
+	public abstract fun getGroupProviders ()Ljava/util/Collection;
+	public abstract fun getGroups ()Ljava/util/concurrent/CompletableFuture;
+	public abstract fun getPrefixData (Ljava/util/UUID;)Ljava/util/concurrent/CompletableFuture;
+	public abstract fun getPrefixData (Ljava/util/UUID;Lnet/kyori/adventure/audience/Audience;)Ljava/util/concurrent/CompletableFuture;
+	public abstract fun getPrimaryGroup (Ljava/util/UUID;)Ljava/util/concurrent/CompletableFuture;
+	public abstract fun isVanished (Ljava/util/UUID;)Z
+	public abstract fun refreshAll ()V
+	public abstract fun refreshPlayer (Ljava/util/UUID;)V
+	public abstract fun registerGroupProvider (Lapp/simplecloud/plugin/prefixes/api/group/GroupProvider;)V
+	public abstract fun reset (Ljava/util/UUID;)V
+	public abstract fun reset (Lnet/kyori/adventure/audience/Audience;)V
+	public abstract fun reset (Lnet/kyori/adventure/audience/Audience;Lnet/kyori/adventure/audience/Audience;)V
+	public abstract fun setColor (Ljava/util/UUID;Lnet/kyori/adventure/text/format/TextColor;)V
+	public abstract fun setColor (Ljava/util/UUID;Lnet/kyori/adventure/text/format/TextColor;Lnet/kyori/adventure/audience/Audience;)V
+	public abstract fun setGroup (Ljava/util/UUID;Lapp/simplecloud/plugin/prefixes/api/group/PrefixesGroup;)V
+	public abstract fun setGroup (Ljava/util/UUID;Lapp/simplecloud/plugin/prefixes/api/group/PrefixesGroup;Lnet/kyori/adventure/audience/Audience;)V
+	public abstract fun setGroup (Ljava/util/UUID;Ljava/lang/String;)Ljava/util/concurrent/CompletableFuture;
+	public abstract fun setGroup (Ljava/util/UUID;Ljava/lang/String;Lnet/kyori/adventure/audience/Audience;)Ljava/util/concurrent/CompletableFuture;
+	public abstract fun setGroup (Lnet/kyori/adventure/audience/Audience;Lapp/simplecloud/plugin/prefixes/api/group/PrefixesGroup;)V
+	public abstract fun setGroup (Lnet/kyori/adventure/audience/Audience;Lapp/simplecloud/plugin/prefixes/api/group/PrefixesGroup;Lnet/kyori/adventure/audience/Audience;)V
+	public abstract fun setGroup (Lnet/kyori/adventure/audience/Audience;Ljava/lang/String;)Ljava/util/concurrent/CompletableFuture;
+	public abstract fun setGroup (Lnet/kyori/adventure/audience/Audience;Ljava/lang/String;Lnet/kyori/adventure/audience/Audience;)Ljava/util/concurrent/CompletableFuture;
+	public abstract fun setPrefix (Ljava/util/UUID;Lnet/kyori/adventure/text/Component;)V
+	public abstract fun setPrefix (Ljava/util/UUID;Lnet/kyori/adventure/text/Component;Lnet/kyori/adventure/audience/Audience;)V
+	public abstract fun setPriority (Ljava/util/UUID;I)V
+	public abstract fun setPriority (Ljava/util/UUID;ILnet/kyori/adventure/audience/Audience;)V
+	public abstract fun setSuffix (Ljava/util/UUID;Lnet/kyori/adventure/text/Component;)V
+	public abstract fun setSuffix (Ljava/util/UUID;Lnet/kyori/adventure/text/Component;Lnet/kyori/adventure/audience/Audience;)V
+	public abstract fun setVanished (Ljava/util/UUID;Z)V
+	public abstract fun unregisterGroupProvider (Ljava/lang/String;)V
+}
+
+public final class app/simplecloud/plugin/prefixes/api/PrefixesApiProvider {
+	public static final field INSTANCE Lapp/simplecloud/plugin/prefixes/api/PrefixesApiProvider;
+	public static final fun get ()Lapp/simplecloud/plugin/prefixes/api/PrefixesApi;
+	public static final fun register (Lapp/simplecloud/plugin/prefixes/api/PrefixesApi;)V
+	public static final fun unregister ()V
+}
+
+public abstract interface class app/simplecloud/plugin/prefixes/api/group/GroupProvider {
+	public abstract fun addGroup (Lapp/simplecloud/plugin/prefixes/api/group/PrefixesGroup;)Ljava/util/concurrent/CompletableFuture;
+	public abstract fun getGroup (Ljava/util/UUID;)Ljava/util/concurrent/CompletableFuture;
+	public abstract fun getGroups ()Ljava/util/concurrent/CompletableFuture;
+	public abstract fun getName ()Ljava/lang/String;
+}
+
+public abstract interface class app/simplecloud/plugin/prefixes/api/group/PrefixesGroup {
+	public abstract fun containsPlayer (Ljava/util/UUID;)Ljava/util/concurrent/CompletableFuture;
+	public abstract fun getChatFormat ()Ljava/lang/String;
+	public abstract fun getColor ()Lnet/kyori/adventure/text/format/TextColor;
+	public abstract fun getDisplayName ()Ljava/lang/String;
+	public abstract fun getName ()Ljava/lang/String;
+	public abstract fun getPermission ()Ljava/lang/String;
+	public abstract fun getPrefix ()Lnet/kyori/adventure/text/Component;
+	public abstract fun getPriority ()I
+	public abstract fun getSuffix ()Lnet/kyori/adventure/text/Component;
+}
+
+public final class app/simplecloud/plugin/prefixes/api/group/PrefixesPlayerData {
+	public fun <init> (Lnet/kyori/adventure/text/Component;Lnet/kyori/adventure/text/Component;Lnet/kyori/adventure/text/format/TextColor;Lnet/kyori/adventure/text/Component;Ljava/lang/String;I)V
+	public final fun component1 ()Lnet/kyori/adventure/text/Component;
+	public final fun component2 ()Lnet/kyori/adventure/text/Component;
+	public final fun component3 ()Lnet/kyori/adventure/text/format/TextColor;
+	public final fun component4 ()Lnet/kyori/adventure/text/Component;
+	public final fun component5 ()Ljava/lang/String;
+	public final fun component6 ()I
+	public final fun copy (Lnet/kyori/adventure/text/Component;Lnet/kyori/adventure/text/Component;Lnet/kyori/adventure/text/format/TextColor;Lnet/kyori/adventure/text/Component;Ljava/lang/String;I)Lapp/simplecloud/plugin/prefixes/api/group/PrefixesPlayerData;
+	public static synthetic fun copy$default (Lapp/simplecloud/plugin/prefixes/api/group/PrefixesPlayerData;Lnet/kyori/adventure/text/Component;Lnet/kyori/adventure/text/Component;Lnet/kyori/adventure/text/format/TextColor;Lnet/kyori/adventure/text/Component;Ljava/lang/String;IILjava/lang/Object;)Lapp/simplecloud/plugin/prefixes/api/group/PrefixesPlayerData;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getChatFormat ()Ljava/lang/String;
+	public final fun getColor ()Lnet/kyori/adventure/text/format/TextColor;
+	public final fun getDisplayName ()Lnet/kyori/adventure/text/Component;
+	public final fun getPrefix ()Lnet/kyori/adventure/text/Component;
+	public final fun getPriority ()I
+	public final fun getSuffix ()Lnet/kyori/adventure/text/Component;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
