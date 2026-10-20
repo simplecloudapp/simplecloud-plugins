@@ -57,6 +57,8 @@ class PrefixesPaper : JavaPlugin() {
             manager.publishAll()
             tablist.expire()
         }, 30L, 30L, TimeUnit.SECONDS)
+
+        Bukkit.getAsyncScheduler().runAtFixedRate(this, { manager.refreshVanished() }, 1L, 1L, TimeUnit.SECONDS)
     }
 
     private fun registerCommands(prefixes: Prefixes) {

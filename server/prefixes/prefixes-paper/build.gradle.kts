@@ -12,6 +12,7 @@ dependencies {
     implementation(projects.server.prefixes.prefixesShared)
     implementation(projects.core.corePaper)
     implementation(libs.cloud.paper)
+    implementation(libs.reflection.remapper)
     compileOnly(libs.paper.api)
     compileOnly(libs.luckperms.api)
     paperweight.paperDevBundle(libs.versions.paper)

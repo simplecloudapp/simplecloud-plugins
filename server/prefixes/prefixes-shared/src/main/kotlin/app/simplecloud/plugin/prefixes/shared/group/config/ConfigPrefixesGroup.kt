@@ -12,7 +12,7 @@ import java.util.UUID
 import java.util.concurrent.CompletableFuture
 
 class ConfigPrefixesGroup(
-    private val group: ConfigGroup,
+    group: ConfigGroup,
     private val permissionChecker: PermissionChecker<UUID>,
 ) : PrefixesGroup {
 

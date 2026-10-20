@@ -57,7 +57,11 @@ tasks.test {
 }
 
 tasks.shadowJar {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
     mergeServiceFiles()
+    filesNotMatching(listOf("META-INF/services/**", "META-INF/*.kotlin_module")) {
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    }
     archiveFileName.set("${project.name}.jar")
 }
 

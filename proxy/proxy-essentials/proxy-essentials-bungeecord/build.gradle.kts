@@ -16,10 +16,6 @@ dependencies {
     compileOnly(libs.slf4j.api)
 }
 
-tasks.shadowJar {
-    duplicatesStrategy = DuplicatesStrategy.INCLUDE
-}
-
 modrinth {
     token.set(project.findProperty("modrinthToken") as String? ?: System.getenv("MODRINTH_TOKEN"))
     projectId.set("WzfN2mLK")

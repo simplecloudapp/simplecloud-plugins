@@ -93,6 +93,15 @@ class PaperDisplayManager(
         }
     }
 
+    fun refreshVanished() {
+        if (!prefixes.config.get().isTablistSynced()) return
+        Bukkit.getOnlinePlayers().forEach { player ->
+            player.scheduler.run(plugin, {
+                if (prefixes.api.isVanished(player.uniqueId) == entries.containsKey(player.uniqueId)) publish(player)
+            }, null)
+        }
+    }
+
     fun unpublishAll() {
         entries.keys.forEach(::unpublish)
     }

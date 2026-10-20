@@ -18,10 +18,6 @@ dependencies {
     kapt(libs.velocity.api)
 }
 
-tasks.shadowJar {
-    duplicatesStrategy = DuplicatesStrategy.INCLUDE
-}
-
 modrinth {
     token.set(project.findProperty("modrinthToken") as String? ?: System.getenv("MODRINTH_TOKEN"))
     projectId.set("WzfN2mLK")
