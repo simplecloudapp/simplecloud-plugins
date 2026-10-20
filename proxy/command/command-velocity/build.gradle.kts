@@ -9,6 +9,7 @@ version = "0.0.6"
 
 dependencies {
     implementation(projects.proxy.command.commandShared)
+    implementation(projects.core.coreVelocity)
     implementation(libs.cloud.velocity)
     compileOnly(libs.velocity.api)
     kapt(libs.velocity.api)

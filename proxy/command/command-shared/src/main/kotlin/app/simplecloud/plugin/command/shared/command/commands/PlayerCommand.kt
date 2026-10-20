@@ -6,10 +6,10 @@ import app.simplecloud.api.player.CloudPlayer
 import app.simplecloud.api.player.CloudPlayer.ConnectResult
 import app.simplecloud.api.server.Server
 import app.simplecloud.plugin.command.shared.CommandPlugin
-import app.simplecloud.plugin.command.shared.command.CloudSender
-import app.simplecloud.plugin.command.shared.command.CloudSuggestions
 import app.simplecloud.plugin.command.shared.utilities.CommandPermissions
 import app.simplecloud.plugin.core.shared.adventure.tags
+import app.simplecloud.plugin.core.shared.command.CloudSender
+import app.simplecloud.plugin.core.shared.command.CloudSuggestions
 import kotlinx.coroutines.*
 import kotlinx.coroutines.future.*
 import net.kyori.adventure.text.Component

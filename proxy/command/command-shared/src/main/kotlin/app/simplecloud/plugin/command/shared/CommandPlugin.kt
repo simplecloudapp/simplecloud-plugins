@@ -1,16 +1,13 @@
 package app.simplecloud.plugin.command.shared
 
 import app.simplecloud.api.CloudApi
-import app.simplecloud.plugin.command.shared.config.DefaultConfigInstaller
 import app.simplecloud.plugin.command.shared.config.MessageConfig
 import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
+import app.simplecloud.plugin.core.shared.config.DefaultConfigInstaller
 import kotlinx.coroutines.*
 import org.slf4j.LoggerFactory
 import java.io.File
 
-/**
- * @author Fynn Bauer in 2024
- */
 class CommandPlugin(private val dir: File) {
 
     private val logger = LoggerFactory.getLogger(CommandPlugin::class.java)

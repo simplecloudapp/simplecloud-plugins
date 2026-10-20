@@ -14,6 +14,7 @@ tasks.withType<Detekt>().configureEach {
     exclude { it.file.invariantSeparatorsPath.contains("/build/generated/") }
 }
 
+// workaround for random error
 pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
     tasks.named("check") {
         setDependsOn(dependsOn.filterNot { it is TaskProvider<*> && it.name == "detekt" })

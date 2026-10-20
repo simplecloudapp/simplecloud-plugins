@@ -1,5 +1,13 @@
+import app.simplecloud.gradle.CopyPluginJar
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
+import org.gradle.accessors.dm.LibrariesForLibs
+import org.gradle.api.Project
+import org.gradle.kotlin.dsl.the
+
+// expose version catalog
+val Project.libs: LibrariesForLibs
+    get() = the<LibrariesForLibs>()
 
 plugins {
     id("org.jetbrains.kotlin.jvm")
@@ -52,7 +60,25 @@ tasks.shadowJar {
     archiveFileName.set("${project.name}.jar")
 }
 
-// idea shit
+val platforms = setOf("velocity", "bungeecord", "waterdog", "paper", "minestom")
+
+if (!path.startsWith(":core:") && !path.startsWith(":server:") && name.substringAfterLast('-') in platforms) {
+    val destination = isolated.rootProject.projectDirectory
+        .file("build/plugins/${name.substringBeforeLast('-')}/$name.jar")
+
+    val copyPluginJar = tasks.register<CopyPluginJar>("copyPluginJar") {
+        group = "build"
+        description = "Copies the plugin jar to build/plugins of the root project."
+        jar.set(tasks.shadowJar.flatMap { it.archiveFile })
+        this.destination.set(destination)
+    }
+
+    tasks.shadowJar {
+        finalizedBy(copyPluginJar)
+    }
+}
+
+// IntelliJ shit
 val ideaSyncActive = providers.systemProperty("idea.sync.active").isPresent
 
 tasks.processResources {

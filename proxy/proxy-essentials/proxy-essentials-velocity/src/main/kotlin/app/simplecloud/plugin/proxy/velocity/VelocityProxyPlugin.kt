@@ -1,7 +1,6 @@
 package app.simplecloud.plugin.proxy.velocity
 
-import app.simplecloud.plugin.core.velocity.command.VelocityCloudSender
-import app.simplecloud.plugin.core.velocity.command.VelocityCloudSenderMapper
+import app.simplecloud.plugin.core.velocity.command.VelocityCloudCommandManager
 import app.simplecloud.plugin.proxy.shared.ProxyEssentials
 import app.simplecloud.plugin.proxy.shared.command.ProxyCommandHandler
 import app.simplecloud.plugin.proxy.velocity.listener.ConnectionListener
@@ -15,8 +14,6 @@ import com.velocitypowered.api.plugin.Dependency
 import com.velocitypowered.api.plugin.Plugin
 import com.velocitypowered.api.plugin.annotation.DataDirectory
 import com.velocitypowered.api.proxy.ProxyServer
-import org.incendo.cloud.execution.ExecutionCoordinator
-import org.incendo.cloud.velocity.VelocityCommandManager
 import java.nio.file.Path
 
 @Plugin(
@@ -44,18 +41,11 @@ class VelocityProxyPlugin @Inject constructor(
         server.eventManager.register(this, ConnectionListener(essentials))
         server.eventManager.register(this, ProxyPingListener(essentials))
 
-        ProxyCommandHandler(createCommandManager(), essentials).register()
+        ProxyCommandHandler(VelocityCloudCommandManager.create(this, server), essentials).register()
     }
 
     @Subscribe
     fun onProxyShutdown(event: ProxyShutdownEvent) {
         essentials.stop()
     }
-
-    private fun createCommandManager(): VelocityCommandManager<VelocityCloudSender> = VelocityCommandManager(
-        server.pluginManager.ensurePluginContainer(this),
-        server,
-        ExecutionCoordinator.asyncCoordinator(),
-        VelocityCloudSenderMapper,
-    )
 }

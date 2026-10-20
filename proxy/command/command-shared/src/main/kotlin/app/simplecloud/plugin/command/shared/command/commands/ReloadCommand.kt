@@ -1,8 +1,8 @@
 package app.simplecloud.plugin.command.shared.command.commands
 
 import app.simplecloud.plugin.command.shared.CommandPlugin
-import app.simplecloud.plugin.command.shared.command.CloudSender
 import app.simplecloud.plugin.command.shared.utilities.CommandPermissions
+import app.simplecloud.plugin.core.shared.command.CloudSender
 import org.incendo.cloud.CommandManager
 import org.incendo.cloud.kotlin.coroutines.extension.suspendingHandler
 import org.incendo.cloud.permission.Permission

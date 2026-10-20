@@ -7,7 +7,8 @@ version = "0.0.6"
 
 dependencies {
     implementation(projects.proxy.command.commandShared)
-    implementation(libs.adventure.platform.bungeecord)
+    implementation(projects.core.coreBungeecord)
+    implementation(libs.adventure.text.serializer.gson)
     implementation(libs.cloud.bungee)
     compileOnly(libs.bungeecord.api)
 }

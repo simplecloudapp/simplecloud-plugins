@@ -1,15 +1,12 @@
 package app.simplecloud.plugin.proxy.bungeecord
 
-import app.simplecloud.plugin.core.bungeecord.command.BungeeCloudSender
-import app.simplecloud.plugin.core.bungeecord.command.BungeeCloudSenderMapper
+import app.simplecloud.plugin.core.bungeecord.command.BungeeCloudCommandManager
 import app.simplecloud.plugin.proxy.bungeecord.listener.ConnectionListener
 import app.simplecloud.plugin.proxy.bungeecord.listener.ProxyPingListener
 import app.simplecloud.plugin.proxy.bungeecord.platform.BungeePlatformImpl
 import app.simplecloud.plugin.proxy.shared.ProxyEssentials
 import app.simplecloud.plugin.proxy.shared.command.ProxyCommandHandler
 import net.md_5.bungee.api.plugin.Plugin
-import org.incendo.cloud.bungee.BungeeCommandManager
-import org.incendo.cloud.execution.ExecutionCoordinator
 
 class BungeeProxyPlugin : Plugin() {
 
@@ -21,16 +18,10 @@ class BungeeProxyPlugin : Plugin() {
         proxy.pluginManager.registerListener(this, ConnectionListener(essentials))
         proxy.pluginManager.registerListener(this, ProxyPingListener(essentials))
 
-        ProxyCommandHandler(createCommandManager(), essentials).register()
+        ProxyCommandHandler(BungeeCloudCommandManager.create(this), essentials).register()
     }
 
     override fun onDisable() {
         essentials.stop()
     }
-
-    private fun createCommandManager(): BungeeCommandManager<BungeeCloudSender> = BungeeCommandManager(
-        this,
-        ExecutionCoordinator.asyncCoordinator(),
-        BungeeCloudSenderMapper(),
-    )
 }

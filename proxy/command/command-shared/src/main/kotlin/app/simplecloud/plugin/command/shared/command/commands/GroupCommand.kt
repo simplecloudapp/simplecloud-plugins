@@ -3,11 +3,11 @@ package app.simplecloud.plugin.command.shared.command.commands
 import app.simplecloud.api.CloudApi
 import app.simplecloud.api.server.ServerState
 import app.simplecloud.plugin.command.shared.CommandPlugin
-import app.simplecloud.plugin.command.shared.command.CloudSender
-import app.simplecloud.plugin.command.shared.command.CloudSuggestions
 import app.simplecloud.plugin.command.shared.utilities.ApiUtils
 import app.simplecloud.plugin.command.shared.utilities.CommandPermissions
 import app.simplecloud.plugin.core.shared.adventure.tags
+import app.simplecloud.plugin.core.shared.command.CloudSender
+import app.simplecloud.plugin.core.shared.command.CloudSuggestions
 import kotlinx.coroutines.*
 import kotlinx.coroutines.future.await
 import org.incendo.cloud.CommandManager
