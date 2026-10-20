@@ -12,6 +12,8 @@ object ServerPlaceholders : PlaceholderType<Server> {
 
     override val properties = setOf(
         "id",
+        "name",
+        "group",
         "type",
         "host",
         "numerical_id",
@@ -26,6 +28,8 @@ object ServerPlaceholders : PlaceholderType<Server> {
 
     override fun getValue(resource: Server, property: String): Any? = when (property) {
         "id" -> resource.serverId
+        "name" -> serverName(resource)
+        "group" -> resource.serverBase.name
         "type" -> resource.serverBase.type
         "host" -> resource.serverhostId
         "numerical_id" -> resource.numericalId
@@ -40,6 +44,12 @@ object ServerPlaceholders : PlaceholderType<Server> {
     }
 
     override suspend fun loadCurrent(api: CloudApi): Server? = api.server().getCurrentServer().await()
+
+    private fun serverName(server: Server): String {
+        val group = server.group
+        if (group != null) return "${group.name}-${server.numericalId}"
+        return server.persistentServer?.name ?: server.serverId
+    }
 
     override suspend fun load(api: CloudApi, target: String): Server? =
         if (target.startsWith(ID_PREFIX)) loadById(api, target.removePrefix(ID_PREFIX)) else loadByNumericalId(api, target)

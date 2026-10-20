@@ -1,6 +1,7 @@
 package app.simplecloud.plugin.placeholders.shared.query
 
 import app.simplecloud.plugin.placeholders.shared.placeholder.GroupPlaceholders
+import app.simplecloud.plugin.placeholders.shared.placeholder.NetworkPlaceholders
 import app.simplecloud.plugin.placeholders.shared.placeholder.PersistentServerPlaceholders
 import app.simplecloud.plugin.placeholders.shared.placeholder.PlaceholderType
 import app.simplecloud.plugin.placeholders.shared.placeholder.ServerPlaceholders
@@ -25,6 +26,6 @@ class PlaceholderQueryParser(private val types: List<PlaceholderType<*>> = DEFAU
         .firstOrNull { rest == it || rest.endsWith("_$it") }
 
     private companion object {
-        val DEFAULT_TYPES = listOf(PersistentServerPlaceholders, ServerPlaceholders, GroupPlaceholders)
+        val DEFAULT_TYPES = listOf(PersistentServerPlaceholders, ServerPlaceholders, GroupPlaceholders, NetworkPlaceholders)
     }
 }
