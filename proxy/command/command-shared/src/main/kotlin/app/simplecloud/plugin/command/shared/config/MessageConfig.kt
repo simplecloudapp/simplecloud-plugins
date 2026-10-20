@@ -171,7 +171,6 @@ data class PlayerErrorSection(
     val sourceNotFound: String = "<prefix> <#DC2626>Source <#F8FAFC><source> <#DC2626>was not found.",
     val sendFailed: String = "<prefix> <#DC2626>Could not send <white><head:<playername>:true> <#F8FAFC><displayname> <#DC2626>to <#F8FAFC><target><#DC2626>.",
     val sendAllFailed: String = "<prefix> <#DC2626>Could not send players to <#F8FAFC><target><#DC2626>.",
-    val groupTargetUnavailable: String = "<prefix> <#F59E0B>Sending players to a group is currently unavailable. Use <#F8FAFC>ps <#F59E0B>instead.",
     val noOnlinePlayers: String = "<prefix> <#F59E0B>No players are online.",
     val allOnTarget: String = "<prefix> <#F59E0B>All players are already on <#F8FAFC><target><#F59E0B>.",
     val noSourcePlayers: String = "<prefix> <#F59E0B>No players were found on <#F8FAFC><source><#F59E0B>.",

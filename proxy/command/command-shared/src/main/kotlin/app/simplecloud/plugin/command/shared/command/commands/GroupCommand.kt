@@ -42,7 +42,7 @@ class GroupCommand<C : CloudSender>(
                         sender.sendMessage(messages.msg(messages.command.group.list.empty))
                         return@suspendingHandler
                     }
-                    val serversByGroup = api.server().allServers.await().groupBy { it.serverGroupId }
+                    val serversByGroup = api.server().allServers.await().filter { it.state != ServerState.STOPPED }.groupBy { it.serverGroupId }
                     sender.sendMessage(messages.msg(messages.command.group.list.title, tags("count" to groups.size)))
                     groups.forEach { group ->
                         val servers = serversByGroup[group.serverGroupId].orEmpty()
@@ -70,12 +70,12 @@ class GroupCommand<C : CloudSender>(
                     val sender = context.sender()
                     val groupName = context.get<String>("group")
                     val messages = plugin.messageConfiguration
-                    val group = api.group().allGroups.await().firstOrNull { it.name.equals(groupName, true) }
+                    val group = ApiUtils.findGroup(api, groupName)
                     if (group == null) {
                         sender.sendMessage(messages.msg(messages.command.group.error.notFound, tags("group" to groupName)))
                         return@suspendingHandler
                     }
-                    val servers = api.server().getServersByGroup(group.name).await()
+                    val servers = api.server().getServersByGroup(group.name).await().filter { it.state != ServerState.STOPPED }
                     sender.sendMessage(messages.msg(messages.command.group.info.title, tags("group" to group.name)))
                     sender.sendMessage(messages.msg(messages.command.group.info.entry, tags("key" to "Type", "value" to group.type.name)))
                     sender.sendMessage(messages.msg(messages.command.group.info.entry, tags("key" to "Memory", "value" to "${group.minMemory}-${group.maxMemory} MB")))
@@ -99,7 +99,7 @@ class GroupCommand<C : CloudSender>(
                     val groupName = context.get<String>("group")
                     val count = context.getOrDefault("count", 1)
                     val messages = plugin.messageConfiguration
-                    val group = api.group().allGroups.await().firstOrNull { it.name.equals(groupName, true) }
+                    val group = ApiUtils.findGroup(api, groupName)
                     if (group == null) {
                         sender.sendMessage(messages.msg(messages.command.group.error.notFound, tags("group" to groupName)))
                         return@suspendingHandler
@@ -139,7 +139,7 @@ class GroupCommand<C : CloudSender>(
                     val groupName = context.get<String>("group")
                     val id = context.getOrDefault("id", null as Int?)
                     val messages = plugin.messageConfiguration
-                    val group = api.group().allGroups.await().firstOrNull { it.name.equals(groupName, true) }
+                    val group = ApiUtils.findGroup(api, groupName)
                     if (group == null) {
                         sender.sendMessage(messages.msg(messages.command.group.error.notFound, tags("group" to groupName)))
                         return@suspendingHandler
@@ -150,7 +150,7 @@ class GroupCommand<C : CloudSender>(
                         sender.sendMessage(messages.msg(messages.command.server.error.notFound, tags("group" to group.name, "id" to id)))
                         return@suspendingHandler
                     }
-                    val targets = matching.filter { it.state != ServerState.STOPPING && it.state != ServerState.CLEANUP } // && it.state != ServerState.STOPPED
+                    val targets = matching.filter { it.state != ServerState.STOPPING && it.state != ServerState.CLEANUP && it.state != ServerState.STOPPED }
                     if (targets.isEmpty()) {
                         if (id == null) {
                             sender.sendMessage(messages.msg(messages.command.group.error.alreadyEmpty, tags("group" to group.name)))

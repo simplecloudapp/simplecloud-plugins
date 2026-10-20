@@ -40,14 +40,14 @@ class ServerCommand<C : CloudSender>(
                     val groupName = context.getOrDefault("group", null as String?)
                     val messages = plugin.messageConfiguration
                     val servers = if (groupName == null) {
-                        api.server().allServers.await()
+                        api.server().allServers.await().filter { it.state != ServerState.STOPPED }
                     } else {
-                        val group = api.group().allGroups.await().firstOrNull { it.name.equals(groupName, true) }
+                        val group = ApiUtils.findGroup(api, groupName)
                         if (group == null) {
                             sender.sendMessage(messages.msg(messages.command.group.error.notFound, tags("group" to groupName)))
                             return@suspendingHandler
                         }
-                        api.server().getServersByGroup(group.name).await()
+                        api.server().getServersByGroup(group.name).await().filter { it.state != ServerState.STOPPED }
                     }
                     if (servers.isEmpty()) {
                         sender.sendMessage(messages.msg(messages.command.server.list.empty))
@@ -89,12 +89,12 @@ class ServerCommand<C : CloudSender>(
                     val groupName = context.get<String>("group")
                     val id = context.get<Int>("id")
                     val messages = plugin.messageConfiguration
-                    val group = api.group().allGroups.await().firstOrNull { it.name.equals(groupName, true) }
+                    val group = ApiUtils.findGroup(api, groupName)
                     if (group == null) {
                         sender.sendMessage(messages.msg(messages.command.group.error.notFound, tags("group" to groupName)))
                         return@suspendingHandler
                     }
-                    val server = api.server().getServersByGroup(group.name).await().firstOrNull { it.numericalId == id }
+                    val server = api.server().findServerByNumericalId(group.name, id).await().orElse(null)
                     if (server == null) {
                         sender.sendMessage(messages.msg(messages.command.server.error.notFound, tags("group" to group.name, "id" to id)))
                         return@suspendingHandler
@@ -120,7 +120,7 @@ class ServerCommand<C : CloudSender>(
                     val sender = context.sender()
                     val groupName = context.get<String>("group")
                     val messages = plugin.messageConfiguration
-                    val group = api.group().allGroups.await().firstOrNull { it.name.equals(groupName, true) }
+                    val group = ApiUtils.findGroup(api, groupName)
                     if (group == null) {
                         sender.sendMessage(messages.msg(messages.command.group.error.notFound, tags("group" to groupName)))
                         return@suspendingHandler
@@ -153,17 +153,17 @@ class ServerCommand<C : CloudSender>(
                     val groupName = context.get<String>("group")
                     val id = context.get<Int>("id")
                     val messages = plugin.messageConfiguration
-                    val group = api.group().allGroups.await().firstOrNull { it.name.equals(groupName, true) }
+                    val group = ApiUtils.findGroup(api, groupName)
                     if (group == null) {
                         sender.sendMessage(messages.msg(messages.command.group.error.notFound, tags("group" to groupName)))
                         return@suspendingHandler
                     }
-                    val server = api.server().getServersByGroup(group.name).await().firstOrNull { it.numericalId == id }
+                    val server = api.server().findServerByNumericalId(group.name, id).await().orElse(null)
                     if (server == null) {
                         sender.sendMessage(messages.msg(messages.command.server.error.notFound, tags("group" to group.name, "id" to id)))
                         return@suspendingHandler
                     }
-                    if (server.state == ServerState.STOPPING || server.state == ServerState.CLEANUP) { // || server.state == ServerState.STOPPED
+                    if (server.state == ServerState.STOPPING || server.state == ServerState.CLEANUP || server.state == ServerState.STOPPED) {
                         sender.sendMessage(messages.msg(messages.command.server.error.alreadyStopping, tags("group" to group.name, "id" to id)))
                         return@suspendingHandler
                     }

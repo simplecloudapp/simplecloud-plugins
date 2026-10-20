@@ -2,6 +2,7 @@ package app.simplecloud.plugin.core.shared.command
 
 import app.simplecloud.api.CloudApi
 import app.simplecloud.api.group.GroupServerType
+import app.simplecloud.api.player.ServerSelectionMode
 import app.simplecloud.api.server.Server
 import app.simplecloud.api.server.ServerState
 import kotlinx.coroutines.future.await
@@ -145,19 +146,17 @@ object CloudSuggestions {
         }
             .asSuggestionProvider()
 
-    // Suggests the names of all players connected to the server stored in the argument
-    // [serverArgument].
-    // fun <C : Any> playersOnServer(api: CloudApi, serverArgument: String = "server"):
-    // SuggestionProvider<C> =
-    //    SuspendingSuggestionProvider<C> { context, _ ->
-    //        try {
-    //            val server = context.get<String>(serverArgument)
-    //            api.player().getOnlinePlayers(server).await().map { Suggestion.suggestion(it.name)
-    // }
-    //        } catch (_: Exception) {
-    //            emptyList()
-    //        }
-    //    }.asSuggestionProvider()
+    /* Suggests the names of all players connected to the server stored in the argument [arg]. */
+    fun <C : Any> playersOnServer(api: CloudApi, arg: String = "server"): SuggestionProvider<C> =
+        SuspendingSuggestionProvider<C> { context, _ ->
+            try {
+                val server = context.get<String>(arg)
+                api.player().getOnlinePlayers(server).await().map { Suggestion.suggestion(it.name)
+                }
+            } catch (_: Exception) {
+                emptyList()
+            }
+        }.asSuggestionProvider()
 
     /**
      * Suggests the names of all players connected to the proxy stored in the argument
@@ -221,8 +220,8 @@ object CloudSuggestions {
                 .map { it.name.lowercase() },
         )
 
-    // fun <C : Any> selectionModes(): SuggestionProvider<C> =
-    //    of(ServerSelectionMode.entries.map { it.name.lowercase() })
+    fun <C : Any> selectionModes(): SuggestionProvider<C> =
+        of(ServerSelectionMode.entries.map { it.name.lowercase() })
 
     /** Suggests all known [GroupServerType]s. */
     fun <C : Any> serverTypes(): SuggestionProvider<C> =

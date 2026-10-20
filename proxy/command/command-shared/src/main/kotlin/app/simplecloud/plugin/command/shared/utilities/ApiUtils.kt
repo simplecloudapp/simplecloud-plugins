@@ -1,22 +1,35 @@
 package app.simplecloud.plugin.command.shared.utilities
 
-import app.simplecloud.api.web.ApiException
-import app.simplecloud.api.web.models.ModelsErrorResponse
+import app.simplecloud.api.CloudApi
+import app.simplecloud.api.CloudApiException
+import app.simplecloud.api.group.Group
+import app.simplecloud.api.persistentserver.PersistentServer
+import kotlinx.coroutines.future.await
 import org.slf4j.LoggerFactory
 import java.util.concurrent.TimeoutException
 
 object ApiUtils {
 
     private val logger = LoggerFactory.getLogger(ApiUtils::class.java)
+    private val statusCodeSuffix = Regex("""\s*\(\d+\)$""")
+
+    suspend fun findGroup(api: CloudApi, name: String): Group? =
+        api.group().findGroupByName(name).await().orElse(null)
+            ?: api.group().allGroups.await().firstOrNull { it.name.equals(name, true) }
+
+    suspend fun findPersistentServer(api: CloudApi, name: String): PersistentServer? =
+        api.persistentServer().findPersistentServerByName(name).await().orElse(null)
+            ?: api.persistentServer().allPersistentServers.await().firstOrNull { it.name.equals(name, true) }
 
     fun reason(throwable: Throwable): String {
         val causes = generateSequence(throwable) { it.cause }
-        val apiException = causes.filterIsInstance<ApiException>().firstOrNull()
+        val exception = causes.filterIsInstance<CloudApiException>().firstOrNull()
 
         return when {
-            apiException == null -> nonApiReason(throwable, causes)
-            apiException.code == 0 -> "the controller is not reachable"
-            else -> parseErrorMessage(apiException.responseBody)
+            exception == null -> nonApiReason(throwable, causes)
+            exception.reason == CloudApiException.Reason.UNAVAILABLE && exception.statusCode <= 0 -> "the controller is not reachable"
+            exception.reason == CloudApiException.Reason.UNAVAILABLE -> "the controller is currently unavailable"
+            else -> formatMessage(exception.message)
         }
     }
 
@@ -26,17 +39,9 @@ object ApiUtils {
         return "an internal error occurred"
     }
 
-    private fun parseErrorMessage(body: String?): String {
-        if (body.isNullOrBlank()) return "an unknown error occurred"
-        val error = try {
-            ModelsErrorResponse.fromJson(body).error
-        } catch (_: Exception) {
-            null
-        }
-        if (error.isNullOrBlank()) return "an unknown error occurred"
-
-        // controller messages start uppercase and may end with a period, e.g. "Group not found."
-        val message = error.trim().trimEnd('.')
+    private fun formatMessage(error: String?): String {
+        val message = error.orEmpty().replace(statusCodeSuffix, "").trim().trimEnd('.')
+        if (message.isBlank()) return "an unknown error occurred"
         val isAcronym = message.length > 1 && message[1].isUpperCase()
         return if (isAcronym) message else message.replaceFirstChar { it.lowercase() }
     }
