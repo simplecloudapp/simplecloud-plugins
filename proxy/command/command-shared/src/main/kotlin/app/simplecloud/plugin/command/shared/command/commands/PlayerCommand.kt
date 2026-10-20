@@ -114,78 +114,20 @@ class PlayerCommand<C : CloudSender>(
                             ),
                         ),
                     )
-                    sender.sendMessage(
-                        messages.msg(
-                            messages.command.player.info.entry,
-                            tags(
-                                "key" to "Name",
-                                "value" to player.name,
-                            ),
-                        ),
-                    )
-                    sender.sendMessage(
-                        messages.msg(
-                            messages.command.player.info.entry,
-                            tags(
-                                "key" to "Display Name",
-                                "value" to player.displayName,
-                            ),
-                        ),
-                    )
-                    sender.sendMessage(
-                        messages.msg(
-                            messages.command.player.info.entry,
-                            tags(
-                                "key" to "Online",
-                                "value" to player.isOnline,
-                            ),
-                        ),
-                    )
-                    sender.sendMessage(
-                        messages.msg(
-                            messages.command.player.info.entry,
-                            tags(
-                                "key" to "Server",
-                                "value" to player.connectedServerName,
-                            ),
-                        ),
-                    )
-                    sender.sendMessage(
-                        messages.msg(
-                            messages.command.player.info.entry,
-                            tags(
-                                "key" to "Proxy",
-                                "value" to player.connectedProxyName,
-                            ),
-                        ),
-                    )
-                    sender.sendMessage(
-                        messages.msg(
-                            messages.command.player.info.entry,
-                            tags(
-                                "key" to "Online Time",
-                                "value" to player.onlineTimeSeconds.seconds,
-                            ),
-                        ),
-                    )
-                    sender.sendMessage(
-                        messages.msg(
-                            messages.command.player.info.entry,
-                            tags(
-                                "key" to "First Seen",
-                                "value" to player.firstSeen,
-                            ),
-                        ),
-                    )
-                    sender.sendMessage(
-                        messages.msg(
-                            messages.command.player.info.entry,
-                            tags(
-                                "key" to "Last Seen",
-                                "value" to player.lastSeen,
-                            ),
-                        ),
-                    )
+                    listOf<Pair<String, Any?>>(
+                        "Name" to player.name,
+                        "Display Name" to player.displayName,
+                        "Online" to player.isOnline,
+                        "Server" to player.connectedServerName,
+                        "Proxy" to player.connectedProxyName,
+                        "Online Time" to player.onlineTimeSeconds.seconds,
+                        "First Seen" to player.firstSeen,
+                        "Last Seen" to player.lastSeen,
+                    ).forEach { (key, value) ->
+                        sender.sendMessage(
+                            messages.msg(messages.command.player.info.entry, tags("key" to key, "value" to value)),
+                        )
+                    }
                 }
                 .permission(Permission.permission(CommandPermissions.PLAYER_INFO))
                 .build(),

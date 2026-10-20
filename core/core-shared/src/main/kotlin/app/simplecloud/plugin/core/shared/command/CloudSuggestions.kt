@@ -153,7 +153,8 @@ object CloudSuggestions {
         SuspendingSuggestionProvider<C> { context, _ ->
             try {
                 val server = context.get<String>(arg)
-                api.player().getOnlinePlayers(server).await().map { Suggestion.suggestion(it.name)
+                api.player().getOnlinePlayers(server).await().map {
+                    Suggestion.suggestion(it.name)
                 }
             } catch (_: Exception) {
                 emptyList()
