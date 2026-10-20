@@ -5,6 +5,7 @@ import app.simplecloud.plugin.core.shared.command.CloudSender
 import app.simplecloud.plugin.core.shared.command.CloudSuggestions
 import app.simplecloud.plugin.proxy.shared.ProxyEssentials
 import app.simplecloud.plugin.proxy.shared.utilities.CommandPermissions
+import kotlinx.coroutines.future.await
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.incendo.cloud.CommandManager
 import org.incendo.cloud.context.CommandContext
@@ -65,6 +66,11 @@ class LayoutCommand<C : CloudSender>(
                     val sender = context.sender()
                     val groupName = context.get<String>("group")
                     try {
+                        if (!groupExists(groupName)) {
+                            sender.sendMessage(groupNotFound(groupName))
+                            return@suspendingHandler
+                        }
+
                         val config = plugin.config.get()
                         val state = plugin.joinStateService.getGroupState(groupName)
                         val forcedLayout = config.joinstates.find { it.name == state }?.forcedMotdLayout
@@ -106,6 +112,11 @@ class LayoutCommand<C : CloudSender>(
                     }
 
                     try {
+                        if (!groupExists(groupName)) {
+                            sender.sendMessage(groupNotFound(groupName))
+                            return@suspendingHandler
+                        }
+
                         if (plugin.layoutService.getGroupLayout(groupName) == layout) {
                             sender.sendMessage(plugin.messageFormatter.format(messages.updateNoChange))
                             return@suspendingHandler
@@ -137,6 +148,13 @@ class LayoutCommand<C : CloudSender>(
             sender.sendMessage(plugin.messageFormatter.format(help.entry, Placeholder.unparsed("command", it)))
         }
     }
+
+    private suspend fun groupExists(groupName: String): Boolean = api.group().findGroupByName(groupName).await().isPresent
+
+    private fun groupNotFound(groupName: String) = plugin.messageFormatter.format(
+        plugin.messages.get().command.targetNotFound,
+        Placeholder.unparsed("target", groupName),
+    )
 
     private fun sendInfo(sender: C, groupName: String, layout: String) {
         val info = plugin.messages.get().command.layout.info

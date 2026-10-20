@@ -1,7 +1,6 @@
 package app.simplecloud.plugin.placeholders.shared.placeholder
 
 import app.simplecloud.api.CloudApi
-import app.simplecloud.api.runtime.SimpleCloudRuntime
 import app.simplecloud.api.server.Server
 import kotlinx.coroutines.future.await
 
@@ -40,14 +39,14 @@ object ServerPlaceholders : PlaceholderType<Server> {
         else -> null
     }
 
-    override suspend fun loadCurrent(api: CloudApi): Server? = api.server().getServerById(SimpleCloudRuntime.serverId()).await()
+    override suspend fun loadCurrent(api: CloudApi): Server? = api.server().getCurrentServer().await()
 
     override suspend fun load(api: CloudApi, target: String): Server? =
         if (target.startsWith(ID_PREFIX)) loadById(api, target.removePrefix(ID_PREFIX)) else loadByNumericalId(api, target)
 
     private suspend fun loadById(api: CloudApi, serverId: String): Server? {
         if (serverId.isBlank()) return null
-        return api.server().getServerById(serverId).await()
+        return api.server().findServerById(serverId).await().orElse(null)
     }
 
     private suspend fun loadByNumericalId(api: CloudApi, target: String): Server? {
@@ -56,6 +55,6 @@ object ServerPlaceholders : PlaceholderType<Server> {
 
         val groupName = target.substring(0, separator)
         val numericalId = target.substring(separator + 1).toIntOrNull() ?: return null
-        return api.server().getServerByNumericalId(groupName, numericalId).await()
+        return api.server().findServerByNumericalId(groupName, numericalId).await().orElse(null)
     }
 }

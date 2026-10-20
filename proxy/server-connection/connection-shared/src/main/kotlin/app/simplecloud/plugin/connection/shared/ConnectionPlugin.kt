@@ -92,8 +92,8 @@ class ConnectionPlugin(
 
     private suspend fun startRegistration() {
         logger.info("Starting server registration...")
-        loadExistingServers()
         registerer.start()
+        loadExistingServers()
     }
 
     private suspend fun loadExistingServers() {

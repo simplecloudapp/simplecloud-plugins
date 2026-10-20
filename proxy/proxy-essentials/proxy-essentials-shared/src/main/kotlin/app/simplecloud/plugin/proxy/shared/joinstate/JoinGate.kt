@@ -1,7 +1,6 @@
 package app.simplecloud.plugin.proxy.shared.joinstate
 
 import app.simplecloud.api.CloudApi
-import app.simplecloud.api.runtime.SimpleCloudRuntime
 import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
 import app.simplecloud.plugin.proxy.shared.config.JoinStateConfig
 import app.simplecloud.plugin.proxy.shared.config.MessageConfig
@@ -96,7 +95,7 @@ class JoinGate(
     }
 
     private suspend fun isProxyFull(): Boolean {
-        val server = api.server().getServerById(SimpleCloudRuntime.serverId()).await()
+        val server = api.server().getCurrentServer().await()
         val group = server.group
         if (group == null) {
             val maxPlayers = server.maxPlayers ?: 0

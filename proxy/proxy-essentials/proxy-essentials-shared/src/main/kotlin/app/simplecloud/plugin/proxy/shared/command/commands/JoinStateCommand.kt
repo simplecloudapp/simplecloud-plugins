@@ -91,10 +91,10 @@ class JoinStateCommand<C : CloudSender>(
                             plugin.messageFormatter.format(plugin.messages.get().command.joinState.list.groups.header),
                         )
                         api.group().allGroups.await().forEach {
-                            sendState(sender, it.name, plugin.joinStateService.getGroupState(it.name))
+                            sendState(sender, it.name, plugin.joinStateService.getState(it.properties))
                         }
                         api.persistentServer().allPersistentServers.await().forEach {
-                            sendState(sender, it.name, plugin.joinStateService.getPersistentServerState(it.name))
+                            sendState(sender, it.name, plugin.joinStateService.getState(it.properties))
                         }
                     } catch (e: Exception) {
                         logger.error("Could not list the join states", e)
@@ -125,6 +125,11 @@ class JoinStateCommand<C : CloudSender>(
 
                         if (isPersistentServer(targetType) && id != null) {
                             sender.sendMessage(plugin.messageFormatter.format(messages.persistentServerId))
+                            return@suspendingHandler
+                        }
+
+                        if (!targetExists(targetType, target, id)) {
+                            sender.sendMessage(targetNotFound(target, id))
                             return@suspendingHandler
                         }
 
@@ -192,6 +197,11 @@ class JoinStateCommand<C : CloudSender>(
                     }
 
                     try {
+                        if (!targetExists(targetType, target, id)) {
+                            sender.sendMessage(targetNotFound(target, id))
+                            return@suspendingHandler
+                        }
+
                         val unchanged = when {
                             isPersistentServer(
                                 targetType,
@@ -254,6 +264,17 @@ class JoinStateCommand<C : CloudSender>(
             ),
         )
     }
+
+    private suspend fun targetExists(targetType: String, target: String, id: Int?): Boolean = when {
+        isPersistentServer(targetType) -> api.persistentServer().findPersistentServerByName(target).await().isPresent
+        id != null -> api.server().findServerByNumericalId(target, id).await().isPresent
+        else -> api.group().findGroupByName(target).await().isPresent
+    }
+
+    private fun targetNotFound(target: String, id: Int?) = plugin.messageFormatter.format(
+        plugin.messages.get().command.targetNotFound,
+        Placeholder.unparsed("target", if (id == null) target else "$target-$id"),
+    )
 
     private fun isTargetTypeValid(targetType: String): Boolean = targetType.equals(
         CloudSuggestions.TARGET_TYPE_GROUP,

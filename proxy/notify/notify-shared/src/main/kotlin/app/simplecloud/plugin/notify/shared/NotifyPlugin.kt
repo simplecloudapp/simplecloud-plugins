@@ -37,7 +37,11 @@ class NotifyPlugin(private val platform: NotifyPlatform) {
 
     fun onPlayerJoin(id: UUID) {
         scope.launch {
-            cache.load(id)
+            try {
+                cache.load(id)
+            } catch (e: Exception) {
+                logger.error("Failed to load the notify settings of '$id'", e)
+            }
         }
     }
 

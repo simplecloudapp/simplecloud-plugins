@@ -4,6 +4,7 @@ import app.simplecloud.api.CloudApi
 import app.simplecloud.api.group.Group
 import app.simplecloud.api.runtime.SimpleCloudRuntime
 import app.simplecloud.api.server.ServerQuery
+import app.simplecloud.api.server.ServerState
 import kotlinx.coroutines.future.await
 
 object GroupPlaceholders : PlaceholderType<GroupPlaceholders.Data> {
@@ -24,12 +25,16 @@ object GroupPlaceholders : PlaceholderType<GroupPlaceholders.Data> {
         else -> null
     }
 
-    override suspend fun loadCurrent(api: CloudApi): Data? = load(api, SimpleCloudRuntime.groupName())
+    override suspend fun loadCurrent(api: CloudApi): Data? {
+        val groupName = SimpleCloudRuntime.groupName()
+        if (groupName.isBlank()) return null
+        return load(api, groupName)
+    }
 
     override suspend fun load(api: CloudApi, target: String): Data? {
-        val group = api.group().getGroupByName(target).await() ?: return null
+        val group = api.group().findGroupByName(target).await().orElse(null) ?: return null
         val query = ServerQuery.create().filterByServerGroupName(group.name)
-        val servers = api.server().getAllServers(query).await()
+        val servers = api.server().getAllServers(query).await().filter { it.state != ServerState.STOPPED }
         return Data(group, servers.sumOf { it.playerCount ?: 0 })
     }
 }

@@ -61,6 +61,7 @@ object CloudSuggestions {
                 api.server()
                     .getServersByGroup(group)
                     .await()
+                    .filter { it.state != ServerState.STOPPED }
                     .sortedBy { it.numericalId }
                     .map { Suggestion.suggestion(it.numericalId.toString()) }
             } catch (_: Exception) {
@@ -76,6 +77,7 @@ object CloudSuggestions {
                 api.server()
                     .allServers
                     .await()
+                    .filter { it.state != ServerState.STOPPED }
                     .mapNotNull { serverName(it) }
                     .map { Suggestion.suggestion(it) }
             } catch (_: Exception) {

@@ -2,7 +2,6 @@ package app.simplecloud.plugin.placeholders.shared.placeholder
 
 import app.simplecloud.api.CloudApi
 import app.simplecloud.api.persistentserver.PersistentServer
-import app.simplecloud.api.runtime.SimpleCloudRuntime
 import kotlinx.coroutines.future.await
 
 object PersistentServerPlaceholders : PlaceholderType<PersistentServer> {
@@ -34,9 +33,11 @@ object PersistentServerPlaceholders : PlaceholderType<PersistentServer> {
         else -> null
     }
 
-    override suspend fun loadCurrent(api: CloudApi): PersistentServer? =
-        api.persistentServer().getPersistentServerById(SimpleCloudRuntime.serverId()).await()
+    override suspend fun loadCurrent(api: CloudApi): PersistentServer? {
+        val persistentServerId = api.server().getCurrentServer().await().persistentServerId ?: return null
+        return api.persistentServer().findPersistentServerById(persistentServerId).await().orElse(null)
+    }
 
     override suspend fun load(api: CloudApi, target: String): PersistentServer? =
-        api.persistentServer().getPersistentServerByName(target).await()
+        api.persistentServer().findPersistentServerByName(target).await().orElse(null)
 }

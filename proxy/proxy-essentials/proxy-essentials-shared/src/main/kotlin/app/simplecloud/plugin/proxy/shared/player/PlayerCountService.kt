@@ -1,7 +1,7 @@
 package app.simplecloud.plugin.proxy.shared.player
 
 import app.simplecloud.api.CloudApi
-import app.simplecloud.api.runtime.SimpleCloudRuntime
+import app.simplecloud.api.group.Group
 import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
 import app.simplecloud.plugin.proxy.shared.config.PlayerCountConfig
 import app.simplecloud.plugin.proxy.shared.config.ProxyEssentialsConfig
@@ -9,6 +9,7 @@ import app.simplecloud.plugin.proxy.shared.platform.ProxyPlatform
 import kotlinx.coroutines.*
 import kotlinx.coroutines.future.await
 import org.slf4j.LoggerFactory
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
@@ -23,6 +24,7 @@ class PlayerCountService(
     private val logger = LoggerFactory.getLogger(PlayerCountService::class.java)
     private val otherOnlinePlayers = AtomicInteger()
     private val networkMaxPlayers = AtomicInteger()
+    private val missingGroups: MutableSet<String> = ConcurrentHashMap.newKeySet()
 
     fun getOnlinePlayers(): Int = platform.getOnlinePlayers() + otherOnlinePlayers.get()
 
@@ -63,10 +65,10 @@ class PlayerCountService(
     }
 
     private suspend fun updateCounts(config: PlayerCountConfig) {
-        val server = api.server().getServerById(SimpleCloudRuntime.serverId()).await()
+        val server = api.server().getCurrentServer().await()
         val groupNames = (listOfNotNull(server.group?.name) + config.additionalGroups).distinct()
-        val groups = groupNames.map { api.group().getGroupByName(it).await() }
-        val groupServers = groupNames.flatMap { api.server().getServersByGroup(it).await() }
+        val groups = groupNames.mapNotNull { findGroup(it) }
+        val groupServers = groups.flatMap { api.server().getServersByGroup(it.name).await() }
         val persistentServers = api.server().allServers.await().filter {
             it.persistentServer?.name in
                 config.additionalPersistentServers
@@ -81,5 +83,18 @@ class PlayerCountService(
                 it.maxPlayers ?: 0
             } + persistentServers.sumOf { it.maxPlayers ?: 0 },
         )
+    }
+
+    private suspend fun findGroup(name: String): Group? {
+        val group = api.group().findGroupByName(name).await().orElse(null)
+        if (group != null) {
+            missingGroups.remove(name)
+            return group
+        }
+
+        if (missingGroups.add(name)) {
+            logger.warn("The group '$name' does not exist, so its players are not counted")
+        }
+        return null
     }
 }

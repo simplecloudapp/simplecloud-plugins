@@ -1,7 +1,8 @@
 package app.simplecloud.plugin.proxy.shared.layout
 
 import app.simplecloud.api.CloudApi
-import app.simplecloud.api.runtime.SimpleCloudRuntime
+import app.simplecloud.api.event.Subscription
+import app.simplecloud.api.server.ServerState
 import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
 import app.simplecloud.plugin.proxy.shared.config.DomainRoute
 import app.simplecloud.plugin.proxy.shared.config.LayoutConfig
@@ -30,21 +31,29 @@ class LayoutService(
     private val localLayout = AtomicReference<String?>()
     private val domainLayouts = AtomicReference<Map<String, String>>(emptyMap())
     private val pingCounters = ConcurrentHashMap<String, AtomicInteger>()
+    private val subscriptions: MutableList<Subscription> = mutableListOf()
 
     suspend fun start() {
-        val server = api.server().getServerById(SimpleCloudRuntime.serverId()).await()
+        val server = api.server().getCurrentServer().await()
         val groupName = server.group?.name
         val groupLayout = if (groupName == null) null else getGroupLayout(groupName)
         localLayout.set(readLayout(server.properties) ?: groupLayout)
 
-        api.event().server().onUpdated { event ->
-            if (event.serverId != server.serverId) return@onUpdated
+        subscriptions.add(
+            api.event().server().onUpdated { event ->
+                if (event.serverId != server.serverId) return@onUpdated
 
-            val layout = readLayout(event.server.properties)
-            if (layout != null && localLayout.getAndSet(layout) != layout) {
-                logger.info("Layout changed to '$layout'")
-            }
-        }
+                val layout = readLayout(event.server.properties)
+                if (layout != null && localLayout.getAndSet(layout) != layout) {
+                    logger.info("Layout changed to '$layout'")
+                }
+            },
+        )
+    }
+
+    fun stop() {
+        subscriptions.forEach { subscription -> subscription.close() }
+        subscriptions.clear()
     }
 
     fun startDomainSync() {
@@ -93,7 +102,7 @@ class LayoutService(
     suspend fun setGroupLayout(groupName: String, layout: String) {
         val group = api.group().getGroupByName(groupName).await()
         api.group().updateGroupProperty(group.serverGroupId, KEY, layout).await()
-        api.server().getServersByGroup(groupName).await().forEach {
+        api.server().getServersByGroup(groupName).await().filter { it.state != ServerState.STOPPED }.forEach {
             api.server().updateServerProperty(it.serverId, KEY, layout).await()
         }
     }

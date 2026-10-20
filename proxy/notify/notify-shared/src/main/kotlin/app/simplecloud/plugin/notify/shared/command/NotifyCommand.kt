@@ -194,7 +194,7 @@ class NotifyCommand<C : CloudSender>(
         }
 
         val target = try {
-            notify.api.player().get(playerName).await()
+            notify.api.player().find(playerName).await().orElse(null)
         } catch (e: Exception) {
             logger.error("Failed to load player '$playerName'", e)
             sender.sendMessage(formatter.message(messages.command.error.storageUnavailable))

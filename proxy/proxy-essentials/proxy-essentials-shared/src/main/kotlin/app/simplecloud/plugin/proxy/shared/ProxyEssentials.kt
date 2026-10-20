@@ -58,6 +58,8 @@ class ProxyEssentials(
     }
 
     fun stop() {
+        joinStateService.stop()
+        layoutService.stop()
         scope.cancel()
         api.close()
     }

@@ -1,8 +1,10 @@
 package app.simplecloud.plugin.proxy.shared.joinstate
 
 import app.simplecloud.api.CloudApi
-import app.simplecloud.api.runtime.SimpleCloudRuntime
+import app.simplecloud.api.event.Subscription
 import app.simplecloud.api.server.Server
+import app.simplecloud.api.server.ServerQuery
+import app.simplecloud.api.server.ServerState
 import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
 import app.simplecloud.plugin.proxy.shared.config.ProxyEssentialsConfig
 import kotlinx.coroutines.*
@@ -21,17 +23,20 @@ class JoinStateService(
     private val localState = AtomicReference<String?>()
     private val lastGroupState = AtomicReference<String?>()
     private val serverStates = AtomicReference<Map<String, String>?>()
+    private val subscriptions: MutableList<Subscription> = mutableListOf()
 
     fun getLocalState(): String = localState.get() ?: config.get().initialState
 
     suspend fun start() {
-        val server = api.server().getServerById(SimpleCloudRuntime.serverId()).await()
+        val server = api.server().getCurrentServer().await()
         localState.set(readState(server.properties) ?: applyDefaultState(server))
 
-        api.event().server().onUpdated { event ->
-            if (event.serverId != server.serverId) return@onUpdated
-            scope.launch { updateLocalState(event.server) }
-        }
+        subscriptions.add(
+            api.event().server().onUpdated { event ->
+                if (event.serverId != server.serverId) return@onUpdated
+                scope.launch { updateLocalState(event.server) }
+            },
+        )
 
         val groupName = server.group?.name ?: return
         scope.launch {
@@ -46,12 +51,19 @@ class JoinStateService(
         }
     }
 
+    fun stop() {
+        subscriptions.forEach { subscription -> subscription.close() }
+        subscriptions.clear()
+    }
+
+    fun getState(properties: Map<String, Any>?): String = readState(properties) ?: config.get().initialState
+
     suspend fun getGroupState(groupName: String): String =
-        readState(api.group().getGroupByName(groupName).await().properties) ?: config.get().initialState
+        getState(api.group().getGroupByName(groupName).await().properties)
 
     suspend fun hasGroupState(groupName: String, state: String): Boolean {
         if (getGroupState(groupName) != state) return false
-        return api.server().getServersByGroup(groupName).await().all { readState(it.properties) == state }
+        return getRunningServersOfGroup(groupName).all { readState(it.properties) == state }
     }
 
     suspend fun getServiceState(groupName: String, numericalId: Int): String {
@@ -60,7 +72,7 @@ class JoinStateService(
     }
 
     suspend fun getPersistentServerState(name: String): String =
-        readState(api.persistentServer().getPersistentServerByName(name).await().properties) ?: config.get().initialState
+        getState(api.persistentServer().getPersistentServerByName(name).await().properties)
 
     suspend fun getTargetState(name: String): String {
         if (isGroup(name)) return getGroupState(name)
@@ -88,7 +100,7 @@ class JoinStateService(
     suspend fun setGroupState(groupName: String, state: String) {
         val group = api.group().getGroupByName(groupName).await()
         api.group().updateGroupProperty(group.serverGroupId, KEY, state).await()
-        api.server().getServersByGroup(groupName).await().forEach { setServerState(it.serverId, state) }
+        getRunningServersOfGroup(groupName).forEach { setServerState(it.serverId, state) }
     }
 
     suspend fun setServiceState(groupName: String, numericalId: Int, state: String) {
@@ -99,12 +111,15 @@ class JoinStateService(
     suspend fun setPersistentServerState(name: String, state: String) {
         val persistentServer = api.persistentServer().getPersistentServerByName(name).await()
         api.persistentServer().updatePersistentServerProperty(persistentServer.persistentServerId, KEY, state).await()
-        api.server().allServers.await()
-            .filter { it.persistentServerId == persistentServer.persistentServerId }
+        api.server().getAllServers(ServerQuery.create().filterByPersistentServerId(persistentServer.persistentServerId)).await()
+            .filter { it.state != ServerState.STOPPED }
             .forEach { setServerState(it.serverId, state) }
     }
 
-    suspend fun isGroup(name: String): Boolean = api.group().allGroups.await().any { it.name == name }
+    suspend fun isGroup(name: String): Boolean = api.group().findGroupByName(name).await().isPresent
+
+    private suspend fun getRunningServersOfGroup(groupName: String): List<Server> =
+        api.server().getServersByGroup(groupName).await().filter { it.state != ServerState.STOPPED }
 
     private suspend fun setServerState(serverId: String, state: String) {
         api.server().updateServerProperty(serverId, KEY, state).await()
@@ -148,7 +163,9 @@ class JoinStateService(
     private suspend fun refreshServerStates() {
         val groupStates = api.group().allGroups.await().associate { it.name to readState(it.properties) }
         val persistentServerStates = api.persistentServer().allPersistentServers.await().associate { it.name to readState(it.properties) }
-        val states = api.server().allServers.await().associate { getServerName(it) to resolveState(it, groupStates, persistentServerStates) }
+        val states = api.server().allServers.await()
+            .filter { it.state != ServerState.STOPPED }
+            .associate { getServerName(it) to resolveState(it, groupStates, persistentServerStates) }
         serverStates.set(states)
     }
 

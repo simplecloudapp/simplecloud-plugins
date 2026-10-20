@@ -28,7 +28,7 @@ class MessageFormatter(
     fun server(server: Server, message: String, vararg tagResolver: TagResolver): Component = parse(
         replaceHover(message, serverHoverPlaceholder, messages.get().notifications.hover.server),
         Placeholder.unparsed("ip", server.ip ?: "N/A"),
-        Placeholder.unparsed("port", server.port.toString()),
+        Placeholder.unparsed("port", server.port?.toString() ?: "N/A"),
         Placeholder.unparsed("group", server.serverBase.name ?: "N/A"),
         Placeholder.unparsed("server", server.serverBase.name ?: "N/A"),
         Placeholder.unparsed("uuid", server.serverId),
@@ -36,8 +36,8 @@ class MessageFormatter(
         Placeholder.unparsed("create_date", formatTimestamp(runCatching { server.createdAt }.getOrNull())),
         Placeholder.unparsed("time", formatTimestamp(Instant.now())),
         Placeholder.unparsed("updated", formatTimestamp(runCatching { server.updatedAt }.getOrNull())),
-        Placeholder.unparsed("players", server.playerCount.toString()),
-        Placeholder.unparsed("max", server.maxPlayers.toString()),
+        Placeholder.unparsed("players", (server.playerCount ?: 0).toString()),
+        Placeholder.unparsed("max", server.maxPlayers?.toString() ?: "N/A"),
         *tagResolver,
     )
 
