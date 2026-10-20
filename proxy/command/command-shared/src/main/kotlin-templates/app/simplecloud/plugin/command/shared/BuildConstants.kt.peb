@@ -1,0 +1,5 @@
+package app.simplecloud.plugin.command.shared
+
+object BuildConstants {
+    const val VERSION = "{{ version }}"
+}

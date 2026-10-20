@@ -1,0 +1,5 @@
+package app.simplecloud.plugin.proxy.shared
+
+object BuildConstants {
+    const val VERSION = "{{ version }}"
+}

@@ -12,6 +12,7 @@ val Project.libs: LibrariesForLibs
 plugins {
     id("org.jetbrains.kotlin.jvm")
     id("com.gradleup.shadow")
+    id("net.kyori.blossom")
     id("simplecloud.spotless-conventions")
     id("simplecloud.detekt-conventions")
 }
@@ -56,6 +57,16 @@ java {
 
 tasks.test {
     useJUnitPlatform()
+}
+
+sourceSets {
+    main {
+        blossom {
+            kotlinSources {
+                property("version", provider { project.version.toString() })
+            }
+        }
+    }
 }
 
 tasks.shadowJar {

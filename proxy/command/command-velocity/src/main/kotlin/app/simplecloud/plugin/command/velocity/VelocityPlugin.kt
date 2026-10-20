@@ -1,5 +1,6 @@
 package app.simplecloud.plugin.command.velocity
 
+import app.simplecloud.plugin.command.shared.BuildConstants
 import app.simplecloud.plugin.command.shared.CommandPlugin
 import app.simplecloud.plugin.command.shared.command.CloudCommandHandler
 import app.simplecloud.plugin.core.velocity.command.VelocityCloudCommandManager

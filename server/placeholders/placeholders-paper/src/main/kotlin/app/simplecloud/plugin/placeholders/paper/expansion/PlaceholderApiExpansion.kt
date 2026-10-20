@@ -1,6 +1,6 @@
 package app.simplecloud.plugin.placeholders.paper.expansion
 
-import app.simplecloud.plugin.placeholders.BuildConstants
+import app.simplecloud.plugin.placeholders.shared.BuildConstants
 import app.simplecloud.plugin.placeholders.shared.resolve.PlaceholderResolver
 import me.clip.placeholderapi.expansion.PlaceholderExpansion
 import org.bukkit.OfflinePlayer
