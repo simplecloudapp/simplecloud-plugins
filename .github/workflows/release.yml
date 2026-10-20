@@ -1,0 +1,77 @@
+name: release and publish
+
+on:
+  release:
+    types: [published]
+
+concurrency:
+  group: release-${{ github.event.release.tag_name }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: release and publish
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v7
+
+      - name: parse tag
+        id: tag
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+        run: |
+          if [[ ! "$TAG" =~ ^([a-z0-9-]+)/v([0-9].*)$ ]]; then
+            echo "::error::Tag '$TAG' does not match <plugin>/v<version>, e.g. command/v0.0.7"
+            exit 1
+          fi
+          echo "plugin=${BASH_REMATCH[1]}" >> "$GITHUB_OUTPUT"
+          echo "version=${BASH_REMATCH[2]}" >> "$GITHUB_OUTPUT"
+
+      - name: check version
+        env:
+          PLUGIN: ${{ steps.tag.outputs.plugin }}
+          VERSION: ${{ steps.tag.outputs.version }}
+        run: |
+          versions=$(find proxy server -path "*/${PLUGIN}-*/build.gradle.kts" \
+            -exec sed -n 's/^version = "\(.*\)"$/\1/p' {} + | sort -u)
+          if [ -z "$versions" ]; then
+            echo "::error::No modules found for plugin '$PLUGIN'"
+            exit 1
+          fi
+          if [ "$versions" != "$VERSION" ]; then
+            echo "::error::Tag version '$VERSION' does not match the version in the build files: $(echo $versions)"
+            exit 1
+          fi
+
+      - name: setup java
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 25
+
+      - name: setup gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: build
+        run: ./gradlew assemble
+
+      - name: upload to release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.event.release.tag_name }}
+          PLUGIN: ${{ steps.tag.outputs.plugin }}
+        run: |
+          shopt -s nullglob
+          jars=(build/plugins/"$PLUGIN"/*.jar)
+          if [ ${#jars[@]} -eq 0 ]; then
+            echo "::error::No jars found in build/plugins/$PLUGIN"
+            exit 1
+          fi
+          gh release upload "$TAG" "${jars[@]}" --clobber
+
+      # TODO: publish to modrinth
