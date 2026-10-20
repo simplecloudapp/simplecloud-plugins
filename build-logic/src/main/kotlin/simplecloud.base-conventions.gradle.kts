@@ -35,7 +35,9 @@ repositories {
 }
 
 dependencies {
-    implementation(libs.kotlin.coroutines)
+    if (!name.endsWith("-api")) {
+        implementation(libs.kotlin.coroutines)
+    }
     testImplementation(libs.kotlin.test)
 }
 

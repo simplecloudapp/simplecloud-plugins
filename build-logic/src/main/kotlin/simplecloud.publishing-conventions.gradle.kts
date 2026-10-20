@@ -11,6 +11,18 @@ shadow {
     addShadowVariantIntoJavaComponent = false
 }
 
+val isSelectedPlugin = providers.gradleProperty("plugin")
+    .map { name.startsWith("$it-") }
+    .getOrElse(false)
+
+tasks.register("publishPlugin") {
+    group = "publishing"
+    description = "Publishes this module if it belongs to the plugin given by -Pplugin."
+    if (isSelectedPlugin) {
+        dependsOn(tasks.named("publish"))
+    }
+}
+
 publishing {
     publications {
         create<MavenPublication>("maven") {
