@@ -45,13 +45,3 @@ jobs:
         env:
           DEPOT_TOKEN: ${{ secrets.DEPOT_TOKEN }}
         run: ./gradlew ${{ github.event_name == 'pull_request' && 'check' || 'build' }} --continue
-
-      - name: upload reports
-        if: failure()
-        uses: actions/upload-artifact@v5
-        with:
-          name: reports
-          path: |
-            **/build/reports/tests/
-            **/build/reports/detekt/
-          retention-days: 7
