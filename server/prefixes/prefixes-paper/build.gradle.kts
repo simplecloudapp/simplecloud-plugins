@@ -1,7 +1,7 @@
 import dev.detekt.gradle.Detekt
 
 plugins {
-    id("simplecloud.base-conventions")
+    id("simplecloud.publishing-conventions")
     alias(libs.plugins.minotaur)
     alias(libs.plugins.paperweight.userdev)
 }
