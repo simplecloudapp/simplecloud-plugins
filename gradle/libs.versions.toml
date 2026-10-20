@@ -22,6 +22,7 @@ adventure-platform-bungeecord = "4.4.1"
 
 
 configurate = "4.2.0"
+caffeine = "3.3.1"
 slf4j = "2.0.20"
 
 cloud = "2.1.0"
@@ -57,6 +58,8 @@ adventure-platform-bungeecord = { module = "net.kyori:adventure-platform-bungeec
 configurate-yaml = { module = "org.spongepowered:configurate-yaml", version.ref = "configurate" }
 configurate-gson = { module = "org.spongepowered:configurate-gson", version.ref = "configurate" }
 configurate-extra-kotlin = { module = "org.spongepowered:configurate-extra-kotlin", version.ref = "configurate" }
+
+caffeine = { module = "com.github.ben-manes.caffeine:caffeine", version.ref = "caffeine" }
 
 slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
 

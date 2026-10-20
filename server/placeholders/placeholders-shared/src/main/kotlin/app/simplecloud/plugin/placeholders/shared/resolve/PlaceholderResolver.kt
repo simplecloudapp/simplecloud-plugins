@@ -4,22 +4,30 @@ import app.simplecloud.api.CloudApi
 import app.simplecloud.plugin.placeholders.shared.placeholder.PlaceholderType
 import app.simplecloud.plugin.placeholders.shared.query.PlaceholderQuery
 import app.simplecloud.plugin.placeholders.shared.query.PlaceholderQueryParser
+import com.github.benmanes.caffeine.cache.AsyncCacheLoader
+import com.github.benmanes.caffeine.cache.AsyncLoadingCache
+import com.github.benmanes.caffeine.cache.Caffeine
 import kotlinx.coroutines.*
-import java.util.concurrent.ConcurrentHashMap
-import kotlin.time.Duration
+import kotlinx.coroutines.future.future
+import org.slf4j.LoggerFactory
+import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
-import kotlin.time.TimeMark
-import kotlin.time.TimeSource
+import kotlin.time.toJavaDuration
 
 class PlaceholderResolver(
     private val api: CloudApi,
     private val scope: CoroutineScope,
     private val parser: PlaceholderQueryParser = PlaceholderQueryParser(),
-    private val ttl: Duration = 5.seconds,
+    private val loadingValue: String = "...",
 ) {
 
-    private val cache = ConcurrentHashMap<ResourceKey, CachedResource>()
-    private val loading = ConcurrentHashMap.newKeySet<ResourceKey>()
+    private val logger = LoggerFactory.getLogger(PlaceholderResolver::class.java)
+
+    private val cache: AsyncLoadingCache<ResourceKey, CachedResource> = Caffeine.newBuilder()
+        .maximumSize(1_000L)
+        .refreshAfterWrite(5.seconds.toJavaDuration())
+        .expireAfterAccess(5.minutes.toJavaDuration())
+        .buildAsync(AsyncCacheLoader { key, _ -> scope.future { CachedResource(load(key)) } })
 
     fun resolve(params: String): String? {
         val query = parser.parse(params) ?: return null
@@ -27,43 +35,31 @@ class PlaceholderResolver(
     }
 
     fun resolve(query: PlaceholderQuery): String {
-        val key = ResourceKey(query.type, query.target)
-        val cached = cache[key]
-        if (cached == null || cached.loadedAt.elapsedNow() > ttl) refresh(key)
+        val future = cache.get(ResourceKey(query.type, query.target))
+        if (!future.isDone) return loadingValue
 
-        val resource = cached?.resource ?: return ""
-        return query.type.read(resource, query.property)?.toString().orEmpty()
+        val resource = future.exceptionally { null }.getNow(null)?.resource ?: return ""
+
+        @Suppress("UNCHECKED_CAST")
+        val type = query.type as PlaceholderType<Any>
+        return type.getValue(resource, query.property)?.toString().orEmpty()
     }
 
     fun preloadCurrent(types: List<PlaceholderType<*>>) {
-        types.forEach { refresh(ResourceKey(it, null)) }
-    }
-
-    private fun refresh(key: ResourceKey) {
-        if (!loading.add(key)) return
-
-        scope.launch {
-            try {
-                cache[key] = CachedResource(load(key), TimeSource.Monotonic.markNow())
-            } finally {
-                loading.remove(key)
-            }
-        }
+        types.forEach { cache.get(ResourceKey(it, null)) }
     }
 
     private suspend fun load(key: ResourceKey): Any? = try {
         if (key.target == null) key.type.loadCurrent(api) else key.type.load(api, key.target)
     } catch (e: CancellationException) {
         throw e
-    } catch (_: Exception) {
+    } catch (e: Exception) {
+        logger.warn("Failed to load {} placeholder for target {}", key.type.prefix, key.target ?: "<current>", e)
         null
     }
 
-    @Suppress("UNCHECKED_CAST")
-    private fun PlaceholderType<*>.read(resource: Any, property: String): Any? =
-        (this as PlaceholderType<Any>).getValue(resource, property)
-
     private data class ResourceKey(val type: PlaceholderType<*>, val target: String?)
 
-    private class CachedResource(val resource: Any?, val loadedAt: TimeMark)
+    private class CachedResource(val resource: Any?)
+
 }
