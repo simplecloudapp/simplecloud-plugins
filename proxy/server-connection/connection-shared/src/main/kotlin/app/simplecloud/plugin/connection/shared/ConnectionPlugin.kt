@@ -99,7 +99,7 @@ class ConnectionPlugin(
     private suspend fun loadExistingServers() {
         val servers = api.server().getAllServers(
             ServerQuery.create()
-                .filterByState(ServerState.AVAILABLE)
+                .filterByState(ServerState.AVAILABLE, ServerState.INGAME)
                 .filterByServerGroupType(GroupServerType.SERVER),
         ).await()
 

@@ -39,6 +39,24 @@ class ServerRegisterer(
                         register(server)
                     }
                 }
+                if (event.newState == ServerState.STOPPED) {
+                    scope.launch {
+                        unregister(server.serverId)
+                    }
+                }
+            },
+        )
+
+        subscriptions.add(
+            api.event().server().onUpdated { event ->
+                val previousRegistration = registeredServers[event.serverId] ?: return@onUpdated
+                val server = event.server ?: return@onUpdated
+                scope.launch {
+                    val registeredServer = convertToRegisteredServer(server) ?: return@launch
+                    if (registeredServer.proxyName != previousRegistration.proxyName) {
+                        register(registeredServer)
+                    }
+                }
             },
         )
 
@@ -47,6 +65,14 @@ class ServerRegisterer(
                 val server = event.server ?: return@onStopped
                 scope.launch {
                     unregister(server.serverId)
+                }
+            },
+        )
+
+        subscriptions.add(
+            api.event().server().onDeleted { event ->
+                scope.launch {
+                    unregister(event.serverId)
                 }
             },
         )
