@@ -3,6 +3,7 @@ package app.simplecloud.plugin.connection.shared.registration
 import app.simplecloud.api.CloudApi
 import app.simplecloud.api.event.Subscription
 import app.simplecloud.api.group.GroupServerType
+import app.simplecloud.api.internal.integration.player.ServerNameRegistry
 import app.simplecloud.api.server.Server
 import app.simplecloud.api.server.ServerState
 import app.simplecloud.plugin.connection.shared.config.ConnectionConfig
@@ -25,12 +26,10 @@ class ServerRegisterer(
     private val subscriptions: MutableList<Subscription> = mutableListOf()
     private val registeredServers = ConcurrentHashMap<String, RegisteredServer>()
 
-    // only used by the ServerNameRegistry integration that is commented out below
-    @Suppress("UnusedPrivateProperty")
     private val serverNames = Function<String, Optional<String>> { id -> Optional.ofNullable(registeredServers[id]?.proxyName) }
 
     fun start() {
-        // app.simplecloud.api.internal.integration.player.ServerNameRegistry.register(serverNames)
+        ServerNameRegistry.register(serverNames)
         subscriptions.add(
             api.event().server().onStateChanged { event ->
                 val server = event.server ?: return@onStateChanged
@@ -54,7 +53,7 @@ class ServerRegisterer(
     }
 
     fun stop() {
-        // app.simplecloud.api.internal.integration.player.ServerNameRegistry.unregister(serverNames)
+        ServerNameRegistry.unregister(serverNames)
         subscriptions.forEach { subscription -> subscription.close() }
         subscriptions.clear()
         scope.cancel()
