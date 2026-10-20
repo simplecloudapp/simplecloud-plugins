@@ -75,6 +75,7 @@ data class WhitelistConfig(
 @ConfigSerializable
 data class PlayerCountConfig(
     val enabled: Boolean = true,
+    val network: Boolean = false,
     val additionalGroups: List<String> = emptyList(),
     val additionalPersistentServers: List<String> = emptyList(),
     val updateTime: Long = 20L,

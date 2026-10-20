@@ -2,6 +2,7 @@ package app.simplecloud.plugin.proxy.shared.joinstate
 
 import app.simplecloud.api.CloudApi
 import app.simplecloud.api.event.Subscription
+import app.simplecloud.api.internal.integration.player.ServerNameRegistry
 import app.simplecloud.api.server.Server
 import app.simplecloud.api.server.ServerQuery
 import app.simplecloud.api.server.ServerState
@@ -190,6 +191,9 @@ class JoinStateService(
     }
 
     private fun getServerName(server: Server): String {
+        val registeredName = ServerNameRegistry.nameOf(server.serverId).orElse(null)
+        if (registeredName != null) return registeredName
+
         val groupName = server.group?.name
         if (groupName != null) return "$groupName-${server.numericalId}"
         return server.persistentServer?.name ?: server.serverId

@@ -1,6 +1,7 @@
 package app.simplecloud.plugin.notify.shared.command
 
 import app.simplecloud.api.player.CloudPlayer
+import app.simplecloud.plugin.core.shared.command.CloudSuggestions
 import app.simplecloud.plugin.notify.shared.NotifyPlugin
 import app.simplecloud.plugin.notify.shared.notification.NotificationType
 import app.simplecloud.plugin.notify.shared.utilities.NotifyPermissions
@@ -94,7 +95,7 @@ class NotifyCommand<C : CloudSender>(
         manager.command(
             manager.commandBuilder("scnotify")
                 .literal("set")
-                .required("player", StringParser.stringParser())
+                .required("player", StringParser.stringParser(), CloudSuggestions.onlinePlayers(notify.api))
                 .required("value", BooleanParser.booleanParser())
                 .optional("type", StringParser.stringParser(), NotifySuggestions.types())
                 .permission(NotifyPermissions.COMMAND_TOGGLE_OTHER)

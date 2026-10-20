@@ -77,7 +77,12 @@ class PlayerCountService(
         val ownMaxPlayers = if (server.group == null) server.maxPlayers ?: 0 else 0
         val otherServers = (groupServers + persistentServers).filter { it.serverId != server.serverId }
 
-        otherOnlinePlayers.set(otherServers.sumOf { it.playerCount ?: 0 })
+        val otherPlayers = if (config.network) {
+            (api.player().onlinePlayerCount.await() - platform.getOnlinePlayers()).coerceAtLeast(0)
+        } else {
+            otherServers.sumOf { it.playerCount ?: 0 }
+        }
+        otherOnlinePlayers.set(otherPlayers)
         networkMaxPlayers.set(
             ownMaxPlayers + groups.sumOf {
                 it.maxPlayers ?: 0

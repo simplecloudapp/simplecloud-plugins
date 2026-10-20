@@ -61,6 +61,8 @@ domains: []
 player-count:
   # Enables summed player counts for the server list and placeholders.
   enabled: true
+  # Shows the online players of the whole network instead of summing the configured groups and persistent servers.
+  network: false
   # Additional SimpleCloud groups included in the displayed player count.
   additional-groups: []
   # Persistent servers included in the displayed player count.
