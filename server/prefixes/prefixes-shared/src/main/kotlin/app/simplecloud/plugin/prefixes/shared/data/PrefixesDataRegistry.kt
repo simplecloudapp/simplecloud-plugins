@@ -18,6 +18,7 @@ class PrefixesDataRegistry(private val platform: PrefixesPlatform) {
     private val groups = ConcurrentHashMap<UUID, PrefixesOverride>()
     private val overrides = ConcurrentHashMap<UUID, PrefixesOverride>()
     private val viewerOverrides = ConcurrentHashMap<ViewerKey, PrefixesOverride>()
+    private val vanished = ConcurrentHashMap.newKeySet<UUID>()
 
     fun getData(id: UUID): PrefixesPlayerData? {
         val group = groups[id] ?: return null
@@ -60,9 +61,16 @@ class PrefixesDataRegistry(private val platform: PrefixesPlatform) {
         viewerOverrides.remove(ViewerKey(id, viewer))
     }
 
+    fun setVanished(id: UUID, vanished: Boolean) {
+        if (vanished) this.vanished.add(id) else this.vanished.remove(id)
+    }
+
+    fun isVanished(id: UUID): Boolean = id in vanished
+
     fun remove(id: UUID) {
         groups.remove(id)
         overrides.remove(id)
+        vanished.remove(id)
         viewerOverrides.keys.removeIf { key -> key.target == id || key.viewer == id }
     }
 

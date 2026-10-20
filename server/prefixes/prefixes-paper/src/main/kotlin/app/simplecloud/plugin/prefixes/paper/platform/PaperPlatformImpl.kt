@@ -24,4 +24,6 @@ class PaperPlatformImpl(private val plugin: Plugin) : PrefixesPlatform {
     override fun getPlayerName(id: UUID): String = Bukkit.getOfflinePlayer(id).name ?: id.toString()
 
     override fun isOnline(id: UUID): Boolean = Bukkit.getPlayer(id) != null
+
+    override fun isVanished(id: UUID): Boolean = Bukkit.getPlayer(id)?.getMetadata("vanished")?.any { it.asBoolean() } ?: false
 }

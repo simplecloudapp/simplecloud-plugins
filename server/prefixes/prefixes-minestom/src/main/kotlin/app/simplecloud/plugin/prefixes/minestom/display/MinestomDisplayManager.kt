@@ -111,6 +111,7 @@ class MinestomDisplayManager(
     }
 
     private fun publish(player: Player, force: Boolean = false) {
+        if (prefixes.api.isVanished(player.uuid)) return unpublish(player.uuid)
         if (!prefixes.config.get().isTablistSynced()) return
         val publisher = prefixes.sync?.publisher ?: return
         val data = registry.getData(player.uuid) ?: return

@@ -35,6 +35,7 @@ class PrefixesPaper : JavaPlugin() {
         Bukkit.getPluginManager().registerEvents(PlayerListener(prefixes, manager, tablist), this)
 
         registerSync(prefixes, manager, tablist)
+        Bukkit.getAsyncScheduler().runAtFixedRate(this, { manager.refreshVanished() }, 1L, 1L, TimeUnit.SECONDS)
 
         prefixes.addListener(PaperPrefixesListener(this, prefixes, manager, tablist))
 

@@ -23,11 +23,11 @@ class LuckPermsGroup(
     override val name: String = group.name
     override val priority: Int = group.weight.orElse(0)
     override val permission: String = "group.${group.name}"
-    override val prefix: Component = miniMessage.deserialize(group.cachedData.metaData.prefix ?: "")
-    override val suffix: Component = miniMessage.deserialize(group.cachedData.metaData.suffix ?: "")
+    override val prefix: Component = miniMessage.deserialize(group.cachedData.metaData.prefix.orEmpty())
+    override val suffix: Component = miniMessage.deserialize(group.cachedData.metaData.suffix.orEmpty())
     override val color: TextColor = parseColor()
-    override val displayName: String = getMetaValue("display-name") ?: ""
-    override val chatFormat: String = getMetaValue("chat-format") ?: ""
+    override val displayName: String = getMetaValue("display-name").orEmpty()
+    override val chatFormat: String = getMetaValue("chat-format").orEmpty()
 
     override fun containsPlayer(id: UUID): CompletableFuture<Boolean> {
         val user = luckPerms.userManager.getUser(id)
