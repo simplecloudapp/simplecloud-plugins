@@ -1,10 +1,5 @@
 package app.simplecloud.plugin.core.shared.adventure
 
-import app.simplecloud.api.group.Group
-import app.simplecloud.api.persistentserver.PersistentServer
-import app.simplecloud.api.server.Server
-import app.simplecloud.plugin.core.shared.placeholder.PlaceholderProvider
-import app.simplecloud.plugin.core.shared.placeholder.argument.ArgumentsResolver
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
@@ -25,37 +20,4 @@ fun tags(vararg entries: Pair<String, Any?>): TagResolver = TagResolver.resolver
             Placeholder.unparsed(key, text)
         }
     },
-)
-
-suspend fun String.appendToComponent(
-    server: Server,
-    prefix: String? = null,
-    vararg argumentsResolver: ArgumentsResolver,
-): Component = PlaceholderProvider.serverPlaceholderProvider.append(
-    server,
-    this,
-    prefix,
-    *argumentsResolver,
-)
-
-suspend fun String.appendToComponent(
-    group: Group,
-    prefix: String? = null,
-    vararg argumentsResolver: ArgumentsResolver,
-): Component = PlaceholderProvider.groupPlaceholderProvider.append(
-    group,
-    this,
-    prefix,
-    *argumentsResolver,
-)
-
-suspend fun String.appendToComponent(
-    persistentServer: PersistentServer,
-    prefix: String? = null,
-    vararg argumentsResolver: ArgumentsResolver,
-): Component = PlaceholderProvider.persistentServerPlaceholderProvider.append(
-    persistentServer,
-    this,
-    prefix,
-    *argumentsResolver,
 )
