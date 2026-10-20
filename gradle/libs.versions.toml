@@ -14,6 +14,7 @@ bungeecord = "1.21-R0.4"
 waterdog = "2.0.4-SNAPSHOT"
 paper = "26.3.build.+"
 minestom = "26_3-SNAPSHOT"
+placeholderapi = "2.12.3"
 
 adventure = "5.2.0"
 adventure-platform-bungeecord = "4.4.1"
@@ -42,6 +43,7 @@ bungeecord-api = { module = "net.md-5:bungeecord-api", version.ref = "bungeecord
 waterdog-api = { module = "dev.waterdog.waterdogpe:waterdog", version.ref = "waterdog" }
 paper-api = { module = "io.papermc.paper:paper-api", version.ref = "paper" }
 minestom = { module = "net.minestom:minestom", version.ref = "minestom" }
+placeholderapi = { module = "me.clip:placeholderapi", version.ref = "placeholderapi" }
 
 adventure = { module = "net.kyori:adventure-api", version.ref = "adventure" }
 adventure-text-minimessage = { module = "net.kyori:adventure-text-minimessage", version.ref = "adventure" }

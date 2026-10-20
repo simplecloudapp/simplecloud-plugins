@@ -2,6 +2,6 @@
 
 ## Todo
 - [x] release publishing
-- [ ] placeholders
+- [x] placeholders
 - [ ] signs
 - [ ] npcs
