@@ -1,0 +1,19 @@
+name: simplecloud-placeholder
+version: ${version}
+main: app.simplecloud.plugin.placeholders.paper.PaperPlaceholdersPlugin
+api-version: "1.20"
+author: SimpleCloud Maintainers
+description: Provides SimpleCloud placeholders for PlaceholderAPI
+website: https://github.com/simplecloudapp/plugins
+folia-supported: true
+
+dependencies:
+  server:
+    PlaceholderAPI:
+      load: BEFORE
+      required: true
+      join-classpath: true
+    simplecloud-api:
+      load: BEFORE
+      required: true
+      join-classpath: true
