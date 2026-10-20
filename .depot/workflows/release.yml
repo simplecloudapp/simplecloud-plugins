@@ -16,6 +16,7 @@ jobs:
   release:
     name: release and publish
     runs-on: depot-ubuntu-latest
+    timeout-minutes: 20
 
     steps:
       - name: checkout
@@ -61,10 +62,13 @@ jobs:
         uses: gradle/actions/setup-gradle@v6
 
       - name: build
+        env:
+          DEPOT_TOKEN: ${{ secrets.DEPOT_TOKEN }}
         run: ./gradlew assemble
 
       - name: publish to maven
         env:
+          DEPOT_TOKEN: ${{ secrets.DEPOT_TOKEN }}
           PLUGIN: ${{ steps.tag.outputs.plugin }}
           SIMPLECLOUD_USERNAME: ${{ secrets.SIMPLECLOUD_USERNAME }}
           SIMPLECLOUD_PASSWORD: ${{ secrets.SIMPLECLOUD_PASSWORD }}

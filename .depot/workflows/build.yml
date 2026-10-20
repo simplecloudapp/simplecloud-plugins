@@ -23,7 +23,8 @@ permissions:
 jobs:
   build:
     name: build
-    runs-on: depot-ubuntu-latest
+    runs-on: depot-ubuntu-24.04-4
+    timeout-minutes: 20
 
     steps:
       - name: checkout
@@ -41,7 +42,9 @@ jobs:
         uses: gradle/actions/setup-gradle@v6
 
       - name: build, test & lint
-        run: ./gradlew build --continue
+        env:
+          DEPOT_TOKEN: ${{ secrets.DEPOT_TOKEN }}
+        run: ./gradlew ${{ github.event_name == 'pull_request' && 'check' || 'build' }} --continue
 
       - name: upload reports
         if: failure()

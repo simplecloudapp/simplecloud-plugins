@@ -12,6 +12,20 @@ plugins {
 
 rootProject.name = "plugins"
 
+val depotToken = providers.environmentVariable("DEPOT_TOKEN").orNull
+
+buildCache {
+    remote<HttpBuildCache> {
+        url = uri("https://cache.depot.dev")
+        isEnabled = depotToken != null
+        isPush = providers.environmentVariable("CI").isPresent
+        credentials {
+            username = ""
+            password = depotToken
+        }
+    }
+}
+
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 include(
