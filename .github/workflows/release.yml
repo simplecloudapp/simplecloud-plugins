@@ -62,6 +62,19 @@ jobs:
       - name: build
         run: ./gradlew assemble
 
+      - name: publish to maven
+        env:
+          PLUGIN: ${{ steps.tag.outputs.plugin }}
+          SIMPLECLOUD_USERNAME: ${{ secrets.SIMPLECLOUD_USERNAME }}
+          SIMPLECLOUD_PASSWORD: ${{ secrets.SIMPLECLOUD_PASSWORD }}
+        run: |
+          tasks=$(grep -l "simplecloud.publishing-conventions" \
+            $(find proxy server -path "*/${PLUGIN}-*/build.gradle.kts") \
+            | xargs -r -n1 dirname | sed 's|/|:|g; s|^|:|; s|$|:publish|') || true
+          if [ -n "$tasks" ]; then
+            ./gradlew $tasks
+          fi
+
       - name: upload to release
         env:
           GH_TOKEN: ${{ github.token }}
