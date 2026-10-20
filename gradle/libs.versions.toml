@@ -6,6 +6,8 @@ minotaur = "2.10.0"
 blossom = "2.2.0"
 spotless = "8.10.4"
 detekt = "2.0.0-alpha.6"
+paperweight = "2.0.0-beta.24"
+protobuf = "0.10.0"
 
 simplecloud-api = "0.1.0-platform.58-dev.5.1-fe01ce5"
 
@@ -16,6 +18,7 @@ paper = "26.3.build.+"
 minestom = "26_3-SNAPSHOT"
 placeholderapi = "2.12.3"
 miniplaceholders = "3.2.0"
+luckperms = "5.5"
 
 adventure = "5.2.0"
 adventure-platform-bungeecord = "4.4.1"
@@ -24,6 +27,9 @@ adventure-platform-bungeecord = "4.4.1"
 configurate = "4.2.0"
 caffeine = "3.3.1"
 slf4j = "2.0.20"
+jnats = "2.26.3"
+protoc = "4.36.2"
+protobuf-kotlin = "4.36.2"
 
 cloud = "2.1.0"
 cloud-platform = "2.0.1"
@@ -47,6 +53,7 @@ paper-api = { module = "io.papermc.paper:paper-api", version.ref = "paper" }
 minestom = { module = "net.minestom:minestom", version.ref = "minestom" }
 placeholderapi = { module = "me.clip:placeholderapi", version.ref = "placeholderapi" }
 miniplaceholders-api = { module = "io.github.miniplaceholders:miniplaceholders-api", version.ref = "miniplaceholders" }
+luckperms-api = { module = "net.luckperms:api", version.ref = "luckperms" }
 
 adventure = { module = "net.kyori:adventure-api", version.ref = "adventure" }
 adventure-text-minimessage = { module = "net.kyori:adventure-text-minimessage", version.ref = "adventure" }
@@ -62,6 +69,11 @@ configurate-extra-kotlin = { module = "org.spongepowered:configurate-extra-kotli
 caffeine = { module = "com.github.ben-manes.caffeine:caffeine", version.ref = "caffeine" }
 
 slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
+
+jnats = { module = "io.nats:jnats", version.ref = "jnats" }
+
+protoc = { module = "com.google.protobuf:protoc", version.ref = "protoc" }
+protobuf-kotlin-lite = { module = "com.google.protobuf:protobuf-kotlin-lite", version.ref = "protobuf-kotlin" }
 
 cloud-core = { module = "org.incendo:cloud-core", version.ref = "cloud" }
 cloud-coroutines = { module = "org.incendo:cloud-kotlin-coroutines", version.ref = "cloud" }
@@ -80,3 +92,5 @@ kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }
 minotaur = { id = "com.modrinth.minotaur", version.ref = "minotaur" }
 blossom = { id = "net.kyori.blossom", version.ref = "blossom" }
+paperweight-userdev = { id = "io.papermc.paperweight.userdev", version.ref = "paperweight" }
+protobuf = { id = "com.google.protobuf", version.ref = "protobuf" }

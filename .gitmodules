@@ -1,0 +1,3 @@
+[submodule "server/prefixes/custom-names"]
+	path = server/prefixes/custom-names
+	url = https://github.com/spacechunks/custom-names.git

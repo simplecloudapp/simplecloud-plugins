@@ -15,8 +15,7 @@ object DefaultConfigInstaller {
     }
 
     /**
-     * Copies all [resources] into [dataDirectory]. Paths may contain sub directories, e.g.
-     * `layout/public.yml`.
+     * Copies all [resources] into [dataDirectory]. Paths may contain sub directories.
      */
     fun installAll(
         dataDirectory: Path,
