@@ -7,4 +7,5 @@ dependencies {
     compileOnly(libs.simplecloud.api)
     compileOnly(libs.paper.api)
     compileOnly(libs.placeholderapi)
+    compileOnly(libs.miniplaceholders.api)
 }
