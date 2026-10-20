@@ -57,6 +57,10 @@ interface PrefixesApi {
 
     fun reset(targets: Audience, viewers: Audience)
 
+    fun setVanished(id: UUID, vanished: Boolean)
+
+    fun isVanished(id: UUID): Boolean
+
     fun addGroup(group: PrefixesGroup): CompletableFuture<Boolean>
 
     fun registerGroupProvider(provider: GroupProvider)

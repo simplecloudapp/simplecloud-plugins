@@ -115,6 +115,14 @@ class PrefixesApiImpl(
         }
     }
 
+    override fun setVanished(id: UUID, vanished: Boolean) {
+        if (!platform.isOnline(id)) return
+        dataRegistry.setVanished(id, vanished)
+        notifyDataChange(id)
+    }
+
+    override fun isVanished(id: UUID): Boolean = dataRegistry.isVanished(id) || platform.isVanished(id)
+
     override fun addGroup(group: PrefixesGroup): CompletableFuture<Boolean> = registry.getCurrentGroupProvider().addGroup(group)
 
     override fun registerGroupProvider(provider: GroupProvider) = registry.register(provider)

@@ -16,4 +16,6 @@ interface PrefixesPlatform {
     fun getPlayerName(id: UUID): String
 
     fun isOnline(id: UUID): Boolean
+
+    fun isVanished(id: UUID): Boolean
 }

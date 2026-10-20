@@ -28,4 +28,6 @@ class MinestomPlatformImpl(
     override fun getPlayerName(id: UUID): String = MinecraftServer.getConnectionManager().getOnlinePlayerByUuid(id)?.username ?: id.toString()
 
     override fun isOnline(id: UUID): Boolean = MinecraftServer.getConnectionManager().getOnlinePlayerByUuid(id) != null
+
+    override fun isVanished(id: UUID): Boolean = false
 }

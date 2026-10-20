@@ -111,6 +111,7 @@ class PaperDisplayManager(
     }
 
     private fun publish(player: Player, force: Boolean = false) {
+        if (prefixes.api.isVanished(player.uniqueId)) return unpublish(player.uniqueId)
         if (!prefixes.config.get().isTablistSynced()) return
         val publisher = prefixes.sync?.publisher ?: return
         val data = registry.getData(player.uniqueId) ?: return
