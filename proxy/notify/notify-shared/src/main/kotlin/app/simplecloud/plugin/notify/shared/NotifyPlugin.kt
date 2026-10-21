@@ -11,7 +11,7 @@ import kotlinx.coroutines.*
 import org.slf4j.LoggerFactory
 import java.util.UUID
 
-class NotifyPlugin(private val platform: NotifyPlatform) {
+class NotifyPlugin(platform: NotifyPlatform) {
 
     private val logger = LoggerFactory.getLogger(NotifyPlugin::class.java)
 
