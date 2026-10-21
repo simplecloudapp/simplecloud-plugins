@@ -132,7 +132,7 @@ notifications:
 
   # Sent when a server changes its state.
   # Placeholders:
-  #   <server>      - Name of the server's group.
+  #   <server>      - Name of the server, e.g. lobby-1.
   #   <id>          - Numerical id of the server, prefixed with a space.
   #   <group>       - Name of the server's group.
   #   <uuid>        - Unique id of the server.
