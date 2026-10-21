@@ -6,6 +6,7 @@ import app.simplecloud.plugin.connection.velocity.command.ConnectionCommand
 import app.simplecloud.plugin.connection.velocity.command.VelocityCommandManager
 import app.simplecloud.plugin.connection.velocity.listener.KickedFromServerListener
 import app.simplecloud.plugin.connection.velocity.listener.PlayerChooseInitialServerListener
+import app.simplecloud.plugin.connection.velocity.platform.VelocityPlatformImpl
 import app.simplecloud.plugin.connection.velocity.registration.VelocityServerRegistry
 import com.google.inject.Inject
 import com.velocitypowered.api.event.Subscribe
@@ -67,8 +68,9 @@ class VelocityConnectionPlugin @Inject constructor(
     }
 
     private fun registerListeners() {
-        server.eventManager.register(this, PlayerChooseInitialServerListener(this, server))
-        server.eventManager.register(this, KickedFromServerListener(this, server))
+        val platform = VelocityPlatformImpl(server)
+        server.eventManager.register(this, PlayerChooseInitialServerListener(this, platform))
+        server.eventManager.register(this, KickedFromServerListener(this, platform))
     }
 
     private fun registerCommands() {

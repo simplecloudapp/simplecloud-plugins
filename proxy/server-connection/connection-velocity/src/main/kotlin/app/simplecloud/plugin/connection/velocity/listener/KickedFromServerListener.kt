@@ -2,14 +2,15 @@ package app.simplecloud.plugin.connection.velocity.listener
 
 import app.simplecloud.plugin.connection.shared.connection.ConnectionResolver
 import app.simplecloud.plugin.connection.velocity.VelocityConnectionPlugin
+import app.simplecloud.plugin.connection.velocity.platform.VelocityConnectionPlayer
+import app.simplecloud.plugin.connection.velocity.platform.VelocityPlatformImpl
 import com.velocitypowered.api.event.Subscribe
 import com.velocitypowered.api.event.player.KickedFromServerEvent
-import com.velocitypowered.api.proxy.ProxyServer
 import kotlin.jvm.optionals.getOrNull
 
 class KickedFromServerListener(
     private val plugin: VelocityConnectionPlugin,
-    private val proxy: ProxyServer,
+    private val platform: VelocityPlatformImpl,
 ) {
 
     @Subscribe(priority = 1000)
@@ -20,22 +21,15 @@ class KickedFromServerListener(
         if (!config.fallback.enabled) return
         if (event.kickedDuringServerConnect() && event.player.currentServer.getOrNull() != null) return
 
-        val kickedServerName = event.server.serverInfo.name
-        val server = ConnectionResolver.matchingTargets(
-            config.fallback.targetConnections,
-            config.connections,
-            proxy.allServers.map { it.serverInfo.name },
-            kickedServerName,
-            event.player::hasPermission,
-        ).firstNotNullOfOrNull { names ->
-            names
-                .mapNotNull { name -> proxy.getServer(name).getOrNull() }
-                .filter { it.serverInfo.name != kickedServerName }
-                .minByOrNull { it.playersConnected.size }
-        }
+        val targetServer = ConnectionResolver.findFallbackTarget(
+            platform,
+            VelocityConnectionPlayer(event.player),
+            event.server.serverInfo.name,
+            config,
+        )
 
-        event.result = if (server != null) {
-            KickedFromServerEvent.RedirectPlayer.create(server)
+        event.result = if (targetServer != null) {
+            KickedFromServerEvent.RedirectPlayer.create(targetServer.server)
         } else {
             KickedFromServerEvent.DisconnectPlayer.create(messages.msg(messages.kick.noFallbackServers))
         }

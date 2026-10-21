@@ -2,9 +2,9 @@ package app.simplecloud.plugin.connection.bungeecord
 
 import app.simplecloud.plugin.connection.bungeecord.command.BungeeCordCommandManager
 import app.simplecloud.plugin.connection.bungeecord.command.ConnectionCommand
-import app.simplecloud.plugin.connection.bungeecord.listener.BungeeCordTargetResolver
 import app.simplecloud.plugin.connection.bungeecord.listener.ServerConnectListener
 import app.simplecloud.plugin.connection.bungeecord.listener.ServerKickListener
+import app.simplecloud.plugin.connection.bungeecord.platform.BungeeCordPlatformImpl
 import app.simplecloud.plugin.connection.bungeecord.registration.BungeeCordServerRegistry
 import app.simplecloud.plugin.connection.shared.ConnectionPlugin
 import net.kyori.adventure.platform.bungeecord.BungeeAudiences
@@ -47,9 +47,9 @@ class BungeeCordConnectionPlugin : Plugin() {
     }
 
     private fun registerListeners() {
-        val targetResolver = BungeeCordTargetResolver(proxy)
-        proxy.pluginManager.registerListener(this, ServerConnectListener(this, targetResolver))
-        proxy.pluginManager.registerListener(this, ServerKickListener(this, targetResolver))
+        val platform = BungeeCordPlatformImpl(proxy)
+        proxy.pluginManager.registerListener(this, ServerConnectListener(this, platform))
+        proxy.pluginManager.registerListener(this, ServerKickListener(this, platform))
     }
 
     private fun registerCommands() {

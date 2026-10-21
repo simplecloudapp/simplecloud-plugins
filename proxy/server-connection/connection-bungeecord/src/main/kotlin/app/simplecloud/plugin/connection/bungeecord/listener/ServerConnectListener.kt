@@ -1,6 +1,9 @@
 package app.simplecloud.plugin.connection.bungeecord.listener
 
 import app.simplecloud.plugin.connection.bungeecord.BungeeCordConnectionPlugin
+import app.simplecloud.plugin.connection.bungeecord.platform.BungeeCordConnectionPlayer
+import app.simplecloud.plugin.connection.bungeecord.platform.BungeeCordPlatformImpl
+import app.simplecloud.plugin.connection.shared.connection.ConnectionResolver
 import net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer
 import net.md_5.bungee.api.event.ServerConnectEvent
 import net.md_5.bungee.api.plugin.Listener
@@ -8,7 +11,7 @@ import net.md_5.bungee.event.EventHandler
 
 class ServerConnectListener(
     private val plugin: BungeeCordConnectionPlugin,
-    private val targetResolver: BungeeCordTargetResolver,
+    private val platform: BungeeCordPlatformImpl,
 ) : Listener {
 
     @EventHandler
@@ -25,9 +28,9 @@ class ServerConnectListener(
         val config = plugin.connectionPlugin.connectionConfig.get()
         val messages = plugin.connectionPlugin.messageConfig.get()
 
-        val targetServer = targetResolver.findJoinTarget(event.player, config)
+        val targetServer = ConnectionResolver.findJoinTarget(platform, BungeeCordConnectionPlayer(event.player), config)
         if (targetServer != null) {
-            event.target = targetServer
+            event.target = targetServer.serverInfo
             return
         }
 
@@ -46,8 +49,8 @@ class ServerConnectListener(
         }
 
         val config = plugin.connectionPlugin.connectionConfig.get()
-        val targetServer = targetResolver.findJoinTarget(event.player, config) ?: return
-        event.target = targetServer
+        val targetServer = ConnectionResolver.findJoinTarget(platform, BungeeCordConnectionPlayer(event.player), config) ?: return
+        event.target = targetServer.serverInfo
     }
 
     private fun handleServerDown(event: ServerConnectEvent) {
@@ -57,9 +60,14 @@ class ServerConnectListener(
         if (!config.fallback.enabled) return
 
         val downServerName = event.player.server?.info?.name ?: return
-        val targetServer = targetResolver.findFallbackTarget(event.player, downServerName, config)
+        val targetServer = ConnectionResolver.findFallbackTarget(
+            platform,
+            BungeeCordConnectionPlayer(event.player),
+            downServerName,
+            config,
+        )
         if (targetServer != null) {
-            event.target = targetServer
+            event.target = targetServer.serverInfo
             return
         }
 

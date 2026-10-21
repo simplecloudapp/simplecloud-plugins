@@ -1,6 +1,9 @@
 package app.simplecloud.plugin.connection.bungeecord.listener
 
 import app.simplecloud.plugin.connection.bungeecord.BungeeCordConnectionPlugin
+import app.simplecloud.plugin.connection.bungeecord.platform.BungeeCordConnectionPlayer
+import app.simplecloud.plugin.connection.bungeecord.platform.BungeeCordPlatformImpl
+import app.simplecloud.plugin.connection.shared.connection.ConnectionResolver
 import net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer
 import net.md_5.bungee.api.chat.TextComponent
 import net.md_5.bungee.api.event.ServerKickEvent
@@ -10,7 +13,7 @@ import net.md_5.bungee.event.EventPriority
 
 class ServerKickListener(
     private val plugin: BungeeCordConnectionPlugin,
-    private val targetResolver: BungeeCordTargetResolver,
+    private val platform: BungeeCordPlatformImpl,
 ) : Listener {
 
     @EventHandler(priority = EventPriority.HIGH)
@@ -21,9 +24,14 @@ class ServerKickListener(
         if (!config.fallback.enabled) return
         if (event.state == ServerKickEvent.State.CONNECTING && event.player.server != null) return
 
-        val targetServer = targetResolver.findFallbackTarget(event.player, event.kickedFrom.name, config)
+        val targetServer = ConnectionResolver.findFallbackTarget(
+            platform,
+            BungeeCordConnectionPlayer(event.player),
+            event.kickedFrom.name,
+            config,
+        )
         if (targetServer != null) {
-            event.cancelServer = targetServer
+            event.cancelServer = targetServer.serverInfo
             event.isCancelled = true
             return
         }

@@ -5,6 +5,7 @@ import app.simplecloud.plugin.connection.waterdog.command.ConnectionCommand
 import app.simplecloud.plugin.connection.waterdog.command.WaterdogCommandManager
 import app.simplecloud.plugin.connection.waterdog.handler.WaterdogJoinHandler
 import app.simplecloud.plugin.connection.waterdog.handler.WaterdogReconnectHandler
+import app.simplecloud.plugin.connection.waterdog.platform.WaterdogPlatformImpl
 import app.simplecloud.plugin.connection.waterdog.registration.WaterdogServerRegistry
 import dev.waterdog.waterdogpe.plugin.Plugin
 
@@ -41,8 +42,9 @@ class WaterdogConnectionPlugin : Plugin() {
     }
 
     private fun registerHandlers() {
-        proxy.joinHandler = WaterdogJoinHandler(this, proxy.joinHandler)
-        proxy.reconnectHandler = WaterdogReconnectHandler(this, proxy.reconnectHandler)
+        val platform = WaterdogPlatformImpl(proxy)
+        proxy.joinHandler = WaterdogJoinHandler(this, platform, proxy.joinHandler)
+        proxy.reconnectHandler = WaterdogReconnectHandler(this, platform, proxy.reconnectHandler)
     }
 
     private fun registerCommands() {
