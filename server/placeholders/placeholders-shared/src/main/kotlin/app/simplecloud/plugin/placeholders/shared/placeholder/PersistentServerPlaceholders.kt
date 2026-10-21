@@ -34,7 +34,7 @@ object PersistentServerPlaceholders : PlaceholderType<PersistentServer> {
     }
 
     override suspend fun loadCurrent(api: CloudApi): PersistentServer? {
-        val persistentServerId = api.server().getCurrentServer().await().persistentServerId ?: return null
+        val persistentServerId = api.server().currentServer.await().persistentServerId ?: return null
         return api.persistentServer().findPersistentServerById(persistentServerId).await().orElse(null)
     }
 

@@ -27,7 +27,7 @@ class PaperPlaceholdersPlugin : JavaPlugin() {
         }
 
         if (placeholderApiExpansion == null && miniPlaceholdersExpansion == null) {
-            logger.warning("Neither PlaceholderAPI nor MiniPlaceholders is installed, no placeholders will be registered")
+            logger.warning("No Placeholder Provider is installed, no placeholders will be registered")
         }
     }
 

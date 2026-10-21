@@ -43,7 +43,7 @@ object ServerPlaceholders : PlaceholderType<Server> {
         else -> null
     }
 
-    override suspend fun loadCurrent(api: CloudApi): Server? = api.server().getCurrentServer().await()
+    override suspend fun loadCurrent(api: CloudApi): Server? = api.server().currentServer.await()
 
     private fun serverName(server: Server): String {
         val group = server.group
