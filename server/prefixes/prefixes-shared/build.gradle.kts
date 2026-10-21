@@ -3,8 +3,6 @@ plugins {
     alias(libs.plugins.protobuf)
 }
 
-version = "1.1.1"
-
 dependencies {
     api(projects.server.prefixes.prefixesApi)
     api(projects.core.coreShared)

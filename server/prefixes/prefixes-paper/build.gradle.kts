@@ -6,8 +6,6 @@ plugins {
     alias(libs.plugins.paperweight.userdev)
 }
 
-version = "1.1.1"
-
 dependencies {
     implementation(projects.server.prefixes.prefixesShared)
     implementation(projects.core.corePaper)

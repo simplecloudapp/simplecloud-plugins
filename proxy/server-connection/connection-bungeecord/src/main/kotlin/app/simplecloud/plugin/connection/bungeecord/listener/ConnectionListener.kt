@@ -2,16 +2,15 @@ package app.simplecloud.plugin.connection.bungeecord.listener
 
 import app.simplecloud.plugin.connection.bungeecord.BungeeCordConnectionPlugin
 import app.simplecloud.plugin.connection.bungeecord.platform.BungeeCordConnectionPlayer
-import app.simplecloud.plugin.connection.bungeecord.platform.BungeeCordPlatformImpl
-import app.simplecloud.plugin.connection.shared.connection.ConnectionResolver
-import net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer
+import app.simplecloud.plugin.core.bungeecord.text.BungeeComponentConverter
 import net.md_5.bungee.api.event.ServerConnectEvent
+import net.md_5.bungee.api.event.ServerKickEvent
 import net.md_5.bungee.api.plugin.Listener
 import net.md_5.bungee.event.EventHandler
+import net.md_5.bungee.event.EventPriority
 
-class ServerConnectListener(
+class ConnectionListener(
     private val plugin: BungeeCordConnectionPlugin,
-    private val platform: BungeeCordPlatformImpl,
 ) : Listener {
 
     @EventHandler
@@ -24,11 +23,29 @@ class ServerConnectListener(
         }
     }
 
+    @EventHandler(priority = EventPriority.HIGH)
+    fun onServerKick(event: ServerKickEvent) {
+        val config = plugin.connectionPlugin.connectionConfig.get()
+        val messageConfig = plugin.connectionPlugin.messageConfig.get()
+
+        if (!config.fallback.enabled) return
+        if (event.state == ServerKickEvent.State.CONNECTING && event.player.server != null) return
+
+        val targetServer = plugin.connectionPlugin.findFallbackTarget(BungeeCordConnectionPlayer(event.player), event.kickedFrom.name)
+        if (targetServer != null) {
+            event.cancelServer = targetServer.serverInfo
+            event.isCancelled = true
+            return
+        }
+
+        event.reason = BungeeComponentConverter.toBungee(messageConfig.msg(messageConfig.kick.noFallbackServers))
+    }
+
     private fun handleJoin(event: ServerConnectEvent) {
         val config = plugin.connectionPlugin.connectionConfig.get()
         val messages = plugin.connectionPlugin.messageConfig.get()
 
-        val targetServer = ConnectionResolver.findJoinTarget(platform, BungeeCordConnectionPlayer(event.player), config)
+        val targetServer = plugin.connectionPlugin.findJoinTarget(BungeeCordConnectionPlayer(event.player))
         if (targetServer != null) {
             event.target = targetServer.serverInfo
             return
@@ -37,9 +54,7 @@ class ServerConnectListener(
         if (!config.networkJoinTargets.enabled) return
 
         event.isCancelled = true
-        event.player.disconnect(
-            *BungeeComponentSerializer.get().serialize(messages.msg(messages.kick.noTargetConnection)),
-        )
+        event.player.disconnect(BungeeComponentConverter.toBungee(messages.msg(messages.kick.noTargetConnection)))
     }
 
     private fun handleLobbyFallback(event: ServerConnectEvent) {
@@ -48,8 +63,7 @@ class ServerConnectListener(
             return
         }
 
-        val config = plugin.connectionPlugin.connectionConfig.get()
-        val targetServer = ConnectionResolver.findJoinTarget(platform, BungeeCordConnectionPlayer(event.player), config) ?: return
+        val targetServer = plugin.connectionPlugin.findJoinTarget(BungeeCordConnectionPlayer(event.player)) ?: return
         event.target = targetServer.serverInfo
     }
 
@@ -60,20 +74,13 @@ class ServerConnectListener(
         if (!config.fallback.enabled) return
 
         val downServerName = event.player.server?.info?.name ?: return
-        val targetServer = ConnectionResolver.findFallbackTarget(
-            platform,
-            BungeeCordConnectionPlayer(event.player),
-            downServerName,
-            config,
-        )
+        val targetServer = plugin.connectionPlugin.findFallbackTarget(BungeeCordConnectionPlayer(event.player), downServerName)
         if (targetServer != null) {
             event.target = targetServer.serverInfo
             return
         }
 
         event.isCancelled = true
-        event.player.disconnect(
-            *BungeeComponentSerializer.get().serialize(messages.msg(messages.kick.noFallbackServers)),
-        )
+        event.player.disconnect(BungeeComponentConverter.toBungee(messages.msg(messages.kick.noFallbackServers)))
     }
 }

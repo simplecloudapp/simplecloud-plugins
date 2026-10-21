@@ -2,7 +2,6 @@ package app.simplecloud.plugin.connection.velocity.command
 
 import app.simplecloud.plugin.connection.shared.config.CommandEntry
 import app.simplecloud.plugin.connection.shared.connection.CommandTarget
-import app.simplecloud.plugin.connection.shared.connection.ConnectionResolver
 import app.simplecloud.plugin.connection.velocity.VelocityConnectionPlugin
 import app.simplecloud.plugin.connection.velocity.platform.VelocityConnectionPlayer
 import com.velocitypowered.api.command.CommandMeta
@@ -53,15 +52,9 @@ class VelocityCommandManager(
             val source = invocation.source() as? Player ?: return
             if (command.permission.isNotEmpty() && !source.hasPermission(command.permission)) return
 
-            val config = plugin.connectionPlugin.connectionConfig.get()
             val messages = plugin.connectionPlugin.messageConfig.get()
 
-            val target = ConnectionResolver.findCommandTarget(
-                plugin.platform,
-                VelocityConnectionPlayer(source),
-                command.targetConnections,
-                config,
-            )
+            val target = plugin.connectionPlugin.findCommandTarget(VelocityConnectionPlayer(source), command.targetConnections)
 
             when (target) {
                 is CommandTarget.Connect -> connect(source, target.server.server)

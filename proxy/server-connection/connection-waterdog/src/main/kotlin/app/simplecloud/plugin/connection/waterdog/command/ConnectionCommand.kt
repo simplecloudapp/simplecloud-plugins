@@ -20,7 +20,8 @@ class ConnectionCommand(
     private val serializer = PlainTextComponentSerializer.plainText()
 
     override fun onExecute(sender: CommandSender, alias: String?, args: Array<out String>): Boolean {
-        val messages = plugin.connectionPlugin.messageConfig.get()
+        val connectionPlugin = plugin.connectionPlugin ?: return true
+        val messages = connectionPlugin.messageConfig.get()
 
         if (args.firstOrNull()?.equals("reload", ignoreCase = true) != true) {
             sendMessage(sender, messages.command.commandUsage)
@@ -40,7 +41,8 @@ class ConnectionCommand(
     }
 
     private fun sendMessage(sender: CommandSender, rawMessage: String) {
-        val messages = plugin.connectionPlugin.messageConfig.get()
+        val connectionPlugin = plugin.connectionPlugin ?: return
+        val messages = connectionPlugin.messageConfig.get()
         val component = messages.msg(rawMessage)
         val plain = serializer.serialize(component)
         sender.sendMessage(plain)

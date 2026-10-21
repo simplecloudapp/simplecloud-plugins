@@ -16,9 +16,15 @@ class MiniPlaceholdersExpansion(
     types: List<PlaceholderType<*>>,
 ) {
 
-    private val expansion: Expansion
+    private val expansion = createExpansion(types)
 
-    init {
+    fun register() = expansion.register()
+
+    fun unregister() {
+        if (expansion.registered()) expansion.unregister()
+    }
+
+    private fun createExpansion(types: List<PlaceholderType<*>>): Expansion {
         val builder = Expansion.builder("simplecloud").author("SimpleCloud").version(BuildConstants.VERSION)
         types.forEach { type ->
             type.properties.forEach { property ->
@@ -32,13 +38,7 @@ class MiniPlaceholdersExpansion(
                 }
             }
         }
-        expansion = builder.build()
-    }
-
-    fun register() = expansion.register()
-
-    fun unregister() {
-        if (expansion.registered()) expansion.unregister()
+        return builder.build()
     }
 
     private fun resolve(type: PlaceholderType<*>, property: String, queue: ArgumentQueue, viewer: UUID?): Tag {

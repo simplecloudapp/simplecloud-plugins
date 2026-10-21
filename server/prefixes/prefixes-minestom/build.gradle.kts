@@ -4,8 +4,6 @@ plugins {
     id("simplecloud.publishing-conventions")
 }
 
-version = "1.1.1"
-
 dependencies {
     api(projects.server.prefixes.prefixesShared)
     implementation(projects.core.coreMinestom)

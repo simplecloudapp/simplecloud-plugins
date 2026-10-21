@@ -49,15 +49,20 @@ object ConnectionResolver {
         return matchingNames.any { it.equals(serverName, ignoreCase = true) }
     }
 
-    fun <S : ConnectionServer> findJoinTarget(platform: ConnectionPlatform<S>, player: ConnectionPlayer, config: ConnectionConfig): S? {
-        val routeServer = findRouteTarget(platform, player, config)
+    fun <S : ConnectionServer> findJoinTarget(
+        platform: ConnectionPlatform<S>,
+        player: ConnectionPlayer,
+        config: ConnectionConfig,
+        stoppingServers: Set<String>,
+    ): S? {
+        val routeServer = findRouteTarget(platform, player, config, stoppingServers)
         if (routeServer != null || !config.networkJoinTargets.enabled) return routeServer
 
         return config.networkJoinTargets.targetConnections
             .sortedByDescending { it.priority }
             .asSequence()
             .mapNotNull { target -> findConnection(target.name, config.connections) }
-            .firstNotNullOfOrNull { connection -> findLeastPopulated(platform, player, connection, null) }
+            .firstNotNullOfOrNull { connection -> findLeastPopulated(platform, player, connection, null, stoppingServers) }
     }
 
     fun <S : ConnectionServer> findFallbackTarget(
@@ -65,6 +70,7 @@ object ConnectionResolver {
         player: ConnectionPlayer,
         kickedServerName: String?,
         config: ConnectionConfig,
+        stoppingServers: Set<String>,
     ): S? {
         val serverNames = platform.getServers().map { server -> server.getName() }
         return config.fallback.targetConnections
@@ -72,7 +78,9 @@ object ConnectionResolver {
             .asSequence()
             .filter { target -> isFromAllowed(target, kickedServerName, config.connections, serverNames) }
             .mapNotNull { target -> findConnection(target.name, config.connections) }
-            .firstNotNullOfOrNull { connection -> findLeastPopulated(platform, player, connection, kickedServerName) }
+            .firstNotNullOfOrNull { connection ->
+                findLeastPopulated(platform, player, connection, kickedServerName, stoppingServers)
+            }
     }
 
     fun <S : ConnectionServer> findCommandTarget(
@@ -80,6 +88,7 @@ object ConnectionResolver {
         player: ConnectionPlayer,
         targets: List<FallbackTargetConnection>,
         config: ConnectionConfig,
+        stoppingServers: Set<String>,
     ): CommandTarget<S> {
         val currentServerName = player.getServerName()
         val servers = platform.getServers()
@@ -96,7 +105,7 @@ object ConnectionResolver {
             }
 
             val server = matchingServers
-                .filter { server -> !server.isStopping() }
+                .filter { server -> server.getName() !in stoppingServers }
                 .minByOrNull { server -> server.getPlayerCount() }
             if (server != null) return CommandTarget.Connect(server)
         }
@@ -113,11 +122,16 @@ object ConnectionResolver {
         target.from.isEmpty() ||
         target.from.any { isServerInConnection(fromServerName, it, connections, serverNames) }
 
-    private fun <S : ConnectionServer> findRouteTarget(platform: ConnectionPlatform<S>, player: ConnectionPlayer, config: ConnectionConfig): S? {
+    private fun <S : ConnectionServer> findRouteTarget(
+        platform: ConnectionPlatform<S>,
+        player: ConnectionPlayer,
+        config: ConnectionConfig,
+        stoppingServers: Set<String>,
+    ): S? {
         val virtualHost = player.getVirtualHost() ?: return null
         val route = findRoute(virtualHost, config.address.routes) ?: return null
         val connection = findConnection(route.targetConnection, config.connections) ?: return null
-        return findLeastPopulated(platform, player, connection, null)
+        return findLeastPopulated(platform, player, connection, null, stoppingServers)
     }
 
     private fun <S : ConnectionServer> findLeastPopulated(
@@ -125,11 +139,12 @@ object ConnectionResolver {
         player: ConnectionPlayer,
         connection: ConnectionEntry,
         excludedServerName: String?,
+        stoppingServers: Set<String>,
     ): S? {
         if (checkRules(connection, player) != null) return null
         return platform.getServers()
             .filter { server -> connection.serverNameMatcher.matches(server.getName()) }
-            .filter { server -> !server.isStopping() }
+            .filter { server -> server.getName() !in stoppingServers }
             .filter { server -> !server.getName().equals(excludedServerName, ignoreCase = true) }
             .minByOrNull { server -> server.getPlayerCount() }
     }

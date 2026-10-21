@@ -4,8 +4,7 @@ import app.simplecloud.plugin.connection.bungeecord.BungeeCordConnectionPlugin
 import app.simplecloud.plugin.connection.bungeecord.platform.BungeeCordConnectionPlayer
 import app.simplecloud.plugin.connection.shared.config.CommandEntry
 import app.simplecloud.plugin.connection.shared.connection.CommandTarget
-import app.simplecloud.plugin.connection.shared.connection.ConnectionResolver
-import net.kyori.adventure.platform.bungeecord.BungeeAudiences
+import app.simplecloud.plugin.core.bungeecord.text.BungeeComponentConverter
 import net.md_5.bungee.api.CommandSender
 import net.md_5.bungee.api.ServerConnectRequest
 import net.md_5.bungee.api.config.ServerInfo
@@ -17,7 +16,6 @@ import java.util.concurrent.CopyOnWriteArrayList
 
 class BungeeCordCommandManager(
     private val plugin: BungeeCordConnectionPlugin,
-    private val audiences: BungeeAudiences,
 ) {
 
     private val commands = CopyOnWriteArrayList<Command>()
@@ -54,24 +52,20 @@ class BungeeCordCommandManager(
     }
 
     private fun handleCommand(player: ProxiedPlayer, command: CommandEntry) {
-        val config = plugin.connectionPlugin.connectionConfig.get()
-        val messages = plugin.connectionPlugin.messageConfig.get()
-        val audience = audiences.player(player)
-
         if (command.permission.isNotEmpty() && !player.hasPermission(command.permission)) return
 
-        val target = ConnectionResolver.findCommandTarget(
-            plugin.platform,
-            BungeeCordConnectionPlayer(player),
-            command.targetConnections,
-            config,
-        )
+        val target = plugin.connectionPlugin.findCommandTarget(BungeeCordConnectionPlayer(player), command.targetConnections)
 
         when (target) {
             is CommandTarget.Connect -> connect(player, target.server.serverInfo)
-            CommandTarget.AlreadyConnected -> audience.sendMessage(messages.msg(command.messages.alreadyConnected))
-            CommandTarget.NotFound -> audience.sendMessage(messages.msg(command.messages.noTargetConnectionFound))
+            CommandTarget.AlreadyConnected -> sendMessage(player, command.messages.alreadyConnected)
+            CommandTarget.NotFound -> sendMessage(player, command.messages.noTargetConnectionFound)
         }
+    }
+
+    private fun sendMessage(player: ProxiedPlayer, rawMessage: String) {
+        val messages = plugin.connectionPlugin.messageConfig.get()
+        player.sendMessage(BungeeComponentConverter.toBungee(messages.msg(rawMessage)))
     }
 
     private fun connect(player: ProxiedPlayer, targetServer: ServerInfo) {

@@ -2,25 +2,17 @@ package app.simplecloud.plugin.connection.bungeecord
 
 import app.simplecloud.plugin.connection.bungeecord.command.BungeeCordCommandManager
 import app.simplecloud.plugin.connection.bungeecord.command.ConnectionCommand
-import app.simplecloud.plugin.connection.bungeecord.listener.ServerConnectListener
-import app.simplecloud.plugin.connection.bungeecord.listener.ServerKickListener
+import app.simplecloud.plugin.connection.bungeecord.listener.ConnectionListener
 import app.simplecloud.plugin.connection.bungeecord.platform.BungeeCordPlatformImpl
-import app.simplecloud.plugin.connection.bungeecord.registration.BungeeCordServerRegistry
 import app.simplecloud.plugin.connection.shared.ConnectionPlugin
-import net.kyori.adventure.platform.bungeecord.BungeeAudiences
 import net.md_5.bungee.api.plugin.Plugin
 
 class BungeeCordConnectionPlugin : Plugin() {
 
-    private val audiences = BungeeAudiences.create(this)
-    private val commandManager = BungeeCordCommandManager(this, audiences)
-    private val serverRegistry = BungeeCordServerRegistry(proxy)
+    private val commandManager = BungeeCordCommandManager(this)
+    private val platform = BungeeCordPlatformImpl(this)
 
-    val connectionPlugin = ConnectionPlugin(
-        dataFolder,
-        serverRegistry,
-    )
-    val platform = BungeeCordPlatformImpl(proxy, connectionPlugin)
+    val connectionPlugin = ConnectionPlugin(platform)
 
     override fun onEnable() {
         cleanupServers()
@@ -31,7 +23,6 @@ class BungeeCordConnectionPlugin : Plugin() {
 
     override fun onDisable() {
         commandManager.unregisterCommands()
-        audiences.close()
         connectionPlugin.shutdown()
     }
 
@@ -43,17 +34,16 @@ class BungeeCordConnectionPlugin : Plugin() {
 
     private fun cleanupServers() {
         if (connectionPlugin.connectionConfig.get().registration.enabled) {
-            serverRegistry.clear()
+            platform.getRegistry().clear()
         }
     }
 
     private fun registerListeners() {
-        proxy.pluginManager.registerListener(this, ServerConnectListener(this, platform))
-        proxy.pluginManager.registerListener(this, ServerKickListener(this, platform))
+        proxy.pluginManager.registerListener(this, ConnectionListener(this))
     }
 
     private fun registerCommands() {
         commandManager.registerCommands()
-        proxy.pluginManager.registerCommand(this, ConnectionCommand(this, audiences))
+        proxy.pluginManager.registerCommand(this, ConnectionCommand(this))
     }
 }

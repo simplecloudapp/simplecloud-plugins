@@ -3,27 +3,31 @@ package app.simplecloud.plugin.connection.shared
 import app.simplecloud.api.CloudApi
 import app.simplecloud.plugin.connection.shared.config.CommandConfig
 import app.simplecloud.plugin.connection.shared.config.ConnectionConfig
+import app.simplecloud.plugin.connection.shared.config.FallbackTargetConnection
 import app.simplecloud.plugin.connection.shared.config.MessageConfig
 import app.simplecloud.plugin.connection.shared.config.RegistrationServer
+import app.simplecloud.plugin.connection.shared.connection.CommandTarget
 import app.simplecloud.plugin.connection.shared.connection.ConnectionResolver
+import app.simplecloud.plugin.connection.shared.platform.ConnectionPlatform
+import app.simplecloud.plugin.connection.shared.platform.ConnectionPlayer
+import app.simplecloud.plugin.connection.shared.platform.ConnectionServer
 import app.simplecloud.plugin.connection.shared.registration.RegisteredServer
 import app.simplecloud.plugin.connection.shared.registration.ServerRegisterer
-import app.simplecloud.plugin.connection.shared.registration.ServerRegistry
 import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
 import kotlinx.coroutines.*
 import org.slf4j.LoggerFactory
-import java.io.File
 import java.util.concurrent.CopyOnWriteArrayList
 
-class ConnectionPlugin(
-    private val dir: File,
-    private val registry: ServerRegistry,
+class ConnectionPlugin<S : ConnectionServer>(
+    private val platform: ConnectionPlatform<S>,
 ) {
 
     private val api = CloudApi.create()
     private val logger = LoggerFactory.getLogger(ConnectionPlugin::class.java)
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private val additionalServers = CopyOnWriteArrayList<RegisteredServer>()
+    private val dir = platform.getDataDirectory()
+    private val registry = platform.getRegistry()
 
     val connectionConfig = ConfigurationFactory.create(dir, "config.yml", ConnectionConfig())
     val messageConfig = ConfigurationFactory.create(dir, "messages.yml", MessageConfig())
@@ -53,7 +57,29 @@ class ConnectionPlugin(
         api.close()
     }
 
-    fun isStopping(serverName: String): Boolean = registerer.isStopping(serverName)
+    fun findJoinTarget(player: ConnectionPlayer): S? = ConnectionResolver.findJoinTarget(
+        platform,
+        player,
+        connectionConfig.get(),
+        registerer.getStoppingServerNames(),
+    )
+
+    fun findFallbackTarget(player: ConnectionPlayer, kickedServerName: String?): S? = ConnectionResolver.findFallbackTarget(
+        platform,
+        player,
+        kickedServerName,
+        connectionConfig.get(),
+        registerer.getStoppingServerNames(),
+    )
+
+    fun findCommandTarget(player: ConnectionPlayer, targets: List<FallbackTargetConnection>): CommandTarget<S> =
+        ConnectionResolver.findCommandTarget(
+            platform,
+            player,
+            targets,
+            connectionConfig.get(),
+            registerer.getStoppingServerNames(),
+        )
 
     fun reload() {
         connectionConfig.loadOrCreate(ConnectionConfig())

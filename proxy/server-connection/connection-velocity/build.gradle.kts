@@ -4,8 +4,6 @@ plugins {
     alias(libs.plugins.minotaur)
 }
 
-version = "1.0.10"
-
 dependencies {
     implementation(projects.proxy.serverConnection.connectionShared)
     compileOnly(libs.simplecloud.api)

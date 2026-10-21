@@ -3,8 +3,6 @@ plugins {
     alias(libs.plugins.minotaur)
 }
 
-version = "1.0.0"
-
 dependencies {
     api(projects.proxy.notify.notifyShared)
     implementation(projects.core.coreBungeecord)

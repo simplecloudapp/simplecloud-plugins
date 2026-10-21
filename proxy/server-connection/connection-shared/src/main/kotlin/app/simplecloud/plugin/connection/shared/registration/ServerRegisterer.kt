@@ -92,9 +92,10 @@ class ServerRegisterer(
         scope.cancel()
     }
 
-    fun isStopping(proxyName: String): Boolean = registeredServers.values.any { server ->
-        server.serverId in stoppingServers && server.proxyName.equals(proxyName, ignoreCase = true)
-    }
+    fun getStoppingServerNames(): Set<String> = registeredServers.values
+        .filter { server -> server.serverId in stoppingServers }
+        .map { server -> server.proxyName }
+        .toSet()
 
     fun register(server: Server) {
         val registeredServer = convertToRegisteredServer(server) ?: return

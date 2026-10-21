@@ -2,8 +2,6 @@ plugins {
     id("simplecloud.base-conventions")
 }
 
-version = "1.0.10"
-
 dependencies {
     api(projects.core.coreShared)
     implementation(libs.bundles.adventure)

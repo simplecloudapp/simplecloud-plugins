@@ -23,7 +23,6 @@ luckperms = "5.5"
 reflection-remapper = "0.1.3"
 
 adventure = "5.2.0"
-adventure-platform-bungeecord = "4.4.1"
 
 configurate = "4.2.0"
 caffeine = "3.3.1"
@@ -63,7 +62,6 @@ adventure-text-minimessage = { module = "net.kyori:adventure-text-minimessage", 
 adventure-text-serializer-gson = { module = "net.kyori:adventure-text-serializer-gson", version.ref = "adventure" }
 adventure-text-serializer-plain = { module = "net.kyori:adventure-text-serializer-plain", version.ref = "adventure" }
 adventure-text-serializer-legacy = { module = "net.kyori:adventure-text-serializer-legacy", version.ref = "adventure" }
-adventure-platform-bungeecord = { module = "net.kyori:adventure-platform-bungeecord", version.ref = "adventure-platform-bungeecord" }
 
 configurate-yaml = { module = "org.spongepowered:configurate-yaml", version.ref = "configurate" }
 configurate-gson = { module = "org.spongepowered:configurate-gson", version.ref = "configurate" }

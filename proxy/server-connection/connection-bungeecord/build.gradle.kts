@@ -3,12 +3,11 @@ plugins {
     alias(libs.plugins.minotaur)
 }
 
-version = "1.0.10"
-
 dependencies {
     implementation(projects.proxy.serverConnection.connectionShared)
-    implementation(libs.adventure.platform.bungeecord)
+    implementation(projects.core.coreBungeecord)
     implementation(libs.bundles.adventure)
+    implementation(libs.adventure.text.serializer.gson)
     compileOnly(libs.simplecloud.api)
     compileOnly(libs.bungeecord.api)
     compileOnly(libs.slf4j.api)

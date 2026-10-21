@@ -2,8 +2,6 @@ plugins {
     id("simplecloud.base-conventions")
 }
 
-version = "0.0.6"
-
 dependencies {
     compileOnly(libs.simplecloud.api)
     compileOnly(libs.slf4j.api)

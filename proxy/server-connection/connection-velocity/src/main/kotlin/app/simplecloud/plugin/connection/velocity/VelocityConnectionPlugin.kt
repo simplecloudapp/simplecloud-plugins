@@ -4,10 +4,8 @@ import app.simplecloud.plugin.connection.shared.BuildConstants
 import app.simplecloud.plugin.connection.shared.ConnectionPlugin
 import app.simplecloud.plugin.connection.velocity.command.ConnectionCommand
 import app.simplecloud.plugin.connection.velocity.command.VelocityCommandManager
-import app.simplecloud.plugin.connection.velocity.listener.KickedFromServerListener
-import app.simplecloud.plugin.connection.velocity.listener.PlayerChooseInitialServerListener
+import app.simplecloud.plugin.connection.velocity.listener.ConnectionListener
 import app.simplecloud.plugin.connection.velocity.platform.VelocityPlatformImpl
-import app.simplecloud.plugin.connection.velocity.registration.VelocityServerRegistry
 import com.google.inject.Inject
 import com.velocitypowered.api.event.Subscribe
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent
@@ -34,11 +32,10 @@ class VelocityConnectionPlugin @Inject constructor(
     private val server: ProxyServer,
 ) {
 
-    private val registry = VelocityServerRegistry(server)
     private val commandManager = VelocityCommandManager(this, server)
+    private val platform = VelocityPlatformImpl(server, dataDirectory)
 
-    val connectionPlugin = ConnectionPlugin(dataDirectory.toFile(), registry)
-    val platform = VelocityPlatformImpl(server, connectionPlugin)
+    val connectionPlugin = ConnectionPlugin(platform)
 
     @Subscribe
     fun onProxyInitialize(event: ProxyInitializeEvent) {
@@ -69,8 +66,7 @@ class VelocityConnectionPlugin @Inject constructor(
     }
 
     private fun registerListeners() {
-        server.eventManager.register(this, PlayerChooseInitialServerListener(this, platform))
-        server.eventManager.register(this, KickedFromServerListener(this, platform))
+        server.eventManager.register(this, ConnectionListener(this))
     }
 
     private fun registerCommands() {

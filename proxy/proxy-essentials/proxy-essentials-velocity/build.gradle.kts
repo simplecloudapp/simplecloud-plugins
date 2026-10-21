@@ -4,8 +4,6 @@ plugins {
     alias(libs.plugins.minotaur)
 }
 
-version = "1.0.0-beta.1"
-
 dependencies {
     implementation(projects.proxy.proxyEssentials.proxyEssentialsShared)
     implementation(libs.cloud.velocity)

@@ -18,7 +18,7 @@ plugins {
 }
 
 group = "app.simplecloud.plugin"
-version = "1.0.0"
+version = providers.gradleProperty("version.${path.substringBeforeLast(':').substringAfterLast(':')}").get()
 
 repositories {
     mavenCentral()

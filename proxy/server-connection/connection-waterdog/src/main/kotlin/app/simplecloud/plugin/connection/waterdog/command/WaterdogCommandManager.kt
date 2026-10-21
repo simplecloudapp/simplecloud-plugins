@@ -2,7 +2,6 @@ package app.simplecloud.plugin.connection.waterdog.command
 
 import app.simplecloud.plugin.connection.shared.config.CommandEntry
 import app.simplecloud.plugin.connection.shared.connection.CommandTarget
-import app.simplecloud.plugin.connection.shared.connection.ConnectionResolver
 import app.simplecloud.plugin.connection.waterdog.WaterdogConnectionPlugin
 import app.simplecloud.plugin.connection.waterdog.platform.WaterdogConnectionPlayer
 import dev.waterdog.waterdogpe.command.Command
@@ -23,7 +22,8 @@ class WaterdogCommandManager(
     private val logger = LoggerFactory.getLogger(WaterdogCommandManager::class.java)
 
     fun registerCommands() {
-        val commands = plugin.connectionPlugin.commandConfig.get().commands
+        val connectionPlugin = plugin.connectionPlugin ?: return
+        val commands = connectionPlugin.commandConfig.get().commands
         for (command in commands) {
             registerCommand(command)
         }
@@ -62,13 +62,8 @@ class WaterdogCommandManager(
     private fun handleCommand(player: ProxiedPlayer, command: CommandEntry) {
         if (command.permission.isNotEmpty() && !player.hasPermission(command.permission)) return
 
-        val config = plugin.connectionPlugin.connectionConfig.get()
-        val target = ConnectionResolver.findCommandTarget(
-            plugin.platform,
-            WaterdogConnectionPlayer(player),
-            command.targetConnections,
-            config,
-        )
+        val connectionPlugin = plugin.connectionPlugin ?: return
+        val target = connectionPlugin.findCommandTarget(WaterdogConnectionPlayer(player), command.targetConnections)
 
         when (target) {
             is CommandTarget.Connect -> connect(player, target.server.serverInfo)
@@ -86,7 +81,8 @@ class WaterdogCommandManager(
     }
 
     private fun sendMessage(player: ProxiedPlayer, rawMessage: String) {
-        val messages = plugin.connectionPlugin.messageConfig.get()
+        val connectionPlugin = plugin.connectionPlugin ?: return
+        val messages = connectionPlugin.messageConfig.get()
         val plain = serializer.serialize(messages.msg(rawMessage))
         player.sendMessage(plain)
     }

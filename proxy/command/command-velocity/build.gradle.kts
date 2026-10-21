@@ -4,8 +4,6 @@ plugins {
     alias(libs.plugins.minotaur)
 }
 
-version = "0.0.6"
-
 dependencies {
     implementation(projects.proxy.command.commandShared)
     implementation(projects.core.coreVelocity)

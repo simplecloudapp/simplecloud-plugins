@@ -5,6 +5,4 @@ interface ConnectionServer {
     fun getName(): String
 
     fun getPlayerCount(): Int
-
-    fun isStopping(): Boolean
 }
