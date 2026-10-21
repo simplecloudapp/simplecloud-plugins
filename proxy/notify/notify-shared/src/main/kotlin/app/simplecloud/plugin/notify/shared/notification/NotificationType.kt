@@ -1,7 +1,7 @@
 package app.simplecloud.plugin.notify.shared.notification
 
 import app.simplecloud.api.server.ServerState
-import app.simplecloud.plugin.notify.shared.command.CloudSender
+import app.simplecloud.plugin.core.shared.command.CloudSender
 import app.simplecloud.plugin.notify.shared.utilities.NotifyPermissions
 
 enum class NotificationType(

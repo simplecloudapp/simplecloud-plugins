@@ -7,9 +7,10 @@ version = "1.0.0"
 
 dependencies {
     api(projects.proxy.notify.notifyShared)
+    implementation(projects.core.coreBungeecord)
     compileOnly(libs.bungeecord.api)
     compileOnly(libs.slf4j.api)
-    implementation(libs.adventure.platform.bungeecord)
+    implementation(libs.adventure.text.serializer.gson)
     implementation(libs.adventure)
     implementation(libs.adventure.text.minimessage)
     implementation(libs.cloud.bungee)

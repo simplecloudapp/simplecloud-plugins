@@ -3,7 +3,6 @@ package app.simplecloud.plugin.connection.shared
 import app.simplecloud.api.CloudApi
 import app.simplecloud.plugin.connection.shared.config.CommandConfig
 import app.simplecloud.plugin.connection.shared.config.ConnectionConfig
-import app.simplecloud.plugin.connection.shared.config.DefaultConfigInstaller
 import app.simplecloud.plugin.connection.shared.config.MessageConfig
 import app.simplecloud.plugin.connection.shared.config.RegistrationServer
 import app.simplecloud.plugin.connection.shared.connection.ConnectionResolver
@@ -26,9 +25,9 @@ class ConnectionPlugin(
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private val additionalServers = CopyOnWriteArrayList<RegisteredServer>()
 
-    val connectionConfig = createConfig("config.yml", ConnectionConfig::class.java, ConnectionConfig())
-    val messageConfig = createConfig("messages.yml", MessageConfig::class.java, MessageConfig())
-    val commandConfig = createConfig("commands.yml", CommandConfig::class.java, CommandConfig())
+    val connectionConfig = ConfigurationFactory.create(dir, "config.yml", ConnectionConfig())
+    val messageConfig = ConfigurationFactory.create(dir, "messages.yml", MessageConfig())
+    val commandConfig = ConfigurationFactory.create(dir, "commands.yml", CommandConfig())
 
     private val registrationEnabled = connectionConfig.get().registration.enabled
     private val registerer = ServerRegisterer(api, registry, connectionConfig)
@@ -55,9 +54,9 @@ class ConnectionPlugin(
     }
 
     fun reload() {
-        loadConfig(connectionConfig, "config.yml", ConnectionConfig())
-        loadConfig(messageConfig, "messages.yml", MessageConfig())
-        loadConfig(commandConfig, "commands.yml", CommandConfig())
+        connectionConfig.loadOrCreate(ConnectionConfig())
+        messageConfig.loadOrCreate(MessageConfig())
+        commandConfig.loadOrCreate(CommandConfig())
         validateConnections()
 
         if (connectionConfig.get().registration.enabled != registrationEnabled) {
@@ -119,15 +118,4 @@ class ConnectionPlugin(
         blueprintConfigurator = null,
         persistent = true,
     )
-
-    private fun <E> createConfig(fileName: String, configClass: Class<E>, default: E): ConfigurationFactory<E> {
-        val factory = ConfigurationFactory(File(dir, fileName), configClass)
-        loadConfig(factory, fileName, default)
-        return factory
-    }
-
-    private fun <E> loadConfig(factory: ConfigurationFactory<E>, fileName: String, default: E) {
-        DefaultConfigInstaller.install(File(dir, fileName).toPath(), javaClass.classLoader)
-        factory.loadOrCreate(default)
-    }
 }

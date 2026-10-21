@@ -8,6 +8,7 @@ version = "1.0.0"
 
 dependencies {
     api(projects.proxy.notify.notifyShared)
+    implementation(projects.core.coreVelocity)
     compileOnly(libs.velocity.api)
     compileOnly(libs.slf4j.api)
     kapt(libs.velocity.api)

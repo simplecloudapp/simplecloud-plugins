@@ -4,7 +4,7 @@ import app.simplecloud.api.CloudApi
 import app.simplecloud.api.CloudApiOptions
 import app.simplecloud.api.runtime.SimpleCloudRuntime
 import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
-import app.simplecloud.plugin.proxy.shared.config.DefaultConfigInstaller
+import app.simplecloud.plugin.core.shared.config.DefaultConfigInstaller
 import app.simplecloud.plugin.proxy.shared.config.MessageConfig
 import app.simplecloud.plugin.proxy.shared.config.ProxyEssentialsConfig
 import app.simplecloud.plugin.proxy.shared.config.migration.LegacyDirectoryMigrator
@@ -44,7 +44,7 @@ class ProxyEssentials(
 
     fun start() {
         LegacyDirectoryMigrator.migrate(dir)
-        DefaultConfigInstaller.install(dir, javaClass.classLoader)
+        DefaultConfigInstaller.installAll(dir, DEFAULT_RESOURCES, javaClass.classLoader, "config")
         loadConfigs()
         layoutService.startDomainSync()
         tabListService.start()
@@ -106,5 +106,16 @@ class ProxyEssentials(
         config.loadOrCreate(ProxyEssentialsConfig())
         messages.loadOrCreate(MessageConfig())
         layoutRepository.loadLayouts()
+    }
+
+    private companion object {
+        val DEFAULT_RESOURCES = listOf(
+            "config.yml",
+            "messages.yml",
+            "layout/public.yml",
+            "layout/maintenance.yml",
+            "layout/server-icons/simplecloud.png",
+            "layout/server-icons/simplecloud-gray.png",
+        )
     }
 }

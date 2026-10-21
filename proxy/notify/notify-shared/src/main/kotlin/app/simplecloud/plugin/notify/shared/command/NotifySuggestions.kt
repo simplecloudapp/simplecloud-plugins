@@ -1,5 +1,6 @@
 package app.simplecloud.plugin.notify.shared.command
 
+import app.simplecloud.plugin.core.shared.command.CloudSender
 import app.simplecloud.plugin.notify.shared.notification.NotificationType
 import org.incendo.cloud.kotlin.coroutines.SuspendingSuggestionProvider
 import org.incendo.cloud.suggestion.Suggestion
