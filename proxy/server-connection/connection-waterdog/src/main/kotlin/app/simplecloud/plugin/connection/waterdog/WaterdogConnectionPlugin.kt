@@ -42,7 +42,7 @@ class WaterdogConnectionPlugin : Plugin() {
     }
 
     private fun registerHandlers() {
-        val platform = WaterdogPlatformImpl(proxy)
+        val platform = WaterdogPlatformImpl(proxy, connectionPlugin)
         proxy.joinHandler = WaterdogJoinHandler(this, platform, proxy.joinHandler)
         proxy.reconnectHandler = WaterdogReconnectHandler(this, platform, proxy.reconnectHandler)
     }

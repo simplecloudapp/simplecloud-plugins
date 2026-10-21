@@ -10,7 +10,6 @@ class BungeeCordPlugin : Plugin() {
     private val plugin = CommandPlugin(dataFolder)
 
     override fun onEnable() {
-        plugin.startup()
         CloudCommandHandler(BungeeCloudCommandManager.create(this), plugin).register()
     }
 

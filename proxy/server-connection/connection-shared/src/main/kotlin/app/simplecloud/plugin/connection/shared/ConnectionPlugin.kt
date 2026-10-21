@@ -53,6 +53,8 @@ class ConnectionPlugin(
         api.close()
     }
 
+    fun isStopping(serverName: String): Boolean = registerer.isStopping(serverName)
+
     fun reload() {
         connectionConfig.loadOrCreate(ConnectionConfig())
         messageConfig.loadOrCreate(MessageConfig())

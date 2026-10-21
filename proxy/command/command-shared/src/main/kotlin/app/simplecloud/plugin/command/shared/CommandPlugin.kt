@@ -3,16 +3,15 @@ package app.simplecloud.plugin.command.shared
 import app.simplecloud.api.CloudApi
 import app.simplecloud.plugin.command.shared.config.MessageConfig
 import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
-import app.simplecloud.plugin.core.shared.config.DefaultConfigInstaller
 import kotlinx.coroutines.*
 import org.slf4j.LoggerFactory
 import java.io.File
 
-class CommandPlugin(private val dir: File) {
+class CommandPlugin(dir: File) {
 
     private val logger = LoggerFactory.getLogger(CommandPlugin::class.java)
 
-    val config = ConfigurationFactory(File(dir, "messages.yml"), MessageConfig::class.java)
+    val config = ConfigurationFactory.create(dir, "messages.yml", MessageConfig())
     val messageConfiguration: MessageConfig get() = config.get()
 
     val api: CloudApi = CloudApi.create()
@@ -26,11 +25,6 @@ class CommandPlugin(private val dir: File) {
                 logger.error("An error occurred in coroutine ${context[CoroutineName]?.name}", exception)
             },
     )
-
-    fun startup() {
-        DefaultConfigInstaller.install(File(dir, "messages.yml").toPath(), javaClass.classLoader)
-        config.loadOrCreate(MessageConfig())
-    }
 
     fun shutdown() {
         scope.cancel()

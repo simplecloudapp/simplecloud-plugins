@@ -68,7 +68,7 @@ class VelocityConnectionPlugin @Inject constructor(
     }
 
     private fun registerListeners() {
-        val platform = VelocityPlatformImpl(server)
+        val platform = VelocityPlatformImpl(server, connectionPlugin)
         server.eventManager.register(this, PlayerChooseInitialServerListener(this, platform))
         server.eventManager.register(this, KickedFromServerListener(this, platform))
     }

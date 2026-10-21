@@ -124,6 +124,7 @@ object ConnectionResolver {
         if (checkRules(connection, player) != null) return null
         return platform.getServers()
             .filter { server -> connection.serverNameMatcher.matches(server.getName()) }
+            .filter { server -> !server.isStopping() }
             .filter { server -> !server.getName().equals(excludedServerName, ignoreCase = true) }
             .minByOrNull { server -> server.getPlayerCount() }
     }

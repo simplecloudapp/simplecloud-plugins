@@ -27,6 +27,7 @@ class ServerRegisterer(
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private val subscriptions: MutableList<Subscription> = mutableListOf()
     private val registeredServers = ConcurrentHashMap<String, RegisteredServer>()
+    private val stoppingServers = ConcurrentHashMap.newKeySet<String>()
 
     private val serverNames = Function<String, Optional<String>> { id -> Optional.ofNullable(registeredServers[id]?.proxyName) }
 
@@ -36,7 +37,11 @@ class ServerRegisterer(
             api.event().server().onStateChanged { event ->
                 val server = event.server ?: return@onStateChanged
                 if (server.serverBase?.type != GroupServerType.SERVER) return@onStateChanged
+                if (event.newState == ServerState.STOPPING || event.newState == ServerState.CLEANUP) {
+                    stoppingServers.add(server.serverId)
+                }
                 if (event.newState == ServerState.AVAILABLE && event.oldState != ServerState.AVAILABLE) {
+                    stoppingServers.remove(server.serverId)
                     scope.launch {
                         register(server)
                     }
@@ -85,6 +90,10 @@ class ServerRegisterer(
         subscriptions.forEach { subscription -> subscription.close() }
         subscriptions.clear()
         scope.cancel()
+    }
+
+    fun isStopping(proxyName: String): Boolean = registeredServers.values.any { server ->
+        server.serverId in stoppingServers && server.proxyName.equals(proxyName, ignoreCase = true)
     }
 
     fun register(server: Server) {
@@ -140,6 +149,7 @@ class ServerRegisterer(
     }
 
     private fun unregister(serverId: String) {
+        stoppingServers.remove(serverId)
         val registeredServer = registeredServers.remove(serverId) ?: return
         logger.info("Unregistering server $serverId (${registeredServer.proxyName})...")
         releaseProxyName(registeredServer)

@@ -27,7 +27,7 @@ class PaperPlaceholdersPlugin : JavaPlugin() {
         }
 
         if (placeholderApiExpansion == null && miniPlaceholdersExpansion == null) {
-            logger.warning("No Placeholder Provider is installed, no placeholders will be registered")
+            logger.warning("Install PlaceholderAPI or MiniPlaceholders to use the SimpleCloud placeholders")
         }
     }
 
