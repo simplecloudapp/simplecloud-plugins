@@ -77,14 +77,20 @@ jobs:
       - name: upload to release
         env:
           GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
           TAG: ${{ github.ref_name }}
           PLUGIN: ${{ steps.tag.outputs.plugin }}
+          VERSION: ${{ steps.tag.outputs.version }}
         run: |
           shopt -s nullglob
           jars=(build/plugins/"$PLUGIN"/*.jar)
           if [ ${#jars[@]} -eq 0 ]; then
             echo "::error::No jars found in build/plugins/$PLUGIN"
             exit 1
+          fi
+          # releases created in the github ui already exist, plain tag pushes need one
+          if ! gh release view "$TAG" > /dev/null 2>&1; then
+            gh release create "$TAG" --verify-tag --title "$PLUGIN v$VERSION" --generate-notes
           fi
           gh release upload "$TAG" "${jars[@]}" --clobber
 
