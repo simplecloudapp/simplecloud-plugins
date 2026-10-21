@@ -35,9 +35,9 @@ class ProxyPingListener(
         }
 
         val icon = if (layout.serverIcon.enabled) serverIconCache.get(layout.serverIcon.file) else null
-        if (icon != null) {
-            val bytes = Base64.getDecoder().decode(icon.substringAfter(","))
-            response.setFavicon(Favicon.create(ImageIO.read(ByteArrayInputStream(bytes))))
+        val favicon = if (icon != null) toFavicon(icon) else null
+        if (favicon != null) {
+            response.setFavicon(favicon)
         }
 
         if (layout.version.name.enabled) {

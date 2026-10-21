@@ -2,6 +2,7 @@ package app.simplecloud.plugin.proxy.shared.joinstate
 
 import app.simplecloud.api.CloudApi
 import app.simplecloud.api.event.Subscription
+import app.simplecloud.api.runtime.SimpleCloudRuntime
 import app.simplecloud.api.internal.integration.player.ServerNameRegistry
 import app.simplecloud.api.server.Server
 import app.simplecloud.api.server.ServerQuery
@@ -94,6 +95,7 @@ class JoinStateService(
     }
 
     fun getServerState(serverName: String): String? {
+        if (SimpleCloudRuntime.serverId().isBlank()) return config.get().initialState
         val states = serverStates.get() ?: return null
         return states[serverName] ?: findExternalServerState(serverName) ?: config.get().initialState
     }

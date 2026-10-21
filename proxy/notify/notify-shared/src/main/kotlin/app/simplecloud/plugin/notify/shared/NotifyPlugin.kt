@@ -33,6 +33,7 @@ class NotifyPlugin(private val platform: NotifyPlatform) {
         listener.stop()
         cache.clear()
         scope.cancel()
+        api.close()
     }
 
     fun onPlayerJoin(id: UUID) {

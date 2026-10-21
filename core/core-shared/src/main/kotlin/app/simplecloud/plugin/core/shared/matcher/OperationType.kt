@@ -34,8 +34,10 @@ enum class OperationType(private val matcher: OperationMatcher<*, *>) {
                 }
 
                 is NumericOperationMatcher -> {
-                    if (key is Int && value is Int) {
-                        matcher.matches(key, value)
+                    val numericKey = key.toString().toIntOrNull()
+                    val numericValue = value.toString().toIntOrNull()
+                    if (numericKey != null && numericValue != null) {
+                        matcher.matches(numericKey, numericValue)
                     } else {
                         false
                     }

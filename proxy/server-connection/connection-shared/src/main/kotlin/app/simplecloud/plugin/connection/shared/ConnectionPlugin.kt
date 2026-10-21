@@ -1,9 +1,6 @@
 package app.simplecloud.plugin.connection.shared
 
 import app.simplecloud.api.CloudApi
-import app.simplecloud.api.group.GroupServerType
-import app.simplecloud.api.server.ServerQuery
-import app.simplecloud.api.server.ServerState
 import app.simplecloud.plugin.connection.shared.config.CommandConfig
 import app.simplecloud.plugin.connection.shared.config.ConnectionConfig
 import app.simplecloud.plugin.connection.shared.config.DefaultConfigInstaller
@@ -16,7 +13,6 @@ import app.simplecloud.plugin.connection.shared.registration.ServerRegisterer
 import app.simplecloud.plugin.connection.shared.registration.ServerRegistry
 import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
 import kotlinx.coroutines.*
-import kotlinx.coroutines.future.await
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.util.concurrent.CopyOnWriteArrayList
@@ -56,6 +52,7 @@ class ConnectionPlugin(
             registerer.stop()
         }
         scope.cancel()
+        api.close()
     }
 
     fun reload() {
@@ -71,7 +68,9 @@ class ConnectionPlugin(
         if (registrationEnabled) {
             unregisterAdditionalServers()
             registerAdditionalServers()
-            registerer.refresh()
+            scope.launch {
+                registerer.refresh()
+            }
         }
     }
 
@@ -93,18 +92,7 @@ class ConnectionPlugin(
     private suspend fun startRegistration() {
         logger.info("Starting server registration...")
         registerer.start()
-        loadExistingServers()
-    }
-
-    private suspend fun loadExistingServers() {
-        val servers = api.server().getAllServers(
-            ServerQuery.create()
-                .filterByState(ServerState.AVAILABLE, ServerState.INGAME)
-                .filterByServerGroupType(GroupServerType.SERVER),
-        ).await()
-
-        logger.info("Found ${servers.size} servers")
-        servers.forEach { server -> registerer.register(server) }
+        registerer.loadExistingServers()
     }
 
     private fun registerAdditionalServers() {

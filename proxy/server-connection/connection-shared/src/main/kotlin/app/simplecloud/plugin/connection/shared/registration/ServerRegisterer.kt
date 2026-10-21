@@ -5,11 +5,13 @@ import app.simplecloud.api.event.Subscription
 import app.simplecloud.api.group.GroupServerType
 import app.simplecloud.api.internal.integration.player.ServerNameRegistry
 import app.simplecloud.api.server.Server
+import app.simplecloud.api.server.ServerQuery
 import app.simplecloud.api.server.ServerState
 import app.simplecloud.plugin.connection.shared.config.ConnectionConfig
 import app.simplecloud.plugin.connection.shared.utilities.RegisteredServerResolver
 import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
 import kotlinx.coroutines.*
+import kotlinx.coroutines.future.await
 import org.slf4j.LoggerFactory
 import java.util.Optional
 import java.util.concurrent.ConcurrentHashMap
@@ -90,11 +92,26 @@ class ServerRegisterer(
         register(registeredServer)
     }
 
-    fun refresh() {
+    suspend fun loadExistingServers() {
+        val servers = fetchRunningServers()
+        logger.info("Found ${servers.size} servers")
+        servers.forEach { server -> register(server) }
+    }
+
+    suspend fun refresh() {
         registeredServers.values.forEach { server ->
             register(server.copy(proxyName = resolveProxyName(server)))
         }
+        fetchRunningServers()
+            .filter { server -> !registeredServers.containsKey(server.serverId) }
+            .forEach { server -> register(server) }
     }
+
+    private suspend fun fetchRunningServers(): List<Server> = api.server().getAllServers(
+        ServerQuery.create()
+            .filterByState(ServerState.AVAILABLE, ServerState.INGAME)
+            .filterByServerGroupType(GroupServerType.SERVER),
+    ).await()
 
     private fun register(server: RegisteredServer) {
         if (server.blueprintConfigurator == "standalone") return
@@ -112,7 +129,8 @@ class ServerRegisterer(
         } else {
             if (previousRegistration != null) {
                 logger.info("Replacing stale registration ${previousRegistration.serverId} (${previousRegistration.proxyName}) with ${server.proxyName}...")
-                registry.unregister(previousRegistration.proxyName, previousRegistration)
+                registeredServers.remove(server.serverId)
+                releaseProxyName(previousRegistration)
             }
             logger.info("Registering server ${server.serverId} (${server.proxyName})...")
         }
@@ -124,7 +142,18 @@ class ServerRegisterer(
     private fun unregister(serverId: String) {
         val registeredServer = registeredServers.remove(serverId) ?: return
         logger.info("Unregistering server $serverId (${registeredServer.proxyName})...")
-        registry.unregister(registeredServer.proxyName, registeredServer)
+        releaseProxyName(registeredServer)
+    }
+
+    private fun releaseProxyName(server: RegisteredServer) {
+        val remaining = registeredServers.values.firstOrNull { other -> other.proxyName == server.proxyName }
+        if (remaining == null) {
+            registry.unregister(server.proxyName, server)
+            return
+        }
+
+        logger.info("Keeping ${server.proxyName} registered for ${remaining.serverId}")
+        registry.register(remaining.proxyName, remaining)
     }
 
     private fun convertToRegisteredServer(server: Server): RegisteredServer? {

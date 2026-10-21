@@ -7,5 +7,5 @@ import java.util.regex.Pattern
 @ConfigSerializable
 object PatternOperationMatcher : StringOperationMatcher {
 
-    override fun matches(key: String, value: String): Boolean = Pattern.matches(key, value)
+    override fun matches(key: String, value: String): Boolean = Pattern.matches(value, key)
 }
