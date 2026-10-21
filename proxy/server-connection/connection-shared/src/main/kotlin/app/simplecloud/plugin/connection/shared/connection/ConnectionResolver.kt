@@ -75,28 +75,33 @@ object ConnectionResolver {
             .firstNotNullOfOrNull { connection -> findLeastPopulated(platform, player, connection, kickedServerName) }
     }
 
-    fun matchingTargets(
+    fun <S : ConnectionServer> findCommandTarget(
+        platform: ConnectionPlatform<S>,
+        player: ConnectionPlayer,
         targets: List<FallbackTargetConnection>,
-        connections: List<ConnectionEntry>,
-        serverNames: List<String>,
-        fromServerName: String?,
-        player: ConnectionPlayer,
-    ): Sequence<List<String>> = targets
-        .sortedByDescending { it.priority }
-        .asSequence()
-        .mapNotNull { target -> matchingServerNames(target, connections, serverNames, fromServerName, player) }
+        config: ConnectionConfig,
+    ): CommandTarget<S> {
+        val currentServerName = player.getServerName()
+        val servers = platform.getServers()
+        val serverNames = servers.map { server -> server.getName() }
 
-    private fun matchingServerNames(
-        target: FallbackTargetConnection,
-        connections: List<ConnectionEntry>,
-        serverNames: List<String>,
-        fromServerName: String?,
-        player: ConnectionPlayer,
-    ): List<String>? {
-        val connection = findConnection(target.name, connections)
-        if (!isFromAllowed(target, fromServerName, connections, serverNames)) return null
-        if (connection == null || checkRules(connection, player) != null) return null
-        return findMatchingServerNames(connection, serverNames).ifEmpty { null }
+        for (target in targets.sortedByDescending { it.priority }) {
+            if (!isFromAllowed(target, currentServerName, config.connections, serverNames)) continue
+            val connection = findConnection(target.name, config.connections) ?: continue
+            if (checkRules(connection, player) != null) continue
+
+            val matchingServers = servers.filter { server -> connection.serverNameMatcher.matches(server.getName()) }
+            if (matchingServers.any { server -> server.getName().equals(currentServerName, ignoreCase = true) }) {
+                return CommandTarget.AlreadyConnected
+            }
+
+            val server = matchingServers
+                .filter { server -> !server.isStopping() }
+                .minByOrNull { server -> server.getPlayerCount() }
+            if (server != null) return CommandTarget.Connect(server)
+        }
+
+        return CommandTarget.NotFound
     }
 
     private fun isFromAllowed(

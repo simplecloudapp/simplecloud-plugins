@@ -1,6 +1,7 @@
 package app.simplecloud.plugin.connection.velocity.command
 
 import app.simplecloud.plugin.connection.shared.config.CommandEntry
+import app.simplecloud.plugin.connection.shared.connection.CommandTarget
 import app.simplecloud.plugin.connection.shared.connection.ConnectionResolver
 import app.simplecloud.plugin.connection.velocity.VelocityConnectionPlugin
 import app.simplecloud.plugin.connection.velocity.platform.VelocityConnectionPlayer
@@ -32,7 +33,7 @@ class VelocityCommandManager(
     }
 
     private fun registerCommand(command: CommandEntry) {
-        val connectionCommand = ConnectionCommand(plugin, proxy, command)
+        val connectionCommand = ConnectionCommand(plugin, command)
         val meta = proxy.commandManager.metaBuilder(command.name)
             .aliases(*command.aliases.toTypedArray())
             .plugin(plugin)
@@ -44,7 +45,6 @@ class VelocityCommandManager(
 
     private class ConnectionCommand(
         private val plugin: VelocityConnectionPlugin,
-        private val proxy: ProxyServer,
         private val command: CommandEntry,
     ) : SimpleCommand {
         private val logger = LoggerFactory.getLogger(ConnectionCommand::class.java)
@@ -56,30 +56,18 @@ class VelocityCommandManager(
             val config = plugin.connectionPlugin.connectionConfig.get()
             val messages = plugin.connectionPlugin.messageConfig.get()
 
-            val currentServerName = source.currentServer.getOrNull()?.serverInfo?.name
-            val targets = ConnectionResolver.matchingTargets(
-                command.targetConnections,
-                config.connections,
-                proxy.allServers.map { it.serverInfo.name },
-                currentServerName,
+            val target = ConnectionResolver.findCommandTarget(
+                plugin.platform,
                 VelocityConnectionPlayer(source),
+                command.targetConnections,
+                config,
             )
 
-            for (names in targets) {
-                if (names.any { name -> name.equals(currentServerName, ignoreCase = true) }) {
-                    source.sendMessage(messages.msg(command.messages.alreadyConnected))
-                    return
-                }
-                val server = names
-                    .mapNotNull { name -> proxy.getServer(name).getOrNull() }
-                    .minByOrNull { it.playersConnected.size }
-                if (server != null) {
-                    connect(source, server)
-                    return
-                }
+            when (target) {
+                is CommandTarget.Connect -> connect(source, target.server.server)
+                CommandTarget.AlreadyConnected -> source.sendMessage(messages.msg(command.messages.alreadyConnected))
+                CommandTarget.NotFound -> source.sendMessage(messages.msg(command.messages.noTargetConnectionFound))
             }
-
-            source.sendMessage(messages.msg(command.messages.noTargetConnectionFound))
         }
 
         private fun connect(source: Player, server: RegisteredServer) {

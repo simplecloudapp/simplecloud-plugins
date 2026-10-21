@@ -10,4 +10,6 @@ class WaterdogConnectionPlayer(
     override fun hasPermission(permission: String): Boolean = player.hasPermission(permission)
 
     override fun getVirtualHost(): String? = player.loginData.joinHostname
+
+    override fun getServerName(): String? = player.serverInfo?.serverName
 }

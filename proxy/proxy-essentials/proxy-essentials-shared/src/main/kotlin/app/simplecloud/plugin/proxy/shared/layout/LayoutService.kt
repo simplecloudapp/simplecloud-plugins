@@ -4,32 +4,27 @@ import app.simplecloud.api.CloudApi
 import app.simplecloud.api.event.Subscription
 import app.simplecloud.api.server.ServerState
 import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
-import app.simplecloud.plugin.proxy.shared.config.DomainRoute
 import app.simplecloud.plugin.proxy.shared.config.LayoutConfig
 import app.simplecloud.plugin.proxy.shared.config.MotdEntry
 import app.simplecloud.plugin.proxy.shared.config.MotdUpdateType
 import app.simplecloud.plugin.proxy.shared.config.ProxyEssentialsConfig
 import app.simplecloud.plugin.proxy.shared.joinstate.JoinStateService
-import kotlinx.coroutines.*
 import kotlinx.coroutines.future.await
 import org.slf4j.LoggerFactory
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.random.Random
-import kotlin.time.Duration.Companion.seconds
 
 class LayoutService(
     private val api: CloudApi,
     private val repository: LayoutRepository,
     private val service: JoinStateService,
     private val config: ConfigurationFactory<ProxyEssentialsConfig>,
-    private val scope: CoroutineScope,
 ) {
 
     private val logger = LoggerFactory.getLogger(LayoutService::class.java)
     private val localLayout = AtomicReference<String?>()
-    private val domainLayouts = AtomicReference<Map<String, String>>(emptyMap())
     private val pingCounters = ConcurrentHashMap<String, AtomicInteger>()
     private val subscriptions: MutableList<Subscription> = mutableListOf()
 
@@ -56,24 +51,11 @@ class LayoutService(
         subscriptions.clear()
     }
 
-    fun startDomainSync() {
-        scope.launch {
-            while (isActive) {
-                try {
-                    updateDomainLayouts()
-                } catch (e: Exception) {
-                    logger.error("Could not update the layouts of the configured domains", e)
-                }
-                delay(3.seconds)
-            }
-        }
-    }
-
     fun getLayout(name: String): LayoutConfig = repository.find(name) ?: LayoutConfig()
 
     fun getLayoutName(domain: String?): String {
         val config = config.get()
-        val domainLayout = if (domain == null) null else domainLayouts.get()[domain.lowercase()]
+        val domainLayout = if (domain == null) null else findDomainLayout(domain)
         val forcedLayout = config.joinstates.find { it.name == service.getLocalState() }?.forcedMotdLayout
         val candidates = listOf(domainLayout, forcedLayout, localLayout.get(), config.initialLayout)
 
@@ -107,22 +89,10 @@ class LayoutService(
         }
     }
 
-    private suspend fun updateDomainLayouts() {
-        val resolved = config.get().domains.mapNotNull { route ->
-            val layout = try {
-                getDomainLayout(route)
-            } catch (e: Exception) {
-                logger.error("Could not update the layout of the domain '${route.domain}'", e)
-                null
-            } ?: return@mapNotNull null
-            route.domain.lowercase() to layout
-        }
-        domainLayouts.set(resolved.toMap())
-    }
-
-    private suspend fun getDomainLayout(route: DomainRoute): String? {
+    private fun findDomainLayout(domain: String): String? {
         val config = config.get()
-        val state = service.getTargetState(route.target)
+        val route = config.domains.find { it.domain.equals(domain, ignoreCase = true) } ?: return null
+        val state = service.findCachedTargetState(route.target) ?: return null
         val candidates = listOf(
             route.rules.find { it.state == state }?.layout,
             config.joinstates.find { it.name == state }?.forcedMotdLayout,

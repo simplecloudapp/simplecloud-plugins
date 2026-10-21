@@ -1,6 +1,7 @@
 package app.simplecloud.plugin.connection.waterdog.command
 
 import app.simplecloud.plugin.connection.shared.config.CommandEntry
+import app.simplecloud.plugin.connection.shared.connection.CommandTarget
 import app.simplecloud.plugin.connection.shared.connection.ConnectionResolver
 import app.simplecloud.plugin.connection.waterdog.WaterdogConnectionPlugin
 import app.simplecloud.plugin.connection.waterdog.platform.WaterdogConnectionPlayer
@@ -62,28 +63,18 @@ class WaterdogCommandManager(
         if (command.permission.isNotEmpty() && !player.hasPermission(command.permission)) return
 
         val config = plugin.connectionPlugin.connectionConfig.get()
-        val currentServerName = player.serverInfo?.serverName
-        val targets = ConnectionResolver.matchingTargets(
-            command.targetConnections,
-            config.connections,
-            plugin.proxy.servers.map { it.serverName },
-            currentServerName,
+        val target = ConnectionResolver.findCommandTarget(
+            plugin.platform,
             WaterdogConnectionPlayer(player),
+            command.targetConnections,
+            config,
         )
 
-        for (names in targets) {
-            if (names.any { name -> name.equals(currentServerName, ignoreCase = true) }) {
-                sendMessage(player, command.messages.alreadyConnected)
-                return
-            }
-            val serverInfo = names.mapNotNull { name -> plugin.proxy.getServerInfo(name) }.minByOrNull { it.players.size }
-            if (serverInfo != null) {
-                connect(player, serverInfo)
-                return
-            }
+        when (target) {
+            is CommandTarget.Connect -> connect(player, target.server.serverInfo)
+            CommandTarget.AlreadyConnected -> sendMessage(player, command.messages.alreadyConnected)
+            CommandTarget.NotFound -> sendMessage(player, command.messages.noTargetConnectionFound)
         }
-
-        sendMessage(player, command.messages.noTargetConnectionFound)
     }
 
     private fun connect(player: ProxiedPlayer, serverInfo: ServerInfo) {

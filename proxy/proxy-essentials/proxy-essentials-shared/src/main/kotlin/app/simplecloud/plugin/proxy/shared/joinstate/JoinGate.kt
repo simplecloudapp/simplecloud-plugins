@@ -1,40 +1,22 @@
 package app.simplecloud.plugin.proxy.shared.joinstate
 
-import app.simplecloud.api.CloudApi
+import app.simplecloud.api.runtime.SimpleCloudRuntime
 import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
 import app.simplecloud.plugin.proxy.shared.config.JoinStateConfig
 import app.simplecloud.plugin.proxy.shared.config.MessageConfig
 import app.simplecloud.plugin.proxy.shared.config.ProxyEssentialsConfig
+import app.simplecloud.plugin.proxy.shared.network.NetworkCache
 import app.simplecloud.plugin.proxy.shared.platform.ProxyPlayer
-import kotlinx.coroutines.*
-import kotlinx.coroutines.future.await
 import org.slf4j.LoggerFactory
-import java.util.concurrent.atomic.AtomicBoolean
-import kotlin.time.Duration.Companion.seconds
 
 class JoinGate(
-    private val api: CloudApi,
+    private val cache: NetworkCache,
     private val service: JoinStateService,
     private val config: ConfigurationFactory<ProxyEssentialsConfig>,
     private val messages: ConfigurationFactory<MessageConfig>,
-    private val scope: CoroutineScope,
 ) {
 
     private val logger = LoggerFactory.getLogger(JoinGate::class.java)
-    private val proxyFull = AtomicBoolean(false)
-
-    fun start() {
-        scope.launch {
-            while (isActive) {
-                try {
-                    proxyFull.set(isProxyFull())
-                } catch (e: Exception) {
-                    logger.error("Could not check whether the proxy is full, keeping the last known value", e)
-                }
-                delay(2.seconds)
-            }
-        }
-    }
 
     fun checkProxyJoin(player: ProxyPlayer): JoinResult {
         if (config.get().whitelist.contains(player.getName(), player.getUniqueId())) return JoinResult.Allowed
@@ -48,7 +30,7 @@ class JoinGate(
             return JoinResult.Denied(kick.noPermission)
         }
 
-        if (proxyFull.get() &&
+        if (isProxyFull() &&
             !player.hasPermission(joinState.permission.full)
         ) {
             return JoinResult.Denied(kick.networkFull)
@@ -94,16 +76,16 @@ class JoinGate(
         return permission.isBlank() || player.hasPermission(permission)
     }
 
-    private suspend fun isProxyFull(): Boolean {
-        val server = api.server().getCurrentServer().await()
-        val group = server.group
-        if (group == null) {
+    private fun isProxyFull(): Boolean {
+        val server = cache.getServer(SimpleCloudRuntime.serverId()) ?: return false
+        val groupName = server.group?.name
+        if (groupName == null) {
             val maxPlayers = server.maxPlayers ?: 0
             return maxPlayers in 1..(server.playerCount ?: 0)
         }
 
-        val maxPlayers = group.maxPlayers ?: 0
-        val onlinePlayers = api.server().getServersByGroup(group.name).await().sumOf { it.playerCount ?: 0 }
+        val maxPlayers = cache.findGroup(groupName)?.maxPlayers ?: 0
+        val onlinePlayers = cache.getServersOfGroup(groupName).sumOf { it.playerCount ?: 0 }
         return maxPlayers in 1..onlinePlayers
     }
 }

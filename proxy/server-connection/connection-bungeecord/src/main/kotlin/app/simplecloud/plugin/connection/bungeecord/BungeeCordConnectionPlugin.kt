@@ -20,6 +20,7 @@ class BungeeCordConnectionPlugin : Plugin() {
         dataFolder,
         serverRegistry,
     )
+    val platform = BungeeCordPlatformImpl(proxy, connectionPlugin)
 
     override fun onEnable() {
         cleanupServers()
@@ -47,7 +48,6 @@ class BungeeCordConnectionPlugin : Plugin() {
     }
 
     private fun registerListeners() {
-        val platform = BungeeCordPlatformImpl(proxy, connectionPlugin)
         proxy.pluginManager.registerListener(this, ServerConnectListener(this, platform))
         proxy.pluginManager.registerListener(this, ServerKickListener(this, platform))
     }

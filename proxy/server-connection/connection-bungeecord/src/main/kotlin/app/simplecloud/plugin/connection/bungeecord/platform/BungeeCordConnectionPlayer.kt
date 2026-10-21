@@ -10,4 +10,6 @@ class BungeeCordConnectionPlayer(
     override fun hasPermission(permission: String): Boolean = player.hasPermission(permission)
 
     override fun getVirtualHost(): String? = player.pendingConnection.virtualHost?.hostName
+
+    override fun getServerName(): String? = player.server?.info?.name
 }

@@ -38,6 +38,7 @@ class VelocityConnectionPlugin @Inject constructor(
     private val commandManager = VelocityCommandManager(this, server)
 
     val connectionPlugin = ConnectionPlugin(dataDirectory.toFile(), registry)
+    val platform = VelocityPlatformImpl(server, connectionPlugin)
 
     @Subscribe
     fun onProxyInitialize(event: ProxyInitializeEvent) {
@@ -68,7 +69,6 @@ class VelocityConnectionPlugin @Inject constructor(
     }
 
     private fun registerListeners() {
-        val platform = VelocityPlatformImpl(server, connectionPlugin)
         server.eventManager.register(this, PlayerChooseInitialServerListener(this, platform))
         server.eventManager.register(this, KickedFromServerListener(this, platform))
     }

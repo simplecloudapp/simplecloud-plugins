@@ -3,6 +3,7 @@ package app.simplecloud.plugin.connection.bungeecord.command
 import app.simplecloud.plugin.connection.bungeecord.BungeeCordConnectionPlugin
 import app.simplecloud.plugin.connection.bungeecord.platform.BungeeCordConnectionPlayer
 import app.simplecloud.plugin.connection.shared.config.CommandEntry
+import app.simplecloud.plugin.connection.shared.connection.CommandTarget
 import app.simplecloud.plugin.connection.shared.connection.ConnectionResolver
 import net.kyori.adventure.platform.bungeecord.BungeeAudiences
 import net.md_5.bungee.api.CommandSender
@@ -59,28 +60,18 @@ class BungeeCordCommandManager(
 
         if (command.permission.isNotEmpty() && !player.hasPermission(command.permission)) return
 
-        val currentServerName = player.server?.info?.name
-        val targets = ConnectionResolver.matchingTargets(
-            command.targetConnections,
-            config.connections,
-            plugin.proxy.servers.keys.toList(),
-            currentServerName,
+        val target = ConnectionResolver.findCommandTarget(
+            plugin.platform,
             BungeeCordConnectionPlayer(player),
+            command.targetConnections,
+            config,
         )
 
-        for (names in targets) {
-            if (names.any { name -> name.equals(currentServerName, ignoreCase = true) }) {
-                audience.sendMessage(messages.msg(command.messages.alreadyConnected))
-                return
-            }
-            val targetServer = names.mapNotNull { name -> plugin.proxy.servers[name] }.minByOrNull { it.players.size }
-            if (targetServer != null) {
-                connect(player, targetServer)
-                return
-            }
+        when (target) {
+            is CommandTarget.Connect -> connect(player, target.server.serverInfo)
+            CommandTarget.AlreadyConnected -> audience.sendMessage(messages.msg(command.messages.alreadyConnected))
+            CommandTarget.NotFound -> audience.sendMessage(messages.msg(command.messages.noTargetConnectionFound))
         }
-
-        audience.sendMessage(messages.msg(command.messages.noTargetConnectionFound))
     }
 
     private fun connect(player: ProxiedPlayer, targetServer: ServerInfo) {

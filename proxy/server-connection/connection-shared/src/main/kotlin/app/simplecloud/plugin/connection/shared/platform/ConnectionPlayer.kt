@@ -5,4 +5,6 @@ interface ConnectionPlayer {
     fun hasPermission(permission: String): Boolean
 
     fun getVirtualHost(): String?
+
+    fun getServerName(): String?
 }

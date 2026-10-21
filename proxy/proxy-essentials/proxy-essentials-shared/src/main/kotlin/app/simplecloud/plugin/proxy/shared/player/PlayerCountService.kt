@@ -2,9 +2,11 @@ package app.simplecloud.plugin.proxy.shared.player
 
 import app.simplecloud.api.CloudApi
 import app.simplecloud.api.group.Group
+import app.simplecloud.api.runtime.SimpleCloudRuntime
 import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
 import app.simplecloud.plugin.proxy.shared.config.PlayerCountConfig
 import app.simplecloud.plugin.proxy.shared.config.ProxyEssentialsConfig
+import app.simplecloud.plugin.proxy.shared.network.NetworkCache
 import app.simplecloud.plugin.proxy.shared.platform.ProxyPlatform
 import kotlinx.coroutines.*
 import kotlinx.coroutines.future.await
@@ -16,6 +18,7 @@ import kotlin.time.Duration.Companion.seconds
 
 class PlayerCountService(
     private val api: CloudApi,
+    private val cache: NetworkCache,
     private val platform: ProxyPlatform,
     private val config: ConfigurationFactory<ProxyEssentialsConfig>,
     private val scope: CoroutineScope,
@@ -65,11 +68,12 @@ class PlayerCountService(
     }
 
     private suspend fun updateCounts(config: PlayerCountConfig) {
-        val server = api.server().getCurrentServer().await()
+        if (!cache.isLoaded()) return
+        val server = cache.getServer(SimpleCloudRuntime.serverId()) ?: return
         val groupNames = (listOfNotNull(server.group?.name) + config.additionalGroups).distinct()
         val groups = groupNames.mapNotNull { findGroup(it) }
-        val groupServers = groups.flatMap { api.server().getServersByGroup(it.name).await() }
-        val persistentServers = api.server().allServers.await().filter {
+        val groupServers = groups.flatMap { cache.getServersOfGroup(it.name) }
+        val persistentServers = cache.getServers().filter {
             it.persistentServer?.name in
                 config.additionalPersistentServers
         }
@@ -90,8 +94,8 @@ class PlayerCountService(
         )
     }
 
-    private suspend fun findGroup(name: String): Group? {
-        val group = api.group().findGroupByName(name).await().orElse(null)
+    private fun findGroup(name: String): Group? {
+        val group = cache.findGroup(name)
         if (group != null) {
             missingGroups.remove(name)
             return group

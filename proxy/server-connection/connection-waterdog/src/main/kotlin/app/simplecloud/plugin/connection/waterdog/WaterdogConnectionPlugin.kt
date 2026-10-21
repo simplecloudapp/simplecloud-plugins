@@ -14,6 +14,7 @@ class WaterdogConnectionPlugin : Plugin() {
     private val commandManager = WaterdogCommandManager(this)
 
     val connectionPlugin by lazy { ConnectionPlugin(dataFolder, WaterdogServerRegistry(proxy)) }
+    val platform by lazy { WaterdogPlatformImpl(proxy, connectionPlugin) }
 
     override fun onEnable() {
         cleanupServers()
@@ -42,7 +43,6 @@ class WaterdogConnectionPlugin : Plugin() {
     }
 
     private fun registerHandlers() {
-        val platform = WaterdogPlatformImpl(proxy, connectionPlugin)
         proxy.joinHandler = WaterdogJoinHandler(this, platform, proxy.joinHandler)
         proxy.reconnectHandler = WaterdogReconnectHandler(this, platform, proxy.reconnectHandler)
     }

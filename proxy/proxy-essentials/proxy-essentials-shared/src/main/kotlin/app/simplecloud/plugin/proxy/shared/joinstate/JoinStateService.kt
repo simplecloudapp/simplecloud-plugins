@@ -9,14 +9,15 @@ import app.simplecloud.api.server.ServerQuery
 import app.simplecloud.api.server.ServerState
 import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
 import app.simplecloud.plugin.proxy.shared.config.ProxyEssentialsConfig
+import app.simplecloud.plugin.proxy.shared.network.NetworkCache
 import kotlinx.coroutines.*
 import kotlinx.coroutines.future.await
 import org.slf4j.LoggerFactory
 import java.util.concurrent.atomic.AtomicReference
-import kotlin.time.Duration.Companion.seconds
 
 class JoinStateService(
     private val api: CloudApi,
+    private val cache: NetworkCache,
     private val config: ConfigurationFactory<ProxyEssentialsConfig>,
     private val scope: CoroutineScope,
 ) {
@@ -24,7 +25,6 @@ class JoinStateService(
     private val logger = LoggerFactory.getLogger(JoinStateService::class.java)
     private val localState = AtomicReference<String?>()
     private val lastGroupState = AtomicReference<String?>()
-    private val serverStates = AtomicReference<Map<String, String>?>()
     private val subscriptions: MutableList<Subscription> = mutableListOf()
 
     fun getLocalState(): String = localState.get() ?: config.get().initialState
@@ -41,16 +41,14 @@ class JoinStateService(
         )
 
         val groupName = server.group?.name ?: return
-        scope.launch {
-            while (isActive) {
-                try {
-                    followGroupState(server.serverId, groupName)
-                } catch (e: Exception) {
-                    logger.error("Could not synchronize the join state with group '$groupName'", e)
-                }
-                delay(2.seconds)
-            }
-        }
+        lastGroupState.set(getGroupState(groupName))
+        subscriptions.add(
+            api.event().group().onUpdated { event ->
+                val group = event.group ?: return@onUpdated
+                if (group.name != groupName) return@onUpdated
+                scope.launch { followGroupState(server.serverId, groupName, getState(group.properties)) }
+            },
+        )
     }
 
     fun stop() {
@@ -81,23 +79,21 @@ class JoinStateService(
         return getPersistentServerState(name)
     }
 
-    fun startServerStateSync() {
-        scope.launch {
-            while (isActive) {
-                try {
-                    refreshServerStates()
-                } catch (e: Exception) {
-                    logger.error("Could not load the join states of the servers, keeping the last known states", e)
-                }
-                delay(2.seconds)
-            }
-        }
+    fun findCachedTargetState(name: String): String? {
+        val group = cache.findGroup(name)
+        if (group != null) return getState(group.properties)
+
+        val persistentServer = cache.findPersistentServer(name) ?: return null
+        return getState(persistentServer.properties)
     }
 
     fun getServerState(serverName: String): String? {
         if (SimpleCloudRuntime.serverId().isBlank()) return config.get().initialState
-        val states = serverStates.get() ?: return null
-        return states[serverName] ?: findExternalServerState(serverName) ?: config.get().initialState
+        if (!cache.isLoaded()) return null
+
+        val server = cache.getServers().find { getServerName(it) == serverName }
+        if (server != null) return resolveState(server)
+        return findExternalServerState(serverName) ?: config.get().initialState
     }
 
     suspend fun setGroupState(groupName: String, state: String) {
@@ -154,33 +150,27 @@ class JoinStateService(
         return state
     }
 
-    private suspend fun followGroupState(serverId: String, groupName: String) {
-        val groupState = getGroupState(groupName)
+    private suspend fun followGroupState(serverId: String, groupName: String, groupState: String) {
         val previousGroupState = lastGroupState.getAndSet(groupState)
         if (previousGroupState == null || previousGroupState == groupState) return
         if (getLocalState() != previousGroupState) return
 
-        setServerState(serverId, groupState)
+        try {
+            setServerState(serverId, groupState)
+        } catch (e: Exception) {
+            logger.error("Could not synchronize the join state with group '$groupName'", e)
+        }
     }
 
-    private suspend fun refreshServerStates() {
-        val groupStates = api.group().allGroups.await().associate { it.name to readState(it.properties) }
-        val persistentServerStates = api.persistentServer().allPersistentServers.await().associate { it.name to readState(it.properties) }
-        val states = api.server().allServers.await()
-            .filter { it.state != ServerState.STOPPED }
-            .associate { getServerName(it) to resolveState(it, groupStates, persistentServerStates) }
-        serverStates.set(states)
-    }
-
-    private fun resolveState(server: Server, groupStates: Map<String, String?>, persistentServerStates: Map<String, String?>): String {
+    private fun resolveState(server: Server): String {
         val state = readState(server.properties)
         if (state != null) return state
 
         val groupName = server.group?.name
-        if (groupName != null) return groupStates[groupName] ?: config.get().initialState
+        if (groupName != null) return getState(cache.findGroup(groupName)?.properties)
 
         val persistentServerName = server.persistentServer?.name ?: return config.get().initialState
-        return persistentServerStates[persistentServerName] ?: config.get().initialState
+        return getState(cache.findPersistentServer(persistentServerName)?.properties)
     }
 
     private fun findExternalServerState(serverName: String): String? =

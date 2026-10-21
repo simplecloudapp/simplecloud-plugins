@@ -11,4 +11,6 @@ class VelocityConnectionPlayer(
     override fun hasPermission(permission: String): Boolean = player.hasPermission(permission)
 
     override fun getVirtualHost(): String? = player.virtualHost.getOrNull()?.hostName
+
+    override fun getServerName(): String? = player.currentServer.getOrNull()?.serverInfo?.name
 }

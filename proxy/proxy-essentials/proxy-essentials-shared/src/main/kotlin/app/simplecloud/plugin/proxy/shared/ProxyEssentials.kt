@@ -12,6 +12,7 @@ import app.simplecloud.plugin.proxy.shared.joinstate.JoinGate
 import app.simplecloud.plugin.proxy.shared.joinstate.JoinStateService
 import app.simplecloud.plugin.proxy.shared.layout.LayoutRepository
 import app.simplecloud.plugin.proxy.shared.layout.LayoutService
+import app.simplecloud.plugin.proxy.shared.network.NetworkCache
 import app.simplecloud.plugin.proxy.shared.platform.ProxyPlatform
 import app.simplecloud.plugin.proxy.shared.player.PlayerCountService
 import app.simplecloud.plugin.proxy.shared.tablist.TabListService
@@ -33,11 +34,12 @@ class ProxyEssentials(
     val config = ConfigurationFactory(dir.resolve("config.yml").toFile(), ProxyEssentialsConfig::class.java)
     val messages = ConfigurationFactory(dir.resolve("messages.yml").toFile(), MessageConfig::class.java)
 
-    val joinStateService = JoinStateService(api, config, scope)
+    val networkCache = NetworkCache(api, scope)
+    val joinStateService = JoinStateService(api, networkCache, config, scope)
     val layoutRepository = LayoutRepository(dir.resolve("layout"))
-    val layoutService = LayoutService(api, layoutRepository, joinStateService, config, scope)
-    val playerCountService = PlayerCountService(api, platform, config, scope)
-    val joinGate = JoinGate(api, joinStateService, config, messages, scope)
+    val layoutService = LayoutService(api, layoutRepository, joinStateService, config)
+    val playerCountService = PlayerCountService(api, networkCache, platform, config, scope)
+    val joinGate = JoinGate(networkCache, joinStateService, config, messages)
     val messageFormatter = MessageFormatter(messages, playerCountService, layoutService)
     val tabListService = TabListService(platform, config, messageFormatter, scope)
     val serverIconDirectory: Path = dir.resolve("layout").resolve("server-icons")
@@ -46,18 +48,17 @@ class ProxyEssentials(
         LegacyDirectoryMigrator.migrate(dir)
         DefaultConfigInstaller.installAll(dir, DEFAULT_RESOURCES, javaClass.classLoader, "config")
         loadConfigs()
-        layoutService.startDomainSync()
         tabListService.start()
 
         if (SimpleCloudRuntime.serverId().isBlank()) return
-        joinStateService.startServerStateSync()
-        joinGate.start()
+        networkCache.start()
         playerCountService.start()
         startJoinStateService()
         startLayoutService()
     }
 
     fun stop() {
+        networkCache.stop()
         joinStateService.stop()
         layoutService.stop()
         scope.cancel()
