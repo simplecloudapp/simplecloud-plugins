@@ -30,7 +30,7 @@ class MessageFormatter(
         Placeholder.unparsed("ip", server.ip ?: "N/A"),
         Placeholder.unparsed("port", server.port?.toString() ?: "N/A"),
         Placeholder.unparsed("group", server.serverBase.name ?: "N/A"),
-        Placeholder.unparsed("server", server.serverBase.name ?: "N/A"),
+        Placeholder.unparsed("server", formatServerName(server)),
         Placeholder.unparsed("uuid", server.serverId),
         Placeholder.unparsed("id", formatNumericalId(server.numericalId)),
         Placeholder.unparsed("create_date", formatTimestamp(runCatching { server.createdAt }.getOrNull())),
@@ -68,6 +68,12 @@ class MessageFormatter(
         "<hover:show_text:'<$placeholder>'>",
         "<hover:show_text:'$hoverMessage'>",
     )
+
+    private fun formatServerName(server: Server): String {
+        val name = server.serverBase.name ?: return "N/A"
+        if (server.numericalId == -1) return name
+        return "$name-${server.numericalId}"
+    }
 
     private fun formatNumericalId(id: Int): String {
         if (id == -1) return ""
