@@ -18,15 +18,15 @@ object ConnectionResolver {
 
     fun findMatchingServerNames(connection: ConnectionEntry, servers: List<String>): List<String> = servers.filter { connection.serverNameMatcher.matches(it) }
 
-    fun checkRules(connection: ConnectionEntry, permissionChecker: (String) -> Boolean): ConnectionRule? {
+    fun checkRules(connection: ConnectionEntry, player: ConnectionPlayer): ConnectionRule? {
         for (rule in connection.rules) {
-            if (rule.bypassPermission.isNotEmpty() && permissionChecker(rule.bypassPermission)) {
+            if (rule.bypassPermission.isNotEmpty() && player.hasPermission(rule.bypassPermission)) {
                 continue
             }
 
             val failed = when (rule.type) {
                 RuleType.PERMISSION -> {
-                    val hasPermission = permissionChecker(rule.name)
+                    val hasPermission = player.hasPermission(rule.name)
                     val permissionRequired = rule.value.isEmpty() || rule.value.toBoolean()
                     hasPermission != permissionRequired
                 }
@@ -80,22 +80,22 @@ object ConnectionResolver {
         connections: List<ConnectionEntry>,
         serverNames: List<String>,
         fromServerName: String?,
-        hasPermission: (String) -> Boolean,
+        player: ConnectionPlayer,
     ): Sequence<List<String>> = targets
         .sortedByDescending { it.priority }
         .asSequence()
-        .mapNotNull { target -> matchingServerNames(target, connections, serverNames, fromServerName, hasPermission) }
+        .mapNotNull { target -> matchingServerNames(target, connections, serverNames, fromServerName, player) }
 
     private fun matchingServerNames(
         target: FallbackTargetConnection,
         connections: List<ConnectionEntry>,
         serverNames: List<String>,
         fromServerName: String?,
-        hasPermission: (String) -> Boolean,
+        player: ConnectionPlayer,
     ): List<String>? {
         val connection = findConnection(target.name, connections)
         if (!isFromAllowed(target, fromServerName, connections, serverNames)) return null
-        if (connection == null || checkRules(connection, hasPermission) != null) return null
+        if (connection == null || checkRules(connection, player) != null) return null
         return findMatchingServerNames(connection, serverNames).ifEmpty { null }
     }
 
@@ -121,7 +121,7 @@ object ConnectionResolver {
         connection: ConnectionEntry,
         excludedServerName: String?,
     ): S? {
-        if (checkRules(connection, player::hasPermission) != null) return null
+        if (checkRules(connection, player) != null) return null
         return platform.getServers()
             .filter { server -> connection.serverNameMatcher.matches(server.getName()) }
             .filter { server -> !server.getName().equals(excludedServerName, ignoreCase = true) }

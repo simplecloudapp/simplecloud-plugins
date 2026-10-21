@@ -1,6 +1,7 @@
 package app.simplecloud.plugin.connection.bungeecord.command
 
 import app.simplecloud.plugin.connection.bungeecord.BungeeCordConnectionPlugin
+import app.simplecloud.plugin.connection.bungeecord.platform.BungeeCordConnectionPlayer
 import app.simplecloud.plugin.connection.shared.config.CommandEntry
 import app.simplecloud.plugin.connection.shared.connection.ConnectionResolver
 import net.kyori.adventure.platform.bungeecord.BungeeAudiences
@@ -64,7 +65,7 @@ class BungeeCordCommandManager(
             config.connections,
             plugin.proxy.servers.keys.toList(),
             currentServerName,
-            player::hasPermission,
+            BungeeCordConnectionPlayer(player),
         )
 
         for (names in targets) {

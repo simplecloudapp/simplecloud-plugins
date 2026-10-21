@@ -3,6 +3,7 @@ package app.simplecloud.plugin.connection.waterdog.command
 import app.simplecloud.plugin.connection.shared.config.CommandEntry
 import app.simplecloud.plugin.connection.shared.connection.ConnectionResolver
 import app.simplecloud.plugin.connection.waterdog.WaterdogConnectionPlugin
+import app.simplecloud.plugin.connection.waterdog.platform.WaterdogConnectionPlayer
 import dev.waterdog.waterdogpe.command.Command
 import dev.waterdog.waterdogpe.command.CommandSender
 import dev.waterdog.waterdogpe.command.CommandSettings
@@ -67,7 +68,7 @@ class WaterdogCommandManager(
             config.connections,
             plugin.proxy.servers.map { it.serverName },
             currentServerName,
-            player::hasPermission,
+            WaterdogConnectionPlayer(player),
         )
 
         for (names in targets) {

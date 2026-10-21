@@ -3,6 +3,7 @@ package app.simplecloud.plugin.connection.velocity.command
 import app.simplecloud.plugin.connection.shared.config.CommandEntry
 import app.simplecloud.plugin.connection.shared.connection.ConnectionResolver
 import app.simplecloud.plugin.connection.velocity.VelocityConnectionPlugin
+import app.simplecloud.plugin.connection.velocity.platform.VelocityConnectionPlayer
 import com.velocitypowered.api.command.CommandMeta
 import com.velocitypowered.api.command.SimpleCommand
 import com.velocitypowered.api.proxy.Player
@@ -61,7 +62,7 @@ class VelocityCommandManager(
                 config.connections,
                 proxy.allServers.map { it.serverInfo.name },
                 currentServerName,
-                source::hasPermission,
+                VelocityConnectionPlayer(source),
             )
 
             for (names in targets) {
