@@ -78,7 +78,7 @@ tasks.shadowJar {
 
 val platforms = setOf("velocity", "bungeecord", "waterdog", "paper", "minestom")
 
-if (!path.startsWith(":core:") && !path.startsWith(":server:") && name.substringAfterLast('-') in platforms) {
+if (!path.startsWith(":core:") && name.substringAfterLast('-') in platforms) {
     val destination = isolated.rootProject.projectDirectory
         .file("build/plugins/${name.substringBeforeLast('-')}/$name.jar")
 
