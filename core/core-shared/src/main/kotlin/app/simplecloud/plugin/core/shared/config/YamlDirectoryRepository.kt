@@ -27,6 +27,7 @@ abstract class YamlDirectoryRepository<E, I>(
     /** Loads all `.yml` and `.yaml` files of the directory and creates it if missing. */
     fun load(): List<E> {
         Files.createDirectories(directory)
+        cachedEntities.clear()
 
         return Files.walk(directory).use { paths ->
             paths
@@ -53,7 +54,7 @@ abstract class YamlDirectoryRepository<E, I>(
 
     /** Deletes the file of the [entity]. */
     fun delete(entity: E) {
-        val file = cachedEntities.entries.find { it.value == entity }?.key ?: return
+        val file = cachedEntities.entries.find { it.value === entity }?.key ?: return
         file.delete()
         cachedEntities.remove(file)
     }

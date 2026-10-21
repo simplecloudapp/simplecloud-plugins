@@ -6,7 +6,6 @@ import app.simplecloud.plugin.connection.shared.config.ConnectionConfig
 import app.simplecloud.plugin.connection.shared.config.DefaultConfigInstaller
 import app.simplecloud.plugin.connection.shared.config.MessageConfig
 import app.simplecloud.plugin.connection.shared.config.RegistrationServer
-import app.simplecloud.plugin.connection.shared.config.migration.LegacyConfigMigrator
 import app.simplecloud.plugin.connection.shared.connection.ConnectionResolver
 import app.simplecloud.plugin.connection.shared.registration.RegisteredServer
 import app.simplecloud.plugin.connection.shared.registration.ServerRegisterer
@@ -27,7 +26,7 @@ class ConnectionPlugin(
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private val additionalServers = CopyOnWriteArrayList<RegisteredServer>()
 
-    val connectionConfig = createConnectionConfig()
+    val connectionConfig = createConfig("config.yml", ConnectionConfig::class.java, ConnectionConfig())
     val messageConfig = createConfig("messages.yml", MessageConfig::class.java, MessageConfig())
     val commandConfig = createConfig("commands.yml", CommandConfig::class.java, CommandConfig())
 
@@ -120,15 +119,6 @@ class ConnectionPlugin(
         blueprintConfigurator = null,
         persistent = true,
     )
-
-    private fun createConnectionConfig(): ConfigurationFactory<ConnectionConfig> {
-        val file = File(dir, "config.yml")
-        DefaultConfigInstaller.install(file.toPath(), javaClass.classLoader)
-
-        val factory = ConfigurationFactory(file, ConnectionConfig::class.java, LegacyConfigMigrator.create(dir))
-        factory.loadOrCreate(ConnectionConfig())
-        return factory
-    }
 
     private fun <E> createConfig(fileName: String, configClass: Class<E>, default: E): ConfigurationFactory<E> {
         val factory = ConfigurationFactory(File(dir, fileName), configClass)

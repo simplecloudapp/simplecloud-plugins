@@ -18,7 +18,7 @@ class BungeeCordCommandManager(
     private val audiences: BungeeAudiences,
 ) {
 
-    private val commands = CopyOnWriteArrayList<String>()
+    private val commands = CopyOnWriteArrayList<Command>()
     private val logger = LoggerFactory.getLogger(BungeeCordCommandManager::class.java)
 
     fun registerCommands() {
@@ -29,13 +29,9 @@ class BungeeCordCommandManager(
     }
 
     fun unregisterCommands() {
-        commands.forEach { plugin.proxy.pluginManager.unregisterCommand(findCommand(it)) }
+        commands.forEach { plugin.proxy.pluginManager.unregisterCommand(it) }
         commands.clear()
     }
-
-    private fun findCommand(name: String): Command? = plugin.proxy.pluginManager.commands.firstOrNull {
-        it.value.name.equals(name, ignoreCase = true)
-    }?.value
 
     private fun registerCommand(command: CommandEntry) {
         val permission = command.permission.ifEmpty { null }
@@ -52,7 +48,7 @@ class BungeeCordCommandManager(
         }
 
         plugin.proxy.pluginManager.registerCommand(plugin, connectionCommand)
-        commands.add(command.name)
+        commands.add(connectionCommand)
     }
 
     private fun handleCommand(player: ProxiedPlayer, command: CommandEntry) {

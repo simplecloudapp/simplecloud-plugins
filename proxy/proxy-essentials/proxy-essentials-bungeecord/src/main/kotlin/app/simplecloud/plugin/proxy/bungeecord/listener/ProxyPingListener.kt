@@ -13,6 +13,7 @@ import java.io.ByteArrayInputStream
 import java.net.InetSocketAddress
 import java.util.Base64
 import java.util.UUID
+import java.util.concurrent.ConcurrentHashMap
 import javax.imageio.ImageIO
 
 class ProxyPingListener(
@@ -20,6 +21,7 @@ class ProxyPingListener(
 ) : Listener {
 
     private val serverIconCache = ServerIconCache(essentials.serverIconDirectory)
+    private val favicons = ConcurrentHashMap<String, Favicon>()
 
     @EventHandler
     fun onProxyPing(event: ProxyPingEvent) {
@@ -59,5 +61,16 @@ class ProxyPingListener(
             }
             response.players = ServerPing.Players(maxPlayers, onlinePlayers, samplePlayers)
         }
+    }
+
+    private fun toFavicon(icon: String): Favicon? {
+        val cached = favicons[icon]
+        if (cached != null) return cached
+
+        val bytes = Base64.getDecoder().decode(icon.substringAfter(","))
+        val image = ImageIO.read(ByteArrayInputStream(bytes)) ?: return null
+        val favicon = Favicon.create(image)
+        favicons[icon] = favicon
+        return favicon
     }
 }
