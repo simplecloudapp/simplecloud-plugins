@@ -82,7 +82,7 @@ val platforms = setOf("velocity", "bungeecord", "waterdog", "paper", "minestom")
 
 if (!path.startsWith(":core:") && name.substringAfterLast('-') in platforms) {
     val destination = isolated.rootProject.projectDirectory
-        .file("build/plugins/${name.substringBeforeLast('-')}/$name.jar")
+        .file("build/plugins/$pluginName/$name.jar")
 
     val copyPluginJar = tasks.register<CopyPluginJar>("copyPluginJar") {
         group = "build"
@@ -93,20 +93,6 @@ if (!path.startsWith(":core:") && name.substringAfterLast('-') in platforms) {
 
     tasks.shadowJar {
         finalizedBy(copyPluginJar)
-    }
-}
-
-plugins.withId("com.modrinth.minotaur") {
-    val isSelectedPlugin = providers.gradleProperty("plugin")
-        .map { it == pluginName }
-        .getOrElse(false)
-
-    tasks.register("publishModrinth") {
-        group = "publishing"
-        description = "Publishes this module to Modrinth if it belongs to the plugin given by -Pplugin."
-        if (isSelectedPlugin) {
-            dependsOn("modrinth", "modrinthSyncBody")
-        }
     }
 }
 

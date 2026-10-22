@@ -2,7 +2,7 @@ import dev.detekt.gradle.Detekt
 
 plugins {
     id("simplecloud.publishing-conventions")
-    alias(libs.plugins.minotaur)
+    id("simplecloud.modrinth-conventions")
     alias(libs.plugins.paperweight.userdev)
 }
 
@@ -37,16 +37,7 @@ tasks.shadowJar {
 }
 
 modrinth {
-    token.set(project.findProperty("modrinthToken") as String? ?: System.getenv("MODRINTH_TOKEN"))
     projectId.set("FZ0Sdplu")
-    versionNumber.set(project.version.toString())
-    versionType.set("release")
-    uploadFile.set(tasks.shadowJar)
-    gameVersions.addAll(
-        "26.2",
-        "26.3",
-    )
+    gameVersions.set(listOf("26.2", "26.3"))
     loaders.addAll("paper", "purpur", "folia")
-    changelog.set("https://docs.simplecloud.app/changelog")
-    syncBodyFrom.set(file("../README.md").readText())
 }

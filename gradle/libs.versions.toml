@@ -56,6 +56,7 @@ shadow-gradle-plugin = { module = "com.gradleup.shadow:shadow-gradle-plugin", ve
 spotless-gradle-plugin = { module = "com.diffplug.spotless:spotless-plugin-gradle", version.ref = "spotless" }
 detekt-gradle-plugin = { module = "dev.detekt:detekt-gradle-plugin", version.ref = "detekt" }
 blossom-gradle-plugin = { module = "net.kyori:blossom", version.ref = "blossom" }
+minotaur-gradle-plugin = { module = "com.modrinth.minotaur:Minotaur", version.ref = "minotaur" }
 
 # SimpleCloud
 simplecloud-api = { module = "app.simplecloud.api:api", version.ref = "simplecloud-api" }
@@ -106,6 +107,5 @@ cloud = ["cloud-core", "cloud-coroutines"]
 [plugins]
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }
-minotaur = { id = "com.modrinth.minotaur", version.ref = "minotaur" }
 paperweight-userdev = { id = "io.papermc.paperweight.userdev", version.ref = "paperweight" }
 protobuf = { id = "com.google.protobuf", version.ref = "protobuf" }

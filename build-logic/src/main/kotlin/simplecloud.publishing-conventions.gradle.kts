@@ -12,7 +12,7 @@ shadow {
 }
 
 val isSelectedPlugin = providers.gradleProperty("plugin")
-    .map { name.startsWith("$it-") }
+    .map { it == path.substringBeforeLast(':').substringAfterLast(':') }
     .getOrElse(false)
 
 tasks.register("publishPlugin") {
