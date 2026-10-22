@@ -41,14 +41,13 @@ jobs:
           PLUGIN: ${{ steps.tag.outputs.plugin }}
           VERSION: ${{ steps.tag.outputs.version }}
         run: |
-          versions=$(find proxy server -path "*/${PLUGIN}-*/build.gradle.kts" \
-            -exec sed -n 's/^version = "\(.*\)"$/\1/p' {} + | sort -u)
-          if [ -z "$versions" ]; then
-            echo "::error::No modules found for plugin '$PLUGIN'"
+          version=$(sed -n "s/^version\.${PLUGIN}=//p" gradle.properties)
+          if [ -z "$version" ]; then
+            echo "::error::No version.${PLUGIN} found in gradle.properties"
             exit 1
           fi
-          if [ "$versions" != "$VERSION" ]; then
-            echo "::error::Tag version '$VERSION' does not match the version in the build files: $(echo $versions)"
+          if [ "$version" != "$VERSION" ]; then
+            echo "::error::Tag version '$VERSION' does not match version.${PLUGIN} in gradle.properties: $version"
             exit 1
           fi
 
@@ -94,4 +93,9 @@ jobs:
           fi
           gh release upload "$TAG" "${jars[@]}" --clobber
 
-      # TODO: publish to modrinth
+      - name: publish to modrinth
+        env:
+          DEPOT_TOKEN: ${{ secrets.DEPOT_TOKEN }}
+          MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+          PLUGIN: ${{ steps.tag.outputs.plugin }}
+        run: ./gradlew publishModrinth -Pplugin="$PLUGIN"
