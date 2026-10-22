@@ -24,9 +24,9 @@ class ConfigGroupProvider(
 
     override fun getGroups(): CompletableFuture<Collection<PrefixesGroup>> = CompletableFuture.completedFuture(loadGroups())
 
-    override fun getGroup(id: UUID): CompletableFuture<PrefixesGroup?> {
+    override fun getGroup(player: UUID): CompletableFuture<PrefixesGroup?> {
         val groups = loadGroups()
-        val group = groups.firstOrNull { !isDefault(it) && it.hasPermission(id) } ?: groups.firstOrNull(::isDefault)
+        val group = groups.firstOrNull { !isDefault(it) && it.hasPermission(player) } ?: groups.firstOrNull(::isDefault)
         return CompletableFuture.completedFuture(group)
     }
 

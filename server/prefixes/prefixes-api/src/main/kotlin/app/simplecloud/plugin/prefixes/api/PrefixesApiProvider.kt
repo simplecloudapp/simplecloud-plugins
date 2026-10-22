@@ -2,11 +2,15 @@ package app.simplecloud.plugin.prefixes.api
 
 import org.jetbrains.annotations.ApiStatus
 
+/**
+ * Provides access to the [PrefixesApi] instance.
+ */
 public object PrefixesApiProvider {
 
     @Volatile
     private var instance: PrefixesApi? = null
 
+    /** Returns the [PrefixesApi] instance, or throws if the Prefixes plugin isn't loaded yet. */
     @JvmStatic
     public fun get(): PrefixesApi = instance ?: error(
         """

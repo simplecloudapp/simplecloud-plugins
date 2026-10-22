@@ -34,13 +34,13 @@ class LuckPermsGroupProvider(
         return CompletableFuture.completedFuture(groups)
     }
 
-    override fun getGroup(id: UUID): CompletableFuture<PrefixesGroup?> {
-        val user = luckPerms.userManager.getUser(id)
+    override fun getGroup(player: UUID): CompletableFuture<PrefixesGroup?> {
+        val user = luckPerms.userManager.getUser(player)
         if (user != null) {
             return CompletableFuture.completedFuture(resolveGroup(user))
         }
 
-        return PrefixesConstants.SCOPE.future { loadGroup(id) }
+        return PrefixesConstants.SCOPE.future { loadGroup(player) }
     }
 
     override fun addGroup(group: PrefixesGroup): CompletableFuture<Boolean> {
@@ -55,10 +55,10 @@ class LuckPermsGroupProvider(
         }
     }
 
-    private suspend fun loadGroup(id: UUID): PrefixesGroup? = try {
-        resolveGroup(luckPerms.userManager.loadUser(id).await())
+    private suspend fun loadGroup(player: UUID): PrefixesGroup? = try {
+        resolveGroup(luckPerms.userManager.loadUser(player).await())
     } catch (exception: Exception) {
-        logger.error("Failed to load LuckPerms user $id", exception)
+        logger.error("Failed to load LuckPerms user $player", exception)
         null
     }
 

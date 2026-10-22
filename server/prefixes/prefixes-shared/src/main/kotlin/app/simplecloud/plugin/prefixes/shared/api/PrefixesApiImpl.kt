@@ -28,43 +28,43 @@ class PrefixesApiImpl(
 
     override fun getGroups(): CompletableFuture<Collection<PrefixesGroup>> = registry.getCurrentGroupProvider().getGroups()
 
-    override fun getPrimaryGroup(id: UUID): CompletableFuture<PrefixesGroup?> = registry.getCurrentGroupProvider().getGroup(id)
+    override fun getPrimaryGroup(player: UUID): CompletableFuture<PrefixesGroup?> = registry.getCurrentGroupProvider().getGroup(player)
 
-    override fun getPrefixData(id: UUID): CompletableFuture<PrefixesPlayerData> = PrefixesConstants.SCOPE.future { dataRegistry.getData(id, getPrimaryGroup(id).await()) }
+    override fun getPrefixData(player: UUID): CompletableFuture<PrefixesPlayerData> = PrefixesConstants.SCOPE.future { dataRegistry.getData(player, getPrimaryGroup(player).await()) }
 
-    override fun getPrefixData(id: UUID, viewer: Audience): CompletableFuture<PrefixesPlayerData> {
-        val viewerId = AudienceResolver.resolveId(viewer) ?: return getPrefixData(id)
-        return PrefixesConstants.SCOPE.future { dataRegistry.getData(id, getPrimaryGroup(id).await(), viewerId) }
+    override fun getPrefixData(player: UUID, viewer: Audience): CompletableFuture<PrefixesPlayerData> {
+        val viewerId = AudienceResolver.resolveId(viewer) ?: return getPrefixData(player)
+        return PrefixesConstants.SCOPE.future { dataRegistry.getData(player, getPrimaryGroup(player).await(), viewerId) }
     }
 
-    override fun setPrefix(id: UUID, prefix: Component) = set(id, PrefixesOverride(prefix = prefix))
+    override fun setPrefix(player: UUID, prefix: Component) = set(player, PrefixesOverride(prefix = prefix))
 
-    override fun setPrefix(id: UUID, prefix: Component, viewers: Audience) = set(id, PrefixesOverride(prefix = prefix), viewers)
+    override fun setPrefix(player: UUID, prefix: Component, viewers: Audience) = set(player, PrefixesOverride(prefix = prefix), viewers)
 
-    override fun setSuffix(id: UUID, suffix: Component) = set(id, PrefixesOverride(suffix = suffix))
+    override fun setSuffix(player: UUID, suffix: Component) = set(player, PrefixesOverride(suffix = suffix))
 
-    override fun setSuffix(id: UUID, suffix: Component, viewers: Audience) = set(id, PrefixesOverride(suffix = suffix), viewers)
+    override fun setSuffix(player: UUID, suffix: Component, viewers: Audience) = set(player, PrefixesOverride(suffix = suffix), viewers)
 
-    override fun setColor(id: UUID, color: TextColor) = set(id, PrefixesOverride(color = color))
+    override fun setColor(player: UUID, color: TextColor) = set(player, PrefixesOverride(color = color))
 
-    override fun setColor(id: UUID, color: TextColor, viewers: Audience) = set(id, PrefixesOverride(color = color), viewers)
+    override fun setColor(player: UUID, color: TextColor, viewers: Audience) = set(player, PrefixesOverride(color = color), viewers)
 
-    override fun setPriority(id: UUID, priority: Int) = set(id, PrefixesOverride(priority = priority))
+    override fun setPriority(player: UUID, priority: Int) = set(player, PrefixesOverride(priority = priority))
 
-    override fun setPriority(id: UUID, priority: Int, viewers: Audience) = set(id, PrefixesOverride(priority = priority), viewers)
+    override fun setPriority(player: UUID, priority: Int, viewers: Audience) = set(player, PrefixesOverride(priority = priority), viewers)
 
-    override fun setGroup(id: UUID, group: String): CompletableFuture<Boolean> {
+    override fun setGroup(player: UUID, group: String): CompletableFuture<Boolean> {
         return PrefixesConstants.SCOPE.future {
             val found = findGroup(group) ?: return@future false
-            setGroup(id, found)
+            setGroup(player, found)
             true
         }
     }
 
-    override fun setGroup(id: UUID, group: String, viewers: Audience): CompletableFuture<Boolean> {
+    override fun setGroup(player: UUID, group: String, viewers: Audience): CompletableFuture<Boolean> {
         return PrefixesConstants.SCOPE.future {
             val found = findGroup(group) ?: return@future false
-            setGroup(id, found, viewers)
+            setGroup(player, found, viewers)
             true
         }
     }
@@ -85,22 +85,22 @@ class PrefixesApiImpl(
         }
     }
 
-    override fun setGroup(id: UUID, group: PrefixesGroup) = set(id, PrefixesOverride.of(group))
+    override fun setGroup(player: UUID, group: PrefixesGroup) = set(player, PrefixesOverride.of(group))
 
-    override fun setGroup(id: UUID, group: PrefixesGroup, viewers: Audience) = set(id, PrefixesOverride.of(group), viewers)
+    override fun setGroup(player: UUID, group: PrefixesGroup, viewers: Audience) = set(player, PrefixesOverride.of(group), viewers)
 
     override fun setGroup(targets: Audience, group: PrefixesGroup) {
-        AudienceResolver.resolveIds(targets).forEach { id -> setGroup(id, group) }
+        AudienceResolver.resolveIds(targets).forEach { player -> setGroup(player, group) }
     }
 
     override fun setGroup(targets: Audience, group: PrefixesGroup, viewers: Audience) {
         val viewerIds = AudienceResolver.resolveIds(viewers)
-        AudienceResolver.resolveIds(targets).forEach { id -> set(id, PrefixesOverride.of(group), viewerIds) }
+        AudienceResolver.resolveIds(targets).forEach { player -> set(player, PrefixesOverride.of(group), viewerIds) }
     }
 
-    override fun reset(id: UUID) {
-        dataRegistry.reset(id)
-        notifyDataChange(id)
+    override fun reset(player: UUID) {
+        dataRegistry.reset(player)
+        notifyDataChange(player)
     }
 
     override fun reset(targets: Audience) {
@@ -109,19 +109,19 @@ class PrefixesApiImpl(
 
     override fun reset(targets: Audience, viewers: Audience) {
         val viewerIds = AudienceResolver.resolveIds(viewers)
-        AudienceResolver.resolveIds(targets).forEach { id ->
-            viewerIds.forEach { viewer -> dataRegistry.reset(id, viewer) }
-            notifyDataChange(id)
+        AudienceResolver.resolveIds(targets).forEach { player ->
+            viewerIds.forEach { viewer -> dataRegistry.reset(player, viewer) }
+            notifyDataChange(player)
         }
     }
 
-    override fun setVanished(id: UUID, vanished: Boolean) {
-        if (!platform.isOnline(id)) return
-        dataRegistry.setVanished(id, vanished)
-        notifyDataChange(id)
+    override fun setVanished(player: UUID, vanished: Boolean) {
+        if (!platform.isOnline(player)) return
+        dataRegistry.setVanished(player, vanished)
+        notifyDataChange(player)
     }
 
-    override fun isVanished(id: UUID): Boolean = dataRegistry.isVanished(id) || platform.isVanished(id)
+    override fun isVanished(player: UUID): Boolean = dataRegistry.isVanished(player) || platform.isVanished(player)
 
     override fun addGroup(group: PrefixesGroup): CompletableFuture<Boolean> = registry.getCurrentGroupProvider().addGroup(group)
 
@@ -133,33 +133,33 @@ class PrefixesApiImpl(
 
     override fun getGroupProviders(): Collection<GroupProvider> = registry.getAllGroupProviders()
 
-    override fun refreshPlayer(id: UUID) {
-        listeners.forEach { it.onPlayerUpdate(id) }
+    override fun refreshPlayer(player: UUID) {
+        listeners.forEach { it.onPlayerUpdate(player) }
     }
 
     override fun refreshAll() {
         listeners.forEach(PrefixesListener::onAllPlayersUpdate)
     }
 
-    private fun set(id: UUID, override: PrefixesOverride) {
-        if (!platform.isOnline(id)) return
-        dataRegistry.set(id, override)
-        notifyDataChange(id)
+    private fun set(player: UUID, override: PrefixesOverride) {
+        if (!platform.isOnline(player)) return
+        dataRegistry.set(player, override)
+        notifyDataChange(player)
     }
 
-    private fun set(id: UUID, override: PrefixesOverride, viewers: Audience) {
-        set(id, override, AudienceResolver.resolveIds(viewers))
+    private fun set(player: UUID, override: PrefixesOverride, viewers: Audience) {
+        set(player, override, AudienceResolver.resolveIds(viewers))
     }
 
-    private fun set(id: UUID, override: PrefixesOverride, viewers: List<UUID>) {
-        if (!platform.isOnline(id)) return
-        viewers.forEach { viewer -> dataRegistry.set(id, viewer, override) }
-        notifyDataChange(id)
+    private fun set(player: UUID, override: PrefixesOverride, viewers: List<UUID>) {
+        if (!platform.isOnline(player)) return
+        viewers.forEach { viewer -> dataRegistry.set(player, viewer, override) }
+        notifyDataChange(player)
     }
 
     private suspend fun findGroup(name: String): PrefixesGroup? = getGroups().await().firstOrNull { group -> group.name.equals(name, ignoreCase = true) }
 
-    private fun notifyDataChange(id: UUID) {
-        listeners.forEach { listener -> listener.onPlayerDataChange(id) }
+    private fun notifyDataChange(player: UUID) {
+        listeners.forEach { listener -> listener.onPlayerDataChange(player) }
     }
 }

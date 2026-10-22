@@ -29,13 +29,13 @@ class LuckPermsGroup(
     override val displayName: String = getMetaValue("display-name").orEmpty()
     override val chatFormat: String = getMetaValue("chat-format").orEmpty()
 
-    override fun containsPlayer(id: UUID): CompletableFuture<Boolean> {
-        val user = luckPerms.userManager.getUser(id)
+    override fun containsPlayer(player: UUID): CompletableFuture<Boolean> {
+        val user = luckPerms.userManager.getUser(player)
         if (user != null) {
             return CompletableFuture.completedFuture(isMember(user))
         }
 
-        return PrefixesConstants.SCOPE.future { isMember(luckPerms.userManager.loadUser(id).await()) }
+        return PrefixesConstants.SCOPE.future { isMember(luckPerms.userManager.loadUser(player).await()) }
     }
 
     private fun isMember(user: User): Boolean =

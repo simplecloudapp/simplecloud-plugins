@@ -25,10 +25,10 @@ class ConfigPrefixesGroup(
     override val displayName: String = group.displayName
     override val chatFormat: String = group.chatFormat
 
-    override fun containsPlayer(id: UUID): CompletableFuture<Boolean> = CompletableFuture.completedFuture(hasPermission(id))
+    override fun containsPlayer(player: UUID): CompletableFuture<Boolean> = CompletableFuture.completedFuture(hasPermission(player))
 
-    fun hasPermission(id: UUID): Boolean {
+    fun hasPermission(player: UUID): Boolean {
         if (permission.isEmpty()) return true
-        return permissionChecker.checkPermission(id, permission)
+        return permissionChecker.checkPermission(player, permission)
     }
 }
