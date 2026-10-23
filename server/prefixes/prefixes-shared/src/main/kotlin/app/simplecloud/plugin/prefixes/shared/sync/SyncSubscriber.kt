@@ -3,7 +3,7 @@ package app.simplecloud.plugin.prefixes.shared.sync
 import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
 import app.simplecloud.plugin.prefixes.shared.PrefixesConstants
 import app.simplecloud.plugin.prefixes.shared.config.PrefixesConfig
-import app.simplecloud.plugin.prefixes.shared.sync.tablist.TablistEntry
+import app.simplecloud.plugin.prefixes.shared.sync.tablist.SyncedTablist
 import app.simplecloud.plugin.prefixes.shared.sync.tablist.TablistEntryMapper
 import app.simplecloud.plugin.prefixes.shared.utilities.ComponentSerializer
 import app.simplecloud.plugin.prefixes.v1.ChatMessageEvent
@@ -11,7 +11,6 @@ import app.simplecloud.plugin.prefixes.v1.TablistEntryRemoveEvent
 import app.simplecloud.plugin.prefixes.v1.TablistEntryUpdateEvent
 import io.nats.client.Connection
 import io.nats.client.Message
-import net.kyori.adventure.text.Component
 import java.time.Duration
 import java.util.UUID
 
@@ -23,31 +22,24 @@ class SyncSubscriber(
     private val logger = PrefixesConstants.LOGGER
     private val dispatcher = connection.createDispatcher(null)
 
-    fun subscribeChatMessage(handler: (Component) -> Unit) {
+    fun start(tablist: SyncedTablist<*, *>, target: SyncTarget) {
         subscribe(PrefixesConfig::isChatSynced, PrefixesSubjects.CHAT) { message ->
-            handler(ComponentSerializer.deserialize(ChatMessageEvent.parseFrom(message.data).json))
+            target.broadcast(ComponentSerializer.deserialize(ChatMessageEvent.parseFrom(message.data).json))
         }
-    }
-
-    fun subscribeTablist(
-        onUpdate: (String, TablistEntry) -> Unit,
-        onRemove: (String, UUID) -> Unit,
-        onRequest: () -> Unit,
-    ) {
         subscribe(PrefixesConfig::isTablistSynced, PrefixesSubjects.TABLIST_UPDATE) { message ->
-            onUpdate(
+            tablist.update(
                 subjects.publisherId(message.subject, PrefixesSubjects.TABLIST_UPDATE),
                 TablistEntryMapper.fromDefinition(TablistEntryUpdateEvent.parseFrom(message.data)),
             )
         }
         subscribe(PrefixesConfig::isTablistSynced, PrefixesSubjects.TABLIST_REMOVE) { message ->
-            onRemove(
+            tablist.remove(
                 subjects.publisherId(message.subject, PrefixesSubjects.TABLIST_REMOVE),
                 UUID.fromString(TablistEntryRemoveEvent.parseFrom(message.data).playerId),
             )
         }
         subscribe(PrefixesConfig::isTablistSynced, PrefixesSubjects.TABLIST_REQUEST) {
-            onRequest()
+            target.publishAll()
         }
     }
 

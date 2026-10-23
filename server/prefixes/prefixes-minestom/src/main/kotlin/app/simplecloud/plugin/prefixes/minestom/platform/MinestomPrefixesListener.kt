@@ -4,14 +4,18 @@ import app.simplecloud.plugin.prefixes.minestom.display.MinestomDisplayManager
 import app.simplecloud.plugin.prefixes.minestom.display.MinestomTablist
 import app.simplecloud.plugin.prefixes.shared.Prefixes
 import app.simplecloud.plugin.prefixes.shared.platform.PrefixesListener
+import app.simplecloud.plugin.prefixes.shared.sync.SyncTarget
+import net.kyori.adventure.text.Component
 import net.minestom.server.MinecraftServer
+import net.minestom.server.adventure.audience.Audiences
 import java.util.UUID
 
 class MinestomPrefixesListener(
     private val prefixes: Prefixes,
     private val manager: MinestomDisplayManager,
     private val tablist: MinestomTablist,
-) : PrefixesListener {
+) : PrefixesListener,
+    SyncTarget {
 
     override fun onReload() {
         onAllPlayersUpdate()
@@ -46,5 +50,13 @@ class MinestomPrefixesListener(
         MinecraftServer.getConnectionManager().onlinePlayers.forEach { player ->
             manager.updatePlayer(player)
         }
+    }
+
+    override fun broadcast(message: Component) {
+        Audiences.players().sendMessage(message)
+    }
+
+    override fun publishAll() {
+        MinecraftServer.getSchedulerManager().scheduleNextTick { manager.publishAll() }
     }
 }

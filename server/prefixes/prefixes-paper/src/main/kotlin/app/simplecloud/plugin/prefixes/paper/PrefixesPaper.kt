@@ -34,10 +34,11 @@ class PrefixesPaper : JavaPlugin() {
         val tablist = PaperTablist()
         Bukkit.getPluginManager().registerEvents(PlayerListener(prefixes, manager, tablist), this)
 
-        registerSync(prefixes, manager, tablist)
+        val listener = PaperPrefixesListener(this, prefixes, manager, tablist)
+        prefixes.sync?.start(tablist, listener)
         Bukkit.getAsyncScheduler().runAtFixedRate(this, { manager.refreshVanished() }, 1L, 1L, TimeUnit.SECONDS)
 
-        prefixes.addListener(PaperPrefixesListener(this, prefixes, manager, tablist))
+        prefixes.addListener(listener)
 
         registerCommands(prefixes)
         prefixes.api.refreshAll()
@@ -45,19 +46,6 @@ class PrefixesPaper : JavaPlugin() {
 
     override fun onDisable() {
         prefixes?.shutdown()
-    }
-
-    private fun registerSync(prefixes: Prefixes, manager: PaperDisplayManager, tablist: PaperTablist) {
-        val sync = prefixes.sync ?: return
-
-        sync.subscriber.subscribeChatMessage { message -> Bukkit.getServer().sendMessage(message) }
-        sync.subscriber.subscribeTablist(tablist::update, tablist::remove) { manager.publishAll() }
-        sync.publisher.publishTablistRequest()
-
-        Bukkit.getAsyncScheduler().runAtFixedRate(this, {
-            manager.publishAll()
-            tablist.expire()
-        }, 30L, 30L, TimeUnit.SECONDS)
     }
 
     private fun registerCommands(prefixes: Prefixes) {

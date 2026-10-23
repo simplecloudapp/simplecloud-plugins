@@ -3,10 +3,16 @@ package app.simplecloud.plugin.prefixes.shared.sync
 import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
 import app.simplecloud.plugin.prefixes.shared.PrefixesConstants
 import app.simplecloud.plugin.prefixes.shared.config.PrefixesConfig
+import app.simplecloud.plugin.prefixes.shared.sync.tablist.SyncedTablist
+import app.simplecloud.plugin.prefixes.shared.utilities.PrefixesCoroutineDetails
 import io.nats.client.Connection
 import io.nats.client.Nats
 import io.nats.client.Options
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import java.time.Duration
+import kotlin.time.Duration.Companion.seconds
 
 class PrefixesSync(
     config: ConfigurationFactory<PrefixesConfig>,
@@ -15,9 +21,22 @@ class PrefixesSync(
     private val logger = PrefixesConstants.LOGGER
     private val connection = createNatsConnection()
     private val subjects = PrefixesSubjects()
+    private val subscriber = SyncSubscriber(connection, subjects, config)
 
     val publisher = SyncPublisher(connection, subjects, config)
-    val subscriber = SyncSubscriber(connection, subjects, config)
+
+    fun start(tablist: SyncedTablist<*, *>, target: SyncTarget) {
+        subscriber.start(tablist, target)
+        publisher.publishTablistRequest()
+
+        PrefixesConstants.SCOPE.launch(PrefixesCoroutineDetails(null, "publish tablist")) {
+            while (isActive) {
+                delay(30.seconds)
+                target.publishAll()
+                tablist.expire()
+            }
+        }
+    }
 
     fun shutdown() {
         runCatching {

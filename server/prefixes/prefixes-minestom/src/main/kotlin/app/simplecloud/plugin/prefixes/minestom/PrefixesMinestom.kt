@@ -12,11 +12,8 @@ import app.simplecloud.plugin.prefixes.minestom.platform.MinestomPrefixesListene
 import app.simplecloud.plugin.prefixes.shared.Prefixes
 import app.simplecloud.plugin.prefixes.shared.PrefixesConstants
 import app.simplecloud.plugin.prefixes.shared.command.PrefixesCommand
-import app.simplecloud.plugin.prefixes.shared.utilities.PrefixesCoroutineDetails
-import kotlinx.coroutines.*
 import net.luckperms.api.LuckPerms
 import net.minestom.server.MinecraftServer
-import net.minestom.server.adventure.audience.Audiences
 import net.minestom.server.entity.Player
 import net.minestom.server.event.EventNode
 import org.incendo.cloud.execution.ExecutionCoordinator
@@ -24,7 +21,6 @@ import org.incendo.cloud.minestom.MinestomCommandManager
 import space.chunks.customname.minestom.CustomNamesMinestom
 import java.nio.file.Path
 import java.util.function.BiPredicate
-import kotlin.time.Duration.Companion.seconds
 
 class PrefixesMinestom private constructor(
     directory: Path,
@@ -39,6 +35,7 @@ class PrefixesMinestom private constructor(
     private val prefixes = Prefixes(platform)
     private val manager = MinestomDisplayManager(prefixes, CustomNamesMinestom.getManager())
     private val tablist = MinestomTablist()
+    private val listener = MinestomPrefixesListener(prefixes, manager, tablist)
     private val logger = PrefixesConstants.LOGGER
 
     fun shutdown() {
@@ -50,7 +47,7 @@ class PrefixesMinestom private constructor(
     private fun init() {
         CustomNamesMinestom.init()
         prefixes.startup()
-        prefixes.addListener(MinestomPrefixesListener(prefixes, manager, tablist))
+        prefixes.addListener(listener)
 
         PlayerListener(prefixes, manager, tablist).register(node)
         MinecraftServer.getGlobalEventHandler().addChild(node)
@@ -59,29 +56,9 @@ class PrefixesMinestom private constructor(
             logger.warn("Source Type is set to '${PrefixesConstants.CONFIG_SOURCE}', but no permission check was registered!")
         }
 
-        registerSync()
+        prefixes.sync?.start(tablist, listener)
         registerCommands()
         prefixes.api.refreshAll()
-    }
-
-    private fun registerSync() {
-        val sync = prefixes.sync ?: return
-
-        sync.subscriber.subscribeChatMessage { message -> Audiences.players().sendMessage(message) }
-        sync.subscriber.subscribeTablist(
-            onUpdate = tablist::update,
-            onRemove = { publisherId, id -> tablist.remove(publisherId, id) },
-            onRequest = { MinecraftServer.getSchedulerManager().scheduleNextTick { manager.publishAll() } },
-        )
-        sync.publisher.publishTablistRequest()
-
-        PrefixesConstants.SCOPE.launch(PrefixesCoroutineDetails(null, "publish tablist")) {
-            while (isActive) {
-                delay(30.seconds)
-                MinecraftServer.getSchedulerManager().scheduleNextTick { manager.publishAll() }
-                tablist.expire()
-            }
-        }
     }
 
     private fun registerCommands() {

@@ -4,6 +4,8 @@ import app.simplecloud.plugin.prefixes.paper.display.PaperDisplayManager
 import app.simplecloud.plugin.prefixes.paper.display.PaperTablist
 import app.simplecloud.plugin.prefixes.shared.Prefixes
 import app.simplecloud.plugin.prefixes.shared.platform.PrefixesListener
+import app.simplecloud.plugin.prefixes.shared.sync.SyncTarget
+import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.plugin.Plugin
 import java.util.UUID
@@ -13,7 +15,8 @@ class PaperPrefixesListener(
     private val prefixes: Prefixes,
     private val manager: PaperDisplayManager,
     private val tablist: PaperTablist,
-) : PrefixesListener {
+) : PrefixesListener,
+    SyncTarget {
 
     override fun onReload() {
         onAllPlayersUpdate()
@@ -46,5 +49,13 @@ class PaperPrefixesListener(
         Bukkit.getOnlinePlayers().forEach { player ->
             manager.updatePlayer(player)
         }
+    }
+
+    override fun broadcast(message: Component) {
+        Bukkit.getServer().sendMessage(message)
+    }
+
+    override fun publishAll() {
+        manager.publishAll()
     }
 }
