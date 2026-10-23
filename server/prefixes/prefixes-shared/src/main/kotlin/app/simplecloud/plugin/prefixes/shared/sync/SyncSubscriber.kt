@@ -3,6 +3,7 @@ package app.simplecloud.plugin.prefixes.shared.sync
 import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
 import app.simplecloud.plugin.prefixes.shared.PrefixesConstants
 import app.simplecloud.plugin.prefixes.shared.config.PrefixesConfig
+import app.simplecloud.plugin.prefixes.shared.platform.PrefixesListener
 import app.simplecloud.plugin.prefixes.shared.sync.tablist.SyncedTablist
 import app.simplecloud.plugin.prefixes.shared.sync.tablist.TablistEntryMapper
 import app.simplecloud.plugin.prefixes.shared.utilities.ComponentSerializer
@@ -22,9 +23,9 @@ class SyncSubscriber(
     private val logger = PrefixesConstants.LOGGER
     private val dispatcher = connection.createDispatcher(null)
 
-    fun start(tablist: SyncedTablist<*, *>, target: SyncTarget) {
+    fun start(tablist: SyncedTablist<*, *>, listener: PrefixesListener) {
         subscribe(PrefixesConfig::isChatSynced, PrefixesSubjects.CHAT) { message ->
-            target.broadcast(ComponentSerializer.deserialize(ChatMessageEvent.parseFrom(message.data).json))
+            listener.onChatMessage(ComponentSerializer.deserialize(ChatMessageEvent.parseFrom(message.data).json))
         }
         subscribe(PrefixesConfig::isTablistSynced, PrefixesSubjects.TABLIST_UPDATE) { message ->
             tablist.update(
@@ -39,7 +40,7 @@ class SyncSubscriber(
             )
         }
         subscribe(PrefixesConfig::isTablistSynced, PrefixesSubjects.TABLIST_REQUEST) {
-            target.publishAll()
+            listener.onTablistRequest()
         }
     }
 

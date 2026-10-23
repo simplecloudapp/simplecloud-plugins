@@ -3,6 +3,7 @@ package app.simplecloud.plugin.prefixes.shared.sync
 import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
 import app.simplecloud.plugin.prefixes.shared.PrefixesConstants
 import app.simplecloud.plugin.prefixes.shared.config.PrefixesConfig
+import app.simplecloud.plugin.prefixes.shared.platform.PrefixesListener
 import app.simplecloud.plugin.prefixes.shared.sync.tablist.SyncedTablist
 import app.simplecloud.plugin.prefixes.shared.utilities.PrefixesCoroutineDetails
 import io.nats.client.Connection
@@ -25,14 +26,14 @@ class PrefixesSync(
 
     val publisher = SyncPublisher(connection, subjects, config)
 
-    fun start(tablist: SyncedTablist<*, *>, target: SyncTarget) {
-        subscriber.start(tablist, target)
+    fun start(tablist: SyncedTablist<*, *>, listener: PrefixesListener) {
+        subscriber.start(tablist, listener)
         publisher.publishTablistRequest()
 
         PrefixesConstants.SCOPE.launch(PrefixesCoroutineDetails(null, "publish tablist")) {
             while (isActive) {
                 delay(30.seconds)
-                target.publishAll()
+                listener.onTablistRequest()
                 tablist.expire()
             }
         }
