@@ -34,19 +34,7 @@ This repository contains all official SimpleCloud plugins.
 | [`server`][dir-server]           | Plugins that run on your game servers                                 |
 | [`build-logic`][dir-build-logic] | Gradle convention plugins for Kotlin, Spotless, Detekt and publishing |
 
-Each plugin has its own README in its directory with its features and configuration.
-
-## Building
-
-You need JDK 25. Clone the repository including its submodules and build it:
-
-```shell
-git clone --recurse-submodules https://github.com/simplecloudapp/simplecloud-plugins.git
-cd simplecloud-plugins
-./gradlew build
-```
-
-The plugin jars are collected in `build/plugins/<plugin>/`.
+Every plugin has its own README describing its features and configuration.
 
 ## Contributing
 

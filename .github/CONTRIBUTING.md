@@ -15,8 +15,7 @@ We love contributions! If you have a question or want to discuss an idea first, 
 If you found a bug or have an idea for a feature, [open an issue][issues].
 
 - Keep every issue about one thing. If you found a bug in notify and another one in signs, open two issues.
-- Label your issue with the plugin it is about, for example `notify` for a bug in the notify plugin, and with its type,
-  for example `bug` or `enhancement`.
+- Mention the plugin your issue is about in the title, for example `notify`.
 - For bugs, describe what you expected, what happened instead and how to reproduce it. Include the plugin version, the
   platform you are running and any relevant logs.
 
@@ -36,8 +35,7 @@ Fork the repository and clone your fork including its submodules:
 git clone --recurse-submodules https://github.com/<your-username>/simplecloud-plugins.git
 ```
 
-Run `./gradlew build` to build everything. The plugin jars are collected in `build/plugins/<plugin>/` of the root
-project.
+Run `./gradlew build` to build everything. The plugin jars are collected in `build/plugins/<plugin>/`.
 
 ### Code style
 
@@ -49,8 +47,8 @@ We use [Spotless][spotless] to keep the formatting consistent. Always run it bef
 ./gradlew spotlessApply
 ```
 
-We also use [Detekt][detekt] for static analysis. Run it on the modules you changed and fix the findings your change
-introduced:
+We also use [Detekt][detekt] for static analysis. Run it on the modules you changed and fix any new issues your change
+introduces, for example:
 
 ```shell
 ./gradlew :proxy:notify:notify-shared:detektMain
@@ -81,7 +79,7 @@ Before submitting the pull request, make sure that you can say "yes" to each poi
 
 ## AI usage
 
-Using AI tools is completely fine, as long as you have a basic understanding of Kotlin. Please write your issues and
+Using AI tools is completely fine, as long as you understand the code you submit. Please write your issues and
 pull request descriptions yourself.
 
 [issues]: https://github.com/simplecloudapp/simplecloud-plugins/issues
