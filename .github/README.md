@@ -25,16 +25,28 @@ This repository contains all official SimpleCloud plugins.
 
 > All information about our plugins can be found in our detailed [documentation][docs-plugins].
 
-## Plugins
+## Repository structure
 
-| Plugin            | Description                                                          | Platforms                      |
-|-------------------|----------------------------------------------------------------------|--------------------------------|
-| Command           | Commands for managing groups, servers and players across the network | Velocity, BungeeCord           |
-| Notify            | Notifies players about server changes in the network                 | Velocity, BungeeCord           |
-| Proxy Essentials  | Essential proxy features for your network                            | Velocity, BungeeCord           |
-| Server Connection | Registers servers and manages player routing                         | Velocity, BungeeCord, Waterdog |
-| Placeholders      | SimpleCloud placeholders for PlaceholderAPI and MiniPlaceholders     | Paper                          |
-| Prefixes          | Prefixes, suffixes and name colors for chat, tab list and name tags  | Paper, Minestom                |
+| Directory                        | Contents                                                              |
+|----------------------------------|-----------------------------------------------------------------------|
+| [`core`][dir-core]               | Shared foundation every plugin is built on, one module per platform   |
+| [`proxy`][dir-proxy]             | Plugins that run on your proxies                                      |
+| [`server`][dir-server]           | Plugins that run on your game servers                                 |
+| [`build-logic`][dir-build-logic] | Gradle convention plugins for Kotlin, Spotless, Detekt and publishing |
+
+Each plugin has its own README in its directory with its features and configuration.
+
+## Building
+
+You need JDK 25. Clone the repository including its submodules and build it:
+
+```shell
+git clone --recurse-submodules https://github.com/simplecloudapp/simplecloud-plugins.git
+cd simplecloud-plugins
+./gradlew build
+```
+
+The plugin jars are collected in `build/plugins/<plugin>/`.
 
 ## Contributing
 
@@ -52,6 +64,11 @@ This repository is licensed under [Apache 2.0][license].
 [issue-feature-request]: https://github.com/simplecloudapp/simplecloud-plugins/issues/new?labels=enhancement
 [docs-plugins]: https://simplecloud.app/docs/en/manual/plugin/overview
 [contributing]: https://github.com/simplecloudapp/simplecloud-plugins?tab=contributing-ov-file
+
+[dir-core]: https://github.com/simplecloudapp/simplecloud-plugins/tree/main/core
+[dir-proxy]: https://github.com/simplecloudapp/simplecloud-plugins/tree/main/proxy
+[dir-server]: https://github.com/simplecloudapp/simplecloud-plugins/tree/main/server
+[dir-build-logic]: https://github.com/simplecloudapp/simplecloud-plugins/tree/main/build-logic
 
 [modrinth]: https://modrinth.com/organization/simplecloud
 
