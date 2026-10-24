@@ -2,7 +2,7 @@
 
 This repository contains all official SimpleCloud plugins:
 
-- Core: the shared foundation every plugin is built on, with one module per platform.
+- Core: common code used by all plugins.
 - Proxy plugins: command, notify, proxy-essentials and server-connection.
 - Server plugins: npcs, placeholders, prefixes and signs.
 - Build logic: Gradle convention plugins for Kotlin, Spotless, Detekt and publishing.

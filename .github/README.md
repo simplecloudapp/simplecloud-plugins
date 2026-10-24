@@ -29,7 +29,7 @@ This repository contains all official SimpleCloud plugins.
 
 | Directory                        | Contents                                                              |
 |----------------------------------|-----------------------------------------------------------------------|
-| [`core`][dir-core]               | Shared foundation every plugin is built on, one module per platform   |
+| [`core`][dir-core]               | Common code used by all plugins                                       |
 | [`proxy`][dir-proxy]             | Plugins that run on your proxies                                      |
 | [`server`][dir-server]           | Plugins that run on your game servers                                 |
 | [`build-logic`][dir-build-logic] | Gradle convention plugins for Kotlin, Spotless, Detekt and publishing |
