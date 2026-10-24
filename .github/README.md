@@ -21,47 +21,42 @@ Give us a star, your support means the world to us!
 </div>
 <br>
 
-> All information about our plugins can be found in our detailed [documentation][docs-plugins].
-
 This repository contains all official SimpleCloud plugins.
+
+> All information about our plugins can be found in our detailed [documentation][docs-plugins].
 
 ## Repository structure
 
-```
-core/         shared foundation every plugin is built on
-proxy/        proxy plugins
-server/       server plugins
-build-logic/  Gradle convention plugins for Kotlin, Spotless, Detekt and publishing
-```
+| Directory                        | Contents                                                              |
+|----------------------------------|-----------------------------------------------------------------------|
+| [`core`][dir-core]               | Common code used by all plugins                                       |
+| [`proxy`][dir-proxy]             | Plugins that run on your proxies                                      |
+| [`server`][dir-server]           | Plugins that run on your game servers                                 |
+| [`build-logic`][dir-build-logic] | Gradle convention plugins for Kotlin, Spotless, Detekt and publishing |
 
-## Building
-
-You need JDK 25. Clone the repository including its submodules and build it:
-
-```shell
-git clone --recurse-submodules https://github.com/simplecloudapp/simplecloud-plugins.git
-cd simplecloud-plugins
-./gradlew build
-```
-
-The plugin jars are collected in `build/plugins/<plugin>/` of the root project.
+Every plugin has its own README describing its features and configuration.
 
 ## Contributing
 
-Contributions to SimpleCloud are welcome and highly appreciated. However, before you jump right into it, we would like
-you to read our [Contribution Guide](CONTRIBUTING.md).
+Contributions are welcome and highly appreciated! To learn how to build the plugins and contribute, read our
+[contributing guidelines][contributing].
 
 ## License
 
 This repository is licensed under [Apache 2.0][license].
 
-
 <!-- LINK GROUP -->
 
 [banner]: https://github.com/simplecloudapp/branding/blob/main/readme/banner/plugins.png?raw=true
-[issue-bug-report]: https://github.com/simplecloudapp/simplecloud-plugins/issues/new?labels=bug&projects=template=01_BUG-REPORT.yml&title=%5BBUG%5D+%3Ctitle%3E
-[issue-feature-request]: https://github.com/simplecloudapp/simplecloud-plugins/discussions/new?category=ideas
+[issue-bug-report]: https://github.com/simplecloudapp/simplecloud-plugins/issues/new?labels=bug
+[issue-feature-request]: https://github.com/simplecloudapp/simplecloud-plugins/issues/new?labels=enhancement
 [docs-plugins]: https://simplecloud.app/docs/en/manual/plugin/overview
+[contributing]: https://github.com/simplecloudapp/simplecloud-plugins?tab=contributing-ov-file
+
+[dir-core]: https://github.com/simplecloudapp/simplecloud-plugins/tree/main/core
+[dir-proxy]: https://github.com/simplecloudapp/simplecloud-plugins/tree/main/proxy
+[dir-server]: https://github.com/simplecloudapp/simplecloud-plugins/tree/main/server
+[dir-build-logic]: https://github.com/simplecloudapp/simplecloud-plugins/tree/main/build-logic
 
 [modrinth]: https://modrinth.com/organization/simplecloud
 
@@ -73,7 +68,7 @@ This repository is licensed under [Apache 2.0][license].
 [social-discord]: https://discord.simplecloud.app
 
 [badge-modrinth]: https://img.shields.io/badge/modrinth-18181b.svg?style=flat-square&logo=modrinth
-[badge-license]: https://img.shields.io/badge/apache%202.0-blue.svg?style=flat-square&label=license&labelColor=18181b&style=flat-square&color=e11d48
+[badge-license]: https://img.shields.io/badge/apache%202.0-blue.svg?style=flat-square&label=license&labelColor=18181b&color=e11d48
 [badge-discord]: https://img.shields.io/badge/Community_Discord-d95652.svg?style=flat-square&logo=discord&color=27272a
 [badge-x]: https://img.shields.io/badge/Follow_@simplecloudapp-d95652.svg?style=flat-square&logo=x&color=27272a
 [badge-bluesky]: https://img.shields.io/badge/Follow_@simplecloud.app-d95652.svg?style=flat-square&logo=bluesky&color=27272a
