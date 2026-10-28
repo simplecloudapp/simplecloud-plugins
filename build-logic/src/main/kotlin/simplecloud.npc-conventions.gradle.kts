@@ -1,7 +1,6 @@
 import org.gradle.accessors.dm.LibrariesForLibs
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
-// The NPC plugin still supports Paper 1.20.6+ on Java 21, so its modules stay below the repository's Java 25.
 plugins {
     id("simplecloud.base-conventions")
 }
@@ -44,7 +43,6 @@ val serverProvidedAdventure = setOf(
 )
 val adventureFloor = the<LibrariesForLibs>().versions.npc.adventure.floor.get()
 
-// our code runs on the server's Adventure, so compile against the oldest one we support
 configurations.matching {
     it.name == "compileClasspath" || it.name.endsWith("CompileClasspath")
 }.configureEach {
@@ -57,7 +55,6 @@ configurations.matching {
     }
 }
 
-// the npc plugin predates the repository's detekt rules, new findings still fail the build
 detekt {
     baseline = file("detekt-baseline.xml")
 }

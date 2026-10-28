@@ -45,23 +45,14 @@ cloud-platform = "2.0.1"
 cloud-minestom = "2.2.0-SNAPSHOT"
 
 # NPCs
-# The NPC plugin's API floor: every NPC module but npc-provider-mannequin compiles against this,
-# so the compiler rejects anything a supported server would not have.
 npc-paper = "1.20.6-R0.1-SNAPSHOT"
-# Mannequin entity API (1.21.9+); only npc-provider-mannequin compiles against this.
 npc-paper-mannequin = "1.21.11-R0.1-SNAPSHOT"
-# The Adventure that npc-paper-mannequin ships; npc-provider-mannequin compiles against it instead of the floor.
 npc-adventure-mannequin = "4.26.1"
-# What paper-api provides on the NPC floor. npc-conventions holds the compile classpath to it.
 npc-adventure-floor = "4.17.0"
-# The Adventure PacketEvents and EntityLib were built against. npc-packetevents ships it, relocated.
 npc-adventure-packets = "4.26.1"
-# The SimpleCloud API jar bundles Adventure without relocating it; newer builds bring Adventure 5,
-# which would lift the NPC compile classpath above the floor.
 npc-simplecloud-api = "0.1.0-platform.33-dev.52.1-9490b37"
 npc-simplecloud-plugin = "0.0.1-platform.1778966459069-b1e45e2"
 packetevents = "2.14.0"
-# EntityLib only publishes snapshots; this is the 3.3.7 build, pinned so a release jar can be rebuilt.
 entitylib = "3.3.7-20260731.141813-1"
 citizens = "2.0.43-SNAPSHOT"
 fancynpcs = "2.9.2"
@@ -148,9 +139,7 @@ znpcsplus-api = { module = "lol.pyr:znpcsplus-api", version.ref = "znpcsplus" }
 adventure = ["adventure", "adventure-text-minimessage", "adventure-text-serializer-plain", "adventure-text-serializer-legacy"]
 configurate = ["configurate-yaml", "configurate-gson", "configurate-extra-kotlin"]
 cloud = ["cloud-core", "cloud-coroutines"]
-# The NPC modules compile against these; npc-conventions holds them to the Adventure floor.
 npc-adventure = ["npc-adventure-api", "npc-adventure-text-minimessage", "npc-adventure-text-serializer-legacy", "npc-adventure-text-serializer-plain"]
-# What npc-packetevents bundles: everything PacketEvents and EntityLib reference.
 npc-packet-adventure = ["npc-adventure-api", "npc-adventure-nbt", "npc-adventure-text-serializer-gson", "npc-adventure-text-serializer-legacy"]
 
 [plugins]
