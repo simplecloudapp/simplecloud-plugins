@@ -1,0 +1,51 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>CyclomaticComplexMethod:NpcConfig.kt:NpcConfig.ActionConfiguration$fun configuredTypes: List&lt;String></ID>
+    <ID>CyclomaticComplexMethod:WatchableYamlDirectoryRepository.kt:WatchableYamlDirectoryRepository$private fun watchUpdates</ID>
+    <ID>ForbiddenMethodCall:CloudExtensions.kt:let { "$it-$numericalId" }</ID>
+    <ID>ForbiddenMethodCall:CloudListStore.kt:CloudListStore$let { return it.value }</ID>
+    <ID>ForbiddenMethodCall:CloudListStore.kt:CloudListStore$let(renew)</ID>
+    <ID>ForbiddenMethodCall:CloudOutageLog.kt:CloudOutageLog$also { log = true }</ID>
+    <ID>ForbiddenMethodCall:CloudUnavailableException.kt:takeIf { cause -> cause !== it }</ID>
+    <ID>ForbiddenMethodCall:GlowColors.kt:GlowColors$let { NamedTextColor.NAMES.value(it.lowercase()) }</ID>
+    <ID>ForbiddenMethodCall:HologramLine.kt:HologramLine$takeIf { it.isNotEmpty() }</ID>
+    <ID>ForbiddenMethodCall:InventoryConfiguration.kt:InventoryConfiguration.SourceConfiguration$let { wanted -> looks.entries.firstOrNull { it.key.equals(wanted, true) }?.value }</ID>
+    <ID>ForbiddenMethodCall:JoinStates.kt:JoinStateResolver$let { return it }</ID>
+    <ID>ForbiddenMethodCall:JoinStates.kt:JoinStateResolver$takeIf { now - it.lastSeen &lt;= OFFLINE_GRACE_MILLIS }</ID>
+    <ID>ForbiddenMethodCall:JoinStates.kt:JoinStateResolver$takeUnless { it == NpcConfig.DEFAULT_JOIN_STATE }</ID>
+    <ID>ForbiddenMethodCall:LenientEnumSerializer.kt:LenientEnumSerializer$run { NpcLog.logger.warning( "Unknown value '$raw' at '${node.path().joinToString(".")}', using the default. " + "Allowed: ${constants.joinToString { it.name }}", ) null }</ID>
+    <ID>ForbiddenMethodCall:NpcConfig.kt:NpcConfig$also(actions::add)</ID>
+    <ID>ForbiddenMethodCall:NpcConfig.kt:NpcConfig$apply { hologram.layouts.forEach { it.joinState = it.joinState.lowercase() } actions.forEach { it.joinState = it.joinState.lowercase() } val normalizedJoinStates = joinStates.map { it.lowercase() }.distinct() joinStates.clear() joinStates.addAll(normalizedJoinStates) }</ID>
+    <ID>ForbiddenMethodCall:NpcConfig.kt:NpcConfig.EquipmentConfiguration$let { slot to it }</ID>
+    <ID>ForbiddenMethodCall:NpcConfig.kt:NpcConfig.HologramConfigurationRoot$also(layouts::add)</ID>
+    <ID>ForbiddenMethodCall:NpcConfigMigration.kt:NpcConfigMigration$let { NpcConfig.TitleConfiguration(it.title, it.text, it.fadeIn, it.stay, it.fadeOut) }</ID>
+    <ID>ForbiddenMethodCall:NpcConfigMigration.kt:NpcConfigMigration$let { NpcLocation(it.world, it.x, it.y, it.z, it.yaw, it.pitch) }</ID>
+    <ID>ForbiddenMethodCall:NpcConfigMigration.kt:NpcConfigMigration$let { ip -> val port = options[LegacyActionOptions.TRANSFER_SERVER_PORT]?.takeIf(String::isNotBlank) ?: LegacyActionOptions.TRANSFER_SERVER_DEFAULT_PORT "$ip:$port" }</ID>
+    <ID>ForbiddenMethodCall:NpcConfigMigration.kt:NpcConfigMigration$let { title -> NpcConfig.TitleConfiguration(title, options[LegacyPlayerActionOptions.SEND_SUBTITLE].orEmpty()) }</ID>
+    <ID>ForbiddenMethodCall:NpcConfigMigration.kt:NpcConfigMigration$takeIf { it.enabled }</ID>
+    <ID>ForbiddenMethodCall:NpcConfigMigration.kt:NpcConfigMigration$takeIf(String::isNotBlank)</ID>
+    <ID>ForbiddenMethodCall:NpcConfigMigration.kt:NpcConfigMigration$with(old.pushback) { NpcConfig.PushbackConfiguration(enabled, radius, strength, vertical, playSound) }</ID>
+    <ID>ForbiddenMethodCall:PersonalText.kt:PersonalText.Companion$also { values[it] = MINI_MESSAGE.deserialize(match.value, resolver) }</ID>
+    <ID>ForbiddenMethodCall:PersonalText.kt:PersonalText.Companion$let { random -> (1..8).map { 'a' + random.nextInt(26) }.joinToString("") }</ID>
+    <ID>ForbiddenMethodCall:ServerBridge.kt:ServerBridgeResolver$let(ServerBridge::OfServer)</ID>
+    <ID>ForbiddenMethodCall:TargetResolver.kt:TargetResolver$let { TargetResolution.Found( ResolvedTarget(it.name, TargetType.PERSISTENT_SERVER, ServerBridge.OfPersistentServer(it)), ) }</ID>
+    <ID>ForbiddenMethodCall:TargetResolver.kt:TargetResolver$let { TargetResolution.Found(ResolvedTarget(it.name, TargetType.GROUP, ServerBridge.OfGroup(it))) }</ID>
+    <ID>ForbiddenMethodCall:TargetResolver.kt:TargetResolver$takeIf { serversOf(target.bridge, lists.servers()).any { it.state == ServerState.AVAILABLE } }</ID>
+    <ID>ForbiddenMethodCall:WatchableYamlDirectoryRepository.kt:WatchableYamlDirectoryRepository$also { watchScope = it }</ID>
+    <ID>ForbiddenMethodCall:WatchableYamlDirectoryRepository.kt:WatchableYamlDirectoryRepository$also(::beforeSave)</ID>
+    <ID>ForbiddenMethodCall:WatchableYamlDirectoryRepository.kt:WatchableYamlDirectoryRepository$apply { update(file.readBytes()) }</ID>
+    <ID>ForbiddenMethodCall:WatchableYamlDirectoryRepository.kt:WatchableYamlDirectoryRepository$let { ReloadDiff.Change(detach(it), detach(current)) }</ID>
+    <ID>ForbiddenMethodCall:WatchableYamlDirectoryRepository.kt:WatchableYamlDirectoryRepository$let { entity -> removeEntity(file.name) externalChangeListener(ReloadDiff(removed = listOf(detach(entity)))) }</ID>
+    <ID>ForbiddenMethodCall:WatchableYamlDirectoryRepository.kt:WatchableYamlDirectoryRepository$let { forget(it) notifyChangeListeners() }</ID>
+    <ID>ForbiddenMethodCall:WatchableYamlDirectoryRepository.kt:WatchableYamlDirectoryRepository$let(::detach)</ID>
+    <ID>ForbiddenMethodCall:WatchableYamlDirectoryRepository.kt:WatchableYamlDirectoryRepository$let(::forget)</ID>
+    <ID>ForbiddenMethodCall:WatchableYamlDirectoryRepository.kt:WatchableYamlDirectoryRepository$takeIf { it != current }</ID>
+    <ID>InstanceOfCheckForException:HologramLineResolver.kt:HologramLineResolver$exception is CloudUnavailableException</ID>
+    <ID>NoNameShadowing:TargetResolver.kt:TargetResolver${ it.state == ServerState.AVAILABLE }</ID>
+    <ID>NoNameShadowing:WatchableYamlDirectoryRepository.kt:WatchableYamlDirectoryRepository$previous</ID>
+    <ID>UnsafeCallOnNullableType:InventoryConfiguration.kt:InventoryConfiguration$it.liveGroup!!</ID>
+    <ID>UnsafeCallOnNullableType:JoinStates.kt:JoinStateResolver$offline.compute(npcId) { _, previous -> val since = previous?.takeIf { now - it.lastSeen &lt;= OFFLINE_GRACE_MILLIS }?.since ?: now OfflineStreak(since, now) }!!</ID>
+  </CurrentIssues>
+</SmellBaseline>

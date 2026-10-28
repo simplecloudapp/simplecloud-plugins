@@ -64,8 +64,18 @@ include(
     ":server:prefixes:prefixes-paper",
     ":server:prefixes:prefixes-minestom",
 
+    ":server:npcs:npc-api",
     ":server:npcs:npc-shared",
+    ":server:npcs:npc-common",
     ":server:npcs:npc-paper",
+    ":server:npcs:npc-packetevents",
+    ":server:npcs:npc-provider-base",
+    ":server:npcs:npc-provider-standalone",
+    ":server:npcs:npc-provider-mannequin",
+    ":server:npcs:npc-provider-citizens",
+    ":server:npcs:npc-provider-fancynpcs",
+    ":server:npcs:npc-provider-mythicmobs",
+    ":server:npcs:npc-provider-znpcsplus",
 
     ":server:placeholders:placeholders-shared",
     ":server:placeholders:placeholders-paper",

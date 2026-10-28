@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>ForbiddenMethodCall:PluginJarTest.kt:PluginJarTest$let { "'$prefix' must not be in the jar, but ${it.size} entries are, e.g. ${it.take(3)}" }</ID>
+    <ID>ForbiddenMethodCall:PluginJarTest.kt:PluginJarTest$let { failures[name] = it }</ID>
+    <ID>ForbiddenMethodCall:PluginJarTest.kt:PluginJarTest$takeIf { it.isNotEmpty() }</ID>
+  </CurrentIssues>
+</SmellBaseline>

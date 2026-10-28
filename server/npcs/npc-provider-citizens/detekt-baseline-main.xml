@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>ForbiddenMethodCall:CitizensRenderer.kt:CitizensRenderer$apply { lookClose(config.entity.lookAtPlayer) setPerPlayer(true) setRange(config.entity.lookAtPlayerDistance) }</ID>
+    <ID>ForbiddenMethodCall:CitizensRenderer.kt:CitizensRenderer$let { GlowTeams.clear(it.uniqueId) }</ID>
+    <ID>ForbiddenMethodCall:CitizensRenderer.kt:CitizensRenderer$let { GlowTeams.set(it, config.entity.glowColor) }</ID>
+    <ID>ForbiddenMethodCall:CitizensRenderer.kt:CitizensRenderer$let(::skinOf)</ID>
+    <ID>ForbiddenMethodCall:CitizensRenderer.kt:CitizensRenderer$let(CitizensAPI.getNPCRegistry()::getById)</ID>
+    <ID>ForbiddenMethodCall:CitizensRenderer.kt:CitizensRenderer$takeIf { nameplateVisible &amp;&amp; it.isNotBlank() &amp;&amp; it != config.id }</ID>
+    <ID>ForbiddenMethodCall:CitizensRenderer.kt:CitizensRenderer$takeIf(String::isNotBlank)</ID>
+  </CurrentIssues>
+</SmellBaseline>

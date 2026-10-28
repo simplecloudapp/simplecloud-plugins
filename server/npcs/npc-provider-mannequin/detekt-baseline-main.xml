@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>ForbiddenMethodCall:MannequinRenderer.kt:MannequinRenderer$also { entityId -> ownedEntityIds.remove(entityId) networkIdByEntityId.remove(entityId)?.let(::forgetNetworkId) }</ID>
+    <ID>ForbiddenMethodCall:MannequinRenderer.kt:MannequinRenderer$also(viewers::add)</ID>
+    <ID>ForbiddenMethodCall:MannequinRenderer.kt:MannequinRenderer$apply { setItemInMainHand(configured.mainHand?.let(EquipmentItems::toItemStack)) setItemInOffHand(configured.offHand?.let(EquipmentItems::toItemStack)) helmet = configured.helmet?.let(EquipmentItems::toItemStack) chestplate = configured.chestplate?.let(EquipmentItems::toItemStack) leggings = configured.leggings?.let(EquipmentItems::toItemStack) boots = configured.boots?.let(EquipmentItems::toItemStack) }</ID>
+    <ID>ForbiddenMethodCall:MannequinRenderer.kt:MannequinRenderer$apply { setProfile(ResolvableProfile.resolvableProfile(buildProfile(config))) setSkinParts(SkinParts.allParts()) isImmovable = true isInvulnerable = true isCollidable = false isSilent = true isPersistent = true isVisibleByDefault = false isGlowing = config.entity.glowing }</ID>
+    <ID>ForbiddenMethodCall:MannequinRenderer.kt:MannequinRenderer$apply { val skin = config.entity.skin if (skin.texture != null &amp;&amp; skin.signature != null) { setProperty(ProfileProperty("textures", skin.texture!!, skin.signature)) } }</ID>
+    <ID>ForbiddenMethodCall:MannequinRenderer.kt:MannequinRenderer$let { entityId -> GlowTeams.clear(entityId) Bukkit.getEntity(entityId)?.remove() }</ID>
+    <ID>ForbiddenMethodCall:MannequinRenderer.kt:MannequinRenderer$let { previous -> if (previous != mannequin.entityId) forgetNetworkId(previous) }</ID>
+    <ID>ForbiddenMethodCall:MannequinRenderer.kt:MannequinRenderer$let { previous -> if (previous != mannequin.uniqueId) ownedEntityIds.remove(previous) }</ID>
+    <ID>ForbiddenMethodCall:MannequinRenderer.kt:MannequinRenderer$let(::forgetNetworkId)</ID>
+    <ID>ForbiddenMethodCall:MannequinRenderer.kt:MannequinRenderer$let(Bukkit::getEntity)</ID>
+    <ID>ForbiddenMethodCall:MannequinRenderer.kt:MannequinRenderer$let(EquipmentItems::toItemStack)</ID>
+    <ID>ForbiddenMethodCall:MannequinRenderer.kt:MannequinRenderer$let(MiniMessage.miniMessage()::deserialize)</ID>
+    <ID>ForbiddenMethodCall:MannequinRenderer.kt:MannequinRenderer$let(viewers::remove)</ID>
+    <ID>ForbiddenMethodCall:MannequinRenderer.kt:MannequinRenderer$run { spawn(config) return@sync }</ID>
+    <ID>ForbiddenMethodCall:MannequinRenderer.kt:MannequinRenderer.RangeEntry$let { player.hideEntity(plugin, it) }</ID>
+    <ID>ForbiddenMethodCall:MannequinRenderer.kt:MannequinRenderer.RangeEntry$let { player.showEntity(plugin, it) }</ID>
+    <ID>ForbiddenMethodCall:MannequinRenderer.kt:MannequinRenderer.RangeEntry$let(::hide)</ID>
+    <ID>UnsafeCallOnNullableType:MannequinRenderer.kt:MannequinRenderer$skin.texture!!</ID>
+  </CurrentIssues>
+</SmellBaseline>

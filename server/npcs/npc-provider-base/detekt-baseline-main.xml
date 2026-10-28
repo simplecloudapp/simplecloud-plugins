@@ -1,0 +1,56 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>AbstractClassCanBeConcreteClass:ProviderInteractListener.kt:ProviderInteractListener$ProviderInteractListener</ID>
+    <ID>ForbiddenMethodCall:ArmorLooks.kt:ArmorLooks$apply { editMeta { meta -> val texture = item.headTexture if (!texture.isNullOrBlank()) HeadTextures.apply(meta, texture) if (item.glowing) meta.setEnchantmentGlintOverride(true) apply(meta, item.color, item.trim, item.customModelData) } }</ID>
+    <ID>ForbiddenMethodCall:ArmorLooks.kt:ArmorLooks$let { (meta as? ArmorMeta)?.trim = it }</ID>
+    <ID>ForbiddenMethodCall:ArmorLooks.kt:ArmorLooks$let { (meta as? LeatherArmorMeta)?.setColor(it) }</ID>
+    <ID>ForbiddenMethodCall:ArmorLooks.kt:ArmorLooks$let { NpcConfig.ArmorTrim(material = it.material.key.toString(), pattern = it.pattern.key.toString()) }</ID>
+    <ID>ForbiddenMethodCall:ArmorLooks.kt:ArmorLooks$let { String.format("#%06x", it.asRGB()) }</ID>
+    <ID>ForbiddenMethodCall:ArmorLooks.kt:ArmorLooks$let(::armorTrim)</ID>
+    <ID>ForbiddenMethodCall:ArmorLooks.kt:ArmorLooks$let(::parseColor)</ID>
+    <ID>ForbiddenMethodCall:ArmorLooks.kt:ArmorLooks$let(Color::fromRGB)</ID>
+    <ID>ForbiddenMethodCall:ArmorLooks.kt:ArmorLooks$let(Registry.TRIM_MATERIAL::get)</ID>
+    <ID>ForbiddenMethodCall:ArmorLooks.kt:ArmorLooks$let(Registry.TRIM_PATTERN::get)</ID>
+    <ID>ForbiddenMethodCall:ArmorLooks.kt:ArmorLooks$let(meta::setCustomModelData)</ID>
+    <ID>ForbiddenMethodCall:ArmorLooks.kt:ArmorLooks$takeIf { it in 0..0xFFFFFF }</ID>
+    <ID>ForbiddenMethodCall:ArmorLooks.kt:ArmorLooks$takeIf { it.hasCustomModelData() }</ID>
+    <ID>ForbiddenMethodCall:ArmorLooks.kt:ArmorLooks$takeIf { it.hasTrim() }</ID>
+    <ID>ForbiddenMethodCall:ArmorLooks.kt:ArmorLooks$takeUnless { it == DEFAULT_LEATHER }</ID>
+    <ID>ForbiddenMethodCall:EntityIds.kt:EntityIds$let { return it.invoke(unsafe, world ?: Bukkit.getWorlds().first()) as Int }</ID>
+    <ID>ForbiddenMethodCall:EquipmentItems.kt:EquipmentItems$takeIf { it.isItem &amp;&amp; !it.isAir }</ID>
+    <ID>ForbiddenMethodCall:GlowTeamPackets.kt:GlowTeamPackets$let { HIDDEN_NAME_TAG_GLOW_PREFIX + glowColor!!.lowercase() }</ID>
+    <ID>ForbiddenMethodCall:GlowTeamPackets.kt:GlowTeamPackets$let { OUTLINE_PREFIX + glowColor!!.lowercase() }</ID>
+    <ID>ForbiddenMethodCall:GlowTeams.kt:GlowTeams$let { Member(scoreboardEntry, it) }</ID>
+    <ID>ForbiddenMethodCall:GlowTeams.kt:GlowTeams$let { add(player, it) }</ID>
+    <ID>ForbiddenMethodCall:GlowTeams.kt:GlowTeams$let { remove(player, it) }</ID>
+    <ID>ForbiddenMethodCall:GlowTeams.kt:GlowTeams$takeIf { GlowColors.resolve(it) != null }</ID>
+    <ID>ForbiddenMethodCall:HeadTextures.kt:HeadTextures$apply { setProperty(ProfileProperty("textures", texture, signature)) }</ID>
+    <ID>ForbiddenMethodCall:LinkedProviderRenderer.kt:LinkedProviderRenderer$let(::locationOf)</ID>
+    <ID>ForbiddenMethodCall:LinkedProviderRenderer.kt:LinkedProviderRenderer$let(::referenceOf)</ID>
+    <ID>ForbiddenMethodCall:LinkedProviderRenderer.kt:LinkedProviderRenderer$run { logger.warning( "NPC '${config.id}' is linked to $providerLabel NPC '$reference', which doesn't exist or " + "isn't loaded; the link stays inactive.", ) return }</ID>
+    <ID>ForbiddenMethodCall:LinkedProviderRenderer.kt:LinkedProviderRenderer$run { logger.warning( if (supportsCreation) { "NPC '${config.id}' is marked as linked but has no $providerLabel reference; " + "the link stays inactive." } else { "NPC '${config.id}' uses provider $providerLabel, which can only link existing NPCs, " + "but has no reference; skipping." }, ) return }</ID>
+    <ID>ForbiddenMethodCall:Locations.kt:let { NpcLocation(it, x, y, z, yaw, pitch) }</ID>
+    <ID>ForbiddenMethodCall:Locations.kt:run { logger.log(Level.WARNING, "Cannot create $providerName NPC '${config.id}': world '$worldName' isn't loaded.") null }</ID>
+    <ID>ForbiddenMethodCall:PacketHologramRenderer.kt:PacketHologramRenderer$let { PersonalLine(it, line.line.refreshSeconds) }</ID>
+    <ID>ForbiddenMethodCall:PacketTextDisplays.kt:PacketTextDisplays$let { meta.height = it }</ID>
+    <ID>ForbiddenMethodCall:PacketTextDisplays.kt:PacketTextDisplays$let { meta.isShadow = it }</ID>
+    <ID>ForbiddenMethodCall:PacketTextDisplays.kt:PacketTextDisplays$let { meta.lineWidth = it }</ID>
+    <ID>ForbiddenMethodCall:PacketTextDisplays.kt:PacketTextDisplays$let { meta.shadowRadius = it }</ID>
+    <ID>ForbiddenMethodCall:PacketTextDisplays.kt:PacketTextDisplays$let { meta.viewRange = it }</ID>
+    <ID>ForbiddenMethodCall:PacketTextDisplays.kt:PacketTextDisplays$let { meta.width = it }</ID>
+    <ID>ForbiddenMethodCall:PlayerSkins.kt:PlayerSkins$let { NpcConfig.SkinConfiguration(it.value, it.signature, requestedName ?: profile.name) }</ID>
+    <ID>ForbiddenMethodCall:PlayerSkins.kt:PlayerSkins$let { skinOf(it.playerProfile, player.name) }</ID>
+    <ID>ForbiddenMethodCall:RefreshScope.kt:RefreshScope$also { it.users++ }</ID>
+    <ID>ForbiddenMethodCall:ViewerTexts.kt:ViewerTexts$also { lines[key] = it }</ID>
+    <ID>ForbiddenMethodCall:ViewerTexts.kt:ViewerTexts$also { stored = true }</ID>
+    <ID>ForbiddenMethodCall:ViewerTexts.kt:ViewerTexts$apply { isDaemon = true }</ID>
+    <ID>ForbiddenMethodCall:ViewerTexts.kt:ViewerTexts$let { push(state.key, it, component) }</ID>
+    <ID>ForbiddenMethodCall:ViewerTexts.kt:ViewerTexts$let { return it.component }</ID>
+    <ID>ForbiddenMethodCall:ViewerTexts.kt:ViewerTexts$takeIf { it.source == state.text }</ID>
+    <ID>ImplicitDefaultLocale:ArmorLooks.kt:ArmorLooks$String.format("#%06x", it.asRGB())</ID>
+    <ID>ReturnCount:ViewerTexts.kt:ViewerTexts$fun textFor: PacketComponent?</ID>
+    <ID>UnsafeCallOnNullableType:GlowTeamPackets.kt:GlowTeamPackets$glowColor!!</ID>
+  </CurrentIssues>
+</SmellBaseline>

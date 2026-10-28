@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>ForbiddenMethodCall:ZNpcsPlusRenderer.kt:ZNpcsPlusRenderer$apply { setProcessed(true) setSave(false) setAllowCommandModification(false) }</ID>
+    <ID>ForbiddenMethodCall:ZNpcsPlusRenderer.kt:ZNpcsPlusRenderer$let { api.npcRegistry.delete(entryId) }</ID>
+    <ID>ForbiddenMethodCall:ZNpcsPlusRenderer.kt:ZNpcsPlusRenderer$let { id to it }</ID>
+    <ID>ForbiddenMethodCall:ZNpcsPlusRenderer.kt:ZNpcsPlusRenderer$run { logger.warning("Cannot create ZNPCsPlus NPC '${config.id}': the 'player' NPC type is unavailable.") return null }</ID>
+    <ID>ForbiddenMethodCall:ZNpcsPlusRenderer.kt:ZNpcsPlusRenderer$takeIf { GlowColors.resolve(it) != null }</ID>
+  </CurrentIssues>
+</SmellBaseline>

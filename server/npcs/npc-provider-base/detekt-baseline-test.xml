@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>ForbiddenMethodCall:HologramGeometryTest.kt:HologramGeometryTest$apply { hologram.startHeight = 2.0 }</ID>
+    <ID>ForbiddenMethodCall:LinkedProviderRendererTest.kt:LinkedProviderRendererTest.FakeRenderer$also { created += config.id createdNpcs[config.id] = it }</ID>
+  </CurrentIssues>
+</SmellBaseline>

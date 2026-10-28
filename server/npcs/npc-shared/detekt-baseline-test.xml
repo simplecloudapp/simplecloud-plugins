@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>ForbiddenMethodCall:NpcConfigMigrationTest.kt:NpcConfigMigrationTest$apply { writeText(trimmed) }</ID>
+    <ID>UnusedPrivateProperty:JoinStateResolverTest.kt:JoinStateResolverTest$private val running = listOf(CloudFakes.server(plain, 1, playerCount = 3, maxPlayers = 20))</ID>
+    <ID>VarCouldBeVal:CloudListStoreTest.kt:CloudListStoreTest$private var availableOnController = listOf(lobbyOne)</ID>
+    <ID>VarCouldBeVal:CloudListStoreTest.kt:CloudListStoreTest$private var groupsOnController = listOf(lobby)</ID>
+  </CurrentIssues>
+</SmellBaseline>

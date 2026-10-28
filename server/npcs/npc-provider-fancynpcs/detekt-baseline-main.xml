@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>ForbiddenMethodCall:FancyGlowColor.kt:FancyGlowColor$let(data::setGlowingColor)</ID>
+    <ID>ForbiddenMethodCall:FancyGlowColor.kt:FancyGlowColor$takeIf(GlowColors.NAMES::contains)</ID>
+    <ID>ForbiddenMethodCall:FancyNpcsRenderer.kt:FancyNpcsRenderer$also(Bukkit.getPluginManager()::callEvent)</ID>
+    <ID>ForbiddenMethodCall:FancyNpcsRenderer.kt:FancyNpcsRenderer$apply { applyAppearance(config) setMirrorSkin(true) }</ID>
+    <ID>ForbiddenMethodCall:FancyNpcsRenderer.kt:FancyNpcsRenderer$let { NpcConfig.SkinConfiguration(it.textureValue, it.textureSignature, it.identifier?.takeIf(String::isNotBlank)) }</ID>
+    <ID>ForbiddenMethodCall:FancyNpcsRenderer.kt:FancyNpcsRenderer$takeIf { !data.isMirrorSkin &amp;&amp; it.hasTexture() }</ID>
+    <ID>ForbiddenMethodCall:FancyNpcsRenderer.kt:FancyNpcsRenderer$takeIf { it.isNotBlank() &amp;&amp; it != EMPTY_NAME &amp;&amp; it != config.id }</ID>
+    <ID>ForbiddenMethodCall:FancyNpcsRenderer.kt:FancyNpcsRenderer$takeIf(String::isNotBlank)</ID>
+  </CurrentIssues>
+</SmellBaseline>
