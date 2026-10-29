@@ -42,9 +42,8 @@ class ConnectionPlugin<S : ConnectionServer>(
         if (!registrationEnabled) return
 
         registerAdditionalServers()
-        scope.launch {
-            startRegistration()
-        }
+        logger.info("Starting server registration...")
+        registerer.start()
     }
 
     fun shutdown() {
@@ -113,12 +112,6 @@ class ConnectionPlugin<S : ConnectionServer>(
             .distinctBy { name -> name.lowercase() }
             .filter { name -> ConnectionResolver.findConnection(name, config.connections) == null }
             .forEach { name -> logger.warn("The connection '$name' is referenced but not defined in config.yml") }
-    }
-
-    private suspend fun startRegistration() {
-        logger.info("Starting server registration...")
-        registerer.start()
-        registerer.loadExistingServers()
     }
 
     private fun registerAdditionalServers() {
