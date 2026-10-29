@@ -1,21 +1,28 @@
 package app.simplecloud.plugin.connection.shared.registration
 
 import app.simplecloud.api.CloudApi
+import app.simplecloud.api.cache.QueryKey
 import app.simplecloud.api.event.Subscription
 import app.simplecloud.api.group.GroupServerType
+import app.simplecloud.api.internal.CloudApiImpl
 import app.simplecloud.api.internal.integration.player.ServerNameRegistry
 import app.simplecloud.api.server.Server
 import app.simplecloud.api.server.ServerQuery
 import app.simplecloud.api.server.ServerState
+import app.simplecloud.api.shaded.nats.client.Connection
 import app.simplecloud.plugin.connection.shared.config.ConnectionConfig
 import app.simplecloud.plugin.connection.shared.utilities.RegisteredServerResolver
 import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
 import kotlinx.coroutines.*
 import kotlinx.coroutines.future.await
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import org.slf4j.LoggerFactory
 import java.util.Optional
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicBoolean
 import java.util.function.Function
+import kotlin.time.Duration.Companion.seconds
 
 class ServerRegisterer(
     private val api: CloudApi,
@@ -28,6 +35,12 @@ class ServerRegisterer(
     private val subscriptions: MutableList<Subscription> = mutableListOf()
     private val registeredServers = ConcurrentHashMap<String, RegisteredServer>()
     private val stoppingServers = ConcurrentHashMap.newKeySet<String>()
+    private val syncMutex = Mutex()
+    private val syncRequired = AtomicBoolean(true)
+    private val changedDuringSync = ConcurrentHashMap.newKeySet<String>()
+
+    @Volatile
+    private var syncing = false
 
     private val serverNames = Function<String, Optional<String>> { id -> Optional.ofNullable(registeredServers[id]?.proxyName) }
 
@@ -42,11 +55,13 @@ class ServerRegisterer(
                 }
                 if (event.newState == ServerState.AVAILABLE && event.oldState != ServerState.AVAILABLE) {
                     stoppingServers.remove(server.serverId)
+                    markChanged(server.serverId)
                     scope.launch {
                         register(server)
                     }
                 }
                 if (event.newState == ServerState.STOPPED) {
+                    markChanged(server.serverId)
                     scope.launch {
                         unregister(server.serverId)
                     }
@@ -61,6 +76,7 @@ class ServerRegisterer(
                 scope.launch {
                     val registeredServer = convertToRegisteredServer(server) ?: return@launch
                     if (registeredServer.proxyName != previousRegistration.proxyName) {
+                        markChanged(registeredServer.serverId)
                         register(registeredServer)
                     }
                 }
@@ -70,6 +86,7 @@ class ServerRegisterer(
         subscriptions.add(
             api.event().server().onStopped { event ->
                 val server = event.server ?: return@onStopped
+                markChanged(server.serverId)
                 scope.launch {
                     unregister(server.serverId)
                 }
@@ -78,11 +95,16 @@ class ServerRegisterer(
 
         subscriptions.add(
             api.event().server().onDeleted { event ->
+                markChanged(event.serverId)
                 scope.launch {
                     unregister(event.serverId)
                 }
             },
         )
+
+        scope.launch {
+            watchConnection()
+        }
     }
 
     fun stop() {
@@ -102,19 +124,66 @@ class ServerRegisterer(
         register(registeredServer)
     }
 
-    suspend fun loadExistingServers() {
-        val servers = fetchRunningServers()
-        logger.info("Found ${servers.size} servers")
-        servers.forEach { server -> register(server) }
-    }
-
     suspend fun refresh() {
         registeredServers.values.forEach { server ->
             register(server.copy(proxyName = resolveProxyName(server)))
         }
-        fetchRunningServers()
-            .filter { server -> !registeredServers.containsKey(server.serverId) }
-            .forEach { server -> register(server) }
+        sync()
+    }
+
+    // Events published while NATS is unreachable are lost, so the server list is loaded again once it is back.
+    private suspend fun watchConnection() {
+        while (currentCoroutineContext().isActive) {
+            if (!isConnected()) {
+                if (!syncRequired.getAndSet(true)) {
+                    logger.warn("Lost connection to SimpleCloud, the servers will be loaded again once it is back")
+                }
+            } else if (syncRequired.get() && !sync()) {
+                delay(10.seconds)
+            }
+            delay(1.seconds)
+        }
+    }
+
+    private fun isConnected(): Boolean = (api as CloudApiImpl).natsConnection.status == Connection.Status.CONNECTED
+
+    private suspend fun sync(): Boolean = syncMutex.withLock {
+        syncRequired.set(false)
+        changedDuringSync.clear()
+        syncing = true
+        try {
+            api.cache().invalidateAll(QueryKey.of("servers"))
+            val servers = fetchRunningServers()
+            logger.info("Found ${servers.size} servers")
+
+            // Servers changed by events during the request are already up to date and may be newer than the response.
+            val serverIds = servers.map { server -> server.serverId }.toSet()
+            synchronized(changedDuringSync) {
+                registeredServers.keys
+                    .filter { serverId -> serverId !in serverIds && serverId !in changedDuringSync }
+                    .forEach { serverId -> unregister(serverId) }
+                servers
+                    .filter { server -> server.serverId !in changedDuringSync }
+                    .forEach { server -> register(server) }
+            }
+            true
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            syncRequired.set(true)
+            logger.warn("Could not load the servers from SimpleCloud, retrying: ${e.message}")
+            false
+        } finally {
+            syncing = false
+        }
+    }
+
+    private fun markChanged(serverId: String) {
+        synchronized(changedDuringSync) {
+            if (syncing) {
+                changedDuringSync.add(serverId)
+            }
+        }
     }
 
     private suspend fun fetchRunningServers(): List<Server> = api.server().getAllServers(
