@@ -39,9 +39,6 @@ class ServerRegisterer(
     private val syncRequired = AtomicBoolean(true)
     private val changedDuringSync = ConcurrentHashMap.newKeySet<String>()
 
-    @Volatile
-    private var syncing = false
-
     private val serverNames = Function<String, Optional<String>> { id -> Optional.ofNullable(registeredServers[id]?.proxyName) }
 
     fun start() {
@@ -131,7 +128,6 @@ class ServerRegisterer(
         sync()
     }
 
-    // Events published while NATS is unreachable are lost, so the server list is loaded again once it is back.
     private suspend fun watchConnection() {
         while (currentCoroutineContext().isActive) {
             if (!isConnected()) {
@@ -148,15 +144,13 @@ class ServerRegisterer(
     private fun isConnected(): Boolean = (api as CloudApiImpl).natsConnection.status == Connection.Status.CONNECTED
 
     private suspend fun sync(): Boolean = syncMutex.withLock {
-        syncRequired.set(false)
+        syncRequired.set(!isConnected())
         changedDuringSync.clear()
-        syncing = true
         try {
             api.cache().invalidateAll(QueryKey.of("servers"))
             val servers = fetchRunningServers()
             logger.info("Found ${servers.size} servers")
 
-            // Servers changed by events during the request are already up to date and may be newer than the response.
             val serverIds = servers.map { server -> server.serverId }.toSet()
             synchronized(changedDuringSync) {
                 registeredServers.keys
@@ -167,20 +161,17 @@ class ServerRegisterer(
                     .forEach { server -> register(server) }
             }
             true
-        } catch (e: CancellationException) {
-            throw e
         } catch (e: Exception) {
+            currentCoroutineContext().ensureActive()
             syncRequired.set(true)
             logger.warn("Could not load the servers from SimpleCloud, retrying: ${e.message}")
             false
-        } finally {
-            syncing = false
         }
     }
 
     private fun markChanged(serverId: String) {
         synchronized(changedDuringSync) {
-            if (syncing) {
+            if (syncMutex.isLocked) {
                 changedDuringSync.add(serverId)
             }
         }
