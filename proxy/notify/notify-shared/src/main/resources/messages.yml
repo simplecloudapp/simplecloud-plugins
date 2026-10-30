@@ -29,17 +29,21 @@ command:
     entry: '<#E2E8F0><command>'
     empty: '<prefix> <#F59E0B>No notify commands are available for you.'
 
-  # Hints for commands that were used with wrong or missing arguments.
-  # Placeholders: <command>, <playername>
-  usage:
-    invalid: '<prefix> <#DC2626>Use <#F8FAFC><command> <#DC2626>instead.'
-    entry: '<#E2E8F0><command>'
-    invalid-state: '<prefix> <#DC2626>Use <#F8FAFC>enable <#DC2626>or <#F8FAFC>disable<#DC2626>.'
-    invalid-toggle-value: '<prefix> <#DC2626>Use <#F8FAFC>true <#DC2626>or <#F8FAFC>false<#DC2626>.'
-    missing-player: '<prefix> <#DC2626>Missing player <#F8FAFC><playername><#DC2626>.'
-
-  permission:
-    denied: '<prefix> <#DC2626>You do not have permission to use this command.'
+  # Shown when a command fails or is used wrong.
+  # Placeholders: <command>, <reason>, <value>, <min>, <max>, <options>
+  exception:
+    syntax: '<prefix> <#DC2626>Use <#F8FAFC><command> <#DC2626>instead.'
+    permission: '<prefix> <#DC2626>You do not have permission to use this command.'
+    invalid-sender: '<prefix> <#DC2626>You cannot use this command.'
+    failed: '<prefix> <#DC2626>The command failed because <#F8FAFC><reason><#DC2626>.'
+    argument:
+      invalid: '<prefix> <#DC2626><#F8FAFC><value> <#DC2626>is not a valid argument.'
+      invalid-number: '<prefix> <#DC2626><#F8FAFC><value> <#DC2626>is not a valid number.'
+      number-too-small: '<prefix> <#DC2626>The number must be at least <#F8FAFC><min><#DC2626>.'
+      number-too-large: '<prefix> <#DC2626>The number must be at most <#F8FAFC><max><#DC2626>.'
+      invalid-boolean: '<prefix> <#DC2626>Use <#F8FAFC>true <#DC2626>or <#F8FAFC>false<#DC2626>.'
+      invalid-enum: '<prefix> <#DC2626><#F8FAFC><value> <#DC2626>is invalid. Use one of <#F8FAFC><options><#DC2626>.'
+      invalid-uuid: '<prefix> <#DC2626><#F8FAFC><value> <#DC2626>is not a valid UUID.'
 
   # Confirmation for a player who toggles their own notifications.
   # Placeholders: <type>

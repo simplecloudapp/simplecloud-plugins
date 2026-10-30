@@ -91,3 +91,17 @@ command:
       update-success: '<prefix>Layout for group updated successfully.'
       update-failure: '<prefix>Failed to update layout for group.'
       update-no-change: '<prefix>Layout for group did not change.'
+
+  exception:
+    syntax: '<prefix><color:#ff0000>Use <color:#a3a3a3><command> <color:#ff0000>instead.'
+    permission: '<prefix><color:#ff0000>You do not have permission to use this command.'
+    invalid-sender: '<prefix><color:#ff0000>You cannot use this command.'
+    failed: '<prefix><color:#ff0000>The command failed because <color:#a3a3a3><reason><color:#ff0000>.'
+    argument:
+      invalid: '<prefix><color:#a3a3a3><value> <color:#ff0000>is not a valid argument.'
+      invalid-number: '<prefix><color:#a3a3a3><value> <color:#ff0000>is not a valid number.'
+      number-too-small: '<prefix><color:#ff0000>The number must be at least <color:#a3a3a3><min><color:#ff0000>.'
+      number-too-large: '<prefix><color:#ff0000>The number must be at most <color:#a3a3a3><max><color:#ff0000>.'
+      invalid-boolean: '<prefix><color:#ff0000>Use <color:#a3a3a3>true <color:#ff0000>or <color:#a3a3a3>false<color:#ff0000>.'
+      invalid-enum: '<prefix><color:#a3a3a3><value> <color:#ff0000>is invalid. Use one of <color:#a3a3a3><options><color:#ff0000>.'
+      invalid-uuid: '<prefix><color:#a3a3a3><value> <color:#ff0000>is not a valid UUID.'

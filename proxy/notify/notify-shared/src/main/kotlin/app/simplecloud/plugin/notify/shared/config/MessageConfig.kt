@@ -1,7 +1,9 @@
 package app.simplecloud.plugin.notify.shared.config
 
 import app.simplecloud.api.server.ServerState
-import app.simplecloud.plugin.core.shared.config.AbstractMessageConfig
+import app.simplecloud.plugin.core.shared.config.AbstractCommandMessageConfig
+import app.simplecloud.plugin.core.shared.config.AbstractCommandMessages
+import app.simplecloud.plugin.core.shared.config.CommandExceptionMessages
 import app.simplecloud.plugin.core.shared.config.VersionedConfig
 import app.simplecloud.plugin.notify.shared.utilities.config.ConfigVersion
 import org.spongepowered.configurate.objectmapping.ConfigSerializable
@@ -11,9 +13,9 @@ data class MessageConfig(
     override val version: Int = ConfigVersion.VERSION,
     val format: Format = Format(),
     override val variables: Map<String, String> = mapOf("prefix" to "<color:#0EA5E9><bold>⚡</bold></color>"),
-    val command: Command = Command(),
+    override val command: Command = Command(),
     val notifications: Notifications = Notifications(),
-) : VersionedConfig, AbstractMessageConfig()
+) : VersionedConfig, AbstractCommandMessageConfig()
 
 @ConfigSerializable
 data class Format(
@@ -23,34 +25,19 @@ data class Format(
 @ConfigSerializable
 data class Command(
     val help: Help = Help(),
-    val usage: Usage = Usage(),
-    val permission: Permission = Permission(),
     val notify: Notify = Notify(),
     val set: SetNotify = SetNotify(),
     val list: NotifyList = NotifyList(),
     val reload: Reload = Reload(),
     val error: Error = Error(),
-)
+    override val exception: CommandExceptionMessages = CommandExceptionMessages(),
+) : AbstractCommandMessages()
 
 @ConfigSerializable
 data class Help(
     val title: String = "<prefix> <#0EA5E9>SimpleCloud Notify commands",
     val entry: String = "<#E2E8F0><command>",
     val empty: String = "<prefix> <#F59E0B>No notify commands are available for you.",
-)
-
-@ConfigSerializable
-data class Usage(
-    val invalid: String = "<prefix> <#DC2626>Use <#F8FAFC><command> <#DC2626>instead.",
-    val entry: String = "<#E2E8F0><command>",
-    val invalidState: String = "<prefix> <#DC2626>Use <#F8FAFC>enable <#DC2626>or <#F8FAFC>disable<#DC2626>.",
-    val invalidToggleValue: String = "<prefix> <#DC2626>Use <#F8FAFC>true <#DC2626>or <#F8FAFC>false<#DC2626>.",
-    val missingPlayer: String = "<prefix> <#DC2626>Missing player <#F8FAFC><playername><#DC2626>.",
-)
-
-@ConfigSerializable
-data class Permission(
-    val denied: String = "<prefix> <#DC2626>You do not have permission to use this command.",
 )
 
 @ConfigSerializable

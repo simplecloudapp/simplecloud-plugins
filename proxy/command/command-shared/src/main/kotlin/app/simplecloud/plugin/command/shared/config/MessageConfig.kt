@@ -1,7 +1,9 @@
 package app.simplecloud.plugin.command.shared.config
 
 import app.simplecloud.plugin.command.shared.utilities.ConfigVersion
-import app.simplecloud.plugin.core.shared.config.AbstractMessageConfig
+import app.simplecloud.plugin.core.shared.config.AbstractCommandMessageConfig
+import app.simplecloud.plugin.core.shared.config.AbstractCommandMessages
+import app.simplecloud.plugin.core.shared.config.CommandExceptionMessages
 import app.simplecloud.plugin.core.shared.config.VersionedConfig
 import org.spongepowered.configurate.objectmapping.ConfigSerializable
 
@@ -9,20 +11,19 @@ import org.spongepowered.configurate.objectmapping.ConfigSerializable
 data class MessageConfig(
     override val version: Int = ConfigVersion.VERSION,
     override val variables: Map<String, String> = mapOf("prefix" to "<#0EA5E9><bold>SC</bold> <#475569>|"),
-    val command: CommandSection = CommandSection(),
-) : VersionedConfig, AbstractMessageConfig()
+    override val command: CommandSection = CommandSection(),
+) : VersionedConfig, AbstractCommandMessageConfig()
 
 @ConfigSerializable
 data class CommandSection(
     val help: HelpSection = HelpSection(),
     val usage: UsageSection = UsageSection(),
-    val permission: PermissionSection = PermissionSection(),
     val group: GroupSection = GroupSection(),
     val server: ServerSection = ServerSection(),
     val player: PlayerSection = PlayerSection(),
     val reload: ReloadSection = ReloadSection(),
-    val error: ErrorSection = ErrorSection(),
-)
+    override val exception: CommandExceptionMessages = CommandExceptionMessages(),
+) : AbstractCommandMessages()
 
 @ConfigSerializable
 data class HelpSection(
@@ -33,16 +34,7 @@ data class HelpSection(
 
 @ConfigSerializable
 data class UsageSection(
-    val invalid: String = "<prefix> <#DC2626>Use <#F8FAFC><command> <#DC2626>instead.",
-    val invalidNumber: String = "<prefix> <#DC2626><#F8FAFC><value> <#DC2626>is not a valid number.",
-    val numberTooSmall: String = "<prefix> <#DC2626>The number must be at least <#F8FAFC><min><#DC2626>.",
-    val numberTooLarge: String = "<prefix> <#DC2626>The number must be at most <#F8FAFC><max><#DC2626>.",
     val invalidTargetType: String = "<prefix> <#DC2626>Use <#F8FAFC>group <#DC2626>or <#F8FAFC>ps <#DC2626>as target type.",
-)
-
-@ConfigSerializable
-data class PermissionSection(
-    val denied: String = "<prefix> <#DC2626>You do not have permission to use this command.",
 )
 
 @ConfigSerializable
@@ -182,9 +174,4 @@ data class PlayerErrorSection(
 data class ReloadSection(
     val success: String = "<prefix> <#A3E635>SimpleCloud Command was reloaded.",
     val failed: String = "<prefix> <#DC2626>SimpleCloud Command could not be reloaded.",
-)
-
-@ConfigSerializable
-data class ErrorSection(
-    val failed: String = "<prefix> <#DC2626>The command failed because <#F8FAFC><reason><#DC2626>.",
 )

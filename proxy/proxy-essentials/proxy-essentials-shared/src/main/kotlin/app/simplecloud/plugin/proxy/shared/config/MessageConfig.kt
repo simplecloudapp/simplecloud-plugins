@@ -1,6 +1,8 @@
 package app.simplecloud.plugin.proxy.shared.config
 
-import app.simplecloud.plugin.core.shared.config.AbstractMessageConfig
+import app.simplecloud.plugin.core.shared.config.AbstractCommandMessageConfig
+import app.simplecloud.plugin.core.shared.config.AbstractCommandMessages
+import app.simplecloud.plugin.core.shared.config.CommandExceptionMessages
 import app.simplecloud.plugin.core.shared.config.VersionedConfig
 import app.simplecloud.plugin.proxy.shared.utilities.ConfigVersion
 import org.spongepowered.configurate.objectmapping.ConfigSerializable
@@ -13,8 +15,8 @@ data class MessageConfig(
     ),
     val format: FormatConfig = FormatConfig(),
     val kick: KickMessages = KickMessages(),
-    val command: CommandMessages = CommandMessages(),
-) : VersionedConfig, AbstractMessageConfig()
+    override val command: CommandMessages = CommandMessages(),
+) : VersionedConfig, AbstractCommandMessageConfig()
 
 @ConfigSerializable
 data class FormatConfig(
@@ -55,7 +57,8 @@ data class CommandMessages(
     val reload: ReloadMessages = ReloadMessages(),
     val joinState: JoinStateMessages = JoinStateMessages(),
     val layout: LayoutMessages = LayoutMessages(),
-)
+    override val exception: CommandExceptionMessages = CommandExceptionMessages(),
+) : AbstractCommandMessages()
 
 @ConfigSerializable
 data class ReloadMessages(
