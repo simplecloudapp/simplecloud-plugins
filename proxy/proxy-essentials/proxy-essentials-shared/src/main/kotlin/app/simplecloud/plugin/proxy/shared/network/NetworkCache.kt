@@ -49,7 +49,7 @@ class NetworkCache(
                 } catch (e: Exception) {
                     logger.error("Could not load the servers and groups of the network, keeping the last known state", e)
                 }
-                delay(30.seconds)
+                delay(if (isLoaded()) 30.seconds else 5.seconds)
             }
         }
     }
