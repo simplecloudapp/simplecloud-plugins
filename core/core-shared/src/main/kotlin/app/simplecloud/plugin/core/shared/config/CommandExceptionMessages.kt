@@ -13,7 +13,7 @@ data class CommandExceptionMessages(
 
 @ConfigSerializable
 data class ArgumentExceptionMessages(
-    val invalid: String = "<prefix> <#DC2626><#F8FAFC><value> <#DC2626>is not a valid argument.",
+    val invalid: String = "<prefix> <#DC2626>Invalid argument: <#F8FAFC><reason><#DC2626>.",
     val invalidNumber: String = "<prefix> <#DC2626><#F8FAFC><value> <#DC2626>is not a valid number.",
     val numberTooSmall: String = "<prefix> <#DC2626>The number must be at least <#F8FAFC><min><#DC2626>.",
     val numberTooLarge: String = "<prefix> <#DC2626>The number must be at most <#F8FAFC><max><#DC2626>.",
