@@ -19,7 +19,7 @@ data class CommandMessages(
     val help: CommandHelpMessages = CommandHelpMessages(),
     val reload: CommandReloadMessages = CommandReloadMessages(),
     override val exception: CommandExceptionMessages = CommandExceptionMessages(),
-) : AbstractCommandMessages()
+) : AbstractCommandMessages
 
 @ConfigSerializable
 data class CommandHelpMessages(

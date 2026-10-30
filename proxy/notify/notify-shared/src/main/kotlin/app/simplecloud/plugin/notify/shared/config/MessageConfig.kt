@@ -31,7 +31,7 @@ data class Command(
     val reload: Reload = Reload(),
     val error: Error = Error(),
     override val exception: CommandExceptionMessages = CommandExceptionMessages(),
-) : AbstractCommandMessages()
+) : AbstractCommandMessages
 
 @ConfigSerializable
 data class Help(

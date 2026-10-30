@@ -49,7 +49,9 @@ class CommandExceptionHandler<C : CloudSender, M : AbstractCommandMessageConfig>
         val argument = messages().argument
         when (cause) {
             is NumberParseException -> handleNumber(sender, cause)
+
             is BooleanParser.BooleanParseException -> send(sender, argument.invalidBoolean, tags("value" to cause.input()))
+
             is EnumParser.EnumParseException -> send(
                 sender,
                 argument.invalidEnum,
@@ -58,8 +60,10 @@ class CommandExceptionHandler<C : CloudSender, M : AbstractCommandMessageConfig>
                     "options" to cause.enumClass().enumConstants.joinToString(", ") { it.name.lowercase() },
                 ),
             )
+
             is UUIDParser.UUIDParseException -> send(sender, argument.invalidUuid, tags("value" to cause.input()))
-            else -> send(sender, argument.invalid, tags("reason" to (cause.message ?: "")))
+
+            else -> send(sender, argument.invalid, tags("reason" to cause.message.orEmpty()))
         }
     }
 

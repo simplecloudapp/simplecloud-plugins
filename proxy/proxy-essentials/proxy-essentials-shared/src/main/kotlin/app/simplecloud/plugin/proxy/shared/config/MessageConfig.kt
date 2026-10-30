@@ -58,7 +58,7 @@ data class CommandMessages(
     val joinState: JoinStateMessages = JoinStateMessages(),
     val layout: LayoutMessages = LayoutMessages(),
     override val exception: CommandExceptionMessages = CommandExceptionMessages(),
-) : AbstractCommandMessages()
+) : AbstractCommandMessages
 
 @ConfigSerializable
 data class ReloadMessages(

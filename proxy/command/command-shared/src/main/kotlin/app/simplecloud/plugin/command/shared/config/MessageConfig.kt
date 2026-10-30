@@ -23,7 +23,7 @@ data class CommandSection(
     val player: PlayerSection = PlayerSection(),
     val reload: ReloadSection = ReloadSection(),
     override val exception: CommandExceptionMessages = CommandExceptionMessages(),
-) : AbstractCommandMessages()
+) : AbstractCommandMessages
 
 @ConfigSerializable
 data class HelpSection(

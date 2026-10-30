@@ -1,6 +1,6 @@
 package app.simplecloud.plugin.core.shared.config
 
-abstract class AbstractCommandMessages {
+interface AbstractCommandMessages {
 
-    abstract val exception: CommandExceptionMessages
+    val exception: CommandExceptionMessages
 }
