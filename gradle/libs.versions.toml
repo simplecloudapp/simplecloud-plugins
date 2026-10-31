@@ -13,7 +13,7 @@ paperweight = "2.0.0-beta.24"
 protobuf = "0.10.0"
 
 # SimpleCloud
-simplecloud-api = "0.1.0-platform.59-dev.6.1-9cfd057"
+simplecloud-api = "0.1.0-platform.61-dev.8.1-9a2bef3"
 
 # Platforms
 velocity = "4.1.0-SNAPSHOT"
