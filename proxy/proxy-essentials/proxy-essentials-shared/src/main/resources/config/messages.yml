@@ -6,7 +6,7 @@ version: '2'
 # Usage: <variable_name> will be replaced with the defined value.
 # ───────────────────────────────────────────────────────────────────────────────
 variables:
-  prefix: '<color:#38bdf8><bold>⚡</bold></color> <color:#ffffff>'
+  prefix: '<color:#38bdf8><bold>⚡</bold></color>'
 
 # ───────────────────────────────────────────────────────────────────────────────
 # Format
@@ -32,62 +32,78 @@ format:
 # Kick Messages
 # ───────────────────────────────────────────────────────────────────────────────
 kick:
-  no-permission: '<red>The network is currently in maintenance mode. Please try again later.'
-  network-full: '<red>The network is currently full. Please try again later.'
-  no-join-state: '<red>No join state found for server. Please try again later.'
+  no-permission: '<#DC2626>The network is currently in maintenance mode. Please try again later.'
+  network-full: '<#DC2626>The network is currently full. Please try again later.'
+  no-join-state: '<#DC2626>No join state found for server. Please try again later.'
 
 # ───────────────────────────────────────────────────────────────────────────────
 # Command Messages
 # ───────────────────────────────────────────────────────────────────────────────
 command:
   help:
-    header: '<prefix>Available /scproxy commands:'
-    entry: '   <color:#a3a3a3><command>'
+    header: '<prefix> <#0EA5E9>SimpleCloud ProxyEssentials commands'
+    entry: '<#E2E8F0><command>'
 
-  failure: '<prefix><color:#ff0000>The command failed, check the console for details.'
-  invalid-target-type: '<prefix><color:#ff0000>The target type has to be group or ps.'
-  persistent-server-id: '<prefix><color:#ff0000>Persistent servers do not have an id.'
-  target-not-found: '<prefix><color:#ff0000>The target <color:#a3a3a3><target> <color:#ff0000>was not found.'
+  failure: '<prefix> <#DC2626>The command failed, check the console for details.'
+  invalid-target-type: '<prefix> <#DC2626>Use <#F8FAFC>group <#DC2626>or <#F8FAFC>ps <#DC2626>as target type.'
+  persistent-server-id: '<prefix> <#DC2626>Persistent servers do not have an id.'
+  target-not-found: '<prefix> <#DC2626>Target <#F8FAFC><target> <#DC2626>was not found.'
 
   reload:
-    start: '<prefix>Reloading ProxyEssentials configurations...'
-    success: '<prefix>Successfully reloaded all ProxyEssentials configurations.'
-    failure: '<prefix>Failed to reload configurations: <color:#ff0000><error>'
+    start: '<prefix> <#0EA5E9>Reloading ProxyEssentials configurations...'
+    success: '<prefix> <#A3E635>ProxyEssentials configurations were reloaded.'
+    failure: '<prefix> <#DC2626>ProxyEssentials configurations could not be reloaded: <#F8FAFC><error>'
 
   join-state:
     server:
-      update-success: '<prefix>Join state of server updated successfully.'
-      update-failure: '<prefix>Failed to update join state of server.'
-      update-no-change: '<prefix>Join state of server did not change.'
+      update-success: '<prefix> <#A3E635>Join state of server was updated.'
+      update-failure: '<prefix> <#DC2626>Join state of server could not be updated.'
+      update-no-change: '<prefix> <#F59E0B>Join state of server did not change.'
 
     group:
-      update-success: '<prefix>Join state of group updated successfully.'
-      update-failure: '<prefix>Failed to update join state of group.'
-      update-no-change: '<prefix>Join state of group did not change.'
+      update-success: '<prefix> <#A3E635>Join state of group was updated.'
+      update-failure: '<prefix> <#DC2626>Join state of group could not be updated.'
+      update-no-change: '<prefix> <#F59E0B>Join state of group did not change.'
 
     help:
-      header: '<prefix>Commands of join state:'
-      entry: '   <color:#a3a3a3><command>'
+      header: '<prefix> <#0EA5E9>Join state commands'
+      entry: '<#E2E8F0><command>'
 
     list:
       groups:
-        header: '<prefix>Groups with their join states:'
-        entry: '   <color:#a3a3a3><group> <color:#ffffff>- <color:#a3a3a3><state>'
+        header: '<prefix> <#0EA5E9>Groups with their join states'
+        entry: '   <#475569>- <#F8FAFC><group> <#475569>(<#E2E8F0><state><#475569>)'
 
       states:
-        header: '<prefix>Available join states:'
-        entry: '   <color:#a3a3a3><state> <color:#ffffff>- <color:#a3a3a3><join_permission>'
+        header: '<prefix> <#0EA5E9>Available join states'
+        entry: '   <#475569>- <#F8FAFC><state> <#475569>(<#E2E8F0><join_permission><#475569>)'
 
   layout:
     help:
-      header: '<prefix>Commands of layout:'
-      entry: '   <color:#a3a3a3><command>'
+      header: '<prefix> <#0EA5E9>Layout commands'
+      entry: '<#E2E8F0><command>'
 
     info:
-      header: '<prefix>Layout for <color:#a3a3a3><group><color:#ffffff>:'
-      entry: '   <color:#a3a3a3><layout>'
+      header: '<prefix> <#0EA5E9>Layout of group <#F8FAFC><group>'
+      entry: '   <#475569>- <#F8FAFC><layout>'
 
     set:
-      update-success: '<prefix>Layout for group updated successfully.'
-      update-failure: '<prefix>Failed to update layout for group.'
-      update-no-change: '<prefix>Layout for group did not change.'
+      update-success: '<prefix> <#A3E635>Layout of group was updated.'
+      update-failure: '<prefix> <#DC2626>Layout of group could not be updated.'
+      update-no-change: '<prefix> <#F59E0B>Layout of group did not change.'
+
+  # Shown when a command fails or is used wrong.
+  # Placeholders: <command>, <reason>, <value>, <min>, <max>, <options>
+  exception:
+    syntax: '<prefix> <#DC2626>Use <#F8FAFC><command> <#DC2626>instead.'
+    permission: '<prefix> <#DC2626>You do not have permission to use this command.'
+    invalid-sender: '<prefix> <#DC2626>You cannot use this command.'
+    failed: '<prefix> <#DC2626>The command failed because <#F8FAFC><reason><#DC2626>.'
+    argument:
+      invalid: '<prefix> <#DC2626>Invalid argument: <#F8FAFC><reason><#DC2626>.'
+      invalid-number: '<prefix> <#DC2626><#F8FAFC><value> <#DC2626>is not a valid number.'
+      number-too-small: '<prefix> <#DC2626>The number must be at least <#F8FAFC><min><#DC2626>.'
+      number-too-large: '<prefix> <#DC2626>The number must be at most <#F8FAFC><max><#DC2626>.'
+      invalid-boolean: '<prefix> <#DC2626>Use <#F8FAFC>true <#DC2626>or <#F8FAFC>false<#DC2626>.'
+      invalid-enum: '<prefix> <#DC2626><#F8FAFC><value> <#DC2626>is invalid. Use one of <#F8FAFC><options><#DC2626>.'
+      invalid-uuid: '<prefix> <#DC2626><#F8FAFC><value> <#DC2626>is not a valid UUID.'

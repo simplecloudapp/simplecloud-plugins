@@ -1,6 +1,7 @@
 package app.simplecloud.plugin.prefixes.shared.command
 
 import app.simplecloud.plugin.core.shared.command.CloudSender
+import app.simplecloud.plugin.core.shared.command.CommandExceptionHandler
 import app.simplecloud.plugin.prefixes.shared.Prefixes
 import app.simplecloud.plugin.prefixes.shared.utilities.PrefixesPermissions
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
@@ -16,10 +17,11 @@ class PrefixesCommand<C : CloudSender>(
     fun register() {
         registerHelp()
         registerReload()
+        CommandExceptionHandler(manager, prefixes.messages).register()
     }
 
     private fun registerHelp() {
-        val root = manager.commandBuilder("scprefix")
+        val root = manager.commandBuilder("scprefix").permission(PrefixesPermissions.COMMAND)
         manager.command(root.handler { sendHelp(it.sender()) })
         manager.command(root.literal("help").handler { sendHelp(it.sender()) })
     }
@@ -37,11 +39,6 @@ class PrefixesCommand<C : CloudSender>(
     }
 
     private fun sendHelp(sender: C) {
-        if (!sender.hasPermission(PrefixesPermissions.COMMAND)) {
-            sender.sendMessage(messages.msg(messages.command.permission.denied))
-            return
-        }
-
         sender.sendMessage(messages.msg(messages.command.help.title))
         sender.sendMessage(messages.msg(messages.command.help.entry, Placeholder.unparsed("command", "/scprefix help")))
 

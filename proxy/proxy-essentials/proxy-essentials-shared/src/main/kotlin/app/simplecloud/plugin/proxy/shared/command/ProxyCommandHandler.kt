@@ -1,6 +1,7 @@
 package app.simplecloud.plugin.proxy.shared.command
 
 import app.simplecloud.plugin.core.shared.command.CloudSender
+import app.simplecloud.plugin.core.shared.command.CommandExceptionHandler
 import app.simplecloud.plugin.proxy.shared.ProxyEssentials
 import app.simplecloud.plugin.proxy.shared.command.commands.JoinStateCommand
 import app.simplecloud.plugin.proxy.shared.command.commands.LayoutCommand
@@ -33,6 +34,7 @@ class ProxyCommandHandler<C : CloudSender>(
         JoinStateCommand(plugin.api, plugin, manager).register()
         LayoutCommand(plugin.api, plugin, manager).register()
         ReloadCommand(plugin, manager).register()
+        CommandExceptionHandler(manager, plugin.messages).register()
     }
 
     private fun sendHelp(context: CommandContext<C>) {

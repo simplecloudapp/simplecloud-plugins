@@ -1,4 +1,4 @@
-package app.simplecloud.plugin.command.shared.utilities
+package app.simplecloud.plugin.core.shared.controller
 
 import app.simplecloud.api.CloudApi
 import app.simplecloud.api.CloudApiException
@@ -12,6 +12,7 @@ object ApiUtils {
 
     private val logger = LoggerFactory.getLogger(ApiUtils::class.java)
     private val statusCodeSuffix = Regex("""\s*\(\d+\)$""")
+    private val apiAvailable = isApiAvailable()
 
     suspend fun findGroup(api: CloudApi, name: String): Group? =
         api.group().findGroupByName(name).await().orElse(null)
@@ -23,6 +24,8 @@ object ApiUtils {
 
     fun reason(throwable: Throwable): String {
         val causes = generateSequence(throwable) { it.cause }
+        if (!apiAvailable) return nonApiReason(throwable, causes)
+
         val exception = causes.filterIsInstance<CloudApiException>().firstOrNull()
 
         return when {
@@ -31,6 +34,13 @@ object ApiUtils {
             exception.reason == CloudApiException.Reason.UNAVAILABLE -> "the controller is currently unavailable"
             else -> formatMessage(exception.message)
         }
+    }
+
+    private fun isApiAvailable(): Boolean = try {
+        Class.forName("app.simplecloud.api.CloudApiException", false, ApiUtils::class.java.classLoader)
+        true
+    } catch (_: ClassNotFoundException) {
+        false
     }
 
     private fun nonApiReason(throwable: Throwable, causes: Sequence<Throwable>): String {
