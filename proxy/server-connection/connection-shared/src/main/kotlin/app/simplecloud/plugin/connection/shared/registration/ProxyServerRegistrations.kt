@@ -6,7 +6,7 @@ import java.util.Optional
 import java.util.concurrent.ConcurrentHashMap
 
 /**
- * The cloud servers registered on this proxy, and which of them holds each proxy name.
+ * The cloud servers this plugin tracks for the proxy, and which of them holds each proxy name.
  *
  * Several servers can resolve to the same proxy name, and registering a name on the proxy replaces the server that
  * had it. Tracking the holder keeps a replaced server from removing the holder when it stops, and lets the
@@ -19,7 +19,8 @@ class ProxyServerRegistrations(
 
     private val logger = LoggerFactory.getLogger(ProxyServerRegistrations::class.java)
 
-    // Keeps holderIds in step with the proxy while events, resyncs and reloads register servers concurrently.
+    // Keeps servers and holderIds consistent with the register and unregister calls this class makes, while events,
+    // resyncs and reloads run concurrently.
     private val lock = Any()
     private val servers = ConcurrentHashMap<String, RegisteredServer>()
 
@@ -50,7 +51,8 @@ class ProxyServerRegistrations(
     }
 
     /**
-     * cloud-api calls this on the NATS dispatcher thread, so it must not block: it only reads the concurrent maps.
+     * Runs concurrently with register and unregister: cloud-api calls it on the NATS dispatcher thread, and other plugins
+     * call it through [ProxyServerNames.proxyNameOf]. So it must not block, and it only reads the concurrent maps.
      */
     override fun proxyNameOf(serverId: String): Optional<String> {
         val server = servers[serverId] ?: return Optional.empty()

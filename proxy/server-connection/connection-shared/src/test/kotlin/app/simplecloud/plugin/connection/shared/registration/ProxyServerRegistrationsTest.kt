@@ -180,6 +180,22 @@ class ProxyServerRegistrationsTest {
         assertEquals(Optional.of(renamedLobby.proxyName), registrations.proxyNameOf(lobby.serverId))
     }
 
+    @Test
+    fun `takes over a name another server holds when a server moves to it`() {
+        val lobby = registeredServer("lobby-id", "lobby-1")
+        val hub = registeredServer("hub-id", "hub-1")
+        val movedLobby = lobby.copy(proxyName = hub.proxyName)
+        registrations.register(lobby)
+        registrations.register(hub)
+
+        registrations.register(movedLobby)
+
+        assertNull(proxy.serverNamed(lobby.proxyName))
+        assertEquals(movedLobby, proxy.serverNamed(hub.proxyName))
+        assertEquals(Optional.of(hub.proxyName), registrations.proxyNameOf(lobby.serverId))
+        assertEquals(Optional.empty(), registrations.proxyNameOf(hub.serverId))
+    }
+
     // Records what the lookup answers for each server just before the proxy switches a name over to it.
     private fun recordAnswersBeforeSwitch(): List<Optional<String>> {
         val answers = CopyOnWriteArrayList<Optional<String>>()
