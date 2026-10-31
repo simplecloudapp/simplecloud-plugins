@@ -1,6 +1,7 @@
 package app.simplecloud.plugin.connection.shared.registration
 
 import java.util.Optional
+import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -16,8 +17,8 @@ class ProxyServerRegistrationsTest {
 
         registrations.register(lobby)
 
-        assertEquals(Optional.of("lobby-1"), registrations.proxyNameOf("lobby-id"))
-        assertEquals(lobby, proxy.serverNamed("lobby-1"))
+        assertEquals(Optional.of(lobby.proxyName), registrations.proxyNameOf(lobby.serverId))
+        assertEquals(lobby, proxy.serverNamed(lobby.proxyName))
     }
 
     @Test
@@ -28,9 +29,9 @@ class ProxyServerRegistrationsTest {
         registrations.register(replaced)
         registrations.register(holder)
 
-        assertEquals(Optional.empty(), registrations.proxyNameOf("replaced-id"))
-        assertEquals(Optional.of("lobby-1"), registrations.proxyNameOf("holder-id"))
-        assertEquals(holder, proxy.serverNamed("lobby-1"))
+        assertEquals(Optional.empty(), registrations.proxyNameOf(replaced.serverId))
+        assertEquals(Optional.of(holder.proxyName), registrations.proxyNameOf(holder.serverId))
+        assertEquals(holder, proxy.serverNamed(holder.proxyName))
     }
 
     @Test
@@ -41,37 +42,34 @@ class ProxyServerRegistrationsTest {
         registrations.register(replaced)
         registrations.register(holder)
 
-        assertEquals(Optional.empty(), registrations.proxyNameOf("replaced-id"))
-        assertEquals(Optional.of("Lobby-1"), registrations.proxyNameOf("holder-id"))
+        assertEquals(Optional.empty(), registrations.proxyNameOf(replaced.serverId))
+        assertEquals(Optional.of(holder.proxyName), registrations.proxyNameOf(holder.serverId))
     }
 
     @Test
-    fun `keeps the holder on the proxy when a replaced server is unregistered`() {
+    fun `keeps the holder when a replaced server whose name differs only in case is unregistered`() {
         val replaced = registeredServer("replaced-id", "lobby-1")
         val holder = registeredServer("holder-id", "Lobby-1")
         registrations.register(replaced)
         registrations.register(holder)
 
-        registrations.unregister("replaced-id")
+        registrations.unregister(replaced.serverId)
 
-        assertEquals(holder, proxy.serverNamed("Lobby-1"))
-        assertEquals(Optional.of("Lobby-1"), registrations.proxyNameOf("holder-id"))
+        assertEquals(holder, proxy.serverNamed(holder.proxyName))
+        assertEquals(Optional.of(holder.proxyName), registrations.proxyNameOf(holder.serverId))
     }
 
     @Test
     fun `leaves the proxy untouched when a replaced server is unregistered`() {
-        val firstReplaced = registeredServer("first-replaced-id", "lobby-1")
-        val secondReplaced = registeredServer("second-replaced-id", "lobby-1")
+        val replaced = registeredServer("replaced-id", "lobby-1")
         val holder = registeredServer("holder-id", "lobby-1")
-        registrations.register(firstReplaced)
-        registrations.register(secondReplaced)
+        registrations.register(replaced)
         registrations.register(holder)
         val changeCountBefore = proxy.changeCount
 
-        registrations.unregister("first-replaced-id")
+        registrations.unregister(replaced.serverId)
 
         assertEquals(changeCountBefore, proxy.changeCount)
-        assertEquals(holder, proxy.serverNamed("lobby-1"))
     }
 
     @Test
@@ -81,11 +79,37 @@ class ProxyServerRegistrationsTest {
         registrations.register(replaced)
         registrations.register(holder)
 
-        registrations.unregister("holder-id")
+        registrations.unregister(holder.serverId)
 
-        assertEquals(replaced, proxy.serverNamed("lobby-1"))
-        assertEquals(Optional.of("lobby-1"), registrations.proxyNameOf("replaced-id"))
-        assertEquals(Optional.empty(), registrations.proxyNameOf("holder-id"))
+        assertEquals(replaced, proxy.serverNamed(replaced.proxyName))
+        assertEquals(Optional.of(replaced.proxyName), registrations.proxyNameOf(replaced.serverId))
+        assertEquals(Optional.empty(), registrations.proxyNameOf(holder.serverId))
+    }
+
+    @Test
+    fun `doesn't map the successor before the proxy routes the name to it`() {
+        val replaced = registeredServer("replaced-id", "lobby-1")
+        val holder = registeredServer("holder-id", "lobby-1")
+        registrations.register(replaced)
+        registrations.register(holder)
+        val answersBeforeSwitch = recordAnswersBeforeSwitch()
+
+        registrations.unregister(holder.serverId)
+
+        assertEquals(listOf(Optional.empty()), answersBeforeSwitch)
+    }
+
+    @Test
+    fun `doesn't map a replaced server that registers again before the proxy routes the name to it`() {
+        val replaced = registeredServer("replaced-id", "lobby-1")
+        val holder = registeredServer("holder-id", "lobby-1")
+        registrations.register(replaced)
+        registrations.register(holder)
+        val answersBeforeSwitch = recordAnswersBeforeSwitch()
+
+        registrations.register(replaced)
+
+        assertEquals(listOf(Optional.empty()), answersBeforeSwitch)
     }
 
     @Test
@@ -93,10 +117,10 @@ class ProxyServerRegistrationsTest {
         val lobby = registeredServer("lobby-id", "lobby-1")
         registrations.register(lobby)
 
-        registrations.unregister("lobby-id")
+        registrations.unregister(lobby.serverId)
 
-        assertNull(proxy.serverNamed("lobby-1"))
-        assertEquals(Optional.empty(), registrations.proxyNameOf("lobby-id"))
+        assertNull(proxy.serverNamed(lobby.proxyName))
+        assertEquals(Optional.empty(), registrations.proxyNameOf(lobby.serverId))
     }
 
     @Test
@@ -107,9 +131,16 @@ class ProxyServerRegistrationsTest {
 
         registrations.register(renamedLobby)
 
-        assertNull(proxy.serverNamed("lobby-1"))
-        assertEquals(renamedLobby, proxy.serverNamed("hub-1"))
-        assertEquals(Optional.of("hub-1"), registrations.proxyNameOf("lobby-id"))
+        assertNull(proxy.serverNamed(lobby.proxyName))
+        assertEquals(renamedLobby, proxy.serverNamed(renamedLobby.proxyName))
+        assertEquals(Optional.of(renamedLobby.proxyName), registrations.proxyNameOf(lobby.serverId))
+    }
+
+    // Records what the lookup answers for each server just before the proxy switches a name over to it.
+    private fun recordAnswersBeforeSwitch(): List<Optional<String>> {
+        val answers = CopyOnWriteArrayList<Optional<String>>()
+        proxy.beforeRegister { server -> answers.add(registrations.proxyNameOf(server.serverId)) }
+        return answers
     }
 
     private fun registeredServer(serverId: String, proxyName: String): RegisteredServer = RegisteredServer(

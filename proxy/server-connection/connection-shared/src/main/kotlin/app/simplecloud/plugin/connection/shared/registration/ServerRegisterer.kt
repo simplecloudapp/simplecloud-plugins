@@ -33,14 +33,14 @@ class ServerRegisterer(
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private val subscriptions: MutableList<Subscription> = mutableListOf()
     private val registrations = ProxyServerRegistrations(registry)
-    private val proxyServerNamesRegistration = AtomicReference<ProxyServerNames.Registration?>()
+    private val lookupRegistration = AtomicReference<ProxyServerNames.Registration?>()
     private val stoppingServers = ConcurrentHashMap.newKeySet<String>()
     private val syncMutex = Mutex()
     private val syncRequired = AtomicBoolean(true)
     private val changedDuringSync = ConcurrentHashMap.newKeySet<String>()
 
     fun start() {
-        proxyServerNamesRegistration.set(ProxyServerNames.register(registrations))
+        lookupRegistration.set(ProxyServerNames.register(registrations))
         subscriptions.add(
             api.event().server().onStateChanged { event ->
                 val server = event.server ?: return@onStateChanged
@@ -103,7 +103,7 @@ class ServerRegisterer(
     }
 
     fun stop() {
-        proxyServerNamesRegistration.getAndSet(null)?.close()
+        lookupRegistration.getAndSet(null)?.close()
         subscriptions.forEach { subscription -> subscription.close() }
         subscriptions.clear()
         scope.cancel()

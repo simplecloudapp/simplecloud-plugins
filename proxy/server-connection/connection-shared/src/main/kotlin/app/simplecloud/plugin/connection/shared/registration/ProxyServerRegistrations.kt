@@ -23,7 +23,7 @@ class ProxyServerRegistrations(
     private val lock = Any()
     private val servers = ConcurrentHashMap<String, RegisteredServer>()
 
-    // Keyed by the lowercased proxy name, because Velocity and BungeeCord compare server names ignoring case.
+    // Keyed by the lowercased proxy name, because the proxies compare server names ignoring case.
     private val holderIds = ConcurrentHashMap<String, String>()
 
     fun find(serverId: String): RegisteredServer? = servers[serverId]
@@ -45,7 +45,7 @@ class ProxyServerRegistrations(
                 logger.info("Registering server ${server.serverId} (${server.proxyName})...")
             }
 
-            claimProxyName(server)
+            registerAsHolder(server)
             servers[server.serverId] = server
         }
     }
@@ -68,28 +68,31 @@ class ProxyServerRegistrations(
         return Optional.of(server.proxyName)
     }
 
-    // Claims the name before the proxy switches to the new server, so the lookup never maps the replaced one to it.
-    private fun claimProxyName(server: RegisteredServer) {
-        val previousHolderId = holderIds.put(nameKey(server.proxyName), server.serverId)
+    // While the proxy switches the name over, the lookup answers for neither server, so it never maps an ID to a
+    // server the proxy doesn't route the name to.
+    private fun registerAsHolder(server: RegisteredServer) {
+        val nameKey = nameKey(server.proxyName)
+        val previousHolderId = holderIds.remove(nameKey)
         if (previousHolderId != null && previousHolderId != server.serverId) {
             logger.warn("Server ${server.serverId} replaces server $previousHolderId as ${server.proxyName} on the proxy")
         }
         registry.register(server.proxyName, server)
+        holderIds[nameKey] = server.serverId
     }
 
     private fun releaseProxyName(server: RegisteredServer) {
-        val nameKey = nameKey(server.proxyName)
-        if (holderIds[nameKey] != server.serverId) return
-        holderIds.remove(nameKey)
+        val releasedNameKey = nameKey(server.proxyName)
+        if (holderIds[releasedNameKey] != server.serverId) return
+        holderIds.remove(releasedNameKey)
 
-        val successor = servers.values.firstOrNull { other -> nameKey(other.proxyName) == nameKey }
+        val successor = servers.values.firstOrNull { other -> nameKey(other.proxyName) == releasedNameKey }
         if (successor == null) {
             registry.unregister(server.proxyName, server)
             return
         }
 
         logger.info("Keeping ${server.proxyName} registered for ${successor.serverId}")
-        claimProxyName(successor)
+        registerAsHolder(successor)
     }
 
     private fun nameKey(proxyName: String): String = proxyName.lowercase()
