@@ -66,11 +66,11 @@ class ServerRegisterer(
 
         subscriptions.add(
             api.event().server().onUpdated { event ->
-                val previousRegistration = registrations.find(event.serverId) ?: return@onUpdated
+                val previousServer = registrations.find(event.serverId) ?: return@onUpdated
                 val server = event.server ?: return@onUpdated
                 scope.launch {
                     val registeredServer = convertToRegisteredServer(server) ?: return@launch
-                    if (registeredServer.proxyName != previousRegistration.proxyName) {
+                    if (registeredServer.proxyName != previousServer.proxyName) {
                         markChanged(registeredServer.serverId)
                         register(registeredServer)
                     }
@@ -151,10 +151,10 @@ class ServerRegisterer(
 
             val serverIds = servers.map { server -> server.serverId }.toSet()
             synchronized(changedDuringSync) {
-                registrations.findAll()
+                val staleServerIds = registrations.findAll()
                     .map { server -> server.serverId }
                     .filter { serverId -> serverId !in serverIds && serverId !in changedDuringSync }
-                    .forEach { serverId -> unregister(serverId) }
+                staleServerIds.forEach { serverId -> unregister(serverId) }
                 servers
                     .filter { server -> server.serverId !in changedDuringSync }
                     .forEach { server -> register(server) }

@@ -113,6 +113,33 @@ class ProxyServerRegistrationsTest {
     }
 
     @Test
+    fun `keeps mapping the holder while it registers again`() {
+        val holder = registeredServer("holder-id", "lobby-1")
+        registrations.register(holder)
+        val answersBeforeSwitch = recordAnswersBeforeSwitch()
+
+        registrations.register(holder)
+
+        assertEquals(listOf(Optional.of(holder.proxyName)), answersBeforeSwitch)
+    }
+
+    @Test
+    fun `keeps the name when the holder is renamed to a name that differs only in case`() {
+        val replaced = registeredServer("replaced-id", "lobby-1")
+        val holder = registeredServer("holder-id", "lobby-1")
+        val renamedHolder = holder.copy(proxyName = "Lobby-1")
+        registrations.register(replaced)
+        registrations.register(holder)
+        val changeCountBefore = proxy.changeCount
+
+        registrations.register(renamedHolder)
+
+        assertEquals(changeCountBefore + 1, proxy.changeCount)
+        assertEquals(renamedHolder, proxy.serverNamed(renamedHolder.proxyName))
+        assertEquals(Optional.of(renamedHolder.proxyName), registrations.proxyNameOf(holder.serverId))
+    }
+
+    @Test
     fun `removes the name from the proxy when its last server is unregistered`() {
         val lobby = registeredServer("lobby-id", "lobby-1")
         registrations.register(lobby)
