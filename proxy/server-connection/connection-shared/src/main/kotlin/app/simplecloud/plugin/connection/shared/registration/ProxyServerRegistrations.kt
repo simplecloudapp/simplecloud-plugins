@@ -33,30 +33,11 @@ class ProxyServerRegistrations(
     fun register(server: RegisteredServer) {
         synchronized(lock) {
             val previousServer = servers[server.serverId]
-            val keepsProxyName = previousServer != null && nameKeyOf(previousServer.proxyName) == nameKeyOf(server.proxyName)
-            val holderId = holderIds[nameKeyOf(server.proxyName)]
-            val nameHeldByOther = holderId != null && holderId != server.serverId
-
-            // A server that registers again doesn't take its name back, so resyncs and reloads don't flip the holder.
-            if (keepsProxyName && nameHeldByOther) {
-                logger.info("Refreshing server ${server.serverId} (${server.proxyName}), server $holderId keeps the name...")
-                servers[server.serverId] = server
-                return
+            when {
+                previousServer == null -> registerNewServer(server)
+                changesProxyName(previousServer, server) -> moveToNewProxyName(previousServer, server)
+                else -> refreshServer(server)
             }
-
-            if (keepsProxyName) {
-                logger.info("Refreshing server ${server.serverId} (${server.proxyName})...")
-            } else {
-                if (previousServer != null) {
-                    logger.info("Replacing stale registration ${previousServer.serverId} (${previousServer.proxyName}) with ${server.proxyName}...")
-                    servers.remove(server.serverId)
-                    releaseProxyName(previousServer)
-                }
-                logger.info("Registering server ${server.serverId} (${server.proxyName})...")
-            }
-
-            registerAsHolder(server)
-            servers[server.serverId] = server
         }
     }
 
@@ -76,6 +57,37 @@ class ProxyServerRegistrations(
         val holderId = holderIds[nameKeyOf(server.proxyName)]
         if (holderId != serverId) return Optional.empty()
         return Optional.of(server.proxyName)
+    }
+
+    private fun registerNewServer(server: RegisteredServer) {
+        logger.info("Registering server ${server.serverId} (${server.proxyName})...")
+        registerAsHolder(server)
+        servers[server.serverId] = server
+    }
+
+    private fun changesProxyName(previousServer: RegisteredServer, server: RegisteredServer): Boolean =
+        nameKeyOf(previousServer.proxyName) != nameKeyOf(server.proxyName)
+
+    private fun moveToNewProxyName(previousServer: RegisteredServer, server: RegisteredServer) {
+        logger.info("Replacing stale registration ${previousServer.serverId} (${previousServer.proxyName}) with ${server.proxyName}...")
+        servers.remove(server.serverId)
+        releaseProxyName(previousServer)
+        registerNewServer(server)
+    }
+
+    // A server that registers again doesn't take its name back, so resyncs and reloads don't flip the holder.
+    private fun refreshServer(server: RegisteredServer) {
+        val holderId = holderIds[nameKeyOf(server.proxyName)]
+        val nameHeldByOther = holderId != null && holderId != server.serverId
+        if (nameHeldByOther) {
+            logger.info("Refreshing server ${server.serverId} (${server.proxyName}), server $holderId keeps the name...")
+            servers[server.serverId] = server
+            return
+        }
+
+        logger.info("Refreshing server ${server.serverId} (${server.proxyName})...")
+        registerAsHolder(server)
+        servers[server.serverId] = server
     }
 
     // Forgets the old holder before the proxy call and records the new one after it, so the lookup doesn't answer for
