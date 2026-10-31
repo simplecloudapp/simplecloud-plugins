@@ -1,0 +1,58 @@
+# AGENTS.md
+
+## General Guidelines
+
+- Don't write or change READMEs unless the user specifically asked for it
+- Don't add unnecessary comments or KDoc in code or build scripts
+
+## Code Style
+
+- Stick to the current code style
+- Don't use scope functions (`let`, `run`, `apply`, `also`, `with`, `takeIf`, `takeUnless`)
+- Don't create files with loose top-level helper or extension functions that are only used a few times, put the
+  logic directly where it is used or into an object instead
+- Avoid `var`, `lateinit var` and `by lazy`
+- Use the `init` block only for things like `require` and `check`
+- Prefer early returns and guard clauses over nested `if`s, e.g. `val id = sender.getUniqueId() ?: return`
+- Use trailing commas in multiline parameter lists, arguments and enum entries
+- One class, data class, interface or enum per file, only configs may keep their nested data classes in one file
+
+## Detekt
+
+The config is `.detekt/detekt.yml` on top of the detekt defaults.
+
+- No `!!`, use `?: return`, `?: error("...")` or a null check
+- No unsafe casts (`as`) without a check, use `as?` or `is`
+- No `println`/`print`, use an SLF4J logger: `LoggerFactory.getLogger(MyClass::class.java)`
+- No `printStackTrace()`, log the exception: `logger.error("Failed to ...", e)`
+- No swallowed exceptions: log them, or name the parameter `_` if ignoring is intended (`catch (_: Exception)`)
+- Don't throw generic exceptions (`Exception`, `RuntimeException`, `Throwable`), use `error(...)`, `require(...)`,
+  `check(...)` or a specific exception with a message
+- Use `require`/`check`/`requireNotNull`/`checkNotNull` instead of manually throwing `IllegalArgumentException` /
+  `IllegalStateException`
+- No unused imports, parameters, private properties, private functions or variables
+  (allowed unused parameter names: `ignored`, `expected`, `event`, `_`)
+- No empty blocks (empty `catch`, `if`, functions without a reason)
+- Max 3 `return` and 3 `throw` statements per function (guard clauses don't count)
+- Functions max 80 lines, max 6 function parameters, max 8 constructor parameters (default params don't count)
+- Max nesting depth of 4, max 4 conditions in one `if`, keep cyclomatic and cognitive complexity low,
+  split into private functions when it gets too big
+- No `Thread.sleep` in coroutines, use `delay`; no `GlobalScope`, no `runBlocking` in plugin code
+- Don't mark functions `suspend` if they don't suspend
+- Don't catch `CancellationException` silently in coroutines
+- No `var` with mutable collections (`var list = mutableListOf()`), and `val` instead of `var` when it's never reassigned
+- Use `const val` for constant primitives and strings in objects and companion objects
+- Constants in `SCREAMING_SNAKE_CASE`, classes `PascalCase`, functions and properties `camelCase`
+- File name must match the single top-level class in it
+- Package must match the directory (`app.simplecloud.plugin.<plugin>.<platform>...`)
+- No redundant `Unit` return types, no unnecessary `?.` on non-null values, use `isNullOrEmpty()`/`orEmpty()`
+- No `@Suppress` unless there is really no other way
+- Disabled, so these are fine: magic numbers, wildcard imports, max line length, `TooManyFunctions`,
+  catching generic exceptions, spread operator
+
+## Formatting
+
+- Spotless with ktlint (`intellij_idea` style) and `.editorconfig`
+- 4 spaces indent (2 for yaml), LF line endings, final newline, UTF-8
+- Keep lines around 120 chars
+- Wildcard imports are fine for `kotlin.**`, `kotlinx.**` and `io.ktor.**`, otherwise explicit imports

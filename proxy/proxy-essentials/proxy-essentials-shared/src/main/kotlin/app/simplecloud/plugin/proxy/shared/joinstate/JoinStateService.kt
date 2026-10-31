@@ -30,7 +30,7 @@ class JoinStateService(
     fun getLocalState(): String = localState.get() ?: config.get().initialState
 
     suspend fun start() {
-        val server = api.server().getCurrentServer().await()
+        val server = api.server().currentServer.await()
         localState.set(readState(server.properties) ?: applyDefaultState(server))
 
         subscriptions.add(

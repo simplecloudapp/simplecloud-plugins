@@ -29,7 +29,7 @@ class LayoutService(
     private val subscriptions: MutableList<Subscription> = mutableListOf()
 
     suspend fun start() {
-        val server = api.server().getCurrentServer().await()
+        val server = api.server().currentServer.await()
         val groupName = server.group?.name
         val groupLayout = if (groupName == null) null else getGroupLayout(groupName)
         localLayout.set(readLayout(server.properties) ?: groupLayout)
