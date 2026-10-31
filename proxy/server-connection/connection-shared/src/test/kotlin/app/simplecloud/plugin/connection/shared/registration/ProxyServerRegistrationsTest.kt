@@ -100,16 +100,32 @@ class ProxyServerRegistrationsTest {
     }
 
     @Test
-    fun `doesn't map a replaced server that registers again before the proxy routes the name to it`() {
+    fun `doesn't take the name back when a replaced server registers again`() {
         val replaced = registeredServer("replaced-id", "lobby-1")
         val holder = registeredServer("holder-id", "lobby-1")
         registrations.register(replaced)
         registrations.register(holder)
-        val answersBeforeSwitch = recordAnswersBeforeSwitch()
+        val changeCountBefore = proxy.changeCount
 
         registrations.register(replaced)
 
-        assertEquals(listOf(Optional.empty()), answersBeforeSwitch)
+        assertEquals(changeCountBefore, proxy.changeCount)
+        assertEquals(holder, proxy.serverNamed(holder.proxyName))
+        assertEquals(Optional.empty(), registrations.proxyNameOf(replaced.serverId))
+    }
+
+    @Test
+    fun `hands the name over with the data a replaced server registered last`() {
+        val replaced = registeredServer("replaced-id", "lobby-1")
+        val movedReplaced = replaced.copy(port = 25570)
+        val holder = registeredServer("holder-id", "lobby-1")
+        registrations.register(replaced)
+        registrations.register(holder)
+        registrations.register(movedReplaced)
+
+        registrations.unregister(holder.serverId)
+
+        assertEquals(movedReplaced, proxy.serverNamed(movedReplaced.proxyName))
     }
 
     @Test
@@ -124,17 +140,18 @@ class ProxyServerRegistrationsTest {
     }
 
     @Test
-    fun `keeps the name when the holder is renamed to a name that differs only in case`() {
+    fun `renames the holder to a name that differs only in case without handing the name to the replaced server`() {
         val replaced = registeredServer("replaced-id", "lobby-1")
         val holder = registeredServer("holder-id", "lobby-1")
         val renamedHolder = holder.copy(proxyName = "Lobby-1")
+        val oneProxyRegistration = 1
         registrations.register(replaced)
         registrations.register(holder)
         val changeCountBefore = proxy.changeCount
 
         registrations.register(renamedHolder)
 
-        assertEquals(changeCountBefore + 1, proxy.changeCount)
+        assertEquals(changeCountBefore + oneProxyRegistration, proxy.changeCount)
         assertEquals(renamedHolder, proxy.serverNamed(renamedHolder.proxyName))
         assertEquals(Optional.of(renamedHolder.proxyName), registrations.proxyNameOf(holder.serverId))
     }

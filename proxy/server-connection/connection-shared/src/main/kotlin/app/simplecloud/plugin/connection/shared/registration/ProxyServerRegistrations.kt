@@ -33,8 +33,18 @@ class ProxyServerRegistrations(
     fun register(server: RegisteredServer) {
         synchronized(lock) {
             val previousServer = servers[server.serverId]
+            val keepsProxyName = previousServer != null && nameKeyOf(previousServer.proxyName) == nameKeyOf(server.proxyName)
+            val holderId = holderIds[nameKeyOf(server.proxyName)]
+            val nameHeldByOther = holderId != null && holderId != server.serverId
 
-            if (previousServer != null && nameKeyOf(previousServer.proxyName) == nameKeyOf(server.proxyName)) {
+            // A server that registers again doesn't take its name back, so resyncs and reloads don't flip the holder.
+            if (keepsProxyName && nameHeldByOther) {
+                logger.info("Refreshing server ${server.serverId} (${server.proxyName}), server $holderId keeps the name...")
+                servers[server.serverId] = server
+                return
+            }
+
+            if (keepsProxyName) {
                 logger.info("Refreshing server ${server.serverId} (${server.proxyName})...")
             } else {
                 if (previousServer != null) {
@@ -68,15 +78,16 @@ class ProxyServerRegistrations(
         return Optional.of(server.proxyName)
     }
 
-    // When the holder changes, the lookup answers for neither server while the proxy switches the name over, so it
-    // doesn't answer for a server before this class has switched the proxy to it.
+    // Forgets the old holder before the proxy call and records the new one after it, so the lookup doesn't answer for
+    // the new holder while the proxy still routes the name to the old one.
     private fun registerAsHolder(server: RegisteredServer) {
         val nameKey = nameKeyOf(server.proxyName)
         val previousHolderId = holderIds[nameKey]
-        if (previousHolderId != server.serverId) {
+        val holderChanges = previousHolderId != server.serverId
+        if (holderChanges) {
             holderIds.remove(nameKey)
         }
-        if (previousHolderId != null && previousHolderId != server.serverId) {
+        if (holderChanges && previousHolderId != null) {
             logger.warn("Server ${server.serverId} replaces server $previousHolderId as ${server.proxyName} on the proxy")
         }
         registry.register(server.proxyName, server)
