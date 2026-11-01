@@ -1,6 +1,7 @@
 package app.simplecloud.plugin.signs.shared
 
 import app.simplecloud.api.CloudApi
+import app.simplecloud.api.event.Subscription
 import app.simplecloud.api.server.Server
 import app.simplecloud.api.server.ServerQuery
 import app.simplecloud.api.server.ServerState
@@ -13,6 +14,7 @@ import app.simplecloud.plugin.signs.shared.repository.LocationRepository
 import app.simplecloud.plugin.signs.shared.repository.YamlDirectory
 import app.simplecloud.plugin.signs.shared.rule.SignRule
 import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.future.await
 import org.slf4j.LoggerFactory
 import java.nio.file.Files
@@ -43,6 +45,8 @@ class SignManager(
     private val assigned = ConcurrentHashMap<SignLocation, Server>()
     private val rendered = ConcurrentHashMap<SignLocation, RenderedSign>()
     private val lastRedraw = AtomicLong()
+    private val refreshRequests = Channel<Unit>(Channel.CONFLATED)
+    private val subscriptions = mutableListOf<Subscription>()
 
     fun start() {
         locations.load()
@@ -51,7 +55,20 @@ class SignManager(
 
         locations.watch(scope)
         layouts.watch(scope)
-        launchLoop(SERVER_REFRESH_INTERVAL, "refresh the servers of the signs") { refreshServers() }
+        subscribeToServerEvents()
+        scope.launch {
+            while (isActive) {
+                try {
+                    refreshServers()
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: Exception) {
+                    logger.error("Failed to refresh the servers of the signs", e)
+                }
+                delay(MIN_REFRESH_GAP)
+                withTimeoutOrNull(SERVER_REFRESH_INTERVAL) { refreshRequests.receive() }
+            }
+        }
     }
 
     fun tick() {
@@ -63,6 +80,7 @@ class SignManager(
     }
 
     fun stop() {
+        subscriptions.forEach { it.close() }
         scope.cancel()
     }
 
@@ -100,35 +118,45 @@ class SignManager(
         renderer.clear(location)
     }
 
-    private fun launchLoop(interval: Long, action: String, block: suspend () -> Unit) {
+    private fun subscribeToServerEvents() {
+        try {
+            val events = api.event().server()
+            subscriptions += events.onStarted { onServerEvent() }
+            subscriptions += events.onStopped { onServerEvent() }
+            subscriptions += events.onStateChanged { onServerEvent() }
+            subscriptions += events.onDeleted { onServerEvent() }
+            subscriptions += events.onUpdated { onServerEvent() }
+        } catch (e: Exception) {
+            logger.warn("Failed to subscribe to server events, signs only update every second", e)
+        }
+    }
+
+    private fun onServerEvent() {
+        refreshRequests.trySend(Unit)
         scope.launch {
-            while (isActive) {
-                try {
-                    block()
-                } catch (e: CancellationException) {
-                    throw e
-                } catch (e: Exception) {
-                    logger.error("Failed to {}", action, e)
-                }
-                delay(interval)
-            }
+            delay(EVENT_RECHECK_DELAY)
+            refreshRequests.trySend(Unit)
         }
     }
 
     private suspend fun refreshServers() {
         val configs = locations.findAll().distinctBy { it.identifier() }
         servers.keys.retainAll(configs.map { it.identifier() }.toSet())
-        configs.forEach { config ->
-            val identifier = config.identifier()
-            try {
-                servers[identifier] = fetchServers(config)
-                failedTargets.remove(identifier)
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: Exception) {
-                if (failedTargets.add(identifier)) {
-                    logger.warn("Failed to fetch the servers of {}: {}", identifier, e.message)
-                }
+        coroutineScope {
+            configs.map { config -> async { refreshServers(config) } }.awaitAll()
+        }
+    }
+
+    private suspend fun refreshServers(config: LocationsConfig) {
+        val identifier = config.identifier()
+        try {
+            servers[identifier] = fetchServers(config)
+            failedTargets.remove(identifier)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            if (failedTargets.add(identifier)) {
+                logger.warn("Failed to fetch the servers of {}: {}", identifier, e.message)
             }
         }
     }
@@ -210,6 +238,8 @@ class SignManager(
     companion object {
         private const val REDRAW_INTERVAL = 5000L
         private const val SERVER_REFRESH_INTERVAL = 1000L
+        private const val MIN_REFRESH_GAP = 250L
+        private const val EVENT_RECHECK_DELAY = 500L
         private const val MAX_LINES = 4
 
         private val STOPPED_STATES = setOf(ServerState.STOPPING, ServerState.CLEANUP, ServerState.STOPPED)
