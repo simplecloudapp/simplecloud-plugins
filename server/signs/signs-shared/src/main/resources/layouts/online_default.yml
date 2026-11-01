@@ -7,6 +7,6 @@ frame-update-interval: 1250
 frames:
   - lines:
       - '<color:#22c55e>⚡</color>'
-      - '<group>-<numerical-id>'
+      - '<server-name>'
       - '<player-count>/<max-players>'
       - '<color:#22c55e><b>ONLINE</b></color>'
