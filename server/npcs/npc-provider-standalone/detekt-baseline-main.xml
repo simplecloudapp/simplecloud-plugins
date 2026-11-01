@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>ForbiddenMethodCall:InteractionHitboxes.kt:InteractionHitboxes$apply { interactionWidth = HITBOX_WIDTH * scale * widthFactor interactionHeight = HITBOX_HEIGHT * config.entity.heightFactor().toFloat() isResponsive = true setGravity(false) persistentDataContainer.set(NpcKeys.HITBOX, PersistentDataType.STRING, config.id) }</ID>
+    <ID>ForbiddenMethodCall:InteractionHitboxes.kt:InteractionHitboxes$let { hitbox -> InteractableEntities.unregister(hitbox.entityId) hitbox.remove() }</ID>
+    <ID>ForbiddenMethodCall:StandaloneNpcRenderer.kt:StandaloneNpcRenderer$apply { isGlowing = config.entity.glowing config.entity.customName?.let { customName = PacketComponents.of(MiniMessage.miniMessage().deserialize(it)) isCustomNameVisible = true } SkinLayers.showAll(this, ServerCompat.version) pose = PacketPoses.of(config.entity.pose) }</ID>
+    <ID>ForbiddenMethodCall:StandaloneNpcRenderer.kt:StandaloneNpcRenderer$let { customName = PacketComponents.of(MiniMessage.miniMessage().deserialize(it)) isCustomNameVisible = true }</ID>
+    <ID>ForbiddenMethodCall:StandaloneNpcRenderer.kt:StandaloneNpcRenderer$let { hitboxes.teleport(config, it) }</ID>
+    <ID>ForbiddenMethodCall:StandaloneNpcRenderer.kt:StandaloneNpcRenderer$let(hitboxes::remove)</ID>
+    <ID>ForbiddenMethodCall:StandaloneNpcRenderer.kt:StandaloneNpcRenderer$run { spawn(config) return@sync }</ID>
+    <ID>ForbiddenMethodCall:StandaloneNpcRenderer.kt:StandaloneNpcRenderer$takeIf { it.world.equals(config.entity.location.world, ignoreCase = true) }</ID>
+  </CurrentIssues>
+</SmellBaseline>

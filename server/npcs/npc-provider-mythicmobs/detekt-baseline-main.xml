@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>ForbiddenMethodCall:MythicMobsRenderer.kt:MythicMobsRenderer$let { NpcLocation(it.world.name, it.x, it.y, it.z, it.yaw, it.pitch) }</ID>
+  </CurrentIssues>
+</SmellBaseline>

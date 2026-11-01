@@ -1,0 +1,355 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>AbstractClassCanBeConcreteClass:AbstractNpcCommand.kt:AbstractNpcCommand$AbstractNpcCommand</ID>
+    <ID>CyclomaticComplexMethod:CanvasController.kt:CanvasController$private fun toolbox</ID>
+    <ID>CyclomaticComplexMethod:CanvasRender.kt:CanvasRender$fun toolbox: Map&lt;Int, NpcItem></ID>
+    <ID>CyclomaticComplexMethod:InteractionExecutor.kt:InteractionExecutor$suspend fun executeAction</ID>
+    <ID>CyclomaticComplexMethod:InventoryViewController.kt:InventoryViewController$fun handleClick</ID>
+    <ID>CyclomaticComplexMethod:InventoryViewController.kt:InventoryViewController$private suspend fun computeSlots: Map&lt;Int, NpcItem></ID>
+    <ID>CyclomaticComplexMethod:LiveGroupMenuBuilder.kt:LiveGroupMenuBuilder$fun build: EditorMenu</ID>
+    <ID>CyclomaticComplexMethod:StateLooksMenuBuilder.kt:StateLooksMenuBuilder$fun build: EditorMenu</ID>
+    <ID>CyclomaticComplexMethod:StudioMenuBuilder.kt:StudioMenuBuilder$fun build: EditorMenu</ID>
+    <ID>CyclomaticComplexMethod:StudioMenuBuilder.kt:StudioMenuBuilder$private fun look</ID>
+    <ID>ForEachOnRange:EquipmentCanvas.kt:EquipmentCanvas$0 until SIZE</ID>
+    <ID>ForbiddenMethodCall:AbstractNpcCommand.kt:AbstractNpcCommand$run { sender.sendError("Inventory {} was not found.", id) null }</ID>
+    <ID>ForbiddenMethodCall:AbstractNpcCommand.kt:AbstractNpcCommand$run { sender.sendError("NPC {} was not found.", id) null }</ID>
+    <ID>ForbiddenMethodCall:AbstractNpcCommand.kt:AbstractNpcCommand$run { sender.sendError("This command can only be used by a player.") null }</ID>
+    <ID>ForbiddenMethodCall:AbstractNpcCommand.kt:AbstractNpcCommand$run { sender.sendError("Unknown interaction {}.", value) null }</ID>
+    <ID>ForbiddenMethodCall:ActionEditorMenuBuilder.kt:ActionEditorMenuBuilder$apply { mutate(actionOrCreate(interaction, joinState)) dropActionIfEmpty(interaction, joinState) }</ID>
+    <ID>ForbiddenMethodCall:ActionFieldsPane.kt:ActionFieldsPane$let { "&lt;key>Left &lt;hnt>$it" }</ID>
+    <ID>ForbiddenMethodCall:ActionFieldsPane.kt:ActionFieldsPane$let { "&lt;val>$it" }</ID>
+    <ID>ForbiddenMethodCall:ActionFieldsPane.kt:ActionFieldsPane$let { "&lt;val>${NpcFormat.plain(it)}" }</ID>
+    <ID>ForbiddenMethodCall:ActionFieldsPane.kt:ActionFieldsPane$let { "&lt;val>${NpcFormat.position(it)}" }</ID>
+    <ID>ForbiddenMethodCall:ActionFieldsPane.kt:ActionFieldsPane$let { "&lt;val>${Ui.quote(it)}" }</ID>
+    <ID>ForbiddenMethodCall:ActionFieldsPane.kt:ActionFieldsPane$let { "&lt;val>${Ui.quote(it.title.ifBlank { it.subtitle })}" }</ID>
+    <ID>ForbiddenMethodCall:ActionFieldsPane.kt:ActionFieldsPane$let { "&lt;val>${animationLabel(it)}" }</ID>
+    <ID>ForbiddenMethodCall:ActionFieldsPane.kt:ActionFieldsPane$let { "&lt;val>/${NpcFormat.plain(it)}" }</ID>
+    <ID>ForbiddenMethodCall:ActionFieldsPane.kt:ActionFieldsPane$let { NpcFormat.messageLines(it).joinToString("&lt;newline>") }</ID>
+    <ID>ForbiddenMethodCall:ActionFieldsPane.kt:ActionFieldsPane$let { if (it.isBlank()) "&lt;hnt>nothing (silent)" else "&lt;val>${Ui.quote(it)}" }</ID>
+    <ID>ForbiddenMethodCall:ActionFieldsPane.kt:ActionFieldsPane$let { lines -> "&lt;val>${Ui.quote(lines.first())}" + if (lines.size > 1) " &lt;hnt>+${lines.size - 1}" else "" }</ID>
+    <ID>ForbiddenMethodCall:ActionFieldsPane.kt:ActionFieldsPane$let { return@Prompt it }</ID>
+    <ID>ForbiddenMethodCall:ActionFieldsPane.kt:ActionFieldsPane$let { slot -> val hint = if (set.isEmpty()) "&lt;hnt>Nothing happens on this click yet." else null pane.left(slot, Ui.addHead("Add", listOfNotNull(hint, "&lt;key>Left &lt;hnt>Pick what happens"))) { port.openAdd() } }</ID>
+    <ID>ForbiddenMethodCall:ActionFieldsPane.kt:ActionFieldsPane$let { { port.edit(it) } }</ID>
+    <ID>ForbiddenMethodCall:ActionFieldsPane.kt:ActionFieldsPane$let(ANIMATIONS::after)</ID>
+    <ID>ForbiddenMethodCall:ActionFieldsPane.kt:ActionFieldsPane$takeIf { a.closeMenu }</ID>
+    <ID>ForbiddenMethodCall:ActionFieldsPane.kt:ActionFieldsPane$takeIf { a.joinTarget }</ID>
+    <ID>ForbiddenMethodCall:ActionFieldsPane.kt:ActionFieldsPane$takeIf { a.previousMenu }</ID>
+    <ID>ForbiddenMethodCall:ActionFieldsPane.kt:ActionFieldsPane$takeIf { current != null }</ID>
+    <ID>ForbiddenMethodCall:ActionFieldsPane.kt:ActionFieldsPane$takeIf { free > 0 }</ID>
+    <ID>ForbiddenMethodCall:ActionFieldsPane.kt:ActionFieldsPane$takeIf { it.isNotBlank() }</ID>
+    <ID>ForbiddenMethodCall:ActionFieldsPane.kt:ActionFieldsPane$takeIf { it.isNotEmpty() }</ID>
+    <ID>ForbiddenMethodCall:ActionsTabBuilder.kt:ActionsTabBuilder$takeIf { action.joinTarget }</ID>
+    <ID>ForbiddenMethodCall:ActionsTabBuilder.kt:ActionsTabBuilder$takeIf { it in states }</ID>
+    <ID>ForbiddenMethodCall:ActionsTabBuilder.kt:ActionsTabBuilder$takeIf { it.configuredTypes().isNotEmpty() }</ID>
+    <ID>ForbiddenMethodCall:AddJoinStateSource.kt:AddJoinStateSource$apply { hologram.layoutOrCreate(state) }</ID>
+    <ID>ForbiddenMethodCall:AddJoinStateSource.kt:AddJoinStateSource$let { "&lt;on>Live now &lt;hnt>on ${it.joinToString(", ")}" }</ID>
+    <ID>ForbiddenMethodCall:AddJoinStateSource.kt:AddJoinStateSource$let { it.lowercase() to target }</ID>
+    <ID>ForbiddenMethodCall:AddJoinStateSource.kt:AddJoinStateSource$takeIf { config.hologram.findLayout(state) != null }</ID>
+    <ID>ForbiddenMethodCall:AddJoinStateSource.kt:AddJoinStateSource$takeIf { state in NpcFormat.actionJoinStates(config) }</ID>
+    <ID>ForbiddenMethodCall:BehaviorTabBuilder.kt:BehaviorTabBuilder$also { mutate(it.pushback) }</ID>
+    <ID>ForbiddenMethodCall:BehaviorTabBuilder.kt:BehaviorTabBuilder$let { "&lt;val>$it" }</ID>
+    <ID>ForbiddenMethodCall:BehaviorTabBuilder.kt:BehaviorTabBuilder$let { player.playSound(it, pushback.soundOptions) }</ID>
+    <ID>ForbiddenMethodCall:BehaviorTabBuilder.kt:BehaviorTabBuilder$takeIf { pushback.enabled }</ID>
+    <ID>ForbiddenMethodCall:CanvasController.kt:CanvasController$let { CanvasOps.sameLook(it, item) }</ID>
+    <ID>ForbiddenMethodCall:CanvasController.kt:CanvasController$let { CanvasRender.LiveState(it.slots, loading = true, cloudDown = it.cloudDown) }</ID>
+    <ID>ForbiddenMethodCall:CanvasController.kt:CanvasController$let { Carried(it, from = null) }</ID>
+    <ID>ForbiddenMethodCall:CanvasController.kt:CanvasController$let { carried -> val targets = input.slots.filter { it &lt; size &amp;&amp; it != carried.from } if (change(player, config) { CanvasOps.stamp(it, targets, carried.item) }) placed(session, carried.item) }</ID>
+    <ID>ForbiddenMethodCall:CanvasController.kt:CanvasController$let { group -> session.activeGroup = group if (click.right) { context.navigate(player, InventoryEditorScreen.LiveGroup(config.id, group)) } else { template(config, group)?.let { session.carried = Carried(it, from = null) } } }</ID>
+    <ID>ForbiddenMethodCall:CanvasController.kt:CanvasController$let { last -> change(player, config) { CanvasOps.put(it, slot, last) } }</ID>
+    <ID>ForbiddenMethodCall:CanvasController.kt:CanvasController$let { last -> change(player, config) { CanvasOps.stamp(it, targets(config, session, slot), last) } }</ID>
+    <ID>ForbiddenMethodCall:CanvasController.kt:CanvasController$let { material -> session.carried = Carried(InventoryItemConfiguration(material = material), from = null) }</ID>
+    <ID>ForbiddenMethodCall:CanvasController.kt:CanvasController$let { session.activeGroup = it }</ID>
+    <ID>ForbiddenMethodCall:CanvasController.kt:CanvasController$let { session.carried = Carried(it, from = null) }</ID>
+    <ID>ForbiddenMethodCall:CanvasController.kt:CanvasController$let { session.livePages.putAll(it) }</ID>
+    <ID>ForbiddenMethodCall:CanvasController.kt:CanvasController$let { template(config, it) }</ID>
+    <ID>ForbiddenMethodCall:CanvasController.kt:CanvasController$takeIf { it in LiveGroups.names(config) }</ID>
+    <ID>ForbiddenMethodCall:CanvasController.kt:CanvasController$takeIf { it.pageControl != null }</ID>
+    <ID>ForbiddenMethodCall:CanvasController.kt:CanvasController$takeIf { stillAt(config, it, carried.item) }</ID>
+    <ID>ForbiddenMethodCall:CanvasRender.kt:CanvasRender$let { "&lt;bd>Adds a slot to &lt;val>$it" }</ID>
+    <ID>ForbiddenMethodCall:CanvasRender.kt:CanvasRender$let { "&lt;bd>Places &lt;val>${Ui.pretty(it.material)}" }</ID>
+    <ID>ForbiddenMethodCall:CanvasRender.kt:CanvasRender$let { LiveGroups.describe(it.type).label }</ID>
+    <ID>ForbiddenMethodCall:CanvasRender.kt:CanvasRender$let { carriedIcon(config, it.item) }</ID>
+    <ID>ForbiddenMethodCall:CanvasRender.kt:CanvasRender$let { group -> if (item.pageControl != null) { "&lt;hnt>Page ${item.pageControl} of &lt;val>$group" } else { "&lt;hnt>Live slot of &lt;val>$group" } }</ID>
+    <ID>ForbiddenMethodCall:CanvasRender.kt:CanvasRender$let { group -> val (_, hex) = LiveGroups.colorOf(config, group) val label = base.name.ifBlank { Ui.pretty(item.material) } when (item.pageControl) { PageControl.PREVIOUS -> base.copy(name = "&lt;$hex>◀ &lt;white>$label") PageControl.NEXT -> base.copy(name = "&lt;$hex>▶ &lt;white>$label") else -> base.copy( name = "&lt;$hex>● &lt;white>$label", amount = ((positions[group]?.indexOf(item.slot) ?: 0) + 1).coerceIn(1, 64), ) } }</ID>
+    <ID>ForbiddenMethodCall:CanvasRender.kt:CanvasRender$takeIf { active }</ID>
+    <ID>ForbiddenMethodCall:CanvasRender.kt:CanvasRender$takeIf { arrowsMissing }</ID>
+    <ID>ForbiddenMethodCall:CanvasRender.kt:CanvasRender$takeIf { it in LiveGroups.names(config) }</ID>
+    <ID>ForbiddenMethodCall:CanvasRender.kt:CanvasRender$takeIf { selected }</ID>
+    <ID>ForbiddenMethodCall:ChatInputPrompts.kt:ChatInputPrompts$let { entry -> entry.player.sendActionBar(Component.empty()) runCatching(entry.prompt.onCancel) }</ID>
+    <ID>ForbiddenMethodCall:ChatInputPrompts.kt:ChatInputPrompts$let { extra -> { text: String -> if (active() &amp;&amp; entry.staged == text) apply(entry, text, extra.submit, extra.next) } }</ID>
+    <ID>ForbiddenMethodCall:ChatInputPrompts.kt:ChatInputPrompts$let { onClear -> { if (active()) { pending.remove(uuid, entry) entry.player.sendActionBar(Component.empty()) entry.player.playSound(SUCCESS_SOUND, SUCCESS_TONE) onClear() } } }</ID>
+    <ID>ForbiddenMethodCall:ChatInputPrompts.kt:ChatInputPrompts$let { previous -> runCatching(previous.prompt.onCancel) }</ID>
+    <ID>ForbiddenMethodCall:ChatInputPrompts.kt:ChatInputPrompts$let { rejected -> reject(entry, rejected.reason) return }</ID>
+    <ID>ForbiddenMethodCall:CloudEventHandler.kt:CloudEventHandler$also { this.scope = it }</ID>
+    <ID>ForbiddenMethodCall:CloudNpcEditorLiveData.kt:CloudNpcEditorLiveData$let { JoinStateResolver.resolve(target, it) }</ID>
+    <ID>ForbiddenMethodCall:CloudNpcEditorLiveData.kt:CloudNpcEditorLiveData$takeIf { it.known }</ID>
+    <ID>ForbiddenMethodCall:CommandMessages.kt:CommandMessages$let { "${Msg.INFO}${Msg.miniMessage.escapeTags(it)}" }</ID>
+    <ID>ForbiddenMethodCall:CommandMessages.kt:CommandMessages$let { key.toString() to it }</ID>
+    <ID>ForbiddenMethodCall:CommandMessages.kt:CommandMessages$run { send( sender, "command.help.unknown", "${Msg.errorPrefix()}Unknown help topic. ${Msg.MUTED}Try: ${Msg.ACCENT}&lt;topics>", mapOf("topics" to helpTopics.joinToString()), ) return }</ID>
+    <ID>ForbiddenMethodCall:CommandSuggestions.kt:CommandSuggestions$let(pluginContext.npcRepository::find)</ID>
+    <ID>ForbiddenMethodCall:ConfirmGateMenuBuilder.kt:ConfirmGateMenuBuilder$let { "&lt;bd>Hologram layout &lt;val>yes &lt;bd>· &lt;val>${it.lines.size} &lt;bd>lines" }</ID>
+    <ID>ForbiddenMethodCall:EditHistory.kt:EditHistory$also { push(redo, current.deepCopy()) }</ID>
+    <ID>ForbiddenMethodCall:EditHistory.kt:EditHistory$also { push(undo, current.deepCopy()) }</ID>
+    <ID>ForbiddenMethodCall:EditorHost.kt:EditorHost$let(::promptContext)</ID>
+    <ID>ForbiddenMethodCall:EditorHost.kt:EditorHost$let(screen)</ID>
+    <ID>ForbiddenMethodCall:EntryActions.kt:EntryActions$let { it.copy(title = apply(it.title), subtitle = apply(it.subtitle)) }</ID>
+    <ID>ForbiddenMethodCall:EntryActions.kt:EntryActions$let(::apply)</ID>
+    <ID>ForbiddenMethodCall:EquipmentCanvas.kt:EquipmentCanvas$let { "&lt;bd>Color &lt;val>$it" }</ID>
+    <ID>ForbiddenMethodCall:EquipmentCanvas.kt:EquipmentCanvas$let { "&lt;bd>Model data &lt;val>$it" }</ID>
+    <ID>ForbiddenMethodCall:EquipmentCanvas.kt:EquipmentCanvas$let { "&lt;bd>Trim &lt;val>${pretty(it.pattern)} &lt;bd>in &lt;val>${pretty(it.material)}" }</ID>
+    <ID>ForbiddenMethodCall:EquipmentCanvas.kt:EquipmentCanvas$let { carried -> val slots = input.slots.mapNotNull(SLOT_AT::get) if (slots.isEmpty()) return session.carriedEquipment = null edit(player, screen) { equipment -> slots.fold(equipment) { acc, slot -> acc.with(slot, carried) } } }</ID>
+    <ID>ForbiddenMethodCall:EquipmentCanvas.kt:EquipmentCanvas$let { icon(it, "&lt;ttl>${Ui.pretty(it.material)}", emptyList()) }</ID>
+    <ID>ForbiddenMethodCall:EquipmentCanvas.kt:EquipmentCanvas$let { put(player, screen, slot, it) }</ID>
+    <ID>ForbiddenMethodCall:EquipmentCanvas.kt:EquipmentCanvas$let { put(player, screen, slot, it.copy(glowing = !it.glowing)) }</ID>
+    <ID>ForbiddenMethodCall:EquipmentCanvas.kt:EquipmentCanvas$let { slot -> clickSlot(player, screen, session, config, slot, input) }</ID>
+    <ID>ForbiddenMethodCall:EquipmentCanvas.kt:EquipmentCanvas$let { slot -> put(player, screen, slot, null) }</ID>
+    <ID>ForbiddenMethodCall:EquipmentCanvas.kt:EquipmentCanvas$let { slot -> val index = if (input.key == CanvasInput.OFFHAND_KEY) input.key else HOTBAR_START + input.key surface.equipmentItem(player, index)?.let { put(player, screen, slot, it) } }</ID>
+    <ID>ForbiddenMethodCall:EquipmentCanvas.kt:EquipmentCanvas$run { context.reportMissing(player, screen.npcId) context.close(player) return }</ID>
+    <ID>ForbiddenMethodCall:EquipmentCanvas.kt:EquipmentCanvas$run { if (session.carriedEquipment != null) { session.carriedEquipment = null context.render(player, screen) } return }</ID>
+    <ID>ForbiddenMethodCall:GroupServersSource.kt:GroupServersSource$let { return it }</ID>
+    <ID>ForbiddenMethodCall:GroupServersSource.kt:GroupServersSource$takeIf { it.isNotBlank() &amp;&amp; it != TARGET_GROUP }</ID>
+    <ID>ForbiddenMethodCall:GroupServersSource.kt:GroupServersSource$takeIf { resolution.target.type == TargetType.GROUP }</ID>
+    <ID>ForbiddenMethodCall:HologramFramesMenuBuilder.kt:HologramFramesMenuBuilder$let { return@Prompt it }</ID>
+    <ID>ForbiddenMethodCall:HologramLineEditor.kt:HologramLineEditor$also { target = it }</ID>
+    <ID>ForbiddenMethodCall:HologramLineEditor.kt:HologramLineEditor$let { promptNextText(context, player, screen, it) }</ID>
+    <ID>ForbiddenMethodCall:HologramLineEditor.kt:HologramLineEditor$let { return@Prompt it }</ID>
+    <ID>ForbiddenMethodCall:HologramLineEditor.kt:HologramLineEditor$takeIf { line.rotating }</ID>
+    <ID>ForbiddenMethodCall:HologramLineEditor.kt:HologramLineEditor$takeIf { mutate(it.hologram.layoutOrCreate(state).lines) }</ID>
+    <ID>ForbiddenMethodCall:HologramTabBuilder.kt:HologramTabBuilder$also { mutate(it.hologram) }</ID>
+    <ID>ForbiddenMethodCall:HologramTabBuilder.kt:HologramTabBuilder$takeIf { it in layouts }</ID>
+    <ID>ForbiddenMethodCall:InputChecks.kt:InputChecks$let { return it }</ID>
+    <ID>ForbiddenMethodCall:InputChecks.kt:InputChecks$takeIf { it in 1..65535 }</ID>
+    <ID>ForbiddenMethodCall:InteractionExecutor.kt:InteractionExecutor$let { PlayerPlaceholders.resolve(it, player) }</ID>
+    <ID>ForbiddenMethodCall:InteractionExecutor.kt:InteractionExecutor$let { animation -> runCatching { effects.animate(npc, player, animation) } .onFailure { logFailure(ActionFields.NPC_ANIMATION, it) } }</ID>
+    <ID>ForbiddenMethodCall:InteractionExecutor.kt:InteractionExecutor$let { command -> runCatching { player.performCommand(PlayerPlaceholders.resolve(command, player)) } .onFailure { logFailure(ActionFields.EXECUTE_COMMAND, it) } }</ID>
+    <ID>ForbiddenMethodCall:InteractionExecutor.kt:InteractionExecutor$let { config -> runCatching { showTitle(player, config) }.onFailure { logFailure(ActionFields.SEND_TITLE, it) } }</ID>
+    <ID>ForbiddenMethodCall:InteractionExecutor.kt:InteractionExecutor$let { inventoryId -> runCatching { inventoryOpener.open(player, inventoryId, InventoryOpenContext(targetServers, strategy)) } .onFailure { logFailure(ActionFields.OPEN_INVENTORY, it) } }</ID>
+    <ID>ForbiddenMethodCall:InteractionExecutor.kt:InteractionExecutor$let { location -> runCatching { player.teleport(location) }.onFailure { logFailure(ActionFields.TELEPORT, it) } }</ID>
+    <ID>ForbiddenMethodCall:InteractionExecutor.kt:InteractionExecutor$let { message -> runCatching { player.sendMessage(render(message, player)) } .onFailure { logFailure(ActionFields.SEND_MESSAGE, it) } }</ID>
+    <ID>ForbiddenMethodCall:InteractionExecutor.kt:InteractionExecutor$let { sound -> runCatching { player.playSound(sound, action.playSoundOptions) } .onFailure { logFailure(ActionFields.PLAY_SOUND, it) } }</ID>
+    <ID>ForbiddenMethodCall:InteractionExecutor.kt:InteractionExecutor$let { text -> runCatching { effects.speak(npc, player, render(text, player)) } .onFailure { logFailure(ActionFields.SPEECH, it) } }</ID>
+    <ID>ForbiddenMethodCall:InteractionExecutor.kt:InteractionExecutor$let { text -> runCatching { player.sendActionBar(render(text, player)) } .onFailure { logFailure(ActionFields.ACTION_BAR, it) } }</ID>
+    <ID>ForbiddenMethodCall:InteractionExecutor.kt:InteractionExecutor$let(player::sendToServer)</ID>
+    <ID>ForbiddenMethodCall:InteractionExecutor.kt:InteractionExecutor$run { CloudOutageLog.warnThrottled( "NPC action '${ActionFields.TRANSFER_TO_SERVER}' has an unusable address '$address'.", key = "transfer:$address", ) return }</ID>
+    <ID>ForbiddenMethodCall:InteractionExecutor.kt:InteractionExecutor$takeIf { action.joinTarget }</ID>
+    <ID>ForbiddenMethodCall:InteractionExecutor.kt:InteractionExecutor$takeIf { sendTo != null }</ID>
+    <ID>ForbiddenMethodCall:InteractionExecutor.kt:InteractionExecutor$takeIf { transferTo != null }</ID>
+    <ID>ForbiddenMethodCall:InventoryCommand.kt:InventoryCommand$let { player -> pluginContext.editors.openInventory(player, config) }</ID>
+    <ID>ForbiddenMethodCall:InventoryCommand.kt:InventoryCommand$run { info(sender, config.id) sender.sendInfo("The editor is in-game only, run this as a player.") return }</ID>
+    <ID>ForbiddenMethodCall:InventoryCommand.kt:InventoryCommand$run { sender.sendError( "Inventory {} was not found, create it with /{} inventory create {} &lt;rows>.", id, COMMAND_LABEL, id, ) return }</ID>
+    <ID>ForbiddenMethodCall:InventoryCommand.kt:InventoryCommand$run { sender.sendError("Player {} is not online.", playerName) return }</ID>
+    <ID>ForbiddenMethodCall:InventoryCommand.kt:InventoryCommand$run { sender.sendInfo( "The create wizard is in-game only, use /{} inventory create &lt;id> &lt;rows> from the console.", COMMAND_LABEL, ) return }</ID>
+    <ID>ForbiddenMethodCall:InventoryDataSources.kt:InventoryDataSources.Companion$apply { register(GroupServersSource) register(PersistentServersSource) register(GroupsSource) register(StaticEntriesSource) }</ID>
+    <ID>ForbiddenMethodCall:InventoryEditor.kt:InventoryEditor$run { context.reportMissing(player, bound.inventoryId) return null }</ID>
+    <ID>ForbiddenMethodCall:InventoryEditorContext.kt:InventoryEditorContext$let { return@Prompt it }</ID>
+    <ID>ForbiddenMethodCall:InventoryEditorContext.kt:InventoryEditorContext$run { reportMissing(player, inventoryId) close(player) null }</ID>
+    <ID>ForbiddenMethodCall:InventoryEditorContext.kt:let { "Menu ${it.inventoryId}" }</ID>
+    <ID>ForbiddenMethodCall:InventoryEditorSession.kt:InventoryEditorSession$let { it.copy(item = moved(it.item)) }</ID>
+    <ID>ForbiddenMethodCall:InventoryEditorSession.kt:InventoryEditorSession$let(::moved)</ID>
+    <ID>ForbiddenMethodCall:InventoryHubMenuBuilder.kt:InventoryHubMenuBuilder$apply { actionsOf(this).filter { it.openInventory.equals(oldId, true) }.forEach { it.openInventory = newId } }</ID>
+    <ID>ForbiddenMethodCall:InventoryHubMenuBuilder.kt:InventoryHubMenuBuilder$let { "&lt;hnt>and $it more" }</ID>
+    <ID>ForbiddenMethodCall:InventoryHubMenuBuilder.kt:InventoryHubMenuBuilder$takeIf { it > 0 }</ID>
+    <ID>ForbiddenMethodCall:InventoryLayout.kt:InventoryLayout$let { size -> items.drop(page * size).take(size) }</ID>
+    <ID>ForbiddenMethodCall:InventoryPickers.kt:InventoryPickers$also { result -> if (result == null) apply(typed) }</ID>
+    <ID>ForbiddenMethodCall:InventoryPickers.kt:InventoryPickers$let { ItemClickActions.of(it, interaction) }</ID>
+    <ID>ForbiddenMethodCall:InventoryPickers.kt:InventoryPickers$let { LiveGroups.source(config, it)?.type }</ID>
+    <ID>ForbiddenMethodCall:InventoryPickers.kt:InventoryPickers$let { slot -> config.items.firstOrNull { it.slot == slot }?.material }</ID>
+    <ID>ForbiddenMethodCall:InventoryPickers.kt:InventoryPickers$run { pick(typed) null }</ID>
+    <ID>ForbiddenMethodCall:InventoryViewController.kt:InventoryViewController$let { it.history + (it.inventoryId to it.context) }</ID>
+    <ID>ForbiddenMethodCall:InventoryViewController.kt:InventoryViewController$let { it.isNullOrBlank() || player.hasPermission(it) }</ID>
+    <ID>ForbiddenMethodCall:InventoryViewController.kt:InventoryViewController$let { player.playSound(it) }</ID>
+    <ID>ForbiddenMethodCall:InventoryViewController.kt:InventoryViewController$let { renderer.updateTitle(view.viewId, it) }</ID>
+    <ID>ForbiddenMethodCall:InventoryViewController.kt:InventoryViewController$let { slots[item.slot] = ItemIconResolver.icon(it, viewer) }</ID>
+    <ID>ForbiddenMethodCall:InventoryViewController.kt:InventoryViewController$let { sources.find(it.type) }</ID>
+    <ID>ForbiddenMethodCall:InventoryViewController.kt:InventoryViewController$run { discardView(view.viewId) renderer.closeView(view.viewId) return }</ID>
+    <ID>ForbiddenMethodCall:InventoryViewController.kt:InventoryViewController$run { discardView(viewId) renderer.closeView(viewId) return }</ID>
+    <ID>ForbiddenMethodCall:InventoryViewController.kt:InventoryViewController$run { logger.warning( "Inventory '${config.id}' live-group '$groupId' has no `live` source configured, skipping.", ) return@forEach }</ID>
+    <ID>ForbiddenMethodCall:InventoryViewController.kt:InventoryViewController$run { logger.warning( "Inventory '${config.id}' live-group '$groupId' uses unknown source type " + "'${sourceConfig.type}', skipping.", ) return@forEach }</ID>
+    <ID>ForbiddenMethodCall:InventoryViewController.kt:InventoryViewController$run { logger.warning("Cannot open inventory '$inventoryId' for ${player.name}: it does not exist.") return@launch }</ID>
+    <ID>ForbiddenMethodCall:InventoryViewController.kt:InventoryViewController$run { player.closeInventory() return }</ID>
+    <ID>ForbiddenMethodCall:InventoryViewController.kt:InventoryViewController$takeIf { it != previousTitle }</ID>
+    <ID>ForbiddenMethodCall:InventoryViewController.kt:InventoryViewController$takeIf { it.isNotBlank() &amp;&amp; playOpenSound }</ID>
+    <ID>ForbiddenMethodCall:ItemActionMenuBuilder.kt:ItemActionMenuBuilder$let { ItemClickActions.of(it, interaction) }</ID>
+    <ID>ForbiddenMethodCall:ItemActionMenuBuilder.kt:ItemActionMenuBuilder$takeIf { slots.size > 1 }</ID>
+    <ID>ForbiddenMethodCall:ItemClickActions.kt:ItemClickActions$also(item.actions::add)</ID>
+    <ID>ForbiddenMethodCall:ItemIconResolver.kt:ItemIconResolver$let { Msg.miniMessage.serialize(BridgePlaceholders.append(it, text, "entry")) }</ID>
+    <ID>ForbiddenMethodCall:ItemIconResolver.kt:ItemIconResolver$let { return icon(it, viewer) }</ID>
+    <ID>ForbiddenMethodCall:ItemIconResolver.kt:ItemIconResolver$let { styled(item, it) }</ID>
+    <ID>ForbiddenMethodCall:ItemIconResolver.kt:ItemIconResolver$let(HeadOwners::skin)</ID>
+    <ID>ForbiddenMethodCall:ItemIconResolver.kt:ItemIconResolver$takeIf { it.isNotBlank() &amp;&amp; !showsViewer }</ID>
+    <ID>ForbiddenMethodCall:ItemIconResolver.kt:ItemIconResolver$takeIf { showsViewer }</ID>
+    <ID>ForbiddenMethodCall:ItemIconResolver.kt:ItemIconResolver$takeIf { texture != null }</ID>
+    <ID>ForbiddenMethodCall:ItemIconResolver.kt:ItemIconResolver$takeUnless { showsViewer }</ID>
+    <ID>ForbiddenMethodCall:ItemTitleMenuBuilder.kt:ItemTitleMenuBuilder$let { ItemClickActions.of(it, screen.interaction) }</ID>
+    <ID>ForbiddenMethodCall:LinesPane.kt:LinesPane$let { "&lt;key>Left &lt;hnt>${it.label} · &lt;key>Shift &lt;hnt>Move" }</ID>
+    <ID>ForbiddenMethodCall:LinesPane.kt:LinesPane$let { it.onClick(index) }</ID>
+    <ID>ForbiddenMethodCall:LinesPane.kt:LinesPane$takeIf { list.opensSecondary(line) }</ID>
+    <ID>ForbiddenMethodCall:LiveGroupMenuBuilder.kt:LiveGroupMenuBuilder$let { "&lt;bd>Shows " + (it.name ?: it.material) }</ID>
+    <ID>ForbiddenMethodCall:LiveGroupMenuBuilder.kt:LiveGroupMenuBuilder$let { return@Prompt it }</ID>
+    <ID>ForbiddenMethodCall:LiveGroupMenuBuilder.kt:LiveGroupMenuBuilder$let(LiveGroups::describe)</ID>
+    <ID>ForbiddenMethodCall:LiveGroupMenuBuilder.kt:LiveGroupMenuBuilder$takeIf { chosen.isEmpty() }</ID>
+    <ID>ForbiddenMethodCall:LiveGroupMenuBuilder.kt:LiveGroupMenuBuilder$takeIf { it.isNotBlank() }</ID>
+    <ID>ForbiddenMethodCall:LiveGroups.kt:LiveGroups$let { looks[state] = it }</ID>
+    <ID>ForbiddenMethodCall:LiveGroups.kt:LiveGroups$takeUnless { it.isEmpty() }</ID>
+    <ID>ForbiddenMethodCall:LooksTabBuilder.kt:LooksTabBuilder$takeIf { entity.customName != null }</ID>
+    <ID>ForbiddenMethodCall:LoreMenuBuilder.kt:LoreMenuBuilder$let { return@Prompt it }</ID>
+    <ID>ForbiddenMethodCall:LoreMenuBuilder.kt:LoreMenuBuilder$let(Msg.miniMessage::stripTags)</ID>
+    <ID>ForbiddenMethodCall:LoreMenuBuilder.kt:LoreMenuBuilder$takeIf { first?.liveGroup != null }</ID>
+    <ID>ForbiddenMethodCall:MenuTemplate.kt:MenuTemplate.Companion$takeIf { index == 0 }</ID>
+    <ID>ForbiddenMethodCall:NpcActionCommand.kt:NpcActionCommand$run { sender.sendWarning("No action is configured for that interaction and join state.") return }</ID>
+    <ID>ForbiddenMethodCall:NpcCommand.kt:NpcCommand$let { online -> val skin = pluginContext.renderer.captureSkin(online) CommandMessages.sendResult(sender, pluginContext.npcManager.updateSkin(config.id, skin)) return }</ID>
+    <ID>ForbiddenMethodCall:NpcCommand.kt:NpcCommand$let { sender.sendMessage(Msg.miniMessage.deserialize(it)) }</ID>
+    <ID>ForbiddenMethodCall:NpcCommand.kt:NpcCommand$run { player.sendError("You're not looking at an NPC, get closer or use /{} {} &lt;id>.", COMMAND_LABEL, subcommand) return null }</ID>
+    <ID>ForbiddenMethodCall:NpcCommand.kt:NpcCommand$run { sender.sendError("Could not find a skin for {}.", input) return@launch }</ID>
+    <ID>ForbiddenMethodCall:NpcCommand.kt:NpcCommand$run { sender.sendError("Specify an id from the console: /{} {} &lt;id>.", COMMAND_LABEL, subcommand) return null }</ID>
+    <ID>ForbiddenMethodCall:NpcCommand.kt:NpcCommand$run { sender.sendInfo("Edit {}: target, hologram, action, pushback, teleport, skin", config.id) return }</ID>
+    <ID>ForbiddenMethodCall:NpcCommandExceptionHandler.kt:NpcCommandExceptionHandler$let { cloudOutage -> context.context().sender().sendError( "{}. Try again once the controller is back.", cloudOutage.message ?: "The SimpleCloud controller is unreachable", ) return@registerHandler }</ID>
+    <ID>ForbiddenMethodCall:NpcCommandExceptionHandler.kt:NpcCommandExceptionHandler$takeIf { cause -> cause !== it }</ID>
+    <ID>ForbiddenMethodCall:NpcEditor.kt:NpcEditor$run { context.reportMissing(player, screen.npcId) return null }</ID>
+    <ID>ForbiddenMethodCall:NpcEditorContext.kt:NpcEditorContext$run { reportMissing(player, npcId) close(player) return Saved.MISSING }</ID>
+    <ID>ForbiddenMethodCall:NpcEditorLiveData.kt:NpcEditorLiveData$let { config.hologram.layoutShownFor(it)?.joinState?.lowercase() }</ID>
+    <ID>ForbiddenMethodCall:NpcEditorLiveData.kt:NpcEditorLiveData$let { joinState(it) }</ID>
+    <ID>ForbiddenMethodCall:NpcEditorLiveData.kt:NpcEditorLiveData$takeIf { config.hologram.enabled }</ID>
+    <ID>ForbiddenMethodCall:NpcFormat.kt:NpcFormat$let { add("&lt;bd>Action bar &lt;val>${Ui.quote(it)}") }</ID>
+    <ID>ForbiddenMethodCall:NpcFormat.kt:NpcFormat$let { add("&lt;bd>Animation &lt;val>${it.name.lowercase().replace('_', ' ')}") }</ID>
+    <ID>ForbiddenMethodCall:NpcFormat.kt:NpcFormat$let { add("&lt;bd>Chat &lt;val>${messageLines(it).size} lines") }</ID>
+    <ID>ForbiddenMethodCall:NpcFormat.kt:NpcFormat$let { add("&lt;bd>Command &lt;val>/${plain(it)}") }</ID>
+    <ID>ForbiddenMethodCall:NpcFormat.kt:NpcFormat$let { add("&lt;bd>Menu &lt;val>${plain(it)}") }</ID>
+    <ID>ForbiddenMethodCall:NpcFormat.kt:NpcFormat$let { add("&lt;bd>Says &lt;val>${Ui.quote(it)}") }</ID>
+    <ID>ForbiddenMethodCall:NpcFormat.kt:NpcFormat$let { add("&lt;bd>Server &lt;val>${plain(it)}") }</ID>
+    <ID>ForbiddenMethodCall:NpcFormat.kt:NpcFormat$let { add("&lt;bd>Sound &lt;val>${plain(it)}") }</ID>
+    <ID>ForbiddenMethodCall:NpcFormat.kt:NpcFormat$let { add("&lt;bd>Teleport &lt;val>${position(it)}") }</ID>
+    <ID>ForbiddenMethodCall:NpcFormat.kt:NpcFormat$let { add("&lt;bd>Title &lt;val>${Ui.quote(it.title.ifBlank { it.subtitle })}") }</ID>
+    <ID>ForbiddenMethodCall:NpcFormat.kt:NpcFormat$let { add("&lt;bd>Transfer &lt;val>${plain(it)}") }</ID>
+    <ID>ForbiddenMethodCall:NpcFormat.kt:NpcFormat$let(Msg.miniMessage::stripTags)</ID>
+    <ID>ForbiddenMethodCall:NpcFormat.kt:NpcFormat$takeIf { it.isNotBlank() }</ID>
+    <ID>ForbiddenMethodCall:NpcHologramCommand.kt:NpcHologramCommand$run { sender.sendError("Hologram line {} does not exist.", line) null }</ID>
+    <ID>ForbiddenMethodCall:NpcHologramCommand.kt:NpcHologramCommand$takeIf { line in 1..it.lines.size }</ID>
+    <ID>ForbiddenMethodCall:NpcInfoPage.kt:NpcInfoPage$let { " ${Msg.MUTED}(${esc(it)})" }</ID>
+    <ID>ForbiddenMethodCall:NpcInfoPage.kt:NpcInfoPage$let { " ${Msg.SUBTLE}· ${Msg.MUTED}sound ${esc(it.lowercase())}" }</ID>
+    <ID>ForbiddenMethodCall:NpcInfoPage.kt:NpcInfoPage$let { add("animation ${it.name.lowercase()}") }</ID>
+    <ID>ForbiddenMethodCall:NpcInfoPage.kt:NpcInfoPage$let { add("command /${esc(it)}") }</ID>
+    <ID>ForbiddenMethodCall:NpcInfoPage.kt:NpcInfoPage$let { add("needs ${esc(it)}") }</ID>
+    <ID>ForbiddenMethodCall:NpcInfoPage.kt:NpcInfoPage$let { add("open menu ${esc(it)}") }</ID>
+    <ID>ForbiddenMethodCall:NpcInfoPage.kt:NpcInfoPage$let { add("send to ${esc(it)}") }</ID>
+    <ID>ForbiddenMethodCall:NpcInfoPage.kt:NpcInfoPage$let { add("sound ${esc(it.lowercase())}") }</ID>
+    <ID>ForbiddenMethodCall:NpcInfoPage.kt:NpcInfoPage$let { add("teleport to ${esc(NpcFormat.position(it))}") }</ID>
+    <ID>ForbiddenMethodCall:NpcInfoPage.kt:NpcInfoPage$let { add("transfer to ${esc(it)}") }</ID>
+    <ID>ForbiddenMethodCall:NpcInfoPage.kt:NpcInfoPage$let { add(hover("action bar", it, formatted = true)) }</ID>
+    <ID>ForbiddenMethodCall:NpcInfoPage.kt:NpcInfoPage$let { add(hover("message", it, formatted = true)) }</ID>
+    <ID>ForbiddenMethodCall:NpcInfoPage.kt:NpcInfoPage$let { add(hover("speech", it, formatted = true)) }</ID>
+    <ID>ForbiddenMethodCall:NpcInfoPage.kt:NpcInfoPage$let { title -> val text = Msg.miniMessage.stripTags(title.title.ifBlank { title.subtitle }) add("title \"${esc(text)}\"") }</ID>
+    <ID>ForbiddenMethodCall:NpcInfoPage.kt:NpcInfoPage$takeIf { it != config.id }</ID>
+    <ID>ForbiddenMethodCall:NpcInfoPage.kt:NpcInfoPage$takeIf { it.isNotBlank() }</ID>
+    <ID>ForbiddenMethodCall:NpcManager.kt:NpcManager$also { it.hologram.enabled = false }</ID>
+    <ID>ForbiddenMethodCall:NpcManager.kt:NpcManager$also { renderer.teleport(it) }</ID>
+    <ID>ForbiddenMethodCall:NpcManager.kt:NpcManager$also { result -> if (result is NpcOperationResult.Success) logger.info("Duplicated NPC '$sourceId' as '$newId'.") }</ID>
+    <ID>ForbiddenMethodCall:NpcManager.kt:NpcManager$also { result -> if (result is NpcOperationResult.Success) { logger.info("Linked NPC '$id' to $providerKey NPC '$reference' (target: ${target.name}).") } }</ID>
+    <ID>ForbiddenMethodCall:NpcManager.kt:NpcManager$also { result -> if (result is NpcOperationResult.Success) { val provider = result.config.entity.provider logger.info("Created NPC '$id' using provider '$provider' (target: ${target.name}).") } }</ID>
+    <ID>ForbiddenMethodCall:NpcManager.kt:NpcManager$also(::apply)</ID>
+    <ID>ForbiddenMethodCall:NpcManager.kt:NpcManager$let { live -> config = config.copy(entity = config.entity.copy(location = live)) }</ID>
+    <ID>ForbiddenMethodCall:NpcManager.kt:NpcManager$let { return it }</ID>
+    <ID>ForbiddenMethodCall:NpcManager.kt:NpcManager$run { logger.warning( "NPC '${config.id}': its $provider NPC '$reference' exists but has no location, " + "keeping the relocation warning.", ) continue }</ID>
+    <ID>ForbiddenMethodCall:NpcManager.kt:NpcManager$takeUnless { it.isSameSpot(config.entity.location) }</ID>
+    <ID>ForbiddenMethodCall:NpcPluginContext.kt:NpcPluginContext$let { renderer.captureSkinByUuid(it) }</ID>
+    <ID>ForbiddenMethodCall:NpcPluginContext.kt:NpcPluginContext$let(::CloudEventHandler)</ID>
+    <ID>ForbiddenMethodCall:NpcRayTrace.kt:NpcRayTrace$let { config to it }</ID>
+    <ID>ForbiddenMethodCall:NpcTabBuilder.kt:NpcTabBuilder$let { "&lt;hnt>+$it more" }</ID>
+    <ID>ForbiddenMethodCall:NpcTabBuilder.kt:NpcTabBuilder$let { "&lt;val>$it" }</ID>
+    <ID>ForbiddenMethodCall:NpcTabBuilder.kt:NpcTabBuilder$let { "&lt;val>${NpcFormat.joinState(it)}" }</ID>
+    <ID>ForbiddenMethodCall:NpcTabBuilder.kt:NpcTabBuilder$takeIf { it > 0 }</ID>
+    <ID>ForbiddenMethodCall:NpcTargetCommand.kt:NpcTargetCommand$run { sender.sendWarning("NPC {} does not use target {}.", id, targetName) return }</ID>
+    <ID>ForbiddenMethodCall:PickMenuSource.kt:PickMenuSource$apply { actionOrCreate(purpose.interaction, purpose.joinState).openInventory = value }</ID>
+    <ID>ForbiddenMethodCall:PickServerSource.kt:PickServerSource$apply { actionOrCreate(purpose.interaction, purpose.joinState).sendToServer = canonical }</ID>
+    <ID>ForbiddenMethodCall:PickSoundSource.kt:PickSoundSource$also { setSound(it, canonical) }</ID>
+    <ID>ForbiddenMethodCall:PickerMenuBuilder.kt:PickerMenuBuilder$also { result -> if (result == null) source.apply(context, player, fresh, typed) }</ID>
+    <ID>ForbiddenMethodCall:PickerMenuBuilder.kt:PickerMenuBuilder$let { fresh -> source.resolveTyped(context, fresh, typed).also { result -> if (result == null) source.apply(context, player, fresh, typed) } }</ID>
+    <ID>ForbiddenMethodCall:PickerTemplate.kt:PickerTemplate$let { result -> pane.on(RESULT_SLOT, resultItem(result, spec.filteredNoun), MenuClick.DROP) { session.pickerResult = null rerender() } }</ID>
+    <ID>ForbiddenMethodCall:PickerTemplate.kt:PickerTemplate$takeIf { text.isBlank() }</ID>
+    <ID>ForbiddenMethodCall:PlaceholderPage.kt:PlaceholderPage$let { add(" ${Msg.SUBTLE}$it") }</ID>
+    <ID>ForbiddenMethodCall:PlaceholderPage.kt:PlaceholderPage$let { key -> CATEGORIES.firstOrNull { it.key == key.lowercase(Locale.ROOT) } }</ID>
+    <ID>ForbiddenMethodCall:PlaceholderPage.kt:PlaceholderPage$takeIf { PlayerPlaceholders.external != null }</ID>
+    <ID>ForbiddenMethodCall:PlaceholderPage.kt:PlaceholderPage$takeIf { topic == null }</ID>
+    <ID>ForbiddenMethodCall:PromptCard.kt:PromptCard$let { builder.append(text(" · ", SUBTLE)).append(text(it, ACCENT)) }</ID>
+    <ID>ForbiddenMethodCall:PromptCard.kt:PromptCard$let { builder.append(text(" · ", SUBTLE)).append(text(it, SUBTLE)) }</ID>
+    <ID>ForbiddenMethodCall:PromptCard.kt:PromptCard$let { clear -> button("⌫ Clear", WARNING, text("Removes the value.", MUTED), callback(clear)) }</ID>
+    <ID>ForbiddenMethodCall:PromptCard.kt:PromptCard$let { extra -> controls.extra?.let { run -> button("⟳ ${extra.label}", BRAND, text(extra.hint, MUTED), callback { run(typed) }) } }</ID>
+    <ID>ForbiddenMethodCall:PromptCard.kt:PromptCard$let { run -> button("⟳ ${extra.label}", BRAND, text(extra.hint, MUTED), callback { run(typed) }) }</ID>
+    <ID>ForbiddenMethodCall:PromptCard.kt:PromptCard$let { suggestButton("✎ Edit current", it) }</ID>
+    <ID>ForbiddenMethodCall:PromptCard.kt:PromptCard$takeIf { it.isNotBlank() }</ID>
+    <ID>ForbiddenMethodCall:PromptCard.kt:PromptCard$takeIf { prompt.format == PromptFormat.MINI_MESSAGE }</ID>
+    <ID>ForbiddenMethodCall:RoutingNpcRenderer.kt:RoutingNpcRenderer$let { config.entity.provider.lowercase() to it }</ID>
+    <ID>ForbiddenMethodCall:RoutingNpcRenderer.kt:RoutingNpcRenderer$let { renderer -> warnedMissingProvider.remove(warnKey) return renderer }</ID>
+    <ID>ForbiddenMethodCall:RoutingNpcRenderer.kt:RoutingNpcRenderer$let { return it.spawn(config) }</ID>
+    <ID>ForbiddenMethodCall:RoutingNpcRenderer.kt:RoutingNpcRenderer$takeIf { it.supportsLinking }</ID>
+    <ID>ForbiddenMethodCall:SkinInput.kt:SkinInput.Companion$let(::Username)</ID>
+    <ID>ForbiddenMethodCall:SkinInput.kt:SkinInput.Companion$let(::Uuid)</ID>
+    <ID>ForbiddenMethodCall:SkinInput.kt:SkinInput.Companion$takeIf(USERNAME::matches)</ID>
+    <ID>ForbiddenMethodCall:SoundTuning.kt:SoundTuning$let { "&lt;bd>Sound &lt;val>$it" }</ID>
+    <ID>ForbiddenMethodCall:SoundTuning.kt:SoundTuning$let { player.playSound(it, options) }</ID>
+    <ID>ForbiddenMethodCall:StateChips.kt:StateChipRow$takeIf { !selected }</ID>
+    <ID>ForbiddenMethodCall:StateChips.kt:StateChipRow$takeIf { removable }</ID>
+    <ID>ForbiddenMethodCall:StateChips.kt:StateChipRow$takeIf { selected }</ID>
+    <ID>ForbiddenMethodCall:StateChips.kt:StateChipRow$takeIf { state == chips.live }</ID>
+    <ID>ForbiddenMethodCall:StateLooksMenuBuilder.kt:StateLooksMenuBuilder$let { "&lt;bd>Glint &lt;val>${if (it) "on" else "off"}" }</ID>
+    <ID>ForbiddenMethodCall:StateLooksMenuBuilder.kt:StateLooksMenuBuilder$let { "&lt;bd>Lore &lt;val>${it.size} &lt;bd>lines" }</ID>
+    <ID>ForbiddenMethodCall:StateLooksMenuBuilder.kt:StateLooksMenuBuilder$let { "&lt;bd>Material &lt;val>$it" }</ID>
+    <ID>ForbiddenMethodCall:StateLooksMenuBuilder.kt:StateLooksMenuBuilder$let { "&lt;bd>Name &lt;val>${Ui.quote(it)}" }</ID>
+    <ID>ForbiddenMethodCall:StateLooksMenuBuilder.kt:StateLooksMenuBuilder$let { ItemIconResolver.styled(template, it) }</ID>
+    <ID>ForbiddenMethodCall:StateLooksMenuBuilder.kt:StateLooksMenuBuilder$let { return@Prompt it }</ID>
+    <ID>ForbiddenMethodCall:StateLooksMenuBuilder.kt:StateLooksMenuBuilder$takeIf { look != null }</ID>
+    <ID>ForbiddenMethodCall:Stepper.kt:Stepper$let { " &lt;hnt>$it" }</ID>
+    <ID>ForbiddenMethodCall:Stepper.kt:Stepper$let(commit)</ID>
+    <ID>ForbiddenMethodCall:StudioMenuBuilder.kt:StudioMenuBuilder$let { "&lt;bd>Now: $it" }</ID>
+    <ID>ForbiddenMethodCall:StudioMenuBuilder.kt:StudioMenuBuilder$let { LiveGroups.describe(it.type).label }</ID>
+    <ID>ForbiddenMethodCall:StudioMenuBuilder.kt:StudioMenuBuilder$let { LiveGroups.source(config, it) }</ID>
+    <ID>ForbiddenMethodCall:StudioMenuBuilder.kt:StudioMenuBuilder$let { it.copy(lore = it.lore + Palette.expand("&lt;hnt>Live preview from the canvas")) }</ID>
+    <ID>ForbiddenMethodCall:StudioMenuBuilder.kt:StudioMenuBuilder$let { return@Prompt it }</ID>
+    <ID>ForbiddenMethodCall:StudioMenuBuilder.kt:StudioMenuBuilder$let(HeadOwners::skin)</ID>
+    <ID>ForbiddenMethodCall:StudioMenuBuilder.kt:StudioMenuBuilder$let(Msg.miniMessage::stripTags)</ID>
+    <ID>ForbiddenMethodCall:StudioMenuBuilder.kt:StudioMenuBuilder$takeIf { data -> data > 0 }</ID>
+    <ID>ForbiddenMethodCall:StudioMenuBuilder.kt:StudioMenuBuilder$takeIf { it.isNotBlank() }</ID>
+    <ID>ForbiddenMethodCall:StudioMenuBuilder.kt:StudioMenuBuilder$takeIf { items.any { it.liveGroup != null } }</ID>
+    <ID>ForbiddenMethodCall:StudioMenuBuilder.kt:StudioMenuBuilder$takeIf { legacy }</ID>
+    <ID>ForbiddenMethodCall:StudioMenuBuilder.kt:StudioMenuBuilder$takeIf { liveSource != null }</ID>
+    <ID>ForbiddenMethodCall:StudioMenuBuilder.kt:StudioMenuBuilder$takeIf { session.mode == CanvasMode.LIVE }</ID>
+    <ID>ForbiddenMethodCall:TextPrompts.kt:TextPrompts$let { return@Prompt PromptResult.Rejected(Component.text(it)) }</ID>
+    <ID>ForbiddenMethodCall:TextPrompts.kt:TextPrompts.Companion$let { render(player, it) }</ID>
+    <ID>ForbiddenMethodCall:TextPrompts.kt:TextPrompts.Companion$let(context)</ID>
+    <ID>ForbiddenMethodCall:TextPrompts.kt:also { closeOnAccept(sessions, player, it) }</ID>
+    <ID>ForbiddenMethodCall:TextPrompts.kt:let { clear -> { sessions.peek(player.uniqueId)?.promptClosed() clear() } }</ID>
+    <ID>ForbiddenMethodCall:TextPrompts.kt:let { extra -> PromptExtra( extra.label, extra.hint, submit = { text -> extra.submit(text).also { closeOnAccept(sessions, player, it) } }, next = extra.next, ) }</ID>
+    <ID>ForbiddenMethodCall:TitleEditorMenuBuilder.kt:TitleEditorMenuBuilder$apply { actionOrCreate(interaction, joinState).sendTitle = null dropActionIfEmpty(interaction, joinState) }</ID>
+    <ID>ForbiddenMethodCall:TitlePane.kt:TitlePane$takeIf { it.title.isNotBlank() || it.subtitle.isNotBlank() }</ID>
+    <ID>ForbiddenMethodCall:TitlePane.kt:TitlePane$takeIf { value.isNotBlank() }</ID>
+    <ID>ForbiddenMethodCall:Ui.kt:Ui$takeIf { valueLine != null }</ID>
+    <ID>LongMethod:CanvasRender.kt:CanvasRender$fun toolbox: Map&lt;Int, NpcItem></ID>
+    <ID>LongMethod:CommandMessages.kt:CommandMessages$private fun helpPage: List&lt;String>?</ID>
+    <ID>LongMethod:InventoryHubMenuBuilder.kt:InventoryHubMenuBuilder$fun build: EditorMenu</ID>
+    <ID>LongMethod:LiveGroupMenuBuilder.kt:LiveGroupMenuBuilder$fun build: EditorMenu</ID>
+    <ID>LongMethod:LooksTabBuilder.kt:LooksTabBuilder$fun build: EditorMenu</ID>
+    <ID>LongMethod:MenuTemplate.kt:MenuTemplate.Companion$fun serverSelector: InventoryConfiguration</ID>
+    <ID>LongMethod:StudioMenuBuilder.kt:StudioMenuBuilder$private fun look</ID>
+    <ID>LongParameterList:ActionFieldsPane.kt:ActionFieldsPane.Port</ID>
+    <ID>LongParameterList:ConfirmGate.kt:fun &lt;S : Any> Pane.armed</ID>
+    <ID>LongParameterList:HologramLineEditor.kt:HologramLineEditor$private fun promptLine</ID>
+    <ID>LongParameterList:InventoryEditorContext.kt:InventoryEditorContext</ID>
+    <ID>LongParameterList:LoreMenuBuilder.kt:LoreMenuBuilder$private fun promptLine</ID>
+    <ID>LongParameterList:MenuTemplate.kt:MenuTemplate.Companion$fun liveGrid: InventoryConfiguration</ID>
+    <ID>LongParameterList:NpcActionCommand.kt:NpcActionCommand$@Command("$COMMAND_SYNTAX edit &lt;id> action title-duration &lt;interaction> &lt;joinState> &lt;fadeIn> &lt;stay> &lt;fadeOut>") @Permission(COMMAND_PERMISSION) fun titleDuration</ID>
+    <ID>LongParameterList:NpcEditorContext.kt:NpcEditorContext</ID>
+    <ID>LongParameterList:StudioMenuBuilder.kt:StudioMenuBuilder$private fun look</ID>
+    <ID>LongParameterList:StudioMenuBuilder.kt:StudioMenuBuilder$private fun prompt</ID>
+    <ID>NoNameShadowing:StudioMenuBuilder.kt:StudioMenuBuilder${ it.liveGroup != null }</ID>
+    <ID>ReturnCount:CanvasOps.kt:CanvasOps$fun shift: InventoryConfiguration?</ID>
+    <ID>ReturnCount:GroupServersSource.kt:GroupServersSource$private suspend fun resolveGroupName: String?</ID>
+    <ID>ReturnCount:NpcManager.kt:NpcManager$fun duplicate: NpcOperationResult</ID>
+    <ID>ReturnCount:NpcManager.kt:NpcManager$suspend fun create: NpcOperationResult</ID>
+    <ID>ReturnCount:NpcManager.kt:NpcManager$suspend fun link: NpcOperationResult</ID>
+    <ID>UnsafeCallOnNullableType:InventoryViewController.kt:InventoryViewController$it.liveGroup!!</ID>
+    <ID>UnusedPrivateProperty:Paginator.kt:Paginator$private val all: List&lt;T></ID>
+    <ID>UselessCallOnNotNull:LiveGroupMenuBuilder.kt:LiveGroupMenuBuilder$listOfNotNull( "&lt;bd>&lt;val>${LiveGroups.contentSlots(config, group).size} &lt;bd>slots", if (LiveGroups.lacksPageControls(config, group)) { "&lt;warn>No page arrows: extra entries are hidden." } else { "&lt;bd>Has page arrows" }, )</ID>
+  </CurrentIssues>
+</SmellBaseline>

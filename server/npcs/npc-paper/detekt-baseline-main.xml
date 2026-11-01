@@ -1,0 +1,60 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>ComplexCondition:CanvasClickDecoder.kt:CanvasClickDecoder$kind != null &amp;&amp; kind == dragKind &amp;&amp; slot >= 0 &amp;&amp; slot !in dragSlots</ID>
+    <ID>CyclomaticComplexMethod:PacketCanvasSurface.kt:PacketCanvasSurface$override fun onPacketSend</ID>
+    <ID>ForbiddenMethodCall:CanvasClickDecoder.kt:CanvasClickDecoder$let { CanvasInput.Click(it, right = button == 1, shift = true) }</ID>
+    <ID>ForbiddenMethodCall:CanvasClickDecoder.kt:CanvasClickDecoder$let { CanvasInput.Clone(it) }</ID>
+    <ID>ForbiddenMethodCall:CanvasClickDecoder.kt:CanvasClickDecoder$let { CanvasInput.DoubleClick(it) }</ID>
+    <ID>ForbiddenMethodCall:CanvasClickDecoder.kt:CanvasClickDecoder$let { CanvasInput.Drop(it, wholeStack = button == 1) }</ID>
+    <ID>ForbiddenMethodCall:CanvasClickDecoder.kt:CanvasClickDecoder$let { CanvasInput.Key(it, button) }</ID>
+    <ID>ForbiddenMethodCall:CanvasClickDecoder.kt:CanvasClickDecoder$takeIf { it >= 0 }</ID>
+    <ID>ForbiddenMethodCall:ItemLooks.kt:ItemLooks$let { HeadConfiguration(texture = it.value, signature = it.signature) }</ID>
+    <ID>ForbiddenMethodCall:ItemLooks.kt:ItemLooks$let(Msg.miniMessage::serialize)</ID>
+    <ID>ForbiddenMethodCall:ItemLooks.kt:ItemLooks$takeIf { it.hasCustomModelData() }</ID>
+    <ID>ForbiddenMethodCall:ItemLooks.kt:ItemLooks$takeIf { it.hasDisplayName() }</ID>
+    <ID>ForbiddenMethodCall:Listeners.kt:Listeners$let { PacketEvents.getAPI().eventManager.registerListener(it) }</ID>
+    <ID>ForbiddenMethodCall:Listeners.kt:Listeners$let { plugin.server.pluginManager.registerEvents(it, plugin) }</ID>
+    <ID>ForbiddenMethodCall:PacketCanvasSurface.kt:PacketCanvasSurface$also { items -> for (slot in PLAYER_WINDOW_STORAGE) { if (slot &lt; items.size) items[slot] = toolboxForPlayerWindow(session, slot) } }</ID>
+    <ID>ForbiddenMethodCall:PacketCanvasSurface.kt:PacketCanvasSurface$also { items -> session.toolbox.forEachIndexed { index, stack -> if (session.size + index &lt; items.size) items[session.size + index] = stack } }</ID>
+    <ID>ForbiddenMethodCall:PacketCanvasSurface.kt:PacketCanvasSurface$let(::packetStack)</ID>
+    <ID>ForbiddenMethodCall:PacketCanvasSurface.kt:PacketCanvasSurface$let(ArmorLooks::read)</ID>
+    <ID>ForbiddenMethodCall:PacketCanvasSurface.kt:PacketCanvasSurface$let(ItemLooks::of)</ID>
+    <ID>ForbiddenMethodCall:PacketCanvasSurface.kt:PacketCanvasSurface$let(PaperNpcItem::toItemStack)</ID>
+    <ID>ForbiddenMethodCall:PacketCanvasSurface.kt:PacketCanvasSurface$let(session.onInput)</ID>
+    <ID>ForbiddenMethodCall:PacketCanvasSurface.kt:PacketCanvasSurface$let(task)</ID>
+    <ID>ForbiddenMethodCall:PacketCanvasSurface.kt:PacketCanvasSurface$takeUnless { it.type.isAir }</ID>
+    <ID>ForbiddenMethodCall:PacketStack.kt:PacketStack$also(::quiet)</ID>
+    <ID>ForbiddenMethodCall:PacketStack.kt:PacketStack$apply { isAccessible = true }</ID>
+    <ID>ForbiddenMethodCall:PacketStack.kt:PacketStack$apply { settings.checkForUpdates(false) load() }</ID>
+    <ID>ForbiddenMethodCall:PaperCommandSender.kt:PaperCommandSender$let { PaperNpcPlayer(plugin, it) }</ID>
+    <ID>ForbiddenMethodCall:PaperEditorMenuOpener.kt:PaperEditorMenuOpener$let(PaperNpcItem::toItemStack)</ID>
+    <ID>ForbiddenMethodCall:PaperInteractionHooks.kt:PaperInteractionHooks$also(Bukkit.getPluginManager()::callEvent)</ID>
+    <ID>ForbiddenMethodCall:PaperInventoryViewRenderer.kt:PaperInventoryViewRenderer$let { inventory -> runSync { inventory.viewers.toList().forEach { it.closeInventory() } } }</ID>
+    <ID>ForbiddenMethodCall:PaperInventoryViewRenderer.kt:PaperInventoryViewRenderer$let(PaperNpcItem::toItemStack)</ID>
+    <ID>ForbiddenMethodCall:PaperInventoryViewRenderer.kt:PaperInventoryViewRenderer$takeIf { it.topInventory === inventory }</ID>
+    <ID>ForbiddenMethodCall:PaperNpcEffects.kt:PaperNpcEffects$let { send(it, PacketTextDisplays.destroy(listOf(entityId))) }</ID>
+    <ID>ForbiddenMethodCall:PaperNpcEffects.kt:PaperNpcEffects$let { send(viewer, PacketTextDisplays.destroy(listOf(it))) }</ID>
+    <ID>ForbiddenMethodCall:PaperNpcItem.kt:PaperNpcItem$apply { editMeta { meta -> val texture = item.skinTexture if (texture != null) { HeadTextures.apply(meta, texture, item.skinSignature) } else { item.playerHeadOwner?.let { owner -> val profile = Bukkit.getPlayer(owner)?.playerProfile ?: Bukkit.createProfile(owner) (meta as? SkullMeta)?.playerProfile = profile } } meta.isHideTooltip = item.hideTooltip if (!item.hideTooltip) { meta.displayName(withoutDefaultItalic(item.name)) if (item.lore.isNotEmpty()) meta.lore(item.lore.map(::withoutDefaultItalic)) } item.customModelData?.let(meta::setCustomModelData) item.maxStackSize?.let(meta::setMaxStackSize) ArmorLooks.apply(meta, item.armorColor, item.armorTrim, null) if (item.glowing) meta.setEnchantmentGlintOverride(true) meta.attributeModifiers = ImmutableMultimap.of() meta.addItemFlags(*ItemFlag.entries.toTypedArray()) } }</ID>
+    <ID>ForbiddenMethodCall:PaperNpcItem.kt:PaperNpcItem$let { owner -> val profile = Bukkit.getPlayer(owner)?.playerProfile ?: Bukkit.createProfile(owner) (meta as? SkullMeta)?.playerProfile = profile }</ID>
+    <ID>ForbiddenMethodCall:PaperNpcItem.kt:PaperNpcItem$let(meta::setCustomModelData)</ID>
+    <ID>ForbiddenMethodCall:PaperNpcItem.kt:PaperNpcItem$let(meta::setMaxStackSize)</ID>
+    <ID>ForbiddenMethodCall:PaperNpcPlayer.kt:PaperNpcPlayer$apply { writeUTF("Connect") writeUTF(serverName) }</ID>
+    <ID>ForbiddenMethodCall:PaperNpcPlayer.kt:PaperNpcPlayer$let(ArmorLooks::read)</ID>
+    <ID>ForbiddenMethodCall:PaperNpcPlayer.kt:PaperNpcPlayer$takeUnless { it.type.isAir }</ID>
+    <ID>ForbiddenMethodCall:PaperPlayerDirectory.kt:PaperPlayerDirectory$let { PaperNpcPlayer(plugin, it) }</ID>
+    <ID>ForbiddenMethodCall:PaperPlugin.kt:PaperPlugin$also { editorWiring = it }</ID>
+    <ID>ForbiddenMethodCall:PaperPlugin.kt:PaperPlugin$also { if (!it.exists()) saveResource(name, false) }</ID>
+    <ID>ForbiddenMethodCall:PaperPlugin.kt:PaperPlugin$also { npcEffects = it }</ID>
+    <ID>ForbiddenMethodCall:PaperPlugin.kt:PaperPlugin$also { providerWiring = it }</ID>
+    <ID>ForbiddenMethodCall:ProviderLoader.kt:ProviderLoader$let { put(descriptor.name, it) }</ID>
+    <ID>ForbiddenMethodCall:ProviderWiring.kt:ProviderWiring.Companion$also { Bukkit.getPluginManager().registerEvents(it, plugin) }</ID>
+    <ID>ForbiddenMethodCall:ProviderWiring.kt:ProviderWiring.Companion$also { it.start() }</ID>
+    <ID>ForbiddenMethodCall:ProviderWiring.kt:ProviderWiring.Companion$also { it.texts.start() }</ID>
+    <ID>ForbiddenMethodCall:PushbackListener.kt:PushbackListener$let { SoundPlayer.play(player, it, config.pushback.soundOptions) }</ID>
+    <ID>ForbiddenMethodCall:SoundCatalog.kt:SoundCatalog$takeIf { keysByName[nameOf(it)] == it }</ID>
+    <ID>ForbiddenMethodCall:SoundPlayer.kt:SoundPlayer$run { if (warned.add(name)) { NpcLog.logger.warning("Unknown sound '$name'; pick one in the editor's sound picker.") } return }</ID>
+    <ID>ForbiddenMethodCall:SoundPlayer.kt:SoundPlayer$takeIf { '.' in it || ':' in it }</ID>
+  </CurrentIssues>
+</SmellBaseline>

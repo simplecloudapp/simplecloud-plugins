@@ -44,6 +44,21 @@ cloud = "2.1.0"
 cloud-platform = "2.0.1"
 cloud-minestom = "2.2.0-SNAPSHOT"
 
+# NPCs
+npc-paper = "1.20.6-R0.1-SNAPSHOT"
+npc-paper-mannequin = "1.21.11-R0.1-SNAPSHOT"
+npc-adventure-mannequin = "4.26.1"
+npc-adventure-floor = "4.17.0"
+npc-adventure-packets = "4.26.1"
+npc-simplecloud-api = "0.1.0-platform.33-dev.52.1-9490b37"
+npc-simplecloud-plugin = "0.0.1-platform.1778966459069-b1e45e2"
+packetevents = "2.14.0"
+entitylib = "3.3.7-20260731.141813-1"
+citizens = "2.0.43-SNAPSHOT"
+fancynpcs = "2.9.2"
+mythic-dist = "5.12.1"
+znpcsplus = "2.1.0-SNAPSHOT"
+
 [libraries]
 # Kotlin
 kotlin-jvm = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin" }
@@ -98,11 +113,34 @@ cloud-velocity = { module = "org.incendo:cloud-velocity", version.ref = "cloud-p
 cloud-bungee = { module = "org.incendo:cloud-bungee", version.ref = "cloud-platform" }
 cloud-paper = { module = "org.incendo:cloud-paper", version.ref = "cloud-platform" }
 cloud-minestom = { module = "org.incendo:cloud-minestom", version.ref = "cloud-minestom" }
+cloud-annotations = { module = "org.incendo:cloud-annotations", version.ref = "cloud" }
+
+# NPCs
+npc-paper-api = { module = "io.papermc.paper:paper-api", version.ref = "npc-paper" }
+npc-paper-mannequin-api = { module = "io.papermc.paper:paper-api", version.ref = "npc-paper-mannequin" }
+npc-simplecloud-api = { module = "app.simplecloud.api:api", version.ref = "npc-simplecloud-api" }
+npc-simplecloud-plugin = { module = "app.simplecloud.plugin:plugin-shared", version.ref = "npc-simplecloud-plugin" }
+npc-adventure-api = { module = "net.kyori:adventure-api", version.ref = "npc-adventure-packets" }
+npc-adventure-text-minimessage = { module = "net.kyori:adventure-text-minimessage", version.ref = "npc-adventure-packets" }
+npc-adventure-text-serializer-gson = { module = "net.kyori:adventure-text-serializer-gson", version.ref = "npc-adventure-packets" }
+npc-adventure-text-serializer-legacy = { module = "net.kyori:adventure-text-serializer-legacy", version.ref = "npc-adventure-packets" }
+npc-adventure-text-serializer-plain = { module = "net.kyori:adventure-text-serializer-plain", version.ref = "npc-adventure-packets" }
+npc-adventure-nbt = { module = "net.kyori:adventure-nbt", version.ref = "npc-adventure-packets" }
+packetevents-spigot = { module = "com.github.retrooper:packetevents-spigot", version.ref = "packetevents" }
+entitylib-spigot = { module = "io.github.tofaa2:spigot", version.ref = "entitylib" }
+entitylib-api = { module = "io.github.tofaa2:api", version.ref = "entitylib" }
+entitylib-common = { module = "io.github.tofaa2:common", version.ref = "entitylib" }
+citizens-main = { module = "net.citizensnpcs:citizens-main", version.ref = "citizens" }
+fancynpcs = { module = "de.oliver:FancyNpcs", version.ref = "fancynpcs" }
+mythic-dist = { module = "io.lumine:Mythic-Dist", version.ref = "mythic-dist" }
+znpcsplus-api = { module = "lol.pyr:znpcsplus-api", version.ref = "znpcsplus" }
 
 [bundles]
 adventure = ["adventure", "adventure-text-minimessage", "adventure-text-serializer-plain", "adventure-text-serializer-legacy"]
 configurate = ["configurate-yaml", "configurate-gson", "configurate-extra-kotlin"]
 cloud = ["cloud-core", "cloud-coroutines"]
+npc-adventure = ["npc-adventure-api", "npc-adventure-text-minimessage", "npc-adventure-text-serializer-legacy", "npc-adventure-text-serializer-plain"]
+npc-packet-adventure = ["npc-adventure-api", "npc-adventure-nbt", "npc-adventure-text-serializer-gson", "npc-adventure-text-serializer-legacy"]
 
 [plugins]
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

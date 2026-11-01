@@ -1,0 +1,53 @@
+variables:
+  prefix: '<#38bdf8><b>⚡</b>'
+
+command:
+  help:
+    title: '<prefix> <#FFFFFF>Commands of SimpleCloud NPCs'
+    topic-title: '<prefix> <#FFFFFF>Help: <#FBBF24><topic>'
+    unknown: '<prefix> <#DC2626>Unknown help topic. <#A3A3A3>Try: <#FBBF24><topics>'
+  reload:
+    success: '<prefix> <#A3E635>SimpleCloud NPCs was reloaded.'
+    failed: '<prefix> <#DC2626>SimpleCloud NPCs could not be reloaded.'
+  npc:
+    create:
+      success: '<prefix> <#A3E635>Created NPC <#FBBF24><id><#A3E635>.'
+      failed: '<prefix> <#DC2626>Could not create the NPC<#FBBF24><detail-suffix>'
+    link:
+      success: '<prefix> <#A3E635>Linked NPC <#FBBF24><id><#A3E635>.'
+    unlink:
+      success: '<prefix> <#A3E635>Unlinked NPC <#FBBF24><id><#A3E635>.'
+    duplicate:
+      success: '<prefix> <#A3E635>Duplicated NPC as <#FBBF24><id><#A3E635>.'
+    delete:
+      success: '<prefix> <#A3E635>Deleted NPC <#FBBF24><id><#A3E635>.'
+    update:
+      success: '<prefix> <#A3E635>Updated NPC <#FBBF24><id><#A3E635>.'
+    error:
+      not-found: '<prefix> <#DC2626>NPC <#FBBF24><detail> <#DC2626>was not found.'
+      already-exists: '<prefix> <#DC2626>NPC <#FBBF24><detail> <#DC2626>already exists.'
+      invalid-id: '<prefix> <#DC2626>NPC id <#FBBF24><detail> <#DC2626>is invalid.'
+      not-linked: '<prefix> <#DC2626>NPC <#FBBF24><detail> <#DC2626>is not a linked NPC, use delete.'
+  provider:
+    error:
+      unavailable: '<prefix> <#DC2626>Provider <#FBBF24><detail> <#DC2626>is unavailable.'
+      external-npc-missing: '<prefix> <#DC2626>Provider NPC <#FBBF24><detail> <#DC2626>was not found.'
+      already-linked: '<prefix> <#DC2626>Provider NPC <#FBBF24><detail> <#DC2626>is already linked.'
+  target:
+    error:
+      not-found: '<prefix> <#DC2626>Target <#FBBF24><detail> <#DC2626>was not found.'
+      ambiguous: '<prefix> <#DC2626>Target <#FBBF24><detail> <#DC2626>exists as both a group and persistent server. Rename one of them.'
+      already-used: '<prefix> <#DC2626>Target <#FBBF24><detail> <#DC2626>is already used by this NPC.'
+      limit: '<prefix> <#DC2626>This NPC already has the maximum of <#FBBF24><detail> <#DC2626>targets.'
+
+player:
+  action:
+    no-permission: '<prefix> <#DC2626>You are not allowed to do that.'
+
+# Help pages can be overridden per topic; the plugin's built-in pages are used when a
+# topic is missing here. Topics: main, create, link, edit, target, hologram, action,
+# pushback, admin, inventory.
+#   help:
+#     pages:
+#       main:
+#         - '<prefix> <#A3A3A3>/scnpcs create <id> <target>'

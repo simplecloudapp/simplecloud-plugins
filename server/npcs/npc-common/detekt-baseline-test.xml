@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>ForbiddenMethodCall:InteractionExecutorTest.kt:InteractionExecutorTest$apply { soundFails = true }</ID>
+    <ID>ForbiddenMethodCall:NpcManagerUpgradeTest.kt:NpcManagerUpgradeTest.FakeProvider$also(spawned::add)</ID>
+    <ID>ForbiddenMethodCall:NpcManagerUpgradeTest.kt:NpcManagerUpgradeTest.FakeProvider$let { if (persisted.remove(it) != null) deletedReferences += it }</ID>
+    <ID>ForbiddenMethodCall:NpcManagerUpgradeTest.kt:NpcManagerUpgradeTest.FakeProvider$let(persisted::get)</ID>
+    <ID>ForbiddenMethodCall:TestFakes.kt:RecordingNpcRenderer$also { spawned += it.id }</ID>
+  </CurrentIssues>
+</SmellBaseline>
