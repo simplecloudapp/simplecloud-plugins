@@ -3,6 +3,7 @@ package app.simplecloud.plugin.signs.shared
 import app.simplecloud.api.CloudApi
 import app.simplecloud.api.server.Server
 import app.simplecloud.api.server.ServerQuery
+import app.simplecloud.api.server.ServerState
 import app.simplecloud.plugin.core.shared.adventure.miniMessage
 import app.simplecloud.plugin.core.shared.config.DefaultConfigInstaller
 import app.simplecloud.plugin.signs.shared.config.layout.LayoutConfig
@@ -157,7 +158,8 @@ class SignManager(
     }
 
     private fun updateSigns(config: LocationsConfig, servers: List<Server>) {
-        val serversById = servers.associateBy { it.serverId }
+        val liveServers = servers.filter { isLive(it) }
+        val serversById = liveServers.associateBy { it.serverId }
         config.locations.forEach { location ->
             val current = assigned[location] ?: return@forEach
             val updated = serversById[current.serverId]
@@ -165,8 +167,8 @@ class SignManager(
         }
 
         val taken = assigned.values.map { it.serverId }.toSet()
-        val free = servers
-            .filter { it.serverId !in taken && SignRule.entries.any { rule -> rule.matches(it) } }
+        val free = liveServers
+            .filter { it.serverId !in taken }
             .sortedWith(SERVER_ORDER)
             .iterator()
 
@@ -177,6 +179,9 @@ class SignManager(
             render(location, assigned[location], config.identifier())
         }
     }
+
+    private fun isLive(server: Server): Boolean =
+        server.state !in STOPPED_STATES && SignRule.entries.any { it.matches(server) }
 
     private fun render(location: SignLocation, server: Server?, target: String) {
         val layout = findLayout(server) ?: return
@@ -206,6 +211,8 @@ class SignManager(
         private const val REDRAW_INTERVAL = 5000L
         private const val SERVER_REFRESH_INTERVAL = 1000L
         private const val MAX_LINES = 4
+
+        private val STOPPED_STATES = setOf(ServerState.STOPPING, ServerState.CLEANUP, ServerState.STOPPED)
 
         private val DEFAULT_LAYOUTS = listOf("empty", "full", "maintenance", "offline", "online", "starting")
 
