@@ -2,16 +2,12 @@ name: 'empty_default'
 rule: 'EMPTY'
 priority: 10
 behind-block: 'LIME_CONCRETE'
+glowing-text: true
 frame-update-interval: 1000
 
 frames:
   - lines:
-      - '<color:#4ade80>✨</color>'
-      - '<server-name>'
-      - '<color:#4ade80><b>EMPTY</b></color>'
-      - '<player-count>/<max-players>'
-  - lines:
-      - '<color:#4ade80>✨</color>'
-      - '<server-name>'
-      - '<color:#4ade80><b>JOIN NOW!</b></color>'
-      - '<player-count>/<max-players>'
+      - '<bold><#F8FAFC><server-name></bold>'
+      - '<#A3E635>Online'
+      - '<#E2E8F0><player-count>/<max-players> players'
+      - '<#94A3B8>Click to join'

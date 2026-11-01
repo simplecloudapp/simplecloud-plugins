@@ -2,11 +2,12 @@ name: 'online_default'
 rule: 'ONLINE'
 priority: 9
 behind-block: 'LIME_CONCRETE'
-frame-update-interval: 1250
+glowing-text: true
+frame-update-interval: 1000
 
 frames:
   - lines:
-      - '<color:#22c55e>⚡</color>'
-      - '<server-name>'
-      - '<player-count>/<max-players>'
-      - '<color:#22c55e><b>ONLINE</b></color>'
+      - '<bold><#F8FAFC><server-name></bold>'
+      - '<#A3E635>Online'
+      - '<#E2E8F0><player-count>/<max-players> players'
+      - '<#94A3B8>Click to join'

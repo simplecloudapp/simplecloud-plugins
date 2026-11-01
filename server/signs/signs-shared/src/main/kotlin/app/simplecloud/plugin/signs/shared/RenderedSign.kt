@@ -5,4 +5,5 @@ import net.kyori.adventure.text.Component
 data class RenderedSign(
     val lines: List<Component>,
     val behindBlock: String?,
+    val glowingText: Boolean,
 )

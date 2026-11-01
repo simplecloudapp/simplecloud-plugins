@@ -7,29 +7,11 @@ import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 
 object SignPlaceholders {
 
-    private val OFFLINE = TagResolver.resolver(
-        tags(
-            "server-name" to "unknown",
-            "numerical-id" to 0,
-            "server-id" to "unknown",
-            "host" to "unknown",
-            "ip" to "unknown",
-            "port" to 0,
-            "min-memory" to 0,
-            "max-memory" to 0,
-            "max-players" to 0,
-            "player-count" to 0,
-            "state" to "unknown",
-            "group" to "",
-            "persistent-server" to "",
-        ),
-        property(emptyMap()),
-    )
-
-    fun of(server: Server?): TagResolver {
-        if (server == null) return OFFLINE
+    fun of(server: Server?, target: String): TagResolver {
+        if (server == null) return offline(target)
         return TagResolver.resolver(
             tags(
+                "target" to target,
                 "server-name" to ServerNames.displayName(server),
                 "group" to ServerNames.groupName(server),
                 "numerical-id" to server.numericalId,
@@ -47,6 +29,26 @@ object SignPlaceholders {
             property(server.properties.orEmpty()),
         )
     }
+
+    private fun offline(target: String): TagResolver = TagResolver.resolver(
+        tags(
+            "target" to target,
+            "server-name" to "unknown",
+            "numerical-id" to 0,
+            "server-id" to "unknown",
+            "host" to "unknown",
+            "ip" to "unknown",
+            "port" to 0,
+            "min-memory" to 0,
+            "max-memory" to 0,
+            "max-players" to 0,
+            "player-count" to 0,
+            "state" to "unknown",
+            "group" to "",
+            "persistent-server" to "",
+        ),
+        property(emptyMap()),
+    )
 
     private fun property(properties: Map<String, Any?>): TagResolver = TagResolver.resolver("property") { arguments, _ ->
         val name = arguments.popOr("property expected").value()

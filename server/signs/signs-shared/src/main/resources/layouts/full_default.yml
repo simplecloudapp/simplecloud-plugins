@@ -1,12 +1,13 @@
 name: 'full_default'
 rule: 'FULL'
-priority: 8
+priority: 11
 behind-block: 'RED_CONCRETE'
-frame-update-interval: 1250
+glowing-text: true
+frame-update-interval: 1000
 
 frames:
   - lines:
-      - '<color:#ff4747>⛔</color>'
-      - '<server-name>'
-      - '<color:#ff4747><b>FULL</b></color>'
-      - '<player-count>/<max-players>'
+      - '<bold><#F8FAFC><server-name></bold>'
+      - '<#F87171>Full'
+      - '<#E2E8F0><player-count>/<max-players> players'
+      - ''

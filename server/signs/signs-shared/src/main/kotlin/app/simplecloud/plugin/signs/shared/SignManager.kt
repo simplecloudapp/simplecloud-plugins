@@ -163,19 +163,20 @@ class SignManager(
             if (!assigned.containsKey(location) && free.hasNext()) {
                 assigned[location] = free.next()
             }
-            render(location, assigned[location])
+            render(location, assigned[location], config.identifier())
         }
     }
 
-    private fun render(location: SignLocation, server: Server?) {
+    private fun render(location: SignLocation, server: Server?, target: String) {
         val layout = findLayout(server) ?: return
         if (layout.frames.isEmpty()) return
 
         val frame = layout.frames[(frameIndexes[layout.name] ?: 0) % layout.frames.size]
-        val placeholders = SignPlaceholders.of(server)
+        val placeholders = SignPlaceholders.of(server, target)
         val sign = RenderedSign(
             frame.lines.take(MAX_LINES).map { miniMessage.deserialize(it, placeholders) },
             layout.behindBlock,
+            layout.glowingText,
         )
         if (rendered.put(location, sign) != sign) {
             renderer.render(location, sign)

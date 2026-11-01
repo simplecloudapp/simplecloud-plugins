@@ -13,6 +13,7 @@ data class LayoutConfig(
     val priority: Int = 0,
     val serverName: String = "%server-name%",
     val behindBlock: String? = null,
+    val glowingText: Boolean = false,
     val frameUpdateInterval: Long = 500,
     val frames: List<FrameConfig> = emptyList(),
 ) {

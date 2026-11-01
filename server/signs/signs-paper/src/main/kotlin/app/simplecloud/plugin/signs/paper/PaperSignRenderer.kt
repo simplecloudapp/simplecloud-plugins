@@ -19,14 +19,14 @@ class PaperSignRenderer(private val plugin: JavaPlugin) : SignRenderer {
         runOnMainThread {
             val state = PaperSignLocations.blockAt(location)?.state as? Sign ?: return@runOnMainThread
             updateBehindBlock(state, sign.behindBlock)
-            writeLines(state, sign.lines)
+            writeLines(state, sign.lines, sign.glowingText)
         }
     }
 
     override fun clear(location: SignLocation) {
         runOnMainThread {
             val state = PaperSignLocations.blockAt(location)?.state as? Sign ?: return@runOnMainThread
-            writeLines(state, emptyList())
+            writeLines(state, emptyList(), false)
         }
     }
 
@@ -35,9 +35,11 @@ class PaperSignRenderer(private val plugin: JavaPlugin) : SignRenderer {
         plugin.server.scheduler.runTask(plugin, Runnable { task() })
     }
 
-    private fun writeLines(sign: Sign, lines: List<Component>) {
+    private fun writeLines(sign: Sign, lines: List<Component>, glowingText: Boolean) {
         Side.entries.forEach { side ->
-            repeat(LINE_COUNT) { index -> sign.getSide(side).line(index, lines.getOrElse(index) { Component.empty() }) }
+            val signSide = sign.getSide(side)
+            signSide.isGlowingText = glowingText
+            repeat(LINE_COUNT) { index -> signSide.line(index, lines.getOrElse(index) { Component.empty() }) }
         }
         sign.update()
     }
