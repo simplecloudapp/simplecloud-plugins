@@ -1,0 +1,18 @@
+name: simplecloud-signs
+version: ${version}
+main: app.simplecloud.plugin.signs.paper.PaperSignsPlugin
+bootstrapper: app.simplecloud.plugin.signs.paper.PaperSignsBootstrap
+api-version: "26.1"
+authors: [ Fllip, PrexorDev ]
+description: Clickable signs that show the servers of your SimpleCloud network and connect players to them
+website: https://github.com/simplecloudapp/simplecloud-plugins
+
+dependencies:
+  bootstrap:
+    simplecloud-api:
+      load: BEFORE
+      required: true
+  server:
+    simplecloud-api:
+      load: BEFORE
+      required: true

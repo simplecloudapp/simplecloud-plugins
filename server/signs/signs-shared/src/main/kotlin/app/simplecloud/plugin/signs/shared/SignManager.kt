@@ -1,0 +1,226 @@
+package app.simplecloud.plugin.signs.shared
+
+import app.simplecloud.api.CloudApi
+import app.simplecloud.api.server.Server
+import app.simplecloud.api.server.ServerQuery
+import app.simplecloud.plugin.core.shared.adventure.miniMessage
+import app.simplecloud.plugin.core.shared.config.DefaultConfigInstaller
+import app.simplecloud.plugin.signs.shared.config.layout.LayoutConfig
+import app.simplecloud.plugin.signs.shared.config.location.LocationsConfig
+import app.simplecloud.plugin.signs.shared.config.location.SignLocation
+import app.simplecloud.plugin.signs.shared.repository.LocationRepository
+import app.simplecloud.plugin.signs.shared.repository.YamlDirectory
+import app.simplecloud.plugin.signs.shared.rule.SignRule
+import kotlinx.coroutines.*
+import kotlinx.coroutines.future.await
+import org.slf4j.LoggerFactory
+import java.nio.file.Files
+import java.nio.file.Path
+import java.util.concurrent.ConcurrentHashMap
+
+class SignManager(
+    val api: CloudApi,
+    dataDirectory: Path,
+    private val renderer: SignRenderer,
+) {
+
+    private val logger = LoggerFactory.getLogger(SignManager::class.java)
+
+    val scope = CoroutineScope(
+        CoroutineName("simplecloud-signs") +
+            SupervisorJob() +
+            Dispatchers.IO +
+            CoroutineExceptionHandler { _, exception -> logger.error("An error occurred in the signs plugin", exception) },
+    )
+
+    private val locations = LocationRepository(dataDirectory.resolve("locations"))
+    private val layouts = YamlDirectory(dataDirectory.resolve("layouts"), LayoutConfig::class.java)
+
+    private val servers = ConcurrentHashMap<String, List<Server>>()
+    private val failedTargets = ConcurrentHashMap.newKeySet<String>()
+    private val assigned = ConcurrentHashMap<SignLocation, Server>()
+    private val rendered = ConcurrentHashMap<SignLocation, RenderedSign>()
+    private val frameIndexes = ConcurrentHashMap<String, Int>()
+    private val frameSwitches = ConcurrentHashMap<String, Long>()
+
+    fun start() {
+        locations.load()
+        layouts.load()
+        logger.info("Loaded {} sign layouts", layouts.findAll().size)
+
+        locations.watch(scope)
+        layouts.watch(scope)
+        launchLoop(SERVER_REFRESH_INTERVAL, "refresh the servers of the signs") { refreshServers() }
+        launchLoop(UPDATE_INTERVAL, "update the signs") { updateSigns() }
+    }
+
+    fun stop() {
+        scope.cancel()
+    }
+
+    fun configs(): List<LocationsConfig> = locations.findAll()
+
+    fun isRegistered(location: SignLocation): Boolean = locations.isRegistered(location)
+
+    fun serverAt(location: SignLocation): Server? = assigned[location]
+
+    fun proxyName(server: Server): String =
+        ServerNames.proxyName(server, findLayout(server)?.serverName ?: LayoutConfig().serverName)
+
+    fun registerForGroup(group: String, location: SignLocation) {
+        locations.addToGroup(group, location)
+    }
+
+    fun registerForPersistentServer(persistentServer: String, location: SignLocation) {
+        locations.addToPersistentServer(persistentServer, location)
+    }
+
+    fun remove(location: SignLocation) {
+        locations.remove(location)
+        forget(location)
+    }
+
+    fun removeAll(identifier: String): Int {
+        val removed = locations.removeAll(identifier)
+        removed.forEach { forget(it) }
+        return removed.size
+    }
+
+    private fun forget(location: SignLocation) {
+        assigned.remove(location)
+        rendered.remove(location)
+        renderer.clear(location)
+    }
+
+    private fun launchLoop(interval: Long, action: String, block: suspend () -> Unit) {
+        scope.launch {
+            while (isActive) {
+                try {
+                    block()
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: Exception) {
+                    logger.error("Failed to {}", action, e)
+                }
+                delay(interval)
+            }
+        }
+    }
+
+    private suspend fun refreshServers() {
+        val configs = locations.findAll().distinctBy { it.identifier() }
+        servers.keys.retainAll(configs.map { it.identifier() }.toSet())
+        configs.forEach { config ->
+            val identifier = config.identifier()
+            try {
+                servers[identifier] = fetchServers(config)
+                failedTargets.remove(identifier)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                if (failedTargets.add(identifier)) {
+                    logger.warn("Failed to fetch the servers of {}: {}", identifier, e.message)
+                }
+            }
+        }
+    }
+
+    private suspend fun fetchServers(config: LocationsConfig): List<Server> {
+        val group = config.group
+        if (!group.isNullOrEmpty()) return api.server().getServersByGroup(group).await()
+
+        val name = config.persistentServer
+        if (name.isNullOrEmpty()) return emptyList()
+        val persistentServer = api.persistentServer().getPersistentServerByName(name).await()
+        val query = ServerQuery.create().filterByPersistentServerId(persistentServer.persistentServerId)
+        return api.server().getAllServers(query).await()
+    }
+
+    private fun updateSigns() {
+        advanceFrames()
+        val configs = locations.findAll()
+        val registered = configs.flatMap { it.locations }.toSet()
+        assigned.keys.retainAll(registered)
+        rendered.keys.retainAll(registered)
+        configs.forEach { updateSigns(it, servers[it.identifier()].orEmpty()) }
+    }
+
+    private fun updateSigns(config: LocationsConfig, servers: List<Server>) {
+        val serversById = servers.associateBy { it.serverId }
+        config.locations.forEach { location ->
+            val current = assigned[location] ?: return@forEach
+            val updated = serversById[current.serverId]
+            if (updated == null) assigned.remove(location) else assigned[location] = updated
+        }
+
+        val taken = assigned.values.map { it.serverId }.toSet()
+        val free = servers
+            .filter { it.serverId !in taken && SignRule.entries.any { rule -> rule.matches(it) } }
+            .sortedWith(SERVER_ORDER)
+            .iterator()
+
+        config.locations.forEach { location ->
+            if (!assigned.containsKey(location) && free.hasNext()) {
+                assigned[location] = free.next()
+            }
+            render(location, assigned[location])
+        }
+    }
+
+    private fun render(location: SignLocation, server: Server?) {
+        val layout = findLayout(server) ?: return
+        if (layout.frames.isEmpty()) return
+
+        val frame = layout.frames[(frameIndexes[layout.name] ?: 0) % layout.frames.size]
+        val placeholders = SignPlaceholders.of(server)
+        val sign = RenderedSign(
+            frame.lines.take(MAX_LINES).map { miniMessage.deserialize(it, placeholders) },
+            layout.behindBlock,
+        )
+        if (rendered.put(location, sign) != sign) {
+            renderer.render(location, sign)
+        }
+    }
+
+    private fun findLayout(server: Server?): LayoutConfig? {
+        val serverName = ServerNames.displayName(server)
+        return layouts.findAll()
+            .sortedByDescending { it.priority }
+            .firstOrNull { it.appliesTo(server) && it.ruleMatches(server) && it.nameMatches(serverName) }
+    }
+
+    private fun advanceFrames() {
+        val now = System.currentTimeMillis()
+        layouts.findAll().filter { it.frames.isNotEmpty() }.forEach { layout ->
+            if (now - (frameSwitches[layout.name] ?: 0L) < layout.frameUpdateInterval) return@forEach
+            frameIndexes[layout.name] = ((frameIndexes[layout.name] ?: 0) + 1) % layout.frames.size
+            frameSwitches[layout.name] = now
+        }
+    }
+
+    companion object {
+        private const val UPDATE_INTERVAL = 50L
+        private const val SERVER_REFRESH_INTERVAL = 1000L
+        private const val MAX_LINES = 4
+
+        private val DEFAULT_LAYOUTS = listOf("empty", "full", "maintenance", "offline", "online", "starting")
+
+        private val SERVER_ORDER = Comparator<Server> { a, b ->
+            when {
+                a.isFromGroup && b.isFromGroup -> a.numericalId.compareTo(b.numericalId)
+                a.isFromPersistentServer && b.isFromPersistentServer -> a.serverId.compareTo(b.serverId)
+                a.isFromGroup -> -1
+                else -> 1
+            }
+        }
+
+        fun installDefaults(dataDirectory: Path) {
+            if (Files.exists(dataDirectory.resolve("layouts"))) return
+            DefaultConfigInstaller.installAll(
+                dataDirectory,
+                DEFAULT_LAYOUTS.map { "layouts/${it}_default.yml" },
+                SignManager::class.java.classLoader,
+            )
+        }
+    }
+}
