@@ -1,13 +1,12 @@
 name: 'maintenance_default'
 rule: 'MAINTENANCE'
 priority: 20
-behind-block: 'ORANGE_CONCRETE'
 glowing-text: true
 frame-update-interval: 1000
 
 frames:
   - lines:
-      - '<bold><#F8FAFC><server-name></bold>'
-      - '<#F59E0B>Maintenance'
       - ''
+      - '<#F8FAFC><server-name>'
+      - '<#F59E0B>ᴍᴀɪɴᴛᴇɴᴀɴᴄᴇ'
       - ''

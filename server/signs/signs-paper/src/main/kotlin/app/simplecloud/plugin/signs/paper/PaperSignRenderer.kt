@@ -4,6 +4,7 @@ import app.simplecloud.plugin.signs.shared.RenderedSign
 import app.simplecloud.plugin.signs.shared.SignRenderer
 import app.simplecloud.plugin.signs.shared.config.location.SignLocation
 import net.kyori.adventure.text.Component
+import org.bukkit.DyeColor
 import org.bukkit.Material
 import org.bukkit.block.Sign
 import org.bukkit.block.data.Directional
@@ -16,11 +17,9 @@ class PaperSignRenderer(private val plugin: JavaPlugin) : SignRenderer {
     private val logger = LoggerFactory.getLogger(PaperSignRenderer::class.java)
 
     override fun render(location: SignLocation, sign: RenderedSign) {
-        runOnMainThread {
-            val state = PaperSignLocations.blockAt(location)?.state as? Sign ?: return@runOnMainThread
-            updateBehindBlock(state, sign.behindBlock)
-            writeLines(state, sign.lines, sign.glowingText)
-        }
+        val state = PaperSignLocations.blockAt(location)?.state as? Sign ?: return
+        updateBehindBlock(state, sign.behindBlock)
+        writeLines(state, sign.lines, sign.glowingText)
     }
 
     override fun clear(location: SignLocation) {
@@ -39,6 +38,8 @@ class PaperSignRenderer(private val plugin: JavaPlugin) : SignRenderer {
         Side.entries.forEach { side ->
             val signSide = sign.getSide(side)
             signSide.isGlowingText = glowingText
+            // with the default black dye, glowing text gets a light outline that washes out light text colors
+            if (glowingText) signSide.color = DyeColor.GRAY
             repeat(LINE_COUNT) { index -> signSide.line(index, lines.getOrElse(index) { Component.empty() }) }
         }
         sign.update()

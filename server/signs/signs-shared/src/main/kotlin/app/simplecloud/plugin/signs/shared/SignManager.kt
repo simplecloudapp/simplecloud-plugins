@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory
 import java.nio.file.Files
 import java.nio.file.Path
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicLong
 
 class SignManager(
     val api: CloudApi,
@@ -40,8 +41,7 @@ class SignManager(
     private val failedTargets = ConcurrentHashMap.newKeySet<String>()
     private val assigned = ConcurrentHashMap<SignLocation, Server>()
     private val rendered = ConcurrentHashMap<SignLocation, RenderedSign>()
-    private val frameIndexes = ConcurrentHashMap<String, Int>()
-    private val frameSwitches = ConcurrentHashMap<String, Long>()
+    private val lastRedraw = AtomicLong()
 
     fun start() {
         locations.load()
@@ -51,7 +51,14 @@ class SignManager(
         locations.watch(scope)
         layouts.watch(scope)
         launchLoop(SERVER_REFRESH_INTERVAL, "refresh the servers of the signs") { refreshServers() }
-        launchLoop(UPDATE_INTERVAL, "update the signs") { updateSigns() }
+    }
+
+    fun tick() {
+        try {
+            updateSigns()
+        } catch (e: Exception) {
+            logger.error("Failed to update the signs", e)
+        }
     }
 
     fun stop() {
@@ -137,7 +144,11 @@ class SignManager(
     }
 
     private fun updateSigns() {
-        advanceFrames()
+        val now = System.currentTimeMillis()
+        if (now - lastRedraw.get() >= REDRAW_INTERVAL) {
+            lastRedraw.set(now)
+            rendered.clear()
+        }
         val configs = locations.findAll()
         val registered = configs.flatMap { it.locations }.toSet()
         assigned.keys.retainAll(registered)
@@ -171,7 +182,8 @@ class SignManager(
         val layout = findLayout(server) ?: return
         if (layout.frames.isEmpty()) return
 
-        val frame = layout.frames[(frameIndexes[layout.name] ?: 0) % layout.frames.size]
+        val frameIndex = System.currentTimeMillis() / layout.frameUpdateInterval.coerceAtLeast(1) % layout.frames.size
+        val frame = layout.frames[frameIndex.toInt()]
         val placeholders = SignPlaceholders.of(server, target)
         val sign = RenderedSign(
             frame.lines.take(MAX_LINES).map { miniMessage.deserialize(it, placeholders) },
@@ -190,17 +202,8 @@ class SignManager(
             .firstOrNull { it.appliesTo(server) && it.ruleMatches(server) && it.nameMatches(serverName) }
     }
 
-    private fun advanceFrames() {
-        val now = System.currentTimeMillis()
-        layouts.findAll().filter { it.frames.isNotEmpty() }.forEach { layout ->
-            if (now - (frameSwitches[layout.name] ?: 0L) < layout.frameUpdateInterval) return@forEach
-            frameIndexes[layout.name] = ((frameIndexes[layout.name] ?: 0) + 1) % layout.frames.size
-            frameSwitches[layout.name] = now
-        }
-    }
-
     companion object {
-        private const val UPDATE_INTERVAL = 50L
+        private const val REDRAW_INTERVAL = 5000L
         private const val SERVER_REFRESH_INTERVAL = 1000L
         private const val MAX_LINES = 4
 

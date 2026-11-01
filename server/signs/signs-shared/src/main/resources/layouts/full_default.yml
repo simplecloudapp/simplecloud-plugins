@@ -1,13 +1,12 @@
 name: 'full_default'
 rule: 'FULL'
 priority: 11
-behind-block: 'RED_CONCRETE'
 glowing-text: true
 frame-update-interval: 1000
 
 frames:
   - lines:
-      - '<bold><#F8FAFC><server-name></bold>'
-      - '<#F87171>Full'
-      - '<#E2E8F0><player-count>/<max-players> players'
+      - ''
+      - '<#F8FAFC><server-name>'
+      - '<#F87171>ꜰᴜʟʟ <#94A3B8>· <player-count>/<max-players>'
       - ''

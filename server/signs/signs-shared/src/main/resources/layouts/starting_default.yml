@@ -1,28 +1,11 @@
 name: 'starting_default'
 rule: 'STARTING'
 priority: 6
-behind-block: 'LIGHT_BLUE_CONCRETE'
 glowing-text: true
-frame-update-interval: 500
 
 frames:
   - lines:
-      - '<bold><#F8FAFC><server-name></bold>'
-      - '<#38BDF8>Starting'
       - ''
-      - ''
-  - lines:
-      - '<bold><#F8FAFC><server-name></bold>'
-      - '<#38BDF8>Starting.'
-      - ''
-      - ''
-  - lines:
-      - '<bold><#F8FAFC><server-name></bold>'
-      - '<#38BDF8>Starting..'
-      - ''
-      - ''
-  - lines:
-      - '<bold><#F8FAFC><server-name></bold>'
-      - '<#38BDF8>Starting...'
-      - ''
+      - '<#F8FAFC><server-name>'
+      - '<shine:ꜱᴛᴀʀᴛɪɴɢ:#38BDF8:#E0F2FE>'
       - ''

@@ -1,13 +1,12 @@
 name: 'offline_default'
 rule: 'OFFLINE'
 priority: 50
-behind-block: 'LIGHT_GRAY_CONCRETE'
 glowing-text: true
 frame-update-interval: 1000
 
 frames:
   - lines:
-      - '<bold><#F8FAFC><target></bold>'
-      - '<#94A3B8>Offline'
       - ''
+      - '<#F8FAFC><target>'
+      - '<#94A3B8>ᴏꜰꜰʟɪɴᴇ'
       - ''

@@ -27,6 +27,7 @@ object SignPlaceholders {
                 "state" to server.state,
             ),
             property(server.properties.orEmpty()),
+            SignShine.resolver,
         )
     }
 
@@ -48,6 +49,7 @@ object SignPlaceholders {
             "persistent-server" to "",
         ),
         property(emptyMap()),
+        SignShine.resolver,
     )
 
     private fun property(properties: Map<String, Any?>): TagResolver = TagResolver.resolver("property") { arguments, _ ->

@@ -17,6 +17,7 @@ class PaperSignsPlugin : JavaPlugin() {
     override fun onEnable() {
         val messages = ConfigurationFactory.create(dataPath, "messages.yml", MessageConfig())
         signs.start()
+        server.scheduler.runTaskTimer(this, Runnable { signs.tick() }, 1L, 1L)
 
         server.messenger.registerOutgoingPluginChannel(this, SignListener.CHANNEL)
         server.pluginManager.registerEvents(SignListener(this, signs), this)
