@@ -46,8 +46,8 @@ This repository is licensed under [Apache 2.0][license].
 
 <!-- ✅ PLEASE EDIT -->
 [banner]: https://raw.githubusercontent.com/simplecloudapp/branding/refs/heads/main/readme/banner/plugin/notify.png
-[issue-bug-report]: https://github.com/simplecloudapp/notify-plugin/issues/new?labels=bug&projects=template=01_BUG-REPORT.yml&title=%5BBUG%5D+%3Ctitle%3E
-[issue-feature-request]: https://github.com/simplecloudapp/notify-plugin/discussions/new?category=ideas
+[issue-bug-report]: https://github.com/simplecloudapp/simplecloud-plugins/issues/new?labels=bug
+[issue-feature-request]: https://github.com/simplecloudapp/simplecloud-plugins/issues/new?labels=enhancement
 [docs-thisproject]: https://simplecloud.app/docs/en/manual/plugin/notify
 [docs-contribute]: https://simplecloud.app/docs/contribute
 
