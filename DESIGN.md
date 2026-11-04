@@ -23,7 +23,7 @@ Character: calm, clear, blue. Every string in every plugin must look like it cam
 | Brand spots | the prefix, the network name (tab list header, MOTD), the team's rank format, hover titles, menu item and hologram names without an accent, clickable things through `interactive` |
 | Chat style | **Line color**: every message is one color for the whole line. Normal messages are `info`; only success, warning, and error change the line color |
 | Prefix | a **bold lightning** `⚡` in brand, before every system message, followed by one space |
-| Prefix form | `<brand><b>⚡</b></brand> `; never a name, never brackets |
+| Prefix form | `<brand><b>⚡</b></brand>`, then one space in the message; never a name, never brackets |
 | Clickable words | no brackets, in `interactive` |
 | Panels | not used yet; when added, buttons without brackets, accept in success, decline in error |
 | Tone | friendly, second person, `!` only for good news |
@@ -131,7 +131,8 @@ The same state has the same color and word on every surface (signs, holograms, m
   styling tag (`<brand>`, `<interactive>`, `<highlight>`, `<muted>`, `<separator>`, `<info>`, `<success>`,
   `<warning>`, `<error>`, `<mint>`, `<violet>`, …) that colors the text after it, unlike `variables`, which insert
   text.
-- `<prefix>` stays in `variables`: `prefix: '<brand><b>⚡</b></brand> '`, trailing space included.
+- `<prefix>` stays in `variables`: `prefix: '<brand><b>⚡</b></brand>'`. Messages write one space after it:
+  `<prefix> <info>...`.
 - Placeholders are named (`<group>`, `<server>`, `<playername>`, `<count>`); anything a player typed (`<message>`,
   `<reason>` from input) goes in through `Placeholder.unparsed`.
 - Sign layouts and NPC holograms and menus understand the same role tags.
@@ -152,27 +153,27 @@ No other decorative symbols: no `»`, `«`, `┃`, `|`, `-`, `├─`, `└─` 
 ### Messages
 
 ```
-<prefix><info>Starting 2 servers for group lobby.
-<prefix><success>Prefixes was reloaded!
-<prefix><warning>Group lobby has no running servers.
-<prefix><error>You don't have permission to use this command.
-<prefix><error>Use /cloud group start <group> instead.
+<prefix> <info>Starting 2 servers for group lobby.
+<prefix> <success>Prefixes was reloaded!
+<prefix> <warning>Group lobby has no running servers.
+<prefix> <error>You don't have permission to use this command.
+<prefix> <error>Use /cloud group start <group> instead.
 ```
 
 Lists and info blocks: a title line with the prefix, then one entry per line, indented with a bullet. Entries are
 `info`; separators stay `separator`.
 
 ```
-<prefix><info>Groups <separator>(</separator>3<separator>)</separator>
+<prefix> <info>Groups <separator>(</separator>3<separator>)</separator>
 <separator>•</separator> <info>lobby <separator>(</separator>12/20 online<separator>)</separator>
 <separator>•</separator> <info>bedwars <separator>(</separator>0/40 online<separator>)</separator>
 
-<prefix><info>Server lobby-1
+<prefix> <info>Server lobby-1
 <separator>•</separator> <info>State<separator>:</separator> Available
 <separator>•</separator> <info>Players<separator>:</separator> 12/20
 ```
 
-An empty list is one `warning` line instead of the title: `<prefix><warning>No groups were found.`
+An empty list is one `warning` line instead of the title: `<prefix> <warning>No groups were found.`
 
 Paged lists end with one control line: Previous and Next in `interactive`, shown only when that page exists, the page
 count in `info`. An entry that does something on click is `interactive` and has a hover action line.
@@ -184,7 +185,7 @@ count in `info`. An entry that does something on click is `interactive` and has 
 Help lists: a title, then one command per line in `interactive`; clicking suggests the command.
 
 ```
-<prefix><info>Notify commands
+<prefix> <info>Notify commands
 <separator>•</separator> <interactive>/scnotify list
 <separator>•</separator> <interactive>/scnotify enable <type>
 ```
@@ -195,10 +196,10 @@ The line color follows the event: starting and created in `info`, available in `
 stopped and deleted in `error`. The name of the thing carries the hover.
 
 ```
-<prefix><info>Server lobby-1 is starting.
-<prefix><success>Server lobby-1 is now available.
-<prefix><warning>Server lobby-1 is stopping.
-<prefix><error>Group bedwars was deleted.
+<prefix> <info>Server lobby-1 is starting.
+<prefix> <success>Server lobby-1 is now available.
+<prefix> <warning>Server lobby-1 is stopping.
+<prefix> <error>Group bedwars was deleted.
 ```
 
 ### Hovers
@@ -219,7 +220,7 @@ Each entry is clickable and in `interactive`. The state word is the one value in
 `success` for enabled, `error` for disabled.
 
 ```
-<prefix><info>Your notifications
+<prefix> <info>Your notifications
 <separator>•</separator> <interactive>Server starting <separator>(</separator><success>enabled<separator>)</separator>
 <separator>•</separator> <interactive>Server stopped <separator>(</separator><error>disabled<separator>)</separator>
 ```
@@ -232,7 +233,7 @@ When the editor asks for chat input: one line with the prefix and the question i
 to type, and `interactive` words for cancel.
 
 ```
-<prefix><info>Type the new hologram line in chat.
+<prefix> <info>Type the new hologram line in chat.
 <muted>MiniMessage works, for example <brand>Lobby</brand>. <interactive>Cancel
 ```
 
@@ -310,7 +311,7 @@ Two lines: the target's name in `brand` (`muted` while offline), then one line i
 ```
 
 Clicking a target that cannot be joined sends one chat message with the prefix:
-`<prefix><warning>Lobby is in maintenance.`, `<prefix><error>Lobby is offline.`
+`<prefix> <warning>Lobby is in maintenance.`, `<prefix> <error>Lobby is offline.`
 
 ### Menus
 
