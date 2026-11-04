@@ -120,7 +120,7 @@ object LiveGroups {
     fun describe(type: String): SourceInfo = when (type) {
         GroupServersSource.TYPE -> SourceInfo(
             "GRASS_BLOCK",
-            "Servers Of A Group",
+            "Servers of a Group",
             listOf("Every running server of one group,", "e.g. Lobby-1, Lobby-2, ..."),
             "LIME_CONCRETE",
             "<brand><entry_group_name>-<entry_numerical_id>",

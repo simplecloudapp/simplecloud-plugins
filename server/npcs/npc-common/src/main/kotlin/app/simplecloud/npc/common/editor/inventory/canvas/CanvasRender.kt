@@ -175,7 +175,7 @@ object CanvasRender {
             )
         }
         tools[Toolbox.PICK] =
-            Ui.item("CHEST", "<ttl>Pick A Material", listOf("<bd>Search every material.", "", "<key>Left-click to open it"))
+            Ui.item("CHEST", "<ttl>Pick a Material", listOf("<bd>Search every material.", "", "<key>Left-click to open it"))
         tools[Toolbox.HAND] = Ui.item(
             "LEATHER",
             "<ttl>From Your Inventory",

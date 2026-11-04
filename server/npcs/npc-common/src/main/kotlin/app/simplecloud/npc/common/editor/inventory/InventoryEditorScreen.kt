@@ -2,7 +2,7 @@ package app.simplecloud.npc.common.editor.inventory
 
 import app.simplecloud.npc.core.interaction.PlayerInteraction
 
-enum class StudioTab { LOOK, CLICK, LIVE }
+enum class StudioTab { LOOK, CLICK }
 
 sealed interface InventoryPickerPurpose {
     data object NewItem : InventoryPickerPurpose

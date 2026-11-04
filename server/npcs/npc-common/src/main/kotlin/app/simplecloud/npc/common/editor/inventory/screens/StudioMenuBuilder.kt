@@ -41,18 +41,17 @@ object StudioMenuBuilder {
     private const val SIZE = Layout.SIZE
 
     private const val LOOK_TAB = 2
-    private const val CLICK_TAB = 4
-    private const val LIVE_TAB = 6
-    private const val PREVIEW_SLOT = 49
+    private const val CLICK_TAB = 6
+    private const val PREVIEW_SLOT = Layout.HEADER
 
     private const val MATERIAL_SLOT = 19
-    private const val NAME_SLOT = 20
-    private const val LORE_SLOT = 21
-    private const val AMOUNT_SLOT = 22
-    private const val GLINT_SLOT = 23
-    private const val TOOLTIP_SLOT = 24
-    private const val MODEL_SLOT = 25
-    private const val HEAD_SLOT = 31
+    private const val NAME_SLOT = 21
+    private const val LORE_SLOT = 23
+    private const val AMOUNT_SLOT = 25
+    private const val GLINT_SLOT = 28
+    private const val TOOLTIP_SLOT = 30
+    private const val MODEL_SLOT = 32
+    private const val HEAD_SLOT = 34
 
     private val CLICK_SLOTS = mapOf(
         PlayerInteraction.LEFT_CLICK to 19,
@@ -62,8 +61,8 @@ object StudioMenuBuilder {
     )
     private const val CLICK_INFO_SLOT = 31
 
-    private const val GROUP_SLOT = 21
-    private const val PLACEHOLDERS_SLOT = 23
+    private const val GROUP_SLOT = 39
+    private const val PLACEHOLDERS_SLOT = 41
 
     private const val DELETE_SLOT = Layout.TOOL_RIGHT
     private const val MAX_MODEL_DATA = 9_999_999
@@ -93,27 +92,24 @@ object StudioMenuBuilder {
             pane.back(context, player)
             return pane.menu("Item Studio")
         }
-        val isLive = items.any { it.liveGroup != null && it.pageControl == null }
-        val tab = if (screen.tab == StudioTab.LIVE && !isLive) StudioTab.LOOK else screen.tab
+        val tab = screen.tab
 
         fun edit(transform: (InventoryItemConfiguration) -> InventoryItemConfiguration) {
             context.change(player, config.id) { StudioTargets.edit(it, targets, transform) }
             context.render(player, screen)
         }
 
-        fun tabItem(slot: Int, which: StudioTab, material: String, label: String, enabled: Boolean = true) {
-            if (!enabled) {
-                pane[slot] = Ui.disabled(label, listOf("<hnt>Only for live slots."))
-                return
-            }
-            pane.left(slot, Ui.option(material, label, emptyList(), selected = tab == which)) {
-                if (tab != which) context.replace(player, screen.copy(tab = which))
+        fun tabItem(slot: Int, which: StudioTab, material: String, label: String, description: String) {
+            val selected = tab == which
+            val name = if (selected) "<val>$label" else "<ttl>$label"
+            val lore = listOf("<bd>$description") + if (selected) emptyList() else listOf("<key>Left-click to open")
+            pane.left(slot, Ui.item(material, name, lore, glowing = selected)) {
+                if (!selected) context.replace(player, screen.copy(tab = which))
             }
         }
 
-        tabItem(LOOK_TAB, StudioTab.LOOK, "PAINTING", "Look")
-        tabItem(CLICK_TAB, StudioTab.CLICK, "LEVER", "Click")
-        tabItem(LIVE_TAB, StudioTab.LIVE, "OBSERVER", "Live", enabled = isLive)
+        tabItem(LOOK_TAB, StudioTab.LOOK, "PAINTING", "Look", "How the item looks")
+        tabItem(CLICK_TAB, StudioTab.CLICK, "LEVER", "Click", "What a click does")
         val livePreview = if (session.mode == CanvasMode.LIVE) session.live?.slots?.get(first.slot) else null
         val shown = livePreview ?: preview(first)
         val group = items.firstNotNullOfOrNull { it.liveGroup }
@@ -135,7 +131,7 @@ object StudioMenuBuilder {
                 "<key>Left-click to edit only this slot",
             )
         }
-        val previewLore = listOf("", "<hnt>This is how the item looks.") + scope
+        val previewLore = listOf("") + scope
         pane.left(PREVIEW_SLOT, shown.copy(lore = shown.lore + previewLore.map(Palette::expand))) {
             if (group != null) {
                 session.thisSlotOnly = !session.thisSlotOnly
@@ -144,9 +140,12 @@ object StudioMenuBuilder {
         }
 
         when (tab) {
-            StudioTab.LOOK -> look(context, player, config, screen, items, pane, ::edit)
+            StudioTab.LOOK -> {
+                look(context, player, config, screen, items, pane, ::edit)
+                live(context, player, config, items, pane)
+            }
+
             StudioTab.CLICK -> click(context, player, config, items, targets, pane)
-            StudioTab.LIVE -> live(context, player, config, items, pane)
         }
 
         val deleted = if (targets.size > 1) "these ${targets.size} items" else "this item"
@@ -166,7 +165,7 @@ object StudioMenuBuilder {
         }
         pane.back(context, player)
 
-        return pane.menu(Ui.title("Item Studio", config.id))
+        return pane.menu(Ui.title(if (tab == StudioTab.LOOK) "Item Look" else "Item Clicks", config.id))
     }
 
     private fun preview(item: InventoryItemConfiguration): NpcItem {
@@ -305,7 +304,8 @@ object StudioMenuBuilder {
         if (!isHead) {
             pane[HEAD_SLOT] = Ui.disabled(
                 "Head Texture",
-                listOf("<hnt>For player heads; set the material to Player Head."),
+                listOf("<hnt>Set the material to Player Head first."),
+                "PLAYER_HEAD",
             )
         } else {
             pane.on(
@@ -417,16 +417,16 @@ object StudioMenuBuilder {
         pane: Pane,
     ) {
         val group = items.firstNotNullOfOrNull { it.liveGroup } ?: return
-        val (color, _) = LiveGroups.colorOf(config, group)
         val sourceLabel = LiveGroups.source(config, group)?.let { LiveGroups.describe(it.type).label } ?: "none"
         pane.left(
             GROUP_SLOT,
             Ui.item(
-                "${color}_DYE",
-                "<ttl>Group <val>$group",
+                "OBSERVER",
+                "<ttl>Live Group",
                 listOf(
+                    "<bd>Name: <val>$group",
                     "<bd>Source: <val>$sourceLabel",
-                    "<bd><val>${LiveGroups.contentSlots(config, group).size} <bd>slots",
+                    "<bd>Slots: <val>${LiveGroups.contentSlots(config, group).size}",
                     "",
                     "<key>Left-click to open the group settings",
                 ),

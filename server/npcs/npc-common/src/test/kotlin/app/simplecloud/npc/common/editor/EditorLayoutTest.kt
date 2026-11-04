@@ -189,7 +189,6 @@ class EditorLayoutTest {
             InventoryEditorScreen.Hub(id),
             InventoryEditorScreen.Studio(id, slots),
             InventoryEditorScreen.Studio(id, slots, StudioTab.CLICK),
-            InventoryEditorScreen.Studio(id, slots, StudioTab.LIVE),
             InventoryEditorScreen.Lore(id, slots),
             InventoryEditorScreen.ItemAction(id, slots, click),
             InventoryEditorScreen.ItemActionBlocks(id, slots, click),

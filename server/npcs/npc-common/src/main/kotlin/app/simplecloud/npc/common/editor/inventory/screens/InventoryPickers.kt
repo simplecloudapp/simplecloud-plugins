@@ -336,7 +336,7 @@ object InventoryPickers {
         screen: InventoryEditorScreen.Picker,
         purpose: InventoryPickerPurpose.OpenInventory,
     ): PickerSpec<InventoryEditorScreen> = PickerSpec(
-        title = Ui.title("Pick A Menu", config.id),
+        title = Ui.title("Pick a Menu", config.id),
         screen = screen,
         header = PickerHeader(
             "CHEST",
@@ -372,7 +372,7 @@ object InventoryPickers {
         }
 
         return PickerSpec(
-            title = Ui.title("Pick A Server", config.id),
+            title = Ui.title("Pick a Server", config.id),
             header = PickerHeader(
                 "MAP",
                 "Which Server?",
@@ -420,7 +420,7 @@ object InventoryPickers {
         }
 
         return PickerSpec(
-            title = Ui.title("Pick A Sound", config.id),
+            title = Ui.title("Pick a Sound", config.id),
             header = PickerHeader(
                 "JUKEBOX",
                 "Which Sound?",
