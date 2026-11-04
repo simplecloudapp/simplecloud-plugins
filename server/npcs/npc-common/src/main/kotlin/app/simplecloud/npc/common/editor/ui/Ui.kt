@@ -14,6 +14,7 @@ object Ui {
     private const val BACK_MATERIAL = "RED_STAINED_GLASS_PANE"
     private const val PAGE_MATERIAL = "BLUE_STAINED_GLASS_PANE"
     private const val ACTION = "<key>"
+    private const val HINT = "<hnt>"
 
     fun item(
         material: String,
@@ -76,7 +77,8 @@ object Ui {
         glowing = current,
     )
 
-    fun disabled(name: String, lore: List<String>, material: String): NpcItem = item(material, "<off>$name", lore)
+    fun disabled(name: String, lore: List<String>, material: String): NpcItem =
+        item(material, "<off>$name", lore.map { if (it.startsWith(HINT)) "<warn>" + it.removePrefix(HINT) else it })
 
     fun empty(name: String, lore: List<String>): NpcItem = item(EMPTY_MATERIAL, "<off>$name", lore)
 
