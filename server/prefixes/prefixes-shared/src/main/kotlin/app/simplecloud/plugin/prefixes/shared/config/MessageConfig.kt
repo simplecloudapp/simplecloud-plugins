@@ -12,7 +12,7 @@ import org.spongepowered.configurate.objectmapping.ConfigSerializable
 data class MessageConfig(
     override val version: Int = ConfigVersion.VERSION,
     override val palette: Map<String, String> = MessagePalette.defaults,
-    override val variables: Map<String, String> = mapOf("prefix" to "<color:#38bdf8><bold>⚡</bold></color>"),
+    override val variables: Map<String, String> = mapOf("prefix" to MessagePalette.PREFIX),
     override val command: CommandMessages = CommandMessages(),
 ) : VersionedConfig, AbstractCommandMessageConfig()
 
@@ -25,12 +25,13 @@ data class CommandMessages(
 
 @ConfigSerializable
 data class CommandHelpMessages(
-    val title: String = "<prefix> <#0EA5E9>SimpleCloud Prefixes commands",
-    val entry: String = "<#E2E8F0><command>",
+    val title: String = "<prefix> <info>Prefixes commands",
+    val entry: String = "<separator>•</separator> <interactive><command>",
+    val hover: String = "<interactive>Click to type this command",
 )
 
 @ConfigSerializable
 data class CommandReloadMessages(
-    val success: String = "<prefix> <#A3E635>SimpleCloud Prefixes was successfully reloaded.",
-    val failed: String = "<prefix> <#DC2626>SimpleCloud Prefixes could not be reloaded.",
+    val success: String = "<prefix> <success>Reloaded the prefixes!",
+    val failed: String = "<prefix> <error>Couldn't reload the prefixes. Check the console.",
 )

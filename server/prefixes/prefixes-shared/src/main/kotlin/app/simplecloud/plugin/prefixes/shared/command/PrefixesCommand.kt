@@ -2,9 +2,9 @@ package app.simplecloud.plugin.prefixes.shared.command
 
 import app.simplecloud.plugin.core.shared.command.CloudSender
 import app.simplecloud.plugin.core.shared.command.CommandExceptionHandler
+import app.simplecloud.plugin.core.shared.command.HelpEntry
 import app.simplecloud.plugin.prefixes.shared.Prefixes
 import app.simplecloud.plugin.prefixes.shared.utilities.PrefixesPermissions
-import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.incendo.cloud.CommandManager
 
 class PrefixesCommand<C : CloudSender>(
@@ -40,10 +40,10 @@ class PrefixesCommand<C : CloudSender>(
 
     private fun sendHelp(sender: C) {
         sender.sendMessage(messages.msg(messages.command.help.title))
-        sender.sendMessage(messages.msg(messages.command.help.entry, Placeholder.unparsed("command", "/scprefix help")))
+        sender.sendMessage(HelpEntry.create(messages, messages.command.help.entry, messages.command.help.hover, "/scprefix help"))
 
         if (sender.hasPermission(PrefixesPermissions.RELOAD)) {
-            sender.sendMessage(messages.msg(messages.command.help.entry, Placeholder.unparsed("command", "/scprefix reload")))
+            sender.sendMessage(HelpEntry.create(messages, messages.command.help.entry, messages.command.help.hover, "/scprefix reload"))
         }
     }
 }

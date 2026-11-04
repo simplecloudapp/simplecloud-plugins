@@ -17,7 +17,7 @@ object PrefixesConstants {
     const val ALL_SYNC_SOURCE = "ALL"
 
     const val DEFAULT_DISPLAY_NAME = "<color><playername>"
-    const val DEFAULT_CHAT_FORMAT = "<prefix><color><playername><suffix> <#475569>» <#F8FAFC><message>"
+    const val DEFAULT_CHAT_FORMAT = "<prefix><color><playername><suffix>: <#E1E1E4><message>"
 
     val LOGGER: Logger = LoggerFactory.getLogger("simplecloud-prefixes")
 
