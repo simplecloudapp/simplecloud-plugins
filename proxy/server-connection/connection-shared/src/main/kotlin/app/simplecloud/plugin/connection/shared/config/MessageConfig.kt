@@ -10,21 +10,21 @@ import org.spongepowered.configurate.objectmapping.ConfigSerializable
 data class MessageConfig(
     override val version: Int = ConfigVersion.VERSION,
     override val palette: Map<String, String> = MessagePalette.defaults,
-    override val variables: Map<String, String> = mapOf("prefix" to "<color:#38bdf8><bold>⚡</bold></color>"),
+    override val variables: Map<String, String> = mapOf("prefix" to MessagePalette.PREFIX),
     val kick: KickMessages = KickMessages(),
     val command: ConnectionCommandMessages = ConnectionCommandMessages(),
 ) : VersionedConfig, AbstractMessageConfig()
 
 @ConfigSerializable
 data class KickMessages(
-    val noFallbackServers: String = "<color:#dc2626>There is no fallback server available.",
-    val noTargetConnection: String = "<color:#dc2626>You have been disconnected from the network<br>because there are no fallback servers available.",
+    val noFallbackServers: String = "<error>There is no server to send you to.<br><br><muted>Try again in a few seconds.",
+    val noTargetConnection: String = "<error>There is no server to join right now.<br><br><muted>Try again in a few seconds.",
 )
 
 @ConfigSerializable
 data class ConnectionCommandMessages(
-    val commandUsage: String = "<prefix> <color:#ffffff>Usage: /connection reload",
-    val configReloading: String = "<prefix> <color:#ffffff>Reloading Connection configurations...",
-    val configReloadedSuccess: String = "<prefix> <color:#22c55e>Successfully reloaded all Connection configurations.",
-    val configReloadedFailed: String = "<prefix> <color:#dc2626>Failed to reload Connection configurations.",
+    val commandUsage: String = "<prefix> <info>Use /connection reload to reload the configuration.",
+    val configReloading: String = "<prefix> <info>Reloading the connection configuration.",
+    val configReloadedSuccess: String = "<prefix> <success>Reloaded the connection configuration!",
+    val configReloadedFailed: String = "<prefix> <error>Couldn't reload the connection configuration. Check the console.",
 )
