@@ -3,6 +3,7 @@ package app.simplecloud.plugin.proxy.shared.config
 import app.simplecloud.plugin.core.shared.config.AbstractCommandMessageConfig
 import app.simplecloud.plugin.core.shared.config.AbstractCommandMessages
 import app.simplecloud.plugin.core.shared.config.CommandExceptionMessages
+import app.simplecloud.plugin.core.shared.config.MessagePalette
 import app.simplecloud.plugin.core.shared.config.VersionedConfig
 import app.simplecloud.plugin.proxy.shared.utilities.ConfigVersion
 import org.spongepowered.configurate.objectmapping.ConfigSerializable
@@ -10,6 +11,7 @@ import org.spongepowered.configurate.objectmapping.ConfigSerializable
 @ConfigSerializable
 data class MessageConfig(
     override val version: Int = ConfigVersion.VERSION,
+    override val palette: Map<String, String> = MessagePalette.defaults,
     override val variables: Map<String, String> = mapOf(
         "prefix" to "<color:#38bdf8><bold>⚡</bold></color>",
     ),

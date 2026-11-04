@@ -2,12 +2,14 @@ package app.simplecloud.plugin.connection.shared.config
 
 import app.simplecloud.plugin.connection.shared.utilities.config.ConfigVersion
 import app.simplecloud.plugin.core.shared.config.AbstractMessageConfig
+import app.simplecloud.plugin.core.shared.config.MessagePalette
 import app.simplecloud.plugin.core.shared.config.VersionedConfig
 import org.spongepowered.configurate.objectmapping.ConfigSerializable
 
 @ConfigSerializable
 data class MessageConfig(
     override val version: Int = ConfigVersion.VERSION,
+    override val palette: Map<String, String> = MessagePalette.defaults,
     override val variables: Map<String, String> = mapOf("prefix" to "<color:#38bdf8><bold>⚡</bold></color>"),
     val kick: KickMessages = KickMessages(),
     val command: ConnectionCommandMessages = ConnectionCommandMessages(),
