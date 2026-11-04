@@ -170,7 +170,7 @@ object StudioMenuBuilder {
         pane.left(
             DELETE_SLOT,
             Ui.item(
-                "TNT",
+                "BARRIER",
                 "<err>Delete",
                 listOf(
                     "<bd>Removes $deleted.",

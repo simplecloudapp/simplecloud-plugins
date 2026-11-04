@@ -101,7 +101,7 @@ object StateLookMenuBuilder {
             pane.left(
                 RESET_SLOT,
                 Ui.item(
-                    "TNT",
+                    "BARRIER",
                     "<err>Reset Look",
                     listOf("<bd>Entries look the same", "<bd>as the slot again.", "", "<key>Left-click to reset it"),
                 ),

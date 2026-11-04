@@ -395,7 +395,7 @@ B . . T P T . . N     B: Back (or Previous Page), T: tools, P: page count, N: Ne
 - Every item that does something ends with an action line. Facts that do nothing have no action line and are
   grouped into one item (a book), never dressed up as buttons.
 - One meaning per icon: every number setting has its own item (a slime block for strength, a feather for upward
-  boost), Delete is always TNT, info is always a book.
+  boost), Delete, Remove and Reset are always a barrier, info is always a book.
 - When several items are edited at once, the screen says so, and a field whose values differ shows `Mixed`.
 
 The editor is an admin tool built from menus and tooltips. It uses the same roles, except that descriptions are

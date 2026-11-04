@@ -154,7 +154,7 @@ object InventoryHubMenuBuilder {
         pane.left(
             DELETE_SLOT,
             Ui.item(
-                "TNT",
+                "BARRIER",
                 "<err>Delete This Menu",
                 listOf(
                     if (users.isEmpty() && menus.isEmpty()) {

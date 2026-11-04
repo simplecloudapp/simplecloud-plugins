@@ -52,7 +52,7 @@ object ItemActionMenuBuilder {
         pane.left(
             ActionFieldsPane.DELETE_SLOT,
             Ui.item(
-                "TNT",
+                "BARRIER",
                 "<err>Clear This Click",
                 listOf("<bd>Removes everything it does.", "<hnt>Undo brings it back.", "", "<key>Left-click to clear it"),
             ),
