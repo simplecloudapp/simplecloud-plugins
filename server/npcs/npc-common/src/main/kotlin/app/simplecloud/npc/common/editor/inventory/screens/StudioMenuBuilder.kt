@@ -64,6 +64,7 @@ object StudioMenuBuilder {
     private const val GROUP_SLOT = 39
     private const val PLACEHOLDERS_SLOT = 41
 
+    private const val SCOPE_SLOT = Layout.TOOL_LEFT
     private const val DELETE_SLOT = Layout.TOOL_RIGHT
     private const val MAX_MODEL_DATA = 9_999_999
 
@@ -113,28 +114,34 @@ object StudioMenuBuilder {
         val livePreview = if (session.mode == CanvasMode.LIVE) session.live?.slots?.get(first.slot) else null
         val shown = livePreview ?: preview(first)
         val group = items.firstNotNullOfOrNull { it.liveGroup }
-        val scope = when {
-            group == null && targets.size == 1 -> listOf("<bd>Editing: <val>This item")
-
-            group == null -> listOf("<bd>Editing: <val>${targets.size} items", "<hnt>Fields that differ show as Mixed.")
-
-            session.thisSlotOnly -> listOf(
-                "<bd>Editing: <val>This slot <bd>of <val>$group",
-                "",
-                "<key>Left-click to edit the whole group",
-            )
-
-            else -> listOf(
-                "<bd>Editing: <val>${targets.size} slots <bd>of <val>$group",
-                "<hnt>Every change applies to all of them.",
-                "",
-                "<key>Left-click to edit only this slot",
-            )
+        val editing = when {
+            targets.size == 1 -> "<bd>Editing: <val>This item"
+            group == null -> "<bd>Editing: <val>${targets.size} items"
+            else -> "<bd>Editing: <val>${targets.size} slots <bd>of <val>$group"
         }
-        val previewLore = listOf("") + scope
-        pane.left(PREVIEW_SLOT, shown.copy(lore = shown.lore + previewLore.map(Palette::expand))) {
-            if (group != null) {
-                session.thisSlotOnly = !session.thisSlotOnly
+        val previewLore = listOfNotNull(
+            "",
+            "<hnt>Players see this item.",
+            editing,
+            if (targets.size > 1) "<hnt>Fields that differ show as Mixed." else null,
+        )
+        pane[PREVIEW_SLOT] = shown.copy(lore = shown.lore + previewLore.map(Palette::expand))
+
+        if (group != null) {
+            val only = session.thisSlotOnly
+            pane.left(
+                SCOPE_SLOT,
+                Ui.item(
+                    "CHEST_MINECART",
+                    if (only) "<ttl>Editing This Slot" else "<ttl>Editing the Whole Group",
+                    listOf(
+                        if (only) "<bd>Changes only touch this slot." else "<bd>Changes touch every slot of <val>$group<bd>.",
+                        "",
+                        if (only) "<key>Left-click to edit the whole group" else "<key>Left-click to edit only this slot",
+                    ),
+                ),
+            ) {
+                session.thisSlotOnly = !only
                 context.render(player, screen)
             }
         }

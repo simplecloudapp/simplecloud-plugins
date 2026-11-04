@@ -52,7 +52,18 @@ object LoreMenuBuilder {
             },
         )
         LinesPane.place(pane, lines)
-        if (targets.size > 1) pane[NOTE_SLOT] = Ui.item("PAPER", "<warn>Applies to ${targets.size} items")
+        val differ = StudioTargets.shared(StudioTargets.items(config, targets)) { it.lore } is StudioTargets.Shared.Mixed
+        pane[NOTE_SLOT] = Ui.item(
+            "WRITABLE_BOOK",
+            "<ttl>Lore",
+            listOfNotNull(
+                "<bd>The lines under the item name.",
+                "",
+                "<bd>Editing: <val>" + if (targets.size == 1) "This item" else "${targets.size} items",
+                if (differ) "<warn>Their lore differs: the first item's" else null,
+                if (differ) "<warn>lines replace it on all of them." else null,
+            ),
+        )
         pane.back(context, player)
 
         return pane.menu(Ui.title("Lore", config.id))

@@ -93,7 +93,17 @@ object HologramFramesMenuBuilder {
         }
         pane.back(context, player)
 
-        val title = "${NpcFormat.joinState(screen.joinState)} · Rotating Line ${screen.line + 1}"
+        pane[Layout.HEADER] = Ui.item(
+            "PAPER",
+            "<ttl>Rotating Line ${screen.line + 1}",
+            listOf(
+                "<bd>Shows its texts one after another.",
+                "",
+                "<bd>Join state: <val>${NpcFormat.joinState(screen.joinState)}",
+                "<bd>Texts: <val>${line?.texts?.size ?: 0}",
+            ),
+        )
+        val title = "Rotating Line ${screen.line + 1}"
 
         return pane.menu(Ui.title(title, NpcFormat.displayName(config)))
     }

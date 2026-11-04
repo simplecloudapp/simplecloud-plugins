@@ -121,7 +121,7 @@ object LiveGroups {
         GroupServersSource.TYPE -> SourceInfo(
             "GRASS_BLOCK",
             "Servers of a Group",
-            listOf("Every running server of one group,", "e.g. Lobby-1, Lobby-2, ..."),
+            listOf("Every running server of one group,", "e.g. Lobby-1 and Lobby-2."),
             "LIME_CONCRETE",
             "<brand><entry_group_name>-<entry_numerical_id>",
             JOIN_LORE,
