@@ -31,9 +31,6 @@ object CommandMessages {
 
     private const val CMD = "/$COMMAND_LABEL"
     private val ARGUMENT_START = Regex(""" [<\[]""")
-    private const val CHAT_WIDTH = 320
-    private const val HELP_INDENT = 8
-    private const val HELP_GAP = 12
 
     @Volatile
     private var messagesPath: Path? = null
@@ -271,25 +268,17 @@ object CommandMessages {
 
     private fun note(text: String) = HelpLine.Note(text)
 
-    private fun renderHelp(lines: List<HelpLine>): List<String> {
-        val commands = lines.filterIsInstance<HelpLine.Command>()
-        val column = commands.filter { fits(it, width(it)) }.maxOfOrNull(::width) ?: 0
-
-        return lines.map { line ->
-            when (line) {
-                is HelpLine.Command -> commandLine(line, column)
-                is HelpLine.Note -> "  ${Msg.MUTED}${Msg.miniMessage.escapeTags(line.text)}"
-            }
+    private fun renderHelp(lines: List<HelpLine>): List<String> = lines.map { line ->
+        when (line) {
+            is HelpLine.Command -> commandLine(line)
+            is HelpLine.Note -> "  ${Msg.MUTED}${Msg.miniMessage.escapeTags(line.text)}"
         }
     }
 
-    private fun commandLine(command: HelpLine.Command, column: Int): String {
+    private fun commandLine(command: HelpLine.Command): String {
         val split = ARGUMENT_START.find(command.usage)?.range?.first ?: command.usage.length
         val literal = command.usage.substring(0, split)
         val arguments = command.usage.substring(split).trim()
-        val inline = width(command) <= column && fits(command, column)
-        val padding = if (inline) ChatPixels.spaces(column - width(command) + HELP_GAP) else ""
-        val description = if (inline) "${Msg.MUTED}${esc(command.description)}" else ""
         val tip = listOfNotNull(
             "${Msg.HIGHLIGHT}${esc(command.description)}",
             if (command.details.isEmpty()) null else "${Msg.MUTED}${esc(command.details)}",
@@ -297,18 +286,10 @@ object CommandMessages {
             "",
             "${Msg.INTERACTIVE}Click to type this command",
         ).joinToString("\n")
-        val line = "  ${Msg.INTERACTIVE}${esc(literal)} ${Msg.MUTED}${esc(arguments)}$padding$description"
+        val line = "  ${Msg.INTERACTIVE}${esc(literal)} ${Msg.MUTED}${esc(arguments)}"
 
         return "<click:suggest_command:'${arg("$CMD $literal ")}'><hover:show_text:'${arg(tip)}'>$line</hover></click>"
     }
-
-    private fun width(command: HelpLine.Command): Int {
-        val split = ARGUMENT_START.find(command.usage)?.range?.first ?: command.usage.length
-        return ChatPixels.width(command.usage.substring(0, split) + " " + command.usage.substring(split).trim())
-    }
-
-    private fun fits(command: HelpLine.Command, column: Int): Boolean =
-        HELP_INDENT + column + HELP_GAP + ChatPixels.width(command.description) <= CHAT_WIDTH
 
     private fun esc(text: String) = Msg.miniMessage.escapeTags(text)
 

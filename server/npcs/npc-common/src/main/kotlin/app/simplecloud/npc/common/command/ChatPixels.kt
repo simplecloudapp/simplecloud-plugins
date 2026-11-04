@@ -14,8 +14,6 @@ object ChatPixels {
         }
     }
 
-    fun spaces(width: Int): String = " ".repeat(((width + SPACE - 1) / SPACE).coerceAtLeast(1))
-
     fun pad(text: String, target: Int): String {
         val missing = target - width(text)
         return if (missing <= 0) text else text + " ".repeat((missing + SPACE - 1) / SPACE)
