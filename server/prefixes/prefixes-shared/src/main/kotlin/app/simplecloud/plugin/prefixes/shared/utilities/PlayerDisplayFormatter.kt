@@ -9,7 +9,9 @@ object PlayerDisplayFormatter {
 
     fun formatDisplayName(data: PrefixesPlayerData, playerName: String, displayNameEnabled: Boolean): Component = if (displayNameEnabled) data.displayName else Component.text(playerName)
 
-    fun formatTablistName(data: PrefixesPlayerData, playerName: String): Component = Component.text(playerName, data.color)
+    fun formatTablistName(data: PrefixesPlayerData, playerName: String): Component = data.prefix
+        .append(Component.text(playerName, data.color))
+        .append(data.suffix)
 
     fun formatChatMessage(data: PrefixesPlayerData, playerName: String, message: Component, displayNameEnabled: Boolean): Component = miniMessage.deserialize(
         data.chatFormat,

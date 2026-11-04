@@ -22,7 +22,7 @@ features:
   # Format chat messages using the group's chat-format.
   chat: true
 
-  # Show the player name in the group's color in the tab list,
+  # Show the group's prefix, colored name and suffix in the tab list,
   # sorted by group priority.
   tablist: true
 
@@ -75,28 +75,19 @@ sync:
 #
 # ─────────────────────────────────────────────────────────────────────────────
 groups:
-- name: owner
+- name: admin
   # Higher priorities are selected first and sorted higher in the tab list.
   priority: 100
   # Permission required to use this group.
-  permission: 'simplecloud.prefix.group.owner'
-  prefix: ''
+  permission: 'simplecloud.prefix.group.admin'
+  prefix: '<#3B95FF>Admin</#3B95FF> <#5F5F63>┃</#5F5F63> '
   suffix: ''
   # Used by the <color> placeholder and player name coloring.
-  color: '<#3B95FF>'
+  color: '<#8EC1FF>'
   # Name shown above the player's head, e.g. '<prefix><color><playername>'.
   display-name: '<color><playername>'
   # Format used when features.chat is enabled.
-  chat-format: '<prefix><color><playername><suffix>: <#CDE3FF><message>'
-
-- name: admin
-  priority: 90
-  permission: 'simplecloud.prefix.group.admin'
-  prefix: ''
-  suffix: ''
-  color: '<#3B95FF>'
-  display-name: '<color><playername>'
-  chat-format: '<prefix><color><playername><suffix>: <#CDE3FF><message>'
+  chat-format: '<prefix><color><playername><suffix><#5F5F63>: <#CDE3FF><message>'
 
 - name: default
   priority: 0
@@ -106,4 +97,4 @@ groups:
   suffix: ''
   color: '<#A1A7B5>'
   display-name: '<color><playername>'
-  chat-format: '<prefix><color><playername><suffix>: <#E1E1E4><message>'
+  chat-format: '<prefix><color><playername><suffix><#5F5F63>: <#E1E1E4><message>'

@@ -28,7 +28,7 @@ Character: calm, clear, blue. Every string in every plugin must look like it cam
 | Panels | not used yet; when added, buttons without brackets, accept in success, decline in error |
 | Tone | friendly, second person, `!` only for good news |
 | Tags | small caps, plain text |
-| Rank format | no rank tags: team ranks show name and `:` in brand, message in `#CDE3FF`; everyone else shows name and `:` in `#A1A7B5`, message in `#E1E1E4`. No brackets, no `»`, no `\|` |
+| Rank format | `Admin ┃ name: message` in chat and `Admin ┃ name` in the tab list: the rank in brand, written normally (not small caps), a dark gray `┃`, the name in the rank's tint, a gray `:`. Players without a rank show only name and `:`. No brackets, no `»` |
 | Sidebar | none |
 | Menus | NPC menus stay vanilla: plain titles, no glass pane frames |
 | Menu actions | `Click to join`: a short sentence in `interactive` |
@@ -101,10 +101,12 @@ server group on a sign, an NPC kind) takes the next free accent in table order: 
 
 ### Rank tints
 
-| Rank | Name and `:` | Message |
-| --- | --- | --- |
-| team (`owner`, `admin`) | brand `#3B95FF` | `#CDE3FF` |
-| everyone else (`default`) | muted `#A1A7B5` | `#E1E1E4` |
+| Rank | Tag | Name | Message |
+| --- | --- | --- | --- |
+| team (`admin`) | `Admin` in brand `#3B95FF`, then `┃` in separator `#5F5F63` | `#8EC1FF` | `#CDE3FF` |
+| everyone else (`default`) | none | muted `#A1A7B5` | `#E1E1E4` |
+
+The `:` after the name is always separator `#5F5F63`.
 
 ### Server states
 
