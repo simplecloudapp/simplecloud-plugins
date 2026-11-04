@@ -150,8 +150,8 @@ data class Hover(
 data class ServerNotifications(
     val starting: String? = "<prefix> <info>Server <hover:show_text:'<notifications.hover.server>'><server></hover> is starting.",
     val available: String? = "<prefix> <success>Server <hover:show_text:'<notifications.hover.server>'><server></hover> is now available.",
-    val stopping: String? = "<prefix> <warning>Server <hover:show_text:'<notifications.hover.server>'><server></hover> is stopping.",
-    val stopped: String? = "<prefix> <error>Server <hover:show_text:'<notifications.hover.server>'><server></hover> has stopped.",
+    val stopping: String? = "<prefix> <info>Server <hover:show_text:'<notifications.hover.server>'><server></hover> is stopping.",
+    val stopped: String? = "<prefix> <muted>Server <hover:show_text:'<notifications.hover.server>'><server></hover> has stopped.",
 ) {
     fun getByState(state: ServerState): String? = when (state) {
         ServerState.STARTING -> starting
@@ -164,11 +164,11 @@ data class ServerNotifications(
 @ConfigSerializable
 data class GroupNotifications(
     val created: String? = "<prefix> <info>Group <hover:show_text:'<notifications.hover.group>'><group></hover> was created.",
-    val deleted: String? = "<prefix> <error>Group <hover:show_text:'<notifications.hover.group>'><group></hover> was deleted.",
+    val deleted: String? = "<prefix> <muted>Group <hover:show_text:'<notifications.hover.group>'><group></hover> was deleted.",
 )
 
 @ConfigSerializable
 data class PersistentServerNotifications(
     val created: String? = "<prefix> <info>Persistent server <hover:show_text:'<notifications.hover.persistent-server>'><server></hover> was created.",
-    val deleted: String? = "<prefix> <error>Persistent server <hover:show_text:'<notifications.hover.persistent-server>'><server></hover> was deleted.",
+    val deleted: String? = "<prefix> <muted>Persistent server <hover:show_text:'<notifications.hover.persistent-server>'><server></hover> was deleted.",
 )

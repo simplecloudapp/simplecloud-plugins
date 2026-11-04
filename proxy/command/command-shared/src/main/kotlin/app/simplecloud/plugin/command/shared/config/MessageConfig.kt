@@ -64,14 +64,14 @@ data class GroupInfoSection(
 
 @ConfigSerializable
 data class GroupStartSection(
-    val success: String = "<prefix> <success>Starting <count> servers for group <group>.",
+    val success: String = "<prefix> <info>Starting <count> servers for group <group>.",
     val partial: String = "<prefix> <warning>Started only <count>/<total> servers for group <group> because <reason>.",
 )
 
 @ConfigSerializable
 data class GroupStopSection(
-    val success: String = "<prefix> <success>Stopping the servers of group <group>.",
-    val successWithIds: String = "<prefix> <success>Stopping servers <ids> of group <group>.",
+    val success: String = "<prefix> <info>Stopping the servers of group <group>.",
+    val successWithIds: String = "<prefix> <info>Stopping servers <ids> of group <group>.",
     val partial: String = "<prefix> <warning>Stopped only <count>/<total> servers of group <group> because <reason>.",
 )
 
@@ -107,12 +107,12 @@ data class ServerInfoSection(
 
 @ConfigSerializable
 data class ServerStartSection(
-    val requested: String = "<prefix> <success>Queued a new server for group <group>.",
+    val requested: String = "<prefix> <info>Starting a new server for group <group>.",
 )
 
 @ConfigSerializable
 data class ServerStopSection(
-    val success: String = "<prefix> <success>Stopping server <group>-<id>.",
+    val success: String = "<prefix> <info>Stopping server <group>-<id>.",
 )
 
 @ConfigSerializable

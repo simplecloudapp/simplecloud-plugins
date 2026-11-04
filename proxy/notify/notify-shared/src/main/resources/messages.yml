@@ -172,17 +172,17 @@ notifications:
   server:
     starting: '<prefix> <info>Server <hover:show_text:''<notifications.hover.server>''><server></hover> is starting.'
     available: '<prefix> <success>Server <hover:show_text:''<notifications.hover.server>''><server></hover> is now available.'
-    stopping: '<prefix> <warning>Server <hover:show_text:''<notifications.hover.server>''><server></hover> is stopping.'
-    stopped: '<prefix> <error>Server <hover:show_text:''<notifications.hover.server>''><server></hover> has stopped.'
+    stopping: '<prefix> <info>Server <hover:show_text:''<notifications.hover.server>''><server></hover> is stopping.'
+    stopped: '<prefix> <muted>Server <hover:show_text:''<notifications.hover.server>''><server></hover> has stopped.'
 
   # Sent when a server group is created or deleted.
   # Placeholders: <group>, <time>
   group:
     created: '<prefix> <info>Group <hover:show_text:''<notifications.hover.group>''><group></hover> was created.'
-    deleted: '<prefix> <error>Group <hover:show_text:''<notifications.hover.group>''><group></hover> was deleted.'
+    deleted: '<prefix> <muted>Group <hover:show_text:''<notifications.hover.group>''><group></hover> was deleted.'
 
   # Sent when a persistent server is created or deleted.
   # Placeholders: <server>, <time>
   persistent-server:
     created: '<prefix> <info>Persistent server <hover:show_text:''<notifications.hover.persistent-server>''><server></hover> was created.'
-    deleted: '<prefix> <error>Persistent server <hover:show_text:''<notifications.hover.persistent-server>''><server></hover> was deleted.'
+    deleted: '<prefix> <muted>Persistent server <hover:show_text:''<notifications.hover.persistent-server>''><server></hover> was deleted.'
