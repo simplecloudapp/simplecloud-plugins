@@ -20,7 +20,6 @@ import app.simplecloud.npc.common.editor.inventory.StudioTargets
 import app.simplecloud.npc.common.editor.menu.EditorMenu
 import app.simplecloud.npc.common.editor.menu.Pane
 import app.simplecloud.npc.common.editor.ui.Clicks
-import app.simplecloud.npc.common.editor.ui.Layout
 import app.simplecloud.npc.common.editor.ui.Ui
 import app.simplecloud.npc.common.inventory.ItemClickActions
 import app.simplecloud.npc.common.inventory.source.GroupServersSource
@@ -32,13 +31,12 @@ import app.simplecloud.npc.core.platform.NpcPlayer
 
 object InventoryPickers {
 
-    private val CATEGORY_SLOTS = listOf(1, 2, 3, 5, 6, 7)
+    private val CATEGORY_SLOTS = (1..7).toList()
     private val CATEGORY_ICONS = mapOf(
         "Blocks" to "GRASS_BLOCK",
         "Tools" to "IRON_PICKAXE",
         "Food" to "APPLE",
         "Dyes" to "RED_DYE",
-        "Panes" to "GLASS_PANE",
         "Heads" to "PLAYER_HEAD",
         InventoryEditorSession.RECENT_CATEGORY to "CLOCK",
         InventoryEditorSession.ALL_CATEGORY to "CHEST",
@@ -127,23 +125,10 @@ object InventoryPickers {
         }
 
         val section = if (purpose is InventoryPickerPurpose.NewItem) "New Item" else "Material"
-        val forWhat = when (purpose) {
-            InventoryPickerPurpose.NewItem -> listOf("<bd>The new item sticks to your", "<bd>cursor; click a slot to place it.")
-
-            is InventoryPickerPurpose.LookMaterial ->
-                listOf("<bd>What entries of <val>${purpose.group} <bd>show while", "<bd>they are ${StateLooksMenuBuilder.label(purpose.state).lowercase()}.")
-
-            else -> listOf("<bd>What the item looks like", "<bd>in the menu.")
-        }
-
         return PickerSpec(
             title = Ui.title(section, config.id),
             screen = screen,
-            header = PickerHeader(
-                current ?: "ITEM_FRAME",
-                "Which Material?",
-                forWhat + listOf("", PickerHeader.now(if (current == null) null else Ui.pretty(current))),
-            ),
+            header = null,
             options = listed.map { material ->
                 val selected = material == current
                 PickerOption(
@@ -175,7 +160,7 @@ object InventoryPickers {
         val filtered = session.pickerResult is PickerResult.Filtered
         val tabs = CommonMaterials.CATEGORIES.map { it.first }
         val filters = listOf(InventoryEditorSession.RECENT_CATEGORY, InventoryEditorSession.ALL_CATEGORY)
-        val slots = tabs.zip(CATEGORY_SLOTS) + filters.mapIndexed { index, name -> name to Layout.tool(index + 1) }
+        val slots = (filters + tabs).zip(CATEGORY_SLOTS)
 
         slots.forEach { (name, slot) ->
             val selected = !filtered && session.materialCategory == name
@@ -203,7 +188,7 @@ object InventoryPickers {
     ): PickerSpec<InventoryEditorScreen> {
         val current = group?.let { LiveGroups.source(config, it)?.type }
         return PickerSpec(
-            title = Ui.title(if (group == null) "New Live Group" else "Source of $group", config.id),
+            title = Ui.title(if (group == null) "New Live Group" else "Source", config.id),
             screen = screen,
             header = PickerHeader(
                 "HOPPER",
@@ -276,7 +261,7 @@ object InventoryPickers {
         }
 
         return PickerSpec(
-            title = Ui.title("Group of $group", config.id),
+            title = Ui.title("Group", config.id),
             screen = screen,
             header = PickerHeader(
                 "BOOKSHELF",
@@ -374,7 +359,7 @@ object InventoryPickers {
         return PickerSpec(
             title = Ui.title("Pick a Server", config.id),
             header = PickerHeader(
-                "MAP",
+                "COMPASS",
                 "Which Server?",
                 clickedLines(purpose.slots, purpose.interaction, "Players go there when they") +
                     PickerHeader.now(currentAction(config, purpose.slots, purpose.interaction)?.sendToServer),
@@ -422,7 +407,7 @@ object InventoryPickers {
         return PickerSpec(
             title = Ui.title("Pick a Sound", config.id),
             header = PickerHeader(
-                "JUKEBOX",
+                "NOTE_BLOCK",
                 "Which Sound?",
                 clickedLines(purpose.slots, purpose.interaction, "Plays when a player") +
                     listOf(PickerHeader.now(action?.playSound), "<hnt>Right-click a sound to hear it."),

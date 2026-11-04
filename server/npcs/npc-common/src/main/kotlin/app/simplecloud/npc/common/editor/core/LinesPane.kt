@@ -109,8 +109,8 @@ object LinesPane {
             listOf("<key>Left-click to ${leftOpens.label}")
         }
         val clicks = first + listOfNotNull(
-            if (index > 0) "<key>Shift-click to move it up" else null,
-            if (index < count - 1) "<key>Shift-right-click to move it down" else null,
+            if (index > 0) "<key>Shift-click to move it left" else null,
+            if (index < count - 1) "<key>Shift-right-click to move it right" else null,
             "<key>Press Q to remove it",
         )
 

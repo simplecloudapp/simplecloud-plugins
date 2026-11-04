@@ -8,6 +8,6 @@ class PickerHeader(private val icon: String, private val title: String, private 
     fun item(): NpcItem = Ui.item(icon, "<ttl>$title", lore)
 
     companion object {
-        fun now(value: String?): String = if (value == null) "<bd>Now: <off>Nothing" else "<bd>Now: <val>$value"
+        fun now(value: String?): String = if (value == null) "<bd>Now: <off>Not set" else "<bd>Now: <val>$value"
     }
 }

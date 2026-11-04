@@ -103,7 +103,7 @@ object StateLookMenuBuilder {
                 Ui.item(
                     "TNT",
                     "<err>Reset Look",
-                    listOf("<bd>Entries go back to the", "<bd>slot's own look.", "", "<key>Left-click to reset it"),
+                    listOf("<bd>Entries look the same", "<bd>as the slot again.", "", "<key>Left-click to reset it"),
                 ),
             ) { change { null } }
         }

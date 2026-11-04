@@ -47,11 +47,10 @@ object CommonMaterials {
     ) + listOf("WOOL", "CONCRETE", "TERRACOTTA").flatMap { suffix -> COLORS.map { "${it}_$suffix" } }
 
     val CATEGORIES: List<Pair<String, List<String>>> = listOf(
-        "Blocks" to BLOCKS + REDSTONE,
+        "Blocks" to BLOCKS + REDSTONE + PANES,
         "Tools" to TOOLS,
         "Food" to FOOD,
         "Dyes" to DYES,
-        "Panes" to PANES,
         "Heads" to HEADS,
     )
 

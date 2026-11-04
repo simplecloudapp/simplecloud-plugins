@@ -45,6 +45,7 @@ object ItemTitleMenuBuilder {
                     change { TitlePane.normalized(mutate(it ?: TitlePane.defaults())) }
                     context.render(player, screen)
                 },
+                scope = scope(config, screen),
                 removeAndBack = {
                     change { null }
                     context.back(player)
@@ -55,5 +56,15 @@ object ItemTitleMenuBuilder {
         pane.back(context, player)
 
         return pane.menu(Ui.title("Title", config.id))
+    }
+
+    private fun scope(config: InventoryConfiguration, screen: InventoryEditorScreen.ItemTitle): List<String> {
+        val items = config.items.filter { it.slot in screen.slots }
+        val titles = items.map { ItemClickActions.of(it, screen.interaction)?.sendTitle }.distinct()
+        return listOfNotNull(
+            "<bd>Editing: <val>" + if (items.size == 1) "This item" else "${items.size} items",
+            if (titles.size > 1) "<warn>The items differ: what you see is" else null,
+            if (titles.size > 1) "<warn>the first one, edits apply to all." else null,
+        )
     }
 }

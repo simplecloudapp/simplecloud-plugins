@@ -67,6 +67,16 @@ object StudioMenuBuilder {
     private const val SCOPE_SLOT = Layout.TOOL_LEFT
     private const val DELETE_SLOT = Layout.TOOL_RIGHT
     private const val MAX_MODEL_DATA = 9_999_999
+    private val SAMPLE = mapOf(
+        "<entry_name>" to "Lobby-1",
+        "<entry_group_name>" to "Lobby",
+        "<entry_numerical_id>" to "1",
+        "<entry_online_players>" to "12",
+        "<entry_max_players>" to "20",
+        "<entry_state>" to "Available",
+        "<entry_motd>" to "A SimpleCloud server",
+        "<entry_server>" to "Lobby-1",
+    )
 
     private val AMOUNT = Stepper(
         label = "Amount",
@@ -109,8 +119,8 @@ object StudioMenuBuilder {
             }
         }
 
-        tabItem(LOOK_TAB, StudioTab.LOOK, "PAINTING", "Look", "How the item looks")
-        tabItem(CLICK_TAB, StudioTab.CLICK, "LEVER", "Click", "What a click does")
+        tabItem(LOOK_TAB, StudioTab.LOOK, "PAINTING", "Item Look", "How the item looks")
+        tabItem(CLICK_TAB, StudioTab.CLICK, "LEVER", "Item Clicks", "What a click does")
         val livePreview = if (session.mode == CanvasMode.LIVE) session.live?.slots?.get(first.slot) else null
         val shown = livePreview ?: preview(first)
         val group = items.firstNotNullOfOrNull { it.liveGroup }
@@ -119,13 +129,13 @@ object StudioMenuBuilder {
             group == null -> "<bd>Editing: <val>${targets.size} items"
             else -> "<bd>Editing: <val>${targets.size} slots <bd>of <val>$group"
         }
+        val intro = listOf("<hnt>Preview with sample values:", "").map(Palette::expand)
         val previewLore = listOfNotNull(
             "",
-            "<hnt>Players see this item.",
             editing,
             if (targets.size > 1) "<hnt>Fields that differ show as Mixed." else null,
         )
-        pane[PREVIEW_SLOT] = shown.copy(lore = shown.lore + previewLore.map(Palette::expand))
+        pane[PREVIEW_SLOT] = shown.copy(lore = intro + shown.lore + previewLore.map(Palette::expand))
 
         if (group != null) {
             val only = session.thisSlotOnly
@@ -155,13 +165,19 @@ object StudioMenuBuilder {
             StudioTab.CLICK -> click(context, player, config, items, targets, pane)
         }
 
-        val deleted = if (targets.size > 1) "these ${targets.size} items" else "this item"
+        val many = targets.size > 1
+        val deleted = if (many) "these ${targets.size} items" else "this item"
         pane.left(
             DELETE_SLOT,
             Ui.item(
                 "TNT",
                 "<err>Delete",
-                listOf("<bd>Removes $deleted.", "<hnt>Undo brings it back.", "", "<key>Left-click to delete it"),
+                listOf(
+                    "<bd>Removes $deleted.",
+                    if (many) "<hnt>Undo brings them back." else "<hnt>Undo brings it back.",
+                    "",
+                    if (many) "<key>Left-click to delete them" else "<key>Left-click to delete it",
+                ),
             ),
         ) {
             context.change(player, config.id) { cfg ->
@@ -176,7 +192,9 @@ object StudioMenuBuilder {
     }
 
     private fun preview(item: InventoryItemConfiguration): NpcItem {
-        val icon = ItemIconResolver.icon(item)
+        val name = item.name
+        val sampled = item.copy(name = if (name == null) null else sample(name), lore = item.lore.map(::sample).toMutableList())
+        val icon = ItemIconResolver.icon(sampled)
         return icon.copy(name = icon.name.ifBlank { Ui.pretty(item.material) }, hideTooltip = false)
     }
 
@@ -446,6 +464,8 @@ object StudioMenuBuilder {
             PromptTokens.ENTRY.map { "<val>${it.token} <hnt>${it.description}" },
         )
     }
+
+    private fun sample(text: String): String = SAMPLE.entries.fold(text) { acc, (token, value) -> acc.replace(token, value) }
 
     private fun modelItem(valueLine: String?): NpcItem = Ui.item(
         "ITEM_FRAME",

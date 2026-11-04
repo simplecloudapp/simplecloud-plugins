@@ -79,7 +79,8 @@ object ItemActionMenuBuilder {
     ): EditorMenu {
         val pane = Pane(ActionFieldsPane.ADD_SIZE)
 
-        ActionFieldsPane.fillAdd(pane, port(context, player, config, screen.slots, screen.interaction), screen.interaction)
+        val editing = "<bd>Editing: <val>" + if (screen.slots.size == 1) "This item" else "${screen.slots.size} items"
+        ActionFieldsPane.fillAdd(pane, port(context, player, config, screen.slots, screen.interaction), screen.interaction, listOf(editing))
         pane.back(context, player)
 
         return pane.menu(Ui.title("Add Action", config.id))

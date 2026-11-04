@@ -51,7 +51,6 @@ object LiveGroupMenuBuilder {
         val screen = InventoryEditorScreen.LiveGroup(config.id, group)
         val source = LiveGroups.source(config, group)
         val type = source?.type
-        val (color, _) = LiveGroups.colorOf(config, group)
         val pane = Pane(SIZE)
 
         fun change(mutate: (InventoryConfiguration) -> InventoryConfiguration?) {
@@ -64,13 +63,16 @@ object LiveGroupMenuBuilder {
 
         if (LiveGroups.members(config, group).isEmpty()) {
             pane.back(context, player)
-            return pane.menu(Ui.title("Group $group", config.id))
+            return pane.menu(Ui.title("Live Group", config.id))
         }
 
         pane[HEADER_SLOT] = Ui.item(
-            "${color}_DYE",
-            "<ttl>Live Group $group",
+            "OBSERVER",
+            "<ttl>$group",
             listOf(
+                "<bd>A live group: its slots fill",
+                "<bd>with one entry each, kept up to date.",
+                "",
                 "<bd>Slots: <val>${LiveGroups.contentSlots(config, group).size}",
                 if (LiveGroups.lacksPageControls(config, group)) {
                     "<warn>No page buttons: extra entries are hidden."
@@ -136,7 +138,7 @@ object LiveGroupMenuBuilder {
         pane.on(
             EMPTY_SLOT,
             Ui.item(
-                emptyLook?.material ?: "GRAY_DYE",
+                emptyLook?.material ?: "STRUCTURE_VOID",
                 "<ttl>Empty Slots",
                 listOf(
                     emptyLook?.let { "<bd>Shows " + (it.name ?: it.material) } ?: "<off>Stays empty",
@@ -236,6 +238,6 @@ object LiveGroupMenuBuilder {
 
         pane.back(context, player)
 
-        return pane.menu(Ui.title("Group $group", config.id))
+        return pane.menu(Ui.title("Live Group", config.id))
     }
 }

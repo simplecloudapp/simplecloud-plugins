@@ -50,6 +50,7 @@ object TitlePane {
         val textPrompts: TextPrompts,
         val edit: ((TitleConfiguration) -> TitleConfiguration) -> Unit,
         val removeAndBack: () -> Unit,
+        val scope: List<String> = emptyList(),
     )
 
     fun normalized(title: TitleConfiguration): TitleConfiguration? =
@@ -83,7 +84,7 @@ object TitlePane {
 
         val total = title.fadeIn + title.stay + title.fadeOut
         pane[PACING_SLOT] = Ui.item(
-            "FILLED_MAP",
+            "PAINTING",
             "<ttl>Title on Screen",
             listOf(
                 "<bd>Title: " + if (title.title.isBlank()) "<off>Not set" else "<val>${Ui.quote(title.title)}",
@@ -91,7 +92,8 @@ object TitlePane {
                 "",
                 NpcFormat.pacing(title),
                 "<bd>On screen for <val>${NpcFormat.seconds(total)}",
-            ),
+                "",
+            ) + port.scope,
         )
 
         if (port.title == null) {
