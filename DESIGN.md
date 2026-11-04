@@ -225,7 +225,7 @@ Each entry is clickable and in `interactive`. The state word is the one value in
 <separator>•</separator> <interactive>Server stopped <separator>(</separator><error>disabled<separator>)</separator>
 ```
 
-Hover: `<interactive>Click to disable` or `<interactive>Click to enable`.
+Hover: `<interactive>Click to toggle`.
 
 ### Prompts
 
@@ -368,7 +368,8 @@ No plugin plays a sound by default; NPC actions only play the sounds an owner ad
 - Rank tags in brackets, bold rank names, or a rank tag for the default rank.
 - Colored or bold menu titles, glass pane frames, and filler items in player menus.
 - `...` for loading or pending states; say the state (`Starting`).
-- Pure white (`#FFFFFF`, `#F8FAFC`) or named colors (`<red>`, `<green>`, `<gold>`) in message strings.
+- Pure white (`#FFFFFF`, `#F8FAFC`) or named colors (`<red>`, `<green>`, `<gold>`) in message strings. The one
+  exception is `<white>` around a player head (`<white><head:<playername>:true></white>`), so the head is not tinted.
 - Raw hex in message strings outside the `palette` section, except the rank tints.
 - Gradients, rainbow text, bold or capitals for emphasis.
 - `&` or `§` color codes in configs.
