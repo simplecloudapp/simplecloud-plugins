@@ -41,6 +41,7 @@ object LinesPane {
                     MenuClick.RIGHT -> list.secondary?.let { it.onClick(index) } ?: duplicate(list, index, max)
                     MenuClick.SHIFT_LEFT -> move(list, index, -1)
                     MenuClick.SHIFT_RIGHT -> move(list, index, +1)
+                    MenuClick.DROP -> remove(list, index)
                     else -> Unit
                 }
             }
@@ -75,6 +76,12 @@ object LinesPane {
         }
     }
 
+    private fun <T> remove(list: LineList<T>, index: Int) = list.edit { fresh ->
+        if (index !in fresh.indices) return@edit false
+        fresh.removeAt(index)
+        true
+    }
+
     private fun <T> duplicate(list: LineList<T>, index: Int, max: Int) = list.edit { fresh ->
         if (fresh.size >= max || index !in fresh.indices) return@edit false
         fresh.add(index + 1, fresh[index])
@@ -101,7 +108,11 @@ object LinesPane {
         } else {
             listOf("<key>Left-click to ${leftOpens.label}")
         }
-        val clicks = first + listOf("<key>Shift-click to move it up", "<key>Shift-right-click to move it down")
+        val clicks = first + listOfNotNull(
+            if (index > 0) "<key>Shift-click to move it up" else null,
+            if (index < count - 1) "<key>Shift-right-click to move it down" else null,
+            "<key>Press Q to remove it",
+        )
 
         return NpcItem(
             "PAPER",
