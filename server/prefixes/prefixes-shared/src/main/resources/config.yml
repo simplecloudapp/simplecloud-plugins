@@ -104,6 +104,6 @@ groups:
   permission: ''
   prefix: ''
   suffix: ''
-  color: '<#A8A8AB>'
+  color: '<#A1A7B5>'
   display-name: '<color><playername>'
   chat-format: '<prefix><color><playername><suffix>: <#E1E1E4><message>'

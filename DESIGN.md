@@ -28,7 +28,7 @@ Character: calm, clear, blue. Every string in every plugin must look like it cam
 | Panels | not used yet; when added, buttons without brackets, accept in success, decline in error |
 | Tone | friendly, second person, `!` only for good news |
 | Tags | small caps, plain text |
-| Rank format | team ranks show the rank in small caps, then name and `:` in brand, message in `#CDE3FF`; everyone else shows name and `:` in `#A8A8AB`, message in `#E1E1E4`. No brackets, no `»`, no `\|` |
+| Rank format | team ranks show the rank in small caps, then name and `:` in brand, message in `#CDE3FF`; everyone else shows name and `:` in `#A1A7B5`, message in `#E1E1E4`. No brackets, no `»`, no `\|` |
 | Sidebar | none |
 | Menus | NPC menus stay vanilla: plain titles, no glass pane frames |
 | Menu actions | `Click to join`: a short sentence in `interactive` |
@@ -37,7 +37,8 @@ Character: calm, clear, blue. Every string in every plugin must look like it cam
 | Language and numbers | English, `2,500`, `2h 41m` |
 
 The palette, the line color chat style, the lightning prefix, the rank format, and the vanilla look come from the
-SimpleCloud Demo network's `DESIGN.md`. That file is the source of truth for them. The current plugin defaults do not
+SimpleCloud Demo network's `DESIGN.md`. Only `error` and `muted` changed: the demo's `#F5464F` and `#A8A8AB` looked
+pale next to the other colors, so error is a truer red and muted a gray with a trace of the brand blue. That file is the source of truth for them. The current plugin defaults do not
 follow it yet and will be changed to match this file.
 
 ## Project facts
@@ -66,12 +67,12 @@ follow it yet and will be changed to match this file.
 | brand | `#3B95FF` | the prefix, the network name, hover titles, the team's rank format |
 | interactive | `#62ADFF` | clickable words and list entries, hover action lines |
 | highlight | `#CFE4FF` | values in hovers, the brightest text |
-| muted | `#A8A8AB` | keys in hovers, quiet hints, command arguments, stopped and deleted things, second lines of kick screens and the MOTD |
+| muted | `#A1A7B5` | keys in hovers, quiet hints, command arguments, stopped and deleted things, second lines of kick screens and the MOTD |
 | separator | `#5F5F63` | `( )`, `:`, `/`, `•` |
 | info | `#4FA3FF` | the line color of every normal message, actions in progress |
 | success | `#6AD13C` | completed actions, online servers |
 | warning | `#FF9029` | no-ops, empty results, maintenance, temporary refusals |
-| error | `#F5464F` | failures, missing permission, invalid input, full servers |
+| error | `#FF3B30` | failures, missing permission, invalid input, full servers |
 
 Rules:
 
@@ -103,7 +104,7 @@ server group on a sign, an NPC kind) takes the next free accent in table order: 
 | Rank | Name and `:` | Message |
 | --- | --- | --- |
 | team (`owner`, `admin`) | brand `#3B95FF` | `#CDE3FF` |
-| everyone else (`default`) | muted `#A8A8AB` | `#E1E1E4` |
+| everyone else (`default`) | muted `#A1A7B5` | `#E1E1E4` |
 
 ### Server states
 
