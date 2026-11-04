@@ -113,6 +113,10 @@ object TitlePane {
             }
         }
 
+        if (port.title == null) {
+            pane[REMOVE_SLOT] = Ui.disabled("Remove Title", listOf("<hnt>There is no title to remove."), "RED_CONCRETE")
+            return
+        }
         pane.left(
             REMOVE_SLOT,
             Ui.item(
