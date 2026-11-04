@@ -122,7 +122,7 @@ object LiveGroups {
             "GRASS_BLOCK",
             "Servers Of A Group",
             listOf("Every running server of one group,", "e.g. Lobby-1, Lobby-2, ..."),
-            "GRASS_BLOCK",
+            "LIME_CONCRETE",
             "<brand><entry_group_name>-<entry_numerical_id>",
             JOIN_LORE,
         )

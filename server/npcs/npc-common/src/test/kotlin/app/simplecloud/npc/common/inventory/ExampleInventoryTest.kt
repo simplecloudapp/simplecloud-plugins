@@ -24,12 +24,12 @@ class ExampleInventoryTest {
         val config = load()
         assertEquals("example", config.id)
         assertEquals(1, config.version)
-        assertEquals(6, config.rows)
-        assertEquals(17, config.items.size)
+        assertEquals(5, config.rows)
+        assertEquals(16, config.items.size)
         assertTrue(config.items.all { it.slot in 0 until config.size() })
         assertEquals(config.items.size, config.items.map { it.slot }.distinct().size, "no duplicate slots")
 
-        val star = assertNotNull(config.items.firstOrNull { it.slot == 4 })
-        assertTrue(star.actions.single().joinTarget, "the star joins the NPC's target")
+        val first = assertNotNull(config.items.firstOrNull { it.slot == 10 })
+        assertNotNull(first.live, "the first server slot holds the live filter")
     }
 }

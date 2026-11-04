@@ -336,7 +336,8 @@ Clicking a target that cannot be joined sends one chat message with the prefix:
   a breadcrumb: `NPCs > limbo`, `limbo > Skin`. No symbols in titles.
 - Item names never italic. A server or group is named in `brand`; controls (Previous Page, Next Page, Back) in
   `interactive`.
-- Content stays in the inner seven columns. A menu's main action sits alone in the middle of the top row.
+- Content stays in the inner seven columns. A menu does one job: the server menu only lists servers, no quick-join
+  item. Server entries are concrete in their state color: lime to join, orange while a round runs, red when full.
 - The bottom row is the control row: Previous Page in the first slot (Back on the first page of a submenu), Next Page
   in the last, a page count in the middle. Previous and Next are light blue glass panes and only show when that page
   exists; Back is a red glass pane. No close button: Escape closes every menu.

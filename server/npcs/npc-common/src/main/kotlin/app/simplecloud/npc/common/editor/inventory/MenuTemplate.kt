@@ -57,11 +57,11 @@ enum class MenuTemplate(val label: String, val icon: String, val description: Li
         )
 
         fun serverSelector(id: String): InventoryConfiguration {
-            val content = (19..25) + (28..34)
+            val content = (10..16) + (19..25)
             val live = content.mapIndexed { index, slot ->
                 InventoryItemConfiguration(
                     slot = slot,
-                    material = "GRASS_BLOCK",
+                    material = "LIME_CONCRETE",
                     name = "<brand><entry_group_name>-<entry_numerical_id>",
                     lore = mutableListOf(
                         "<muted>Players: <highlight><entry_online_players>/<entry_max_players>",
@@ -108,33 +108,25 @@ enum class MenuTemplate(val label: String, val icon: String, val description: Li
             }
             val controls = listOf(
                 InventoryItemConfiguration(
-                    slot = 45,
+                    slot = 36,
                     material = "LIGHT_BLUE_STAINED_GLASS_PANE",
                     name = "<interactive>Previous Page",
                     liveGroup = "servers",
                     pageControl = PageControl.PREVIOUS,
                 ),
                 InventoryItemConfiguration(
-                    slot = 53,
+                    slot = 44,
                     material = "LIGHT_BLUE_STAINED_GLASS_PANE",
                     name = "<interactive>Next Page",
                     liveGroup = "servers",
                     pageControl = PageControl.NEXT,
-                ),
-                InventoryItemConfiguration(
-                    slot = 4,
-                    material = "NETHER_STAR",
-                    name = "<brand>Join a Server",
-                    glowing = true,
-                    lore = mutableListOf("<highlight>Joins the emptiest server.", "", "<interactive>Click to join"),
-                    actions = mutableListOf(NpcConfig.ActionConfiguration(joinTarget = true)),
                 ),
             )
 
             return InventoryConfiguration(
                 id = id,
                 title = "Servers",
-                rows = 6,
+                rows = 5,
                 items = (live + controls).toMutableList(),
             )
         }

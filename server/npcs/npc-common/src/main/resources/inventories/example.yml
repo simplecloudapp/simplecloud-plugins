@@ -6,7 +6,7 @@
 version: 1
 id: example
 title: "Servers"
-rows: 6
+rows: 5
 # Optional: only players with this permission can open the menu.
 # open-permission: lobby.servers
 # Optional: played once when the menu opens.
@@ -20,21 +20,8 @@ open-sound: UI_BUTTON_CLICK
 # Group" in the toolbox under the menu, and drag the swatch across the slots it
 # should fill; or hand-author them here.
 items:
-  # The main action sits alone in the middle of the top row.
-  - slot: 4
-    material: NETHER_STAR
-    name: "<brand>Join a Server"
-    glowing: true
-    lore:
-      - "<highlight>Joins the emptiest server of"
-      - "<highlight>this NPC's target group."
-      - ""
-      - "<interactive>Click to join"
-    actions:
-      # join-target uses the target servers of the NPC that opened this menu.
-      - join-target: true
   # Only players with the permission see this item at all.
-  # - slot: 22
+  # - slot: 4
   #   material: DIAMOND
   #   name: "<brand>VIP Lounge"
   #   view-permission: lobby.vip
@@ -47,7 +34,7 @@ items:
   # group. Every slot has its own look, resolved per matched server via <entry_*>
   # placeholders: <entry_name>, <entry_numerical_id>, <entry_state>,
   # <entry_online_players>, <entry_max_players>, <entry_motd>, <entry_property:key>, ...
-  - slot: 19
+  - slot: 10
     live-group: servers
     live:
       # Built-in sources: group-servers, persistent-servers, groups, static.
@@ -60,6 +47,8 @@ items:
       # NUMERICAL_ID (default) or PLAYER_COUNT.
       sort: NUMERICAL_ID
       # How an entry looks per server state; unset fields keep the slot's own look.
+      # The icon shows the state at a glance: lime to join, orange while a round runs,
+      # red when full.
       # States: AVAILABLE, FULL, STARTING, INGAME (and OFFLINE for groups/persistent servers).
       looks:
         FULL:
@@ -74,7 +63,7 @@ items:
             - "<muted>Players: <highlight><entry_online_players>/<entry_max_players>"
             - ""
             - "<warning>A round is running."
-    material: GRASS_BLOCK
+    material: LIME_CONCRETE
     name: "<brand><entry_group_name>-<entry_numerical_id>"
     lore:
       - "<muted>Players: <highlight><entry_online_players>/<entry_max_players>"
@@ -91,28 +80,28 @@ items:
     when-empty:
       material: GRAY_DYE
       name: "<muted>No Servers Online"
-  - { slot: 20, live-group: servers, material: GRASS_BLOCK }
-  - { slot: 21, live-group: servers, material: GRASS_BLOCK }
-  - { slot: 22, live-group: servers, material: GRASS_BLOCK }
-  - { slot: 23, live-group: servers, material: GRASS_BLOCK }
-  - { slot: 24, live-group: servers, material: GRASS_BLOCK }
-  - { slot: 25, live-group: servers, material: GRASS_BLOCK }
-  - { slot: 28, live-group: servers, material: GRASS_BLOCK }
-  - { slot: 29, live-group: servers, material: GRASS_BLOCK }
-  - { slot: 30, live-group: servers, material: GRASS_BLOCK }
-  - { slot: 31, live-group: servers, material: GRASS_BLOCK }
-  - { slot: 32, live-group: servers, material: GRASS_BLOCK }
-  - { slot: 33, live-group: servers, material: GRASS_BLOCK }
-  - { slot: 34, live-group: servers, material: GRASS_BLOCK }
+  - { slot: 11, live-group: servers, material: LIME_CONCRETE }
+  - { slot: 12, live-group: servers, material: LIME_CONCRETE }
+  - { slot: 13, live-group: servers, material: LIME_CONCRETE }
+  - { slot: 14, live-group: servers, material: LIME_CONCRETE }
+  - { slot: 15, live-group: servers, material: LIME_CONCRETE }
+  - { slot: 16, live-group: servers, material: LIME_CONCRETE }
+  - { slot: 19, live-group: servers, material: LIME_CONCRETE }
+  - { slot: 20, live-group: servers, material: LIME_CONCRETE }
+  - { slot: 21, live-group: servers, material: LIME_CONCRETE }
+  - { slot: 22, live-group: servers, material: LIME_CONCRETE }
+  - { slot: 23, live-group: servers, material: LIME_CONCRETE }
+  - { slot: 24, live-group: servers, material: LIME_CONCRETE }
+  - { slot: 25, live-group: servers, material: LIME_CONCRETE }
 
   # Shown only when there are more servers than group slots, in the first and the
   # last slot of the bottom row.
-  - slot: 45
+  - slot: 36
     live-group: servers
     page-control: previous
     material: LIGHT_BLUE_STAINED_GLASS_PANE
     name: "<interactive>Previous Page"
-  - slot: 53
+  - slot: 44
     live-group: servers
     page-control: next
     material: LIGHT_BLUE_STAINED_GLASS_PANE
@@ -121,7 +110,7 @@ items:
   # More examples (commented out):
   #
   # A live group listing every group; clicking joins the emptiest AVAILABLE server of it.
-  # - slot: 28
+  # - slot: 19
   #   live-group: groups
   #   live:
   #     type: groups
@@ -131,7 +120,7 @@ items:
   #     - "<muted>Online: <highlight><entry_online_players>"
   #
   # A hand-authored paged static list.
-  # - slot: 28
+  # - slot: 19
   #   live-group: content
   #   live:
   #     type: static
