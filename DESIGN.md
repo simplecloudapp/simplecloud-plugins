@@ -262,7 +262,7 @@ small caps.
 
 ```
 header: '<br><brand>ꜱɪᴍᴘʟᴇᴄʟᴏᴜᴅ<br>'
-footer: '<br> <muted>Players on your network<separator>: <highlight><online_players> <br><separator>ꜱɪᴍᴘʟᴇᴄʟᴏᴜᴅ.ᴀᴘᴘ<br>'
+footer: '<br> <highlight><online_players> <muted>online on your network <br><separator>ꜱɪᴍᴘʟᴇᴄʟᴏᴜᴅ.ᴀᴘᴘ<br>'
 ```
 
 ### Server list and kick screens
