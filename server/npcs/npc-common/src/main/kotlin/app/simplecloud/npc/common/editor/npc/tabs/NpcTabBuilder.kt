@@ -8,6 +8,7 @@ import app.simplecloud.npc.common.editor.npc.NpcEditorContext
 import app.simplecloud.npc.common.editor.npc.NpcEditorScreen
 import app.simplecloud.npc.common.editor.npc.NpcFormat
 import app.simplecloud.npc.common.editor.npc.NpcTab
+import app.simplecloud.npc.common.editor.ui.Layout
 import app.simplecloud.npc.common.editor.ui.Ui
 import app.simplecloud.npc.common.manager.NpcFailure
 import app.simplecloud.npc.common.manager.NpcOperationResult
@@ -17,12 +18,10 @@ import app.simplecloud.npc.core.platform.NpcPlayer
 import net.kyori.adventure.text.Component
 
 object NpcTabBuilder {
-    private const val SUMMON_SLOT = 20
-    private const val DUPLICATE_SLOT = 22
-    private const val DELETE_SLOT = 24
-    private const val TARGETS_SLOT = 29
-    private const val LIVE_SLOT = 31
-    private const val NEARBY_SLOT = 33
+    private const val SUMMON_SLOT = 21
+    private const val DUPLICATE_SLOT = 23
+    private const val STATUS_SLOT = 31
+    private const val DELETE_SLOT = Layout.TOOL_RIGHT
 
     fun build(context: NpcEditorContext, player: NpcPlayer, config: NpcConfig): EditorMenu {
         val screen = NpcEditorScreen.Tab(config.id, NpcTab.NPC)
@@ -56,7 +55,7 @@ object NpcTabBuilder {
             player,
             screen,
             "delete-npc",
-            idle = Ui.item("BARRIER", "<err>Delete NPC", listOf("<err>There is no undo.", "<key>Left-click to delete it")),
+            idle = Ui.item("TNT", "<err>Delete NPC", listOf("<err>There is no undo.", "", "<key>Left-click to delete it")),
             verb = "Delete ${NpcFormat.displayName(config)}",
         ) {
             context.npcManager.delete(config.id)
@@ -64,26 +63,16 @@ object NpcTabBuilder {
         }
 
         val targets = config.targetServers
-        pane[TARGETS_SLOT] = Ui.item(
-            "COMPASS",
-            "<ttl>Targets",
-            listOfNotNull(
-                targets.firstOrNull()?.let { "<val>$it" } ?: "<off>None",
-                (targets.size - 1).takeIf { it > 0 }?.let { "<hnt>+$it more" },
-            ),
-        )
-
         val joinState = live.hologramState(config).joinState
-        pane[LIVE_SLOT] = Ui.item(
-            "REDSTONE_TORCH",
-            "<ttl>Join State",
-            listOf(joinState?.let { "<val>${NpcFormat.joinState(it)}" } ?: "<off>unknown", "<hnt>of the first target"),
-        )
-
-        pane[NEARBY_SLOT] = Ui.item(
-            "PLAYER_HEAD",
-            "<ttl>Nearby",
-            listOf("<val>${live.playersInRange(config)} <hnt>players in range"),
+        val nearby = live.playersInRange(config)
+        pane[STATUS_SLOT] = Ui.item(
+            "BOOK",
+            "<ttl>Status",
+            listOf(
+                "<bd>Targets: " + if (targets.isEmpty()) "<off>None" else "<val>" + targets.joinToString("<bd>, <val>"),
+                "<bd>Join state: " + if (joinState == null) "<off>Unknown" else "<val>${NpcFormat.joinState(joinState)}",
+                "<bd>Players nearby: <val>$nearby",
+            ),
         )
 
         return TabFrame.menu(pane, config, NpcTab.NPC)

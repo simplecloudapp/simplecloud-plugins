@@ -15,13 +15,13 @@ import app.simplecloud.npc.core.platform.NpcPlayer
 class AddJoinStateSource(override val purpose: PickerPurpose.AddJoinState) : PickerSource {
     private val forHologram = purpose.forHologram
 
-    override val title = if (forHologram) "Add Layout" else "Add Join State"
+    override val title = "Add Join State"
 
     override fun header(context: NpcEditorContext, config: NpcConfig) = PickerHeader(
         "PAPER",
-        if (forHologram) "Add A Layout" else "Add A Join State",
+        "Add A Join State",
         if (forHologram) {
-            listOf("<bd>Pick the join state the new", "<bd>hologram layout shows for.")
+            listOf("<bd>Pick the join state that gets", "<bd>its own hologram lines.")
         } else {
             listOf("<bd>Pick the join state that gets", "<bd>its own click actions.")
         } + listOf("", "<hnt>A join state is what the target", "<hnt>server is doing, e.g. ingame."),
@@ -39,16 +39,16 @@ class AddJoinStateSource(override val purpose: PickerPurpose.AddJoinState) : Pic
 
         return JoinStates.offered(config, liveTargets.keys).map { state ->
             val label = NpcFormat.joinState(state)
-            val usedLine = "<bd>Used by " + listOfNotNull(
-                "<val>hologram".takeIf { config.hologram.findLayout(state) != null },
-                "<val>actions".takeIf { state in NpcFormat.actionJoinStates(config) },
-            ).ifEmpty { listOf("<off>nothing yet") }.joinToString("<bd>, ")
+            val usedLine = "<bd>Set up for: " + listOfNotNull(
+                "<val>Hologram".takeIf { config.hologram.findLayout(state) != null },
+                "<val>Actions".takeIf { state in NpcFormat.actionJoinStates(config) },
+            ).ifEmpty { listOf("<off>Nothing yet") }.joinToString("<bd>, ")
             val liveLine = liveTargets[state]?.let { "<on>Live now <hnt>on ${it.joinToString(", ")}" }
             val lore = listOfNotNull(usedLine, liveLine)
             when {
                 state in present -> PickerOption(
                     label,
-                    Ui.unavailable(label, lore, "Already present here."),
+                    Ui.unavailable(label, lore, "It is already set up here."),
                     available = false,
                 )
 

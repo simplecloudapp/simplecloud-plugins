@@ -38,7 +38,7 @@ object StateChipRow {
         chips: StateChips,
     ) {
         val add = chips.add
-        val showChips = chips.states.size > 1
+        val showChips = chips.states.isNotEmpty()
         val pages = Paginator(context.session(player).pages, key, chips.states, VISIBLE_CHIPS)
         val previous = if (showChips) Ui.previousPage(pages.page) else null
         val next = if (showChips) Ui.nextPage(pages.page, pages.pageCount) else null
@@ -69,6 +69,7 @@ object StateChipRow {
             chips.detail(state),
             "<on>Live now".takeIf { state == chips.live },
             "<hnt>Shown below".takeIf { selected },
+            if (chips.states.size == 1) "<hnt>A join state is what the target is doing." else null,
             "",
             "<key>Left-click to show it".takeIf { !selected },
             "<key>Right-click to remove it".takeIf { removable },

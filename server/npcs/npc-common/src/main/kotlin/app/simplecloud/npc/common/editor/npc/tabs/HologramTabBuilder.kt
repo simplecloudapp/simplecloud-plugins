@@ -24,6 +24,7 @@ object HologramTabBuilder {
 
     private val START_HEIGHT = Stepper(
         label = "Height",
+        material = "LADDER",
         range = NpcConfig.HologramConfigurationRoot.START_HEIGHT_RANGE,
         step = 0.05,
         default = NpcConfig.HologramConfigurationRoot().startHeight,
@@ -72,7 +73,7 @@ object HologramTabBuilder {
                         context.navigate(player, NpcEditorScreen.Confirm(config.id, ConfirmPurpose.RemoveLayout(state)))
                     }
                 },
-                add = StateChipRow.Add(Ui.addHead("Add Layout", listOf("<hnt>Other lines for another join state"))) {
+                add = StateChipRow.Add(Ui.addHead("Add Join State", listOf("<bd>Show other lines while the", "<bd>target is in another state.", "", "<key>Left-click to pick a join state"))) {
                     context.navigate(player, NpcEditorScreen.Picker(config.id, PickerPurpose.AddJoinState(forHologram = true)))
                 },
             ),

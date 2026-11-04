@@ -351,7 +351,7 @@ object ActionFieldsPane {
 
         val slot = slots.getOrNull(set.size)
         if (slot != null && free > 0) {
-            val hint = if (set.isEmpty()) "<hnt>Nothing happens on this click yet." else null
+            val hint = if (set.isEmpty()) "<hnt>Nothing is set for this click yet." else null
             pane.left(slot, Ui.addHead("Add", listOfNotNull(hint, "<key>Left-click to pick what happens"))) {
                 port.openAdd()
             }

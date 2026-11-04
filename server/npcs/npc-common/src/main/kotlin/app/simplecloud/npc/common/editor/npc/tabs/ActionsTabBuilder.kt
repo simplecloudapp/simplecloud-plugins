@@ -51,7 +51,7 @@ object ActionsTabBuilder {
                     context.navigate(player, NpcEditorScreen.Confirm(config.id, ConfirmPurpose.RemoveJoinState(state)))
                 },
                 add = if (states.size < NpcConfig.MAX_JOIN_STATES) {
-                    StateChipRow.Add(Ui.addHead("Add Join State", listOf("<hnt>Other clicks for another join state"))) {
+                    StateChipRow.Add(Ui.addHead("Add Join State", listOf("<bd>Let clicks do other things while", "<bd>the target is in another state.", "", "<key>Left-click to pick a join state"))) {
                         val purpose = PickerPurpose.AddJoinState(forHologram = false)
                         context.navigate(player, NpcEditorScreen.Picker(config.id, purpose))
                     }

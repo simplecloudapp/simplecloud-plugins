@@ -43,7 +43,7 @@ object NpcFormat {
 
     fun pacing(title: NpcConfig.TitleConfiguration): String =
         "<bd><val>${seconds(title.fadeIn)} <bd>in · " +
-            "<val>${seconds(title.stay)} <bd>hold · " +
+            "<val>${seconds(title.stay)} <bd>stay · " +
             "<val>${seconds(title.fadeOut)} <bd>out"
 
     fun messageLines(message: String?): List<String> = message?.split('\n')?.filter { it.isNotBlank() }.orEmpty()
