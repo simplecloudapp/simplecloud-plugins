@@ -52,8 +52,6 @@ object PickerTemplate {
     private const val EMPTY_SLOT = 31
     private const val TYPE_SLOT = Layout.TOOL_LEFT
 
-    private const val RESULT_TTL_TICKS = 60L
-
     fun <S : Any> build(host: EditorHost<S>, player: NpcPlayer, spec: PickerSpec<S>): EditorMenu {
         val session = host.session(player)
         val pages = Paginator(session.pages, pageKey(spec.screen), spec.options, Layout.ROW_SLOTS * spec.gridRows)
@@ -112,19 +110,12 @@ object PickerTemplate {
         val session = host.sessions.peek(player.uniqueId) ?: return
         session.pickerResult = result
         host.render(player, screen)
-
-        host.runLater(RESULT_TTL_TICKS) {
-            val current = host.sessions.peek(player.uniqueId) ?: return@runLater
-            if (current.pickerResult !== result) return@runLater
-            current.pickerResult = null
-            if (host.isShowing(player) { it == screen }) host.render(player, screen)
-        }
     }
 
     private fun <S : Any> promptTyped(host: EditorHost<S>, player: NpcPlayer, spec: PickerSpec<S>) {
         host.textPrompts.open(
             player,
-            title = "Search",
+            title = "Type a Name",
             instruction = "Type a name in chat; part of one filters the list.",
             current = null,
             validate = { text -> "Type a name.".takeIf { text.isBlank() } },
