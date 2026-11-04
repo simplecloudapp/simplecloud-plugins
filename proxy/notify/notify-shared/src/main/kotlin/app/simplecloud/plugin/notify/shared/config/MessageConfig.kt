@@ -1,6 +1,7 @@
 package app.simplecloud.plugin.notify.shared.config
 
 import app.simplecloud.api.server.ServerState
+import app.simplecloud.plugin.core.shared.command.HelpMessages
 import app.simplecloud.plugin.core.shared.config.AbstractCommandMessageConfig
 import app.simplecloud.plugin.core.shared.config.AbstractCommandMessages
 import app.simplecloud.plugin.core.shared.config.CommandExceptionMessages
@@ -37,11 +38,19 @@ data class Command(
 
 @ConfigSerializable
 data class Help(
-    val title: String = "<prefix> <info>Notify commands",
-    val entry: String = "<separator>•</separator> <interactive><command></interactive> <muted><arguments>",
-    val hover: String = "<interactive>Click to type this command",
+    val title: String = "<prefix> <info>Notify commands  <separator>/scnotify",
+    override val entry: String = HelpMessages.ENTRY,
+    override val hover: String = HelpMessages.HOVER,
     val empty: String = "<prefix> <warning>You can't use any notify commands.",
-)
+    override val descriptions: Map<String, String> = mapOf(
+        "help" to "Show this list",
+        "list" to "Show your notifications",
+        "enable [type]" to "Turn notifications on",
+        "disable [type]" to "Turn notifications off",
+        "set <player> <true/false> [type]" to "Turn them on or off for a player",
+        "reload config" to "Reload the configuration",
+    ),
+) : HelpMessages
 
 @ConfigSerializable
 data class Notify(

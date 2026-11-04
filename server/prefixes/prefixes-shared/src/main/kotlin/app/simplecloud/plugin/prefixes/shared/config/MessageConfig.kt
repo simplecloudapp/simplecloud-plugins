@@ -1,5 +1,6 @@
 package app.simplecloud.plugin.prefixes.shared.config
 
+import app.simplecloud.plugin.core.shared.command.HelpMessages
 import app.simplecloud.plugin.core.shared.config.AbstractCommandMessageConfig
 import app.simplecloud.plugin.core.shared.config.AbstractCommandMessages
 import app.simplecloud.plugin.core.shared.config.CommandExceptionMessages
@@ -25,10 +26,14 @@ data class CommandMessages(
 
 @ConfigSerializable
 data class CommandHelpMessages(
-    val title: String = "<prefix> <info>Prefixes commands",
-    val entry: String = "<separator>•</separator> <interactive><command></interactive> <muted><arguments>",
-    val hover: String = "<interactive>Click to type this command",
-)
+    val title: String = "<prefix> <info>Prefixes commands  <separator>/scprefix",
+    override val entry: String = HelpMessages.ENTRY,
+    override val hover: String = HelpMessages.HOVER,
+    override val descriptions: Map<String, String> = mapOf(
+        "help" to "Show this list",
+        "reload" to "Reload the configuration",
+    ),
+) : HelpMessages
 
 @ConfigSerializable
 data class CommandReloadMessages(

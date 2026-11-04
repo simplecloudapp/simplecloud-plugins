@@ -31,6 +31,9 @@ object CommandMessages {
 
     private const val CMD = "/$COMMAND_LABEL"
     private val ARGUMENT_START = Regex(""" [<\[]""")
+    private const val CHAT_WIDTH = 320
+    private const val HELP_INDENT = 8
+    private const val HELP_GAP = 12
 
     @Volatile
     private var messagesPath: Path? = null
@@ -146,16 +149,16 @@ object CommandMessages {
 
         val page = normalizedTopic ?: "main"
         val title = if (normalizedTopic == null) {
-            render("command.help.title", "${Msg.infoPrefix()}NPC commands")
+            render("command.help.title", "${Msg.infoPrefix()}NPC commands  ${Msg.SUBTLE}$CMD")
         } else {
             render(
                 "command.help.topic-title",
-                "${Msg.infoPrefix()}NPC commands: <topic>",
+                "${Msg.infoPrefix()}NPC <topic> commands  ${Msg.SUBTLE}$CMD",
                 mapOf("topic" to normalizedTopic),
             )
         }
 
-        val lines = listOf(title) + renderLines("command.help.pages.$page", fallbackLines)
+        val lines = listOf(title) + renderLines("command.help.pages.$page", renderHelp(fallbackLines))
 
         sender.sendMessage(Msg.miniMessage.deserialize(lines.joinToString("\n")))
     }
@@ -173,116 +176,143 @@ object CommandMessages {
         return configured.map { it.substitute(variables) }
     }
 
-    private fun helpPage(topic: String?): List<String>? = when (topic) {
+    private fun helpPage(topic: String?): List<HelpLine>? = when (topic) {
         null -> listOf(
-            command("$CMD create", "$CMD create", "Create an NPC"),
-            command("$CMD link ", "$CMD link", "Attach an existing Citizens/FancyNpcs/ZNPCsPlus NPC"),
-            command("$CMD edit", "$CMD edit [id]", "Edit an NPC (or the one you're looking at)"),
-            command("$CMD list", "$CMD list", "List all NPCs"),
-            command("$CMD info", "$CMD info [id]", "View details (or the one you're looking at)"),
-            command("$CMD delete", "$CMD delete [id]", "Delete an NPC (or the one you're looking at)"),
-            note("More: $CMD help <topic>"),
-            note("Topics: ${helpTopics.joinToString()}"),
+            command("create <id> <target>", "Create an NPC where you stand"),
+            command("link <id> <provider> <reference> <target>", "Attach an NPC of another plugin"),
+            command("edit [id]", "Open the editor"),
+            command("info [id]", "Show the details of an NPC"),
+            command("list", "List all NPCs"),
+            command("delete [id]", "Delete an NPC"),
+            command("help <topic>", "More commands by topic", "Topics: ${helpTopics.joinToString()}"),
         )
 
         "create" -> listOf(
-            command("$CMD create ", "$CMD create <id> <target>"),
-            note("Spawns a native NPC at your position, links it, and opens its editor."),
+            command("create <id> <target>", "Create an NPC where you stand"),
+            note("Spawns a native NPC, links it to the target and opens its editor."),
             note("Example: $CMD create lobby Lobby"),
         )
 
         "link" -> listOf(
-            command("$CMD link ", "$CMD link <id> <provider> <reference> <target>"),
-            note("Attaches hologram and click handling to an NPC you created with"),
-            note("Citizens, FancyNpcs, ZNPCsPlus or MythicMobs. The NPC itself is never changed."),
-            note("Example: $CMD link lobby citizens 42 Lobby"),
-            command("$CMD unlink ", "$CMD unlink <id>", "Detach again, the NPC stays"),
+            command("link <id> <provider> <reference> <target>", "Attach an NPC of another plugin"),
+            command("unlink <id>", "Detach it again, the NPC stays"),
+            note("Works with Citizens, FancyNpcs, ZNPCsPlus and MythicMobs. The NPC itself"),
+            note("is never changed. Example: $CMD link lobby citizens 42 Lobby"),
         )
 
         "edit" -> listOf(
-            command("$CMD edit", "$CMD edit", "Edit the NPC you're looking at"),
-            command("$CMD edit ", "$CMD edit <id> target"),
-            command("$CMD edit ", "$CMD edit <id> hologram"),
-            command("$CMD edit ", "$CMD edit <id> action"),
-            command("$CMD edit ", "$CMD edit <id> pushback"),
-            command("$CMD edit ", "$CMD edit <id> teleport"),
-            command("$CMD edit ", "$CMD edit <id> skin <player>"),
-            note("Use $CMD help <topic> for details."),
+            command("edit", "Edit the NPC you are looking at"),
+            command("edit <id> target", "Change the targets"),
+            command("edit <id> hologram", "Change the hologram"),
+            command("edit <id> action", "Change the click actions"),
+            command("edit <id> pushback", "Change the pushback"),
+            command("edit <id> teleport", "Move it to where you stand"),
+            command("edit <id> skin <player>", "Use the skin of a player"),
         )
 
         "target" -> listOf(
-            command("$CMD edit ", "$CMD edit <id> target list"),
-            command("$CMD edit ", "$CMD edit <id> target add <target>"),
-            command("$CMD edit ", "$CMD edit <id> target remove <target>"),
+            command("edit <id> target list", "List the targets"),
+            command("edit <id> target add <target>", "Add a target"),
+            command("edit <id> target remove <target>", "Remove a target"),
         )
 
         "hologram" -> listOf(
-            command("$CMD edit ", "$CMD edit <id> hologram enable"),
-            command("$CMD edit ", "$CMD edit <id> hologram disable"),
-            command("$CMD edit ", "$CMD edit <id> hologram height <value>"),
-            command("$CMD edit ", "$CMD edit <id> hologram line add <state> <text>"),
-            command("$CMD edit ", "$CMD edit <id> hologram line set <state> <line> <text>"),
-            command("$CMD edit ", "$CMD edit <id> hologram line remove <state> <line>"),
+            command("edit <id> hologram enable", "Show the hologram"),
+            command("edit <id> hologram disable", "Hide the hologram"),
+            command("edit <id> hologram height <value>", "Set its height"),
+            command("edit <id> hologram line add <state> <text>", "Add a line"),
+            command("edit <id> hologram line set <state> <line> <text>", "Change a line"),
+            command("edit <id> hologram line remove <state> <line>", "Remove a line"),
         )
 
         "action" -> listOf(
-            note("$CMD edit <id> action <type> <interaction> <state> [value]"),
-            note("Types: join-target, open-inventory, play-sound,"),
-            note("  send-message, execute-command, teleport-here, title,"),
-            note("  subtitle, title-duration, action-bar, send-to-server, transfer-to-server"),
-            note("$CMD edit <id> action clear <interaction> <state> [field]"),
+            command("edit <id> action <type> <interaction> <state> [value]", "Set an action"),
+            command("edit <id> action clear <interaction> <state> [field]", "Clear an action"),
+            note("Types: join-target, open-inventory, play-sound, send-message,"),
+            note("execute-command, teleport-here, title, subtitle, title-duration,"),
+            note("action-bar, send-to-server, transfer-to-server"),
             note("Fields: ${ActionFields.NAMES.joinToString()}"),
         )
 
         "pushback" -> listOf(
-            command("$CMD edit ", "$CMD edit <id> pushback enable"),
-            command("$CMD edit ", "$CMD edit <id> pushback disable"),
-            command("$CMD edit ", "$CMD edit <id> pushback radius <value>"),
-            command("$CMD edit ", "$CMD edit <id> pushback strength <value>"),
-            command("$CMD edit ", "$CMD edit <id> pushback vertical <value>"),
-            command("$CMD edit ", "$CMD edit <id> pushback sound <sound>"),
-            command("$CMD edit ", "$CMD edit <id> pushback sound clear"),
+            command("edit <id> pushback enable", "Push players away"),
+            command("edit <id> pushback disable", "Stop pushing players away"),
+            command("edit <id> pushback radius <value>", "Set the radius"),
+            command("edit <id> pushback strength <value>", "Set the strength"),
+            command("edit <id> pushback vertical <value>", "Set the upward push"),
+            command("edit <id> pushback sound <sound>", "Play a sound on push"),
+            command("edit <id> pushback sound clear", "Remove the sound"),
         )
 
         "admin" -> listOf(
-            command("$CMD list", "$CMD list", "List NPCs"),
-            command("$CMD info", "$CMD info [id]", "View details (or the one you're looking at)"),
-            command("$CMD tp ", "$CMD tp <id>", "Teleport to an NPC"),
-            command("$CMD duplicate ", "$CMD duplicate <id> <newId>", "Copy an NPC to where you stand"),
-            command("$CMD delete", "$CMD delete [id]", "Delete completely"),
-            command("$CMD reload", "$CMD reload", "Reload configs"),
-            command("$CMD placeholders", "$CMD placeholders", "List placeholders"),
+            command("list", "List all NPCs"),
+            command("info [id]", "Show the details of an NPC"),
+            command("tp <id>", "Teleport to an NPC"),
+            command("duplicate <id> <newId>", "Copy an NPC to where you stand"),
+            command("delete [id]", "Delete an NPC"),
+            command("reload", "Reload the configuration"),
+            command("placeholders", "List the placeholders"),
         )
 
         "inventory" -> listOf(
-            command("$CMD inventory create", "$CMD inventory create", "Create wizard"),
-            command("$CMD inventory create ", "$CMD inventory create <id> <rows>"),
-            command("$CMD inventory edit ", "$CMD inventory edit <id>", "Visual editor"),
-            command("$CMD inventory delete ", "$CMD inventory delete <id>"),
-            command("$CMD inventory open ", "$CMD inventory open <id> [player]", "Open it, e.g. from a compass item"),
-            command("$CMD inventory list", "$CMD inventory list"),
-            note("Reference from an NPC via $CMD edit <id> action open-inventory"),
+            command("inventory create", "Create a menu step by step"),
+            command("inventory create <id> <rows>", "Create a menu"),
+            command("inventory edit <id>", "Open the menu editor"),
+            command("inventory delete <id>", "Delete a menu"),
+            command("inventory open <id> [player]", "Open a menu"),
+            command("inventory list", "List all menus"),
+            note("Open a menu from an NPC with $CMD edit <id> action open-inventory."),
         )
 
         else -> null
     }
 
-    private fun command(suggestion: String, usage: String, description: String? = null): String {
-        val escaped = suggestion.replace("'", "\\'")
-        val tip = listOfNotNull(
-            description?.let { "${Msg.INFO}${Msg.miniMessage.escapeTags(it)}" },
-            "${Msg.INTERACTIVE}Click to type this command",
-        ).joinToString("\n").replace("'", "\\'")
-        val split = ARGUMENT_START.find(usage)?.range?.first ?: usage.length
-        val literal = Msg.miniMessage.escapeTags(usage.substring(0, split))
-        val arguments = Msg.miniMessage.escapeTags(usage.substring(split).trim())
-        val line = "${Msg.SUBTLE}• ${Msg.INTERACTIVE}$literal ${Msg.MUTED}$arguments"
-        val hover = "<hover:show_text:'$tip'>$line</hover>"
+    private fun command(usage: String, description: String, details: String = "") = HelpLine.Command(usage, description, details)
 
-        return "<click:suggest_command:'$escaped'>$hover</click>"
+    private fun note(text: String) = HelpLine.Note(text)
+
+    private fun renderHelp(lines: List<HelpLine>): List<String> {
+        val commands = lines.filterIsInstance<HelpLine.Command>()
+        val column = commands.filter { fits(it, width(it)) }.maxOfOrNull(::width) ?: 0
+
+        return lines.map { line ->
+            when (line) {
+                is HelpLine.Command -> commandLine(line, column)
+                is HelpLine.Note -> "  ${Msg.MUTED}${Msg.miniMessage.escapeTags(line.text)}"
+            }
+        }
     }
 
-    private fun note(text: String): String = "${Msg.MUTED}${Msg.miniMessage.escapeTags(text)}"
+    private fun commandLine(command: HelpLine.Command, column: Int): String {
+        val split = ARGUMENT_START.find(command.usage)?.range?.first ?: command.usage.length
+        val literal = command.usage.substring(0, split)
+        val arguments = command.usage.substring(split).trim()
+        val inline = width(command) <= column && fits(command, column)
+        val padding = if (inline) ChatPixels.spaces(column - width(command) + HELP_GAP) else ""
+        val description = if (inline) "${Msg.MUTED}${esc(command.description)}" else ""
+        val tip = listOfNotNull(
+            "${Msg.HIGHLIGHT}${esc(command.description)}",
+            if (command.details.isEmpty()) null else "${Msg.MUTED}${esc(command.details)}",
+            "${Msg.MUTED}Usage: ${Msg.HIGHLIGHT}${esc("$CMD ${command.usage}")}",
+            "",
+            "${Msg.INTERACTIVE}Click to type this command",
+        ).joinToString("\n")
+        val line = "  ${Msg.INTERACTIVE}${esc(literal)} ${Msg.MUTED}${esc(arguments)}$padding$description"
+
+        return "<click:suggest_command:'${arg("$CMD $literal ")}'><hover:show_text:'${arg(tip)}'>$line</hover></click>"
+    }
+
+    private fun width(command: HelpLine.Command): Int {
+        val split = ARGUMENT_START.find(command.usage)?.range?.first ?: command.usage.length
+        return ChatPixels.width(command.usage.substring(0, split) + " " + command.usage.substring(split).trim())
+    }
+
+    private fun fits(command: HelpLine.Command, column: Int): Boolean =
+        HELP_INDENT + column + HELP_GAP + ChatPixels.width(command.description) <= CHAT_WIDTH
+
+    private fun esc(text: String) = Msg.miniMessage.escapeTags(text)
+
+    private fun arg(text: String) = text.replace("\\", "\\\\").replace("'", "\\'")
 
     private fun failure(failure: NpcFailure): Pair<String, String> = when (failure) {
         NpcFailure.INVALID_ID ->

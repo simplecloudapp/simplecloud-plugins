@@ -44,12 +44,19 @@ variables:
 # ───────────────────────────────────────────────────────────────────────────────
 command:
   # Overview of all commands the sender is allowed to use.
-  # Placeholders: <command>
   help:
-    title: '<prefix> <info>Notify commands'
-    entry: '<separator>•</separator> <interactive><command></interactive> <muted><arguments>'
-    hover: '<interactive>Click to type this command'
+    title: '<prefix> <info>Notify commands  <separator>/scnotify'
+    entry: '  <interactive><command></interactive> <muted><arguments></muted><padding><muted><description>'
+    hover: '<highlight><description><br><muted>Usage: <highlight><usage><br><br><interactive>Click to type this command'
     empty: '<prefix> <warning>You can''t use any notify commands.'
+    # Shown next to each command and in its hover, keyed by the usage without /scnotify.
+    descriptions:
+      'help': 'Show this list'
+      'list': 'Show your notifications'
+      'enable [type]': 'Turn notifications on'
+      'disable [type]': 'Turn notifications off'
+      'set <player> <true/false> [type]': 'Turn them on or off for a player'
+      'reload config': 'Reload the configuration'
 
   # Shown when a command fails or is used wrong.
   # Placeholders: <command>, <reason>, <value>, <min>, <max>, <options>

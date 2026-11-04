@@ -4,7 +4,7 @@ import app.simplecloud.api.player.CloudPlayer
 import app.simplecloud.plugin.core.shared.command.CloudSender
 import app.simplecloud.plugin.core.shared.command.CloudSuggestions
 import app.simplecloud.plugin.core.shared.command.CommandExceptionHandler
-import app.simplecloud.plugin.core.shared.command.HelpEntry
+import app.simplecloud.plugin.core.shared.command.HelpPage
 import app.simplecloud.plugin.notify.shared.NotifyPlugin
 import app.simplecloud.plugin.notify.shared.notification.NotificationType
 import app.simplecloud.plugin.notify.shared.utilities.NotifyPermissions
@@ -31,11 +31,12 @@ class NotifyCommand<C : CloudSender>(
     private val cache = notify.cache
 
     private val commands = linkedMapOf(
-        "/scnotify help" to NotifyPermissions.COMMAND_HELP,
-        "/scnotify reload config" to NotifyPermissions.COMMAND_RELOAD_CONFIG,
-        "/scnotify list" to NotifyPermissions.COMMAND_TOGGLE_SELF,
-        "/scnotify <enable/disable> [type]" to NotifyPermissions.COMMAND_TOGGLE_SELF,
-        "/scnotify set <player> <true/false> [type]" to NotifyPermissions.COMMAND_TOGGLE_OTHER,
+        "help" to NotifyPermissions.COMMAND_HELP,
+        "list" to NotifyPermissions.COMMAND_TOGGLE_SELF,
+        "enable [type]" to NotifyPermissions.COMMAND_TOGGLE_SELF,
+        "disable [type]" to NotifyPermissions.COMMAND_TOGGLE_SELF,
+        "set <player> <true/false> [type]" to NotifyPermissions.COMMAND_TOGGLE_OTHER,
+        "reload config" to NotifyPermissions.COMMAND_RELOAD_CONFIG,
     )
 
     fun register() {
@@ -123,9 +124,7 @@ class NotifyCommand<C : CloudSender>(
         }
 
         sender.sendMessage(formatter.message(messages.command.help.title))
-        usable.forEach { usage ->
-            sender.sendMessage(HelpEntry.create(messages, messages.command.help.entry, messages.command.help.hover, usage))
-        }
+        HelpPage.entries(messages, messages.command.help, "/scnotify", usable.toList()).forEach(sender::sendMessage)
     }
 
     private suspend fun sendList(sender: C) {

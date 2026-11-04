@@ -1,6 +1,7 @@
 package app.simplecloud.plugin.command.shared.config
 
 import app.simplecloud.plugin.command.shared.utilities.ConfigVersion
+import app.simplecloud.plugin.core.shared.command.HelpMessages
 import app.simplecloud.plugin.core.shared.config.AbstractCommandMessageConfig
 import app.simplecloud.plugin.core.shared.config.AbstractCommandMessages
 import app.simplecloud.plugin.core.shared.config.CommandExceptionMessages
@@ -29,11 +30,28 @@ data class CommandSection(
 
 @ConfigSerializable
 data class HelpSection(
-    val title: String = "<prefix> <info>Cloud commands",
-    val entry: String = "<separator>•</separator> <interactive><command></interactive> <muted><arguments>",
-    val hover: String = "<interactive>Click to type this command",
+    val title: String = "<prefix> <info>Cloud commands  <separator>/cloud",
+    override val entry: String = HelpMessages.ENTRY,
+    override val hover: String = HelpMessages.HOVER,
     val empty: String = "<prefix> <warning>You can't use any cloud commands.",
-)
+    override val descriptions: Map<String, String> = mapOf(
+        "group list" to "List all groups",
+        "group info <group>" to "Show a group",
+        "group start <group> [count]" to "Start servers of a group",
+        "group stop <group> [id]" to "Stop servers of a group",
+        "server list [group]" to "List the running servers",
+        "server info <group> <id>" to "Show a server",
+        "server start <group>" to "Start a new server",
+        "server stop <group> <id>" to "Stop a server",
+        "player list <group|ps> <target>" to "List the players on a target",
+        "player info <player>" to "Show a player",
+        "player send <player> <group|ps> <target>" to "Send a player to a target",
+        "player sendall <group|ps> <target>" to "Send all players to a target",
+        "player sendfrom <source> <group|ps> <target>" to "Move the players of a source",
+        "player message <player> <message>" to "Send a player a message",
+        "reload" to "Reload the messages",
+    ),
+) : HelpMessages
 
 @ConfigSerializable
 data class UsageSection(

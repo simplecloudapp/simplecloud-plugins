@@ -13,6 +13,7 @@ object Msg {
     const val INFO = "<info>"
     const val KEY = "<info>"
     const val INTERACTIVE = "<interactive>"
+    const val HIGHLIGHT = "<highlight>"
 
     const val MUTED = "<muted>"
     const val SUBTLE = "<separator>"

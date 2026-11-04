@@ -35,9 +35,15 @@ variables:
 # ───────────────────────────────────────────────────────────────────────────────
 command:
   help:
-    title: '<prefix> <info>Sign commands'
-    entry: '<separator>•</separator> <interactive><command></interactive> <muted><arguments>'
-    hover: '<interactive>Click to type this command'
+    title: '<prefix> <info>Sign commands  <separator>/scsigns'
+    entry: '  <interactive><command></interactive> <muted><arguments></muted><padding><muted><description>'
+    hover: '<highlight><description><br><muted>Usage: <highlight><usage><br><br><interactive>Click to type this command'
+    # Shown next to each command and in its hover, keyed by the usage without /scsigns.
+    descriptions:
+      'add group <group>': 'Turn this sign into a group sign'
+      'add persistent <name>': 'Turn this sign into a server sign'
+      'remove [group|persistent server]': 'Remove this sign or all of a target'
+      'list [page] [group|persistent server]': 'List the registered signs'
 
   add:
     success: '<prefix> <success>Created a sign for <target>!'

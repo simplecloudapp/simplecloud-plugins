@@ -37,10 +37,27 @@ variables:
 command:
   # Shown on /cloud
   help:
-    title: '<prefix> <info>Cloud commands'
-    entry: '<separator>•</separator> <interactive><command></interactive> <muted><arguments>'
-    hover: '<interactive>Click to type this command'
+    title: '<prefix> <info>Cloud commands  <separator>/cloud'
+    entry: '  <interactive><command></interactive> <muted><arguments></muted><padding><muted><description>'
+    hover: '<highlight><description><br><muted>Usage: <highlight><usage><br><br><interactive>Click to type this command'
     empty: '<prefix> <warning>You can''t use any cloud commands.'
+    # Shown next to each command and in its hover, keyed by the usage without /cloud.
+    descriptions:
+      'group list': 'List all groups'
+      'group info <group>': 'Show a group'
+      'group start <group> [count]': 'Start servers of a group'
+      'group stop <group> [id]': 'Stop servers of a group'
+      'server list [group]': 'List the running servers'
+      'server info <group> <id>': 'Show a server'
+      'server start <group>': 'Start a new server'
+      'server stop <group> <id>': 'Stop a server'
+      'player list <group|ps> <target>': 'List the players on a target'
+      'player info <player>': 'Show a player'
+      'player send <player> <group|ps> <target>': 'Send a player to a target'
+      'player sendall <group|ps> <target>': 'Send all players to a target'
+      'player sendfrom <source> <group|ps> <target>': 'Move the players of a source'
+      'player message <player> <message>': 'Send a player a message'
+      'reload': 'Reload the messages'
 
   # Shown when a command is used with wrong arguments
   usage:

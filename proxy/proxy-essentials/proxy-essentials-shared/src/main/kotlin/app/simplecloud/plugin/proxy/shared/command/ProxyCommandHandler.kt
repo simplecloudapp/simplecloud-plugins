@@ -41,20 +41,16 @@ class ProxyCommandHandler<C : CloudSender>(
         val help = plugin.messages.get().command.help
         val formatter = plugin.messageFormatter
         val entries = listOf(
-            "/scproxy reload" to CommandPermissions.RELOAD,
-            "/scproxy joinstate help" to CommandPermissions.JOINSTATE_HELP,
-            "/scproxy joinstate list" to CommandPermissions.JOINSTATE_INFO,
-            "/scproxy joinstate info" to CommandPermissions.JOINSTATE_INFO,
-            "/scproxy joinstate info <group|ps> <target> [id]" to CommandPermissions.JOINSTATE_INFO,
-            "/scproxy joinstate set <group|ps> <target> <joinstate> [id]" to CommandPermissions.JOINSTATE_SET,
-            "/scproxy layout help" to CommandPermissions.LAYOUT_HELP,
-            "/scproxy layout info [group]" to CommandPermissions.LAYOUT_INFO,
-            "/scproxy layout set <group> <layout>" to CommandPermissions.LAYOUT_SET,
+            "reload" to CommandPermissions.RELOAD,
+            "joinstate list" to CommandPermissions.JOINSTATE_INFO,
+            "joinstate info" to CommandPermissions.JOINSTATE_INFO,
+            "joinstate info <group|ps> <target> [id]" to CommandPermissions.JOINSTATE_INFO,
+            "joinstate set <group|ps> <target> <joinstate> [id]" to CommandPermissions.JOINSTATE_SET,
+            "layout info [group]" to CommandPermissions.LAYOUT_INFO,
+            "layout set <group> <layout>" to CommandPermissions.LAYOUT_SET,
         ).filter { (_, permission) -> sender.hasPermission(permission) }
 
         sender.sendMessage(formatter.format(help.header))
-        entries.forEach { (command, _) ->
-            sender.sendMessage(formatter.formatHelpEntry(help, command))
-        }
+        formatter.formatHelp(help, entries.map { it.first }).forEach(sender::sendMessage)
     }
 }

@@ -1,5 +1,6 @@
 package app.simplecloud.plugin.signs.shared.config
 
+import app.simplecloud.plugin.core.shared.command.HelpMessages
 import app.simplecloud.plugin.core.shared.config.AbstractCommandMessageConfig
 import app.simplecloud.plugin.core.shared.config.AbstractCommandMessages
 import app.simplecloud.plugin.core.shared.config.CommandExceptionMessages
@@ -32,10 +33,16 @@ data class CommandMessages(
 
 @ConfigSerializable
 data class CommandHelpMessages(
-    val title: String = "<prefix> <info>Sign commands",
-    val entry: String = "<separator>•</separator> <interactive><command></interactive> <muted><arguments>",
-    val hover: String = "<interactive>Click to type this command",
-)
+    val title: String = "<prefix> <info>Sign commands  <separator>/scsigns",
+    override val entry: String = HelpMessages.ENTRY,
+    override val hover: String = HelpMessages.HOVER,
+    override val descriptions: Map<String, String> = mapOf(
+        "add group <group>" to "Turn this sign into a group sign",
+        "add persistent <name>" to "Turn this sign into a server sign",
+        "remove [group|persistent server]" to "Remove this sign or all of a target",
+        "list [page] [group|persistent server]" to "List the registered signs",
+    ),
+) : HelpMessages
 
 @ConfigSerializable
 data class CommandAddMessages(

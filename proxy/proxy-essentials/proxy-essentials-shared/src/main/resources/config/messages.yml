@@ -58,9 +58,18 @@ kick:
 # ───────────────────────────────────────────────────────────────────────────────
 command:
   help:
-    header: '<prefix> <info>Proxy commands'
-    entry: '<separator>•</separator> <interactive><command></interactive> <muted><arguments>'
-    hover: '<interactive>Click to type this command'
+    header: '<prefix> <info>Proxy commands  <separator>/scproxy'
+    entry: '  <interactive><command></interactive> <muted><arguments></muted><padding><muted><description>'
+    hover: '<highlight><description><br><muted>Usage: <highlight><usage><br><br><interactive>Click to type this command'
+    # Shown next to each command and in its hover, keyed by the usage without /scproxy.
+    descriptions:
+      'reload': 'Reload the configuration'
+      'joinstate list': 'List the join states of all groups'
+      'joinstate info': 'Show the join state of this server'
+      'joinstate info <group|ps> <target> [id]': 'Show the join state of a target'
+      'joinstate set <group|ps> <target> <joinstate> [id]': 'Change the join state of a target'
+      'layout info [group]': 'Show the layout of a group'
+      'layout set <group> <layout>': 'Change the layout of a group'
 
   failure: '<prefix> <error>The command failed. Check the console.'
   invalid-target-type: '<prefix> <error>Use group or ps as the target type.'
@@ -84,9 +93,15 @@ command:
       update-no-change: '<prefix> <warning>The group already has this join state.'
 
     help:
-      header: '<prefix> <info>Join state commands'
-      entry: '<separator>•</separator> <interactive><command></interactive> <muted><arguments>'
-      hover: '<interactive>Click to type this command'
+      header: '<prefix> <info>Join state commands  <separator>/scproxy'
+      entry: '  <interactive><command></interactive> <muted><arguments></muted><padding><muted><description>'
+      hover: '<highlight><description><br><muted>Usage: <highlight><usage><br><br><interactive>Click to type this command'
+      # Shown next to each command and in its hover, keyed by the usage without /scproxy.
+      descriptions:
+        'joinstate list': 'List the join states of all groups'
+        'joinstate info': 'Show the join state of this server'
+        'joinstate info <group|ps> <target> [id]': 'Show the join state of a target'
+        'joinstate set <group|ps> <target> <joinstate> [id]': 'Change the join state of a target'
 
     list:
       groups:
@@ -99,9 +114,13 @@ command:
 
   layout:
     help:
-      header: '<prefix> <info>Layout commands'
-      entry: '<separator>•</separator> <interactive><command></interactive> <muted><arguments>'
-      hover: '<interactive>Click to type this command'
+      header: '<prefix> <info>Layout commands  <separator>/scproxy'
+      entry: '  <interactive><command></interactive> <muted><arguments></muted><padding><muted><description>'
+      hover: '<highlight><description><br><muted>Usage: <highlight><usage><br><br><interactive>Click to type this command'
+      # Shown next to each command and in its hover, keyed by the usage without /scproxy.
+      descriptions:
+        'layout info [group]': 'Show the layout of a group'
+        'layout set <group> <layout>': 'Change the layout of a group'
 
     info:
       header: '<prefix> <info>Layout of group <group>'

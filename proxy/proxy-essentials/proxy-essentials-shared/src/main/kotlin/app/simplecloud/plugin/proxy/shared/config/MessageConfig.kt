@@ -1,5 +1,6 @@
 package app.simplecloud.plugin.proxy.shared.config
 
+import app.simplecloud.plugin.core.shared.command.HelpMessages
 import app.simplecloud.plugin.core.shared.config.AbstractCommandMessageConfig
 import app.simplecloud.plugin.core.shared.config.AbstractCommandMessages
 import app.simplecloud.plugin.core.shared.config.CommandExceptionMessages
@@ -46,9 +47,17 @@ data class KickMessages(
 
 @ConfigSerializable
 data class CommandMessages(
-    val help: ListMessages = ListMessages(
-        header = "<prefix> <info>Proxy commands",
-        entry = "<separator>•</separator> <interactive><command></interactive> <muted><arguments>",
+    val help: HelpListMessages = HelpListMessages(
+        header = "<prefix> <info>Proxy commands  <separator>/scproxy",
+        descriptions = mapOf(
+            "reload" to "Reload the configuration",
+            "joinstate list" to "List the join states of all groups",
+            "joinstate info" to "Show the join state of this server",
+            "joinstate info <group|ps> <target> [id]" to "Show the join state of a target",
+            "joinstate set <group|ps> <target> <joinstate> [id]" to "Change the join state of a target",
+            "layout info [group]" to "Show the layout of a group",
+            "layout set <group> <layout>" to "Change the layout of a group",
+        ),
     ),
     val failure: String = "<prefix> <error>The command failed. Check the console.",
     val invalidTargetType: String = "<prefix> <error>Use group or ps as the target type.",
@@ -79,9 +88,14 @@ data class JoinStateMessages(
         updateFailure = "<prefix> <error>Couldn't update the join state of the group.",
         updateNoChange = "<prefix> <warning>The group already has this join state.",
     ),
-    val help: ListMessages = ListMessages(
-        header = "<prefix> <info>Join state commands",
-        entry = "<separator>•</separator> <interactive><command></interactive> <muted><arguments>",
+    val help: HelpListMessages = HelpListMessages(
+        header = "<prefix> <info>Join state commands  <separator>/scproxy",
+        descriptions = mapOf(
+            "joinstate list" to "List the join states of all groups",
+            "joinstate info" to "Show the join state of this server",
+            "joinstate info <group|ps> <target> [id]" to "Show the join state of a target",
+            "joinstate set <group|ps> <target> <joinstate> [id]" to "Change the join state of a target",
+        ),
     ),
     val list: JoinStateListMessages = JoinStateListMessages(),
 )
@@ -100,9 +114,12 @@ data class JoinStateListMessages(
 
 @ConfigSerializable
 data class LayoutMessages(
-    val help: ListMessages = ListMessages(
-        header = "<prefix> <info>Layout commands",
-        entry = "<separator>•</separator> <interactive><command></interactive> <muted><arguments>",
+    val help: HelpListMessages = HelpListMessages(
+        header = "<prefix> <info>Layout commands  <separator>/scproxy",
+        descriptions = mapOf(
+            "layout info [group]" to "Show the layout of a group",
+            "layout set <group> <layout>" to "Change the layout of a group",
+        ),
     ),
     val info: ListMessages = ListMessages(
         header = "<prefix> <info>Layout of group <group>",
@@ -119,8 +136,15 @@ data class LayoutMessages(
 data class ListMessages(
     val header: String = "",
     val entry: String = "",
-    val hover: String = "<interactive>Click to type this command",
 )
+
+@ConfigSerializable
+data class HelpListMessages(
+    val header: String = "",
+    override val entry: String = HelpMessages.ENTRY,
+    override val hover: String = HelpMessages.HOVER,
+    override val descriptions: Map<String, String> = emptyMap(),
+) : HelpMessages
 
 @ConfigSerializable
 data class UpdateMessages(

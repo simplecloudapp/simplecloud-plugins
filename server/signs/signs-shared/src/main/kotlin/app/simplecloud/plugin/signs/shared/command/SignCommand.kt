@@ -4,7 +4,7 @@ import app.simplecloud.plugin.core.shared.adventure.tags
 import app.simplecloud.plugin.core.shared.command.CloudSender
 import app.simplecloud.plugin.core.shared.command.CloudSuggestions
 import app.simplecloud.plugin.core.shared.command.CommandExceptionHandler
-import app.simplecloud.plugin.core.shared.command.HelpEntry
+import app.simplecloud.plugin.core.shared.command.HelpPage
 import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
 import app.simplecloud.plugin.core.shared.controller.ApiUtils
 import app.simplecloud.plugin.signs.shared.SignManager
@@ -173,9 +173,7 @@ class SignCommand<C : CloudSender>(
 
     private fun sendHelp(sender: C) {
         send(sender, config.command.help.title)
-        HELP_ENTRIES.forEach {
-            sender.sendMessage(HelpEntry.create(config, config.command.help.entry, config.command.help.hover, "/$NAME $it"))
-        }
+        HelpPage.entries(config, config.command.help, "/scsigns", HELP_ENTRIES).forEach(sender::sendMessage)
     }
 
     private fun registeredTargets(): SuggestionProvider<C> = SuggestionProvider.blocking { _, _ ->

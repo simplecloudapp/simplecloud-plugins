@@ -2,7 +2,7 @@ package app.simplecloud.plugin.prefixes.shared.command
 
 import app.simplecloud.plugin.core.shared.command.CloudSender
 import app.simplecloud.plugin.core.shared.command.CommandExceptionHandler
-import app.simplecloud.plugin.core.shared.command.HelpEntry
+import app.simplecloud.plugin.core.shared.command.HelpPage
 import app.simplecloud.plugin.prefixes.shared.Prefixes
 import app.simplecloud.plugin.prefixes.shared.utilities.PrefixesPermissions
 import org.incendo.cloud.CommandManager
@@ -39,11 +39,8 @@ class PrefixesCommand<C : CloudSender>(
     }
 
     private fun sendHelp(sender: C) {
+        val usages = if (sender.hasPermission(PrefixesPermissions.RELOAD)) listOf("help", "reload") else listOf("help")
         sender.sendMessage(messages.msg(messages.command.help.title))
-        sender.sendMessage(HelpEntry.create(messages, messages.command.help.entry, messages.command.help.hover, "/scprefix help"))
-
-        if (sender.hasPermission(PrefixesPermissions.RELOAD)) {
-            sender.sendMessage(HelpEntry.create(messages, messages.command.help.entry, messages.command.help.hover, "/scprefix reload"))
-        }
+        HelpPage.entries(messages, messages.command.help, "/scprefix", usages).forEach(sender::sendMessage)
     }
 }
