@@ -135,7 +135,8 @@ The same state has the same color and word on every surface (signs, holograms, m
   `<prefix> <info>...`.
 - Placeholders are named (`<group>`, `<server>`, `<playername>`, `<count>`); anything a player typed (`<message>`,
   `<reason>` from input) goes in through `Placeholder.unparsed`.
-- Sign layouts and NPC holograms and menus understand the same role tags.
+- Sign layouts and NPC holograms and menus understand the same role tags. The NPC plugin reads its palette from its
+  own `messages.yml`.
 - No hex codes in message strings outside the `palette` section, except the rank tints and `<shine>` colors.
 
 ### Symbols
@@ -144,7 +145,7 @@ The same state has the same color and word on every surface (signs, holograms, m
 | --- | --- |
 | `⚡` (bold, brand) | the prefix, nothing else |
 | `•` (separator) | list bullets |
-| `·` (separator) | between the state and the player count on signs |
+| `·` (separator) | between the state and the player count on signs, between facts in one line of an admin page |
 
 No other decorative symbols: no `»`, `«`, `┃`, `|`, `-`, `├─`, `└─` as bullets, `═══` rules, `✦`, `★`.
 
@@ -316,7 +317,7 @@ Clicking a target that cannot be joined sends one chat message with the prefix:
 ### Menus
 
 - The title is one plain noun without color tags, so it keeps vanilla's title gray: `Servers`.
-- Item names never italic. A server or group is named in `brand`; controls (Previous page, Next page) in
+- Item names never italic. A server or group is named in `brand`; controls (Previous Page, Next Page, Close) in
   `interactive`.
 - Tooltip order: name, description in `highlight`, facts as `<muted>Key: <highlight>value`, one action line in
   `interactive`. A state that blocks the action replaces the action line, in the state color.
@@ -351,7 +352,7 @@ No plugin plays a sound by default; NPC actions only play the sounds an owner ad
 
 ## Writing
 
-- Sentence case everywhere.
+- Sentence case everywhere except item and menu entry names (Title Case): `Join a Server`, `Next Page`.
 - End every sentence with a period, or `!` for good news. No `...`.
 - Address the reader as "you". Name the thing: `Group lobby`, not "the target".
 - Failures say what is missing or what to do: `Use /cloud group start <group> instead.`, never `Error!`.
