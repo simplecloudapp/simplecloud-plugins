@@ -27,6 +27,7 @@ object BehaviorTabBuilder {
 
     private val LOOK_AT_RANGE = Stepper(
         label = "Look Range",
+        hints = listOf("<bd>How close a player must be."),
         material = "SCULK_SENSOR",
         range = NpcConfig.NpcEntityConfiguration.LOOK_AT_PLAYER_DISTANCE_RANGE,
         step = 0.5,
@@ -36,6 +37,7 @@ object BehaviorTabBuilder {
     )
     private val RENDER_RANGE = Stepper(
         label = "Render Range",
+        hints = listOf("<bd>How far away players see it."),
         material = "SPYGLASS",
         range = NpcConfig.NpcEntityConfiguration.VIEW_DISTANCE_RANGE,
         step = 4.0,
@@ -45,6 +47,7 @@ object BehaviorTabBuilder {
     )
     private val PUSH_STRENGTH = Stepper(
         label = "Strength",
+        hints = listOf("<bd>How hard it pushes players back."),
         material = "SLIME_BLOCK",
         range = NpcConfig.PushbackConfiguration.STRENGTH_RANGE,
         step = 0.05,
@@ -53,6 +56,7 @@ object BehaviorTabBuilder {
     )
     private val PUSH_RADIUS = Stepper(
         label = "Radius",
+        hints = listOf("<bd>How close a player must be."),
         material = "TARGET",
         range = NpcConfig.PushbackConfiguration.RADIUS_RANGE,
         step = 0.5,
@@ -62,6 +66,7 @@ object BehaviorTabBuilder {
     )
     private val UPWARD_BOOST = Stepper(
         label = "Upward Boost",
+        hints = listOf("<bd>How high it lifts pushed players."),
         material = "FEATHER",
         range = NpcConfig.PushbackConfiguration.VERTICAL_RANGE,
         step = 0.05,

@@ -134,6 +134,7 @@ class EditorLayoutTest {
 
     private fun inventoryParents(id: String, screen: InventoryEditorScreen): List<InventoryEditorScreen> {
         val studio = InventoryEditorScreen.Studio(id, listOf(19))
+        val clicks = InventoryEditorScreen.Studio(id, listOf(19), StudioTab.CLICK)
         val click = InventoryEditorScreen.ItemAction(id, listOf(19), PlayerInteraction.LEFT_CLICK)
         val group = InventoryEditorScreen.LiveGroup(id, "servers")
         return when (screen) {
@@ -152,7 +153,7 @@ class EditorLayoutTest {
 
                 is InventoryPickerPurpose.OpenInventory, is InventoryPickerPurpose.SendToServer,
                 is InventoryPickerPurpose.Sound,
-                -> listOf(studio, click)
+                -> listOf(clicks, click)
 
                 else -> emptyList()
             }

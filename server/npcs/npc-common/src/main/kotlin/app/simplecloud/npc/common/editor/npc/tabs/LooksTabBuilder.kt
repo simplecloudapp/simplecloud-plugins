@@ -32,6 +32,7 @@ object LooksTabBuilder {
         default = 1.0,
         decimals = 2,
         unit = "×",
+        hints = listOf("<bd>1.00× is the normal size."),
     )
 
     fun build(context: NpcEditorContext, player: NpcPlayer, config: NpcConfig): EditorMenu {

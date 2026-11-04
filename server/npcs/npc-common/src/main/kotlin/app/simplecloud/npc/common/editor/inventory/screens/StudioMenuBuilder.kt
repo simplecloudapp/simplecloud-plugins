@@ -129,13 +129,14 @@ object StudioMenuBuilder {
             group == null -> "<bd>Editing: <val>${targets.size} items"
             else -> "<bd>Editing: <val>${targets.size} slots <bd>of <val>$group"
         }
-        val intro = listOf("<hnt>Preview with sample values:", "").map(Palette::expand)
+        val intro = listOf("<hnt>Player tooltip, with sample values:").map(Palette::expand)
+        val quiet = shown.lore.map { Palette.expand("<bd>" + Msg.miniMessage.stripTags(it)) }
         val previewLore = listOfNotNull(
             "",
             editing,
             if (targets.size > 1) "<hnt>Fields that differ show as Mixed." else null,
         )
-        pane[PREVIEW_SLOT] = shown.copy(lore = intro + shown.lore + previewLore.map(Palette::expand))
+        pane[PREVIEW_SLOT] = shown.copy(lore = intro + quiet + previewLore.map(Palette::expand))
 
         if (group != null) {
             val only = session.thisSlotOnly
@@ -174,7 +175,7 @@ object StudioMenuBuilder {
                 "<err>Delete",
                 listOf(
                     "<bd>Removes $deleted.",
-                    if (many) "<hnt>Undo brings them back." else "<hnt>Undo brings it back.",
+                    "<hnt>Undo it on the menu screen.",
                     "",
                     if (many) "<key>Left-click to delete them" else "<key>Left-click to delete it",
                 ),

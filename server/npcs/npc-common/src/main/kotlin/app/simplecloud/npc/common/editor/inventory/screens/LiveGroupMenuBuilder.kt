@@ -122,7 +122,7 @@ object LiveGroupMenuBuilder {
                     "",
                     if (on) "<key>Left-click to stop listing them" else "<key>Left-click to list them",
                 )
-                pane.left(slot, Ui.item(if (on) "LIME_DYE" else "GRAY_DYE", "<ttl>$label Servers", lore, glowing = on)) {
+                pane.left(slot, Ui.item(stateIcon(state), "<ttl>$label Servers", lore, glowing = listed)) {
                     change {
                         LiveGroups.setSource(it, group) { s ->
                             val states = s.states.map(String::uppercase).toMutableSet()
@@ -239,5 +239,14 @@ object LiveGroupMenuBuilder {
         pane.back(context, player)
 
         return pane.menu(Ui.title("Live Group", config.id))
+    }
+
+    private fun stateIcon(state: ServerState): String = when (state) {
+        ServerState.STARTING -> "LIGHT_BLUE_CONCRETE"
+        ServerState.AVAILABLE -> "LIME_CONCRETE"
+        ServerState.INGAME -> "ORANGE_CONCRETE"
+        ServerState.STOPPING -> "YELLOW_CONCRETE"
+        ServerState.PREPARING -> "WHITE_CONCRETE"
+        else -> "GRAY_CONCRETE"
     }
 }

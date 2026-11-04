@@ -18,6 +18,11 @@ object TemplatesMenuBuilder {
 
     fun build(context: InventoryEditorContext, player: NpcPlayer): EditorMenu {
         val pane = Pane(SIZE)
+        pane[Layout.HEADER] = Ui.item(
+            "CHEST",
+            "<ttl>Which Kind of Menu?",
+            listOf("<bd>Pick a starting point.", "<bd>Everything can be changed later."),
+        )
 
         MenuTemplate.entries.zip(TEMPLATE_SLOTS).forEach { (template, slot) ->
             pane.left(

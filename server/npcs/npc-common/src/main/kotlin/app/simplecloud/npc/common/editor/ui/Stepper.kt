@@ -45,7 +45,7 @@ data class Stepper(
             listOf("$valueLine <hnt>(${fmt(min)} – ${fmt(max)})") + hints + mixedHint + listOf(
                 "",
                 "<key>Left-click +${fmt(step)} · Right-click −${fmt(step)}",
-                "<key>Shift-click for ×$bigMultiplier steps",
+                "<key>Hold Shift for steps of ${fmt(step * bigMultiplier)}",
             ),
         )
     }

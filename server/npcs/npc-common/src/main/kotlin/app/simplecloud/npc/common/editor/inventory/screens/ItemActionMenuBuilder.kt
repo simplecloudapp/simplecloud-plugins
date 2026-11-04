@@ -54,7 +54,7 @@ object ItemActionMenuBuilder {
             Ui.item(
                 "RED_CONCRETE",
                 "<err>Clear This Click",
-                listOf("<bd>Removes everything it does.", "<hnt>Undo brings it back.", "", "<key>Left-click to clear it"),
+                listOf("<bd>Removes everything it does.", "<hnt>Undo it on the menu screen.", "", "<key>Left-click to clear it"),
             ),
         ) {
             context.change(player, config.id) { fresh ->
