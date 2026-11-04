@@ -148,7 +148,7 @@ object LiveGroups {
         "static" -> SourceInfo(
             "PAPER",
             "Fixed List",
-            listOf("Entries written by hand in the YAML."),
+            listOf("You write the entries in the", "config file of the menu."),
             "PAPER",
             "<brand>Entry",
             emptyList(),

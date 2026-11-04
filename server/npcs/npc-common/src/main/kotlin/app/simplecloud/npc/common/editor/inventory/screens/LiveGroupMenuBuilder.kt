@@ -95,7 +95,7 @@ object LiveGroupMenuBuilder {
             val targetLabel = if (target == GroupServersSource.TARGET_GROUP) "the opening NPC's target" else target
             pane.left(
                 GROUP_SLOT,
-                Ui.item("PAPER", "<ttl>Which Group", listOf("<bd>Now: <val>$targetLabel", "", "<key>Left-click to change it")),
+                Ui.item("PAPER", "<ttl>Group", listOf("<bd>Now: <val>$targetLabel", "", "<key>Left-click to change it")),
             ) { pick(InventoryPickerPurpose.LiveSourceGroup(group)) }
 
             val sort = source.sort?.uppercase() ?: SORTS.first()
@@ -109,16 +109,18 @@ object LiveGroupMenuBuilder {
             }
 
             val chosen = source.states.map { it.uppercase() }.toSet()
-            val noneHint = listOfNotNull("<hnt>None picked: everything but stopping.".takeIf { chosen.isEmpty() })
             val states = ServerState.entries.filterNot { it.name.startsWith("UNKNOWN") }
             states.zip(Layout.list(states.size, firstRow = 2, rows = 1)).forEach { (state, slot) ->
                 val on = state.name in chosen
-                pane.toggle(
-                    slot,
-                    state.name.lowercase().replace('_', ' ').replaceFirstChar(Char::uppercase),
-                    on,
-                    extraLore = noneHint,
-                ) {
+                val label = state.name.lowercase().replace('_', ' ').replaceFirstChar(Char::uppercase)
+                val listed = on || (chosen.isEmpty() && state != ServerState.STOPPING)
+                val lore = listOfNotNull(
+                    if (listed) "<on>Listed" else "<off>Not listed",
+                    if (chosen.isEmpty()) "<hnt>Nothing picked, so all but stopping." else null,
+                    "",
+                    if (on) "<key>Left-click to stop listing them" else "<key>Left-click to list them",
+                )
+                pane.left(slot, Ui.item(if (on) "LIME_DYE" else "GRAY_DYE", "<ttl>$label Servers", lore, glowing = on)) {
                     change {
                         LiveGroups.setSource(it, group) { s ->
                             val states = s.states.map(String::uppercase).toMutableSet()
@@ -135,7 +137,7 @@ object LiveGroupMenuBuilder {
             EMPTY_SLOT,
             Ui.item(
                 emptyLook?.material ?: "GRAY_DYE",
-                "<ttl>When A Slot Is Empty",
+                "<ttl>Empty Slots",
                 listOf(
                     emptyLook?.let { "<bd>Shows " + (it.name ?: it.material) } ?: "<off>Stays empty",
                     "",
@@ -211,12 +213,11 @@ object LiveGroupMenuBuilder {
                     "PAINTING",
                     "<ttl>State Looks",
                     listOf(
-                        if (looks == 0) "<off>None set" else "<bd><val>$looks <bd>states styled",
-                        "<hnt>Full, starting and offline each get their own look.",
+                        if (looks == 0) "<off>None set" else "<bd>States with their own look: <val>$looks",
+                        "<hnt>Entries can look different per server state.",
                         "",
                         "<key>Left-click to open it",
                     ),
-                    glowing = looks > 0,
                 ),
             ) { context.navigate(player, InventoryEditorScreen.StateLooks(config.id, group)) }
         }

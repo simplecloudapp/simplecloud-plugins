@@ -256,7 +256,7 @@ object CanvasRender {
             "${color}_STAINED_GLASS_PANE",
             "<ttl>$group",
             listOfNotNull(
-                "<bd>Source <val>$sourceLabel",
+                "<bd>Source: <val>$sourceLabel",
                 "<bd><val>$slots <bd>slots",
                 "<warn>No page arrows: extra entries are hidden.".takeIf { arrowsMissing },
                 "<on>Active: arrows and key 4 use it".takeIf { active },

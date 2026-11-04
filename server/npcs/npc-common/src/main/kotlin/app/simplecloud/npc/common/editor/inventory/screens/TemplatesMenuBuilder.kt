@@ -25,7 +25,7 @@ object TemplatesMenuBuilder {
                 Ui.item(
                     template.icon,
                     "<ttl>${template.label}",
-                    template.description.map { "<bd>$it" } + listOf("", "<key>Left-click to create and open the canvas"),
+                    template.description.map { "<bd>$it" } + listOf("", "<key>Left-click to create it"),
                 ),
             ) { create(context, player, template) }
         }

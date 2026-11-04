@@ -25,10 +25,10 @@ object InventoryHubMenuBuilder {
     private const val CANVAS_SLOT = 20
     private const val TITLE_SLOT = 22
     private const val RENAME_SLOT = 24
-    private const val USED_BY_SLOT = 29
-    private const val DUPLICATE_SLOT = 31
-    private const val DELETE_SLOT = 33
+    private const val USED_BY_SLOT = 30
+    private const val DUPLICATE_SLOT = 32
     private const val UNDO_SLOT = Layout.TOOL_LEFT
+    private const val DELETE_SLOT = Layout.TOOL_RIGHT
 
     private const val DEFAULT_TITLE = "Menu"
     private const val USED_BY_LISTED = 6
@@ -57,13 +57,13 @@ object InventoryHubMenuBuilder {
 
         pane[SNAPSHOT_SLOT] = Ui.item(
             "CHEST",
-            "<ttl>Menu <val>${config.id}",
+            "<ttl>${config.id}",
             listOf(
-                "<bd>Title " + config.title,
-                "<bd>Rows <val>${config.rows} <hnt>· ${config.size()} slots",
-                "<bd><val>${config.items.count { it.liveGroup == null }} <bd>items · " +
-                    "<val>${config.liveGroups().size} <bd>live groups",
-                "<bd>Opened by <val>${users.size} <bd>NPC${if (users.size == 1) "" else "s"} · " +
+                "<bd>Title: <val>" + config.title,
+                "<bd>Rows: <val>${config.rows}",
+                "<bd>Items: <val>${config.items.count { it.liveGroup == null }}",
+                "<bd>Live groups: <val>${config.liveGroups().size}",
+                "<bd>Opened by: <val>${users.size} <bd>NPC${if (users.size == 1) "" else "s"}, " +
                     "<val>${menus.size} <bd>menu${if (menus.size == 1) "" else "s"}",
             ),
         )
@@ -72,11 +72,12 @@ object InventoryHubMenuBuilder {
             CANVAS_SLOT,
             Ui.item(
                 "CRAFTING_TABLE",
-                "<ttl>Edit On The Canvas",
+                "<ttl>Edit Slots",
                 listOf(
-                    "<bd>Menu editor",
+                    "<bd>Place, move and style the items",
+                    "<bd>of the menu in a live preview.",
                     "",
-                    "<key>Left-click to open the canvas",
+                    "<key>Left-click to open it",
                 ),
             ),
         ) { context.navigate(player, InventoryEditorScreen.Canvas(config.id)) }
@@ -85,10 +86,11 @@ object InventoryHubMenuBuilder {
             TITLE_SLOT,
             Ui.item(
                 "NAME_TAG",
-                "<ttl>Title",
+                "<ttl>Inventory Title",
                 listOf(
-                    "<bd>Now: " + config.title,
-                    "<hnt>Plain text keeps the vanilla title look.",
+                    "<bd>Now: <val>" + config.title,
+                    "<bd>The text at the top of the menu.",
+                    "<hnt>Plain text keeps the vanilla look.",
                     "",
                     "<key>Left-click to type a new one in chat",
                     "<key>Press Q to reset to the default",
@@ -110,35 +112,33 @@ object InventoryHubMenuBuilder {
             RENAME_SLOT,
             Ui.item(
                 "ANVIL",
-                "<ttl>Rename",
+                "<ttl>Rename Menu",
                 listOf(
-                    "<bd>Id <val>${config.id}",
+                    "<bd>Id: <val>${config.id}",
+                    "<bd>The name commands and NPCs use.",
                     "",
                     "<key>Left-click to type a new id in chat",
                 ),
             ),
         ) { promptRename(context, player, config) }
 
-        pane.left(
-            USED_BY_SLOT,
-            Ui.item(
-                "ARMOR_STAND",
-                "<ttl>Used By",
-                if (users.isEmpty()) {
-                    listOf("<off>No NPC opens this menu yet.")
-                } else {
+        if (users.isEmpty()) {
+            pane[USED_BY_SLOT] = Ui.item("ARMOR_STAND", "<ttl>Used By", listOf("<off>No NPC opens this menu yet."))
+        }
+        if (users.isNotEmpty()) {
+            pane.left(
+                USED_BY_SLOT,
+                Ui.item(
+                    "ARMOR_STAND",
+                    "<ttl>Used By",
                     users.take(USED_BY_LISTED).map { "<bd>· <val>${it.id}" } +
                         listOfNotNull(
                             (users.size - USED_BY_LISTED).takeIf { it > 0 }?.let { "<hnt>and $it more" },
                             "",
                             "<key>Left-click to open one of them",
-                        )
-                },
-            ),
-        ) {
-            if (users.isNotEmpty()) {
-                context.navigate(player, InventoryEditorScreen.Picker(config.id, InventoryPickerPurpose.UsedBy))
-            }
+                        ),
+                ),
+            ) { context.navigate(player, InventoryEditorScreen.Picker(config.id, InventoryPickerPurpose.UsedBy)) }
         }
 
         pane.left(
@@ -146,7 +146,7 @@ object InventoryHubMenuBuilder {
             Ui.item(
                 "MAP",
                 "<ttl>Duplicate",
-                listOf("<bd>A copy with a new id, opened here.", "", "<key>Left-click to duplicate it"),
+                listOf("<bd>A copy with a new id, opened here.", "", "<key>Left-click to name the copy"),
             ),
         ) { duplicate(context, player, config) }
 
@@ -156,7 +156,11 @@ object InventoryHubMenuBuilder {
                 "TNT",
                 "<err>Delete This Menu",
                 listOf(
-                    if (users.isEmpty()) "<hnt>No NPC opens it." else "<warn>${users.size} NPC(s) still open it.",
+                    if (users.isEmpty()) {
+                        "<hnt>No NPC opens it."
+                    } else {
+                        "<warn>${users.size} NPC${if (users.size == 1) "" else "s"} still open it."
+                    },
                     "",
                     "<key>Left-click to delete it",
                 ),
@@ -166,29 +170,33 @@ object InventoryHubMenuBuilder {
             context.navigate(player, confirm)
         }
 
-        pane.on(
-            UNDO_SLOT,
-            Ui.item(
-                if (history.canUndo || history.canRedo) "CLOCK" else "GRAY_DYE",
-                "<ttl>Undo / Redo",
-                listOf(
-                    "<bd><val>${history.undoCount} <bd>steps back · <val>${history.redoCount} <bd>forward",
-                    "",
-                    "<key>Left-click to undo",
-                    "<key>Right-click to redo",
-                ),
-            ),
-        ) { click ->
-            val moved = when (click) {
-                MenuClick.LEFT -> context.undo(player, config.id)
-                MenuClick.RIGHT -> context.redo(player, config.id)
-                else -> false
+        if (!history.canUndo && !history.canRedo) {
+            pane[UNDO_SLOT] = Ui.disabled("Undo", listOf("<hnt>Nothing to undo yet."))
+        } else {
+            pane.on(UNDO_SLOT, undoItem(history.undoCount, history.redoCount)) { click ->
+                val moved = when (click) {
+                    MenuClick.LEFT -> context.undo(player, config.id)
+                    MenuClick.RIGHT -> context.redo(player, config.id)
+                    else -> false
+                }
+                if (moved) context.render(player, screen)
             }
-            if (moved) context.render(player, screen)
         }
 
         return pane.menu(Ui.root(config.id))
     }
+
+    private fun undoItem(back: Int, forward: Int) = Ui.item(
+        "RECOVERY_COMPASS",
+        "<ttl>Undo",
+        listOfNotNull(
+            "<bd>Steps back: <val>$back",
+            "<bd>Steps forward: <val>$forward",
+            "",
+            if (back > 0) "<key>Left-click to undo" else null,
+            if (forward > 0) "<key>Right-click to redo" else null,
+        ),
+    )
 
     private fun promptRename(context: InventoryEditorContext, player: NpcPlayer, config: InventoryConfiguration) {
         context.chatPrompt(

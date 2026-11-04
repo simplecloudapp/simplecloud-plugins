@@ -65,7 +65,7 @@ object InventoryConfirms {
                         listOf(
                             "<bd><val>$slots <bd>slots, page arrows included.",
                             "",
-                            "<hnt>Undo on the canvas brings it back.",
+                            "<hnt>Undo brings it back.",
                         ),
                     ),
                     fire = {
