@@ -18,8 +18,8 @@ motd:
   # Wrap a line in <center>...</center> to center it using vanilla font metrics.
   layouts:
     - name: maintenance
-      line1: '<center><brand>SimpleCloud</center>'
-      line2: '<center><warning>ɪɴ ᴍᴀɪɴᴛᴇɴᴀɴᴄᴇ, ʙᴀᴄᴋ ꜱᴏᴏɴ</center>'
+      line1: '<center><brand>ꜱɪᴍᴘʟᴇᴄʟᴏᴜᴅ</center>'
+      line2: '<center><warning>In maintenance, back soon.</center>'
 
 server-icon:
   enabled: true
@@ -30,7 +30,7 @@ player-list:
   enabled: true
   player-list:
     - ''
-    - '<muted>ꜱɪᴍᴘʟᴇᴄʟᴏᴜᴅ.ᴀᴘᴘ'
+    - '<muted>simplecloud.app'
     - ''
 
 # Server version text and player slots configuration.

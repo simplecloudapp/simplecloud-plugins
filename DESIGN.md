@@ -257,26 +257,26 @@ to type, and `interactive` words for cancel.
 ### Tab list
 
 The header and footer keep a space at the start and end of each line, and the footer sentence stays long, so the tab
-list is wide enough when only one column of players shows. The address is in small caps.
+list is wide enough when only one column of players shows. The network name and the address are in small caps.
 
 ```
-header: '<br><brand>SimpleCloud<br>'
+header: '<br><brand>ꜱɪᴍᴘʟᴇᴄʟᴏᴜᴅ<br>'
 footer: '<br> <highlight><online_players> players <muted>are playing on your network <br> <separator>  ꜱɪᴍᴘʟᴇᴄʟᴏᴜᴅ.ᴀᴘᴘ<br>'
 ```
 
 ### Server list and kick screens
 
-- MOTD line 1 is the network name in brand, centered; line 2 is one short phrase in small caps, in `muted` or in the
-  join state's color.
+- MOTD line 1 is the network name in brand and small caps, centered; line 2 is one short sentence in `muted`, or the
+  join state in its color.
 - The version text only shows a state: `<warning>Maintenance`.
-- The player list hover is plain: the network's address in small caps, in `muted`.
+- The player list hover is plain: the network's address in `muted`.
 
 ```
-line1: '<center><brand>SimpleCloud</center>'
-line2: '<center><muted>ᴀ ɴᴇᴛᴡᴏʀᴋ ᴘᴏᴡᴇʀᴇᴅ ʙʏ ꜱɪᴍᴘʟᴇᴄʟᴏᴜᴅ.ᴀᴘᴘ</center>'
+line1: '<center><brand>ꜱɪᴍᴘʟᴇᴄʟᴏᴜᴅ</center>'
+line2: '<center><muted>A network powered by simplecloud.app</center>'
 
-line1: '<center><brand>SimpleCloud</center>'
-line2: '<center><warning>ɪɴ ᴍᴀɪɴᴛᴇɴᴀɴᴄᴇ, ʙᴀᴄᴋ ꜱᴏᴏɴ</center>'
+line1: '<center><brand>ꜱɪᴍᴘʟᴇᴄʟᴏᴜᴅ</center>'
+line2: '<center><warning>In maintenance, back soon.</center>'
 ```
 
 Kick screens: no prefix. Line 1 says what happened in its state color, an empty line, then what to do in `muted`.
