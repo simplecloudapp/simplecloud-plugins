@@ -155,6 +155,6 @@ object BehaviorTabBuilder {
             }
         }
 
-        return TabFrame.menu(pane, config)
+        return TabFrame.menu(pane, config, NpcTab.BEHAVIOR)
     }
 }

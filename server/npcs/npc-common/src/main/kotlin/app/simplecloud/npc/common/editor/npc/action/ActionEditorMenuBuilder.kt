@@ -31,8 +31,7 @@ object ActionEditorMenuBuilder {
         pane[ActionFieldsPane.HEADER_SLOT] = Ui.item(
             Clicks.material(interaction),
             "<ttl>${Clicks.label(interaction)}",
-            listOf("<hnt>Join state <val>${NpcFormat.joinState(joinState)}"),
-            glowing = true,
+            listOf("<bd>Join state: <val>${NpcFormat.joinState(joinState)}"),
         )
 
         ActionFieldsPane.fill(pane, port(context, player, config, interaction, joinState, screen))

@@ -32,14 +32,15 @@ object TargetsTabBuilder {
             val state = when {
                 !summary.known -> "<hnt>Waiting for the cloud."
                 summary.liveServers == 0 -> "<warn>Offline"
-                else -> "<val>${summary.liveServers} <hnt>servers · <val>${summary.players} <hnt>players"
+                else -> "<bd>Servers: <val>${summary.liveServers} <hnt>· <bd>Players: <val>${summary.players}"
             }
             val lore = listOf(
-                "<hnt>${if (summary.isGroup) "Group" else "Server"}",
+                "<bd>Type: <val>${if (summary.isGroup) "Group" else "Server"}",
                 state,
-                if (removable) "<key>Right-click to remove it" else "<hnt>The last target stays.",
+                "",
+                if (removable) "<key>Right-click to remove it" else "<hnt>An NPC needs at least one target.",
             )
-            pane.on(slot, Ui.item(if (summary.isGroup) "BOOKSHELF" else "BOOK", "<ttl>$target", lore)) { click ->
+            pane.on(slot, Ui.item(if (summary.isGroup) "BOOKSHELF" else "MAP", "<ttl>$target", lore)) { click ->
                 if (click != MenuClick.RIGHT || !removable) return@on
                 context.commit(player, config.id, screen, Refresh.HOLOGRAM) { fresh ->
                     if (fresh.targetServers.size <= 1) return@commit null
@@ -61,7 +62,7 @@ object TargetsTabBuilder {
             Ui.item(
                 "HOPPER",
                 "<ttl>Join Strategy",
-                listOf("<val>${strategyLabel(config.joinStrategy)}", "<key>Left <hnt>Next"),
+                listOf("<bd>Now: <val>${strategyLabel(config.joinStrategy)}", "", "<key>Left-click to switch"),
             ),
         ) {
             context.commit(player, config.id, screen) { fresh ->
@@ -69,7 +70,7 @@ object TargetsTabBuilder {
             }
         }
 
-        return TabFrame.menu(pane, config)
+        return TabFrame.menu(pane, config, NpcTab.TARGETS)
     }
 
     private fun strategyLabel(strategy: JoinStrategy): String = when (strategy) {

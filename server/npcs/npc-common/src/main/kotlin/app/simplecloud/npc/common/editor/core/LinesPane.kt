@@ -33,7 +33,7 @@ object LinesPane {
         lines.take(max).forEachIndexed { index, line ->
             val text = list.textOf(line)
             val secondary = list.secondary?.takeIf { list.opensSecondary(line) }
-            val rightLabel = list.secondary?.label ?: "Duplicate"
+            val rightLabel = list.secondary?.label ?: "duplicate it"
             val item = lineItem(text, index, lines.size, list.hints(line), rightLabel, secondary)
             pane.on(slots[index], item) { click ->
                 when (click) {
@@ -96,13 +96,17 @@ object LinesPane {
         rightLabel: String,
         leftOpens: LineAction?,
     ): NpcItem {
-        val clicks = leftOpens?.let { "<key>Left <hnt>${it.label} · <key>Shift <hnt>Move" }
-            ?: "<key>Left <hnt>Edit · <key>Right <hnt>$rightLabel · <key>Shift <hnt>Move"
+        val first = if (leftOpens == null) {
+            listOf("<key>Left-click to edit it", "<key>Right-click to $rightLabel")
+        } else {
+            listOf("<key>Left-click to ${leftOpens.label}")
+        }
+        val clicks = first + listOf("<key>Shift-click to move it up", "<key>Shift-right-click to move it down")
 
         return NpcItem(
             "PAPER",
             text.ifBlank { Palette.expand("<hnt>(blank line)") },
-            (listOf("<hnt>Line ${index + 1} of $count") + hints + clicks).map(Palette::expand),
+            (listOf("<hnt>Line ${index + 1} of $count") + hints + listOf("") + clicks).map(Palette::expand),
         )
     }
 }

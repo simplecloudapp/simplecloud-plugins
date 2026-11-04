@@ -77,12 +77,18 @@ object LooksTabBuilder {
                 "<ttl>Glow",
                 listOf(
                     "<on>On <hnt>· <val>${NpcFormat.glowLabel(color)}",
-                    "<key>Left <hnt>Turn off · <key>Right <hnt>Color",
+                    "",
+                    "<key>Left-click to turn it off",
+                    "<key>Right-click to pick the color",
                 ),
                 glowing = true,
             )
         } else {
-            Ui.item("GRAY_DYE", "<ttl>Glow", listOf("<off>Off", "<key>Left <hnt>Turn on · <key>Right <hnt>Color"))
+            Ui.item(
+                NpcFormat.glowIcon(color),
+                "<ttl>Glow",
+                listOf("<off>Off", "", "<key>Left-click to turn it on", "<key>Right-click to pick the color"),
+            )
         }
         pane.on(GLOW_SLOT, glowItem) { click ->
             when (click) {
@@ -132,7 +138,7 @@ object LooksTabBuilder {
             pane[SCALE_SLOT] = Ui.disabled("Size", reason)
         }
 
-        return TabFrame.menu(pane, config)
+        return TabFrame.menu(pane, config, NpcTab.LOOKS)
     }
 
     private fun poseLabel(pose: NpcPose): String = when (pose) {

@@ -86,7 +86,7 @@ object NpcTabBuilder {
             listOf("<val>${live.playersInRange(config)} <hnt>players in range"),
         )
 
-        return TabFrame.menu(pane, config)
+        return TabFrame.menu(pane, config, NpcTab.NPC)
     }
 
     private fun promptDuplicate(

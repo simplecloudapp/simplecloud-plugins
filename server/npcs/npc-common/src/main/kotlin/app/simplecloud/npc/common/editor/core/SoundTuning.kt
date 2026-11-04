@@ -51,17 +51,17 @@ object SoundTuning {
                 tune { it.copy(pitch = value) }
             }
         }
+        if (sound == null) {
+            pane[PREVIEW_SLOT] = Ui.disabled("Preview", listOf("<hnt>Pick a sound first."))
+            return
+        }
         pane.left(
             PREVIEW_SLOT,
             Ui.item(
                 "BELL",
                 "<ttl>Preview",
-                listOf(
-                    sound?.let { "<bd>Sound <val>$it" } ?: "<bd>Sound <off>none picked yet",
-                    NpcFormat.soundSettings(options),
-                    "<key>Left-click to play it to me",
-                ),
+                listOf("<bd>Sound: <val>$sound", NpcFormat.soundSettings(options), "", "<key>Left-click to play it to me"),
             ),
-        ) { sound?.let { player.playSound(it, options) } }
+        ) { player.playSound(sound, options) }
     }
 }

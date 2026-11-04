@@ -336,10 +336,9 @@ object ActionFieldsPane {
         set.zip(slots).forEach { (block, slot) ->
             val lore = listOfNotNull(
                 block.summary(action),
-                listOfNotNull(
-                    block.editHint?.let { "<key>Left <hnt>$it" },
-                    "<key>Right-click to remove it",
-                ).joinToString(" <hnt>· "),
+                "",
+                if (block.editHint == null) null else "<key>Left-click to ${block.editHint.replaceFirstChar(Char::lowercase)}",
+                "<key>Right-click to remove it",
             )
             pane.on(slot, Ui.item(block.material, "<ttl>${block.label}", lore, glowing = true)) { click ->
                 when (click) {

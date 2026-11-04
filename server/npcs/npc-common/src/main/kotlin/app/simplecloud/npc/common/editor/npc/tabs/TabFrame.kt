@@ -39,5 +39,5 @@ object TabFrame {
         return pane
     }
 
-    fun menu(pane: Pane, config: NpcConfig): EditorMenu = pane.menu(Ui.root(NpcFormat.displayName(config)))
+    fun menu(pane: Pane, config: NpcConfig, tab: NpcTab): EditorMenu = pane.menu(Ui.title(tab.label, NpcFormat.displayName(config)))
 }

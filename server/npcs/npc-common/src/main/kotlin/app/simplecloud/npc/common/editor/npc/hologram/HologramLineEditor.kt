@@ -66,7 +66,7 @@ object HologramLineEditor {
 
                 rotation + live
             },
-            secondary = LineAction("Rotating texts") { index ->
+            secondary = LineAction("edit its rotating texts") { index ->
                 context.navigate(player, NpcEditorScreen.HologramFrames(config.id, state, index))
             },
             opensSecondary = HologramLine::rotating,

@@ -22,7 +22,7 @@ object GlowMenuBuilder {
 
         NpcFormat.GLOW_COLORS.zip(COLOR_SLOTS).forEach { (color, slot) ->
             val selected = color.teamName.equals(current, true)
-            pane.left(slot, Ui.option(color.icon, color.label, listOf(""), selected)) {
+            pane.left(slot, Ui.option(color.icon, color.label, emptyList(), selected, nameColor(color.teamName))) {
                 context.commitAndBack(player, config.id, refresh = Refresh.ENTITY) { fresh ->
                     fresh.copy(entity = fresh.entity.copy(glowing = true, glowColor = color.teamName))
                 }
@@ -33,4 +33,6 @@ object GlowMenuBuilder {
 
         return pane.menu(Ui.title("Glow Color", NpcFormat.displayName(config)))
     }
+
+    private fun nameColor(teamName: String): String = if (teamName == "black") "<gray>" else "<$teamName>"
 }

@@ -65,17 +65,18 @@ object ActionsTabBuilder {
             val action = config.findAction(interaction, selected)?.takeIf { it.configuredTypes().isNotEmpty() }
             val item = if (action == null) {
                 Ui.item(
-                    "LIGHT_GRAY_CONCRETE",
+                    Clicks.material(interaction),
                     "<ttl>${Clicks.label(interaction)}",
-                    listOf("<off>Nothing happens", "<key>Left-click to set it up"),
+                    listOf("<off>Nothing happens", "", "<key>Left-click to set it up"),
                 )
             } else {
                 val summary =
                     listOfNotNull("<on>Join target".takeIf { action.joinTarget }) + NpcFormat.fieldLines(action)
                 Ui.item(
-                    "LIME_CONCRETE",
-                    "<on>${Clicks.label(interaction)}",
-                    summary.take(SUMMARY_LINES) + listOf("<key>Left-click to edit it"),
+                    Clicks.material(interaction),
+                    "<ttl>${Clicks.label(interaction)}",
+                    summary.take(SUMMARY_LINES) + listOf("", "<key>Left-click to edit it"),
+                    glowing = true,
                 )
             }
             pane.left(slot, item) {
@@ -83,7 +84,7 @@ object ActionsTabBuilder {
             }
         }
 
-        return TabFrame.menu(pane, config)
+        return TabFrame.menu(pane, config, NpcTab.ACTIONS)
     }
 
     private fun configured(config: NpcConfig, state: String): Int =

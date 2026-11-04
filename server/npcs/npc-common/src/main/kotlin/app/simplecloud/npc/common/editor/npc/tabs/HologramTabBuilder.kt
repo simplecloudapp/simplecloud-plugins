@@ -80,7 +80,7 @@ object HologramTabBuilder {
 
         LinesPane.place(pane, HologramLineEditor.lines(context, player, config, selected, screen), firstRow = 2, rows = 2)
 
-        return TabFrame.menu(pane, config)
+        return TabFrame.menu(pane, config, NpcTab.HOLOGRAM)
     }
 
     private fun linkedHint(config: NpcConfig): List<String> {
