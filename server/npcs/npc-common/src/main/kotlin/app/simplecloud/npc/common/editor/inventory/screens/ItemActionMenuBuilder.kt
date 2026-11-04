@@ -32,10 +32,13 @@ object ItemActionMenuBuilder {
             Clicks.material(screen.interaction),
             "<ttl>${Clicks.label(screen.interaction)}",
             listOf("<bd>Editing: <val>" + if (slots.size == 1) "This item" else "${slots.size} items") +
-                if (ClickSummary.hasOwn(items, screen.interaction)) {
-                    emptyList()
-                } else {
-                    listOf("") + ClickSummary.lines(config, items, screen.interaction)
+                when {
+                    ClickSummary.differs(items, screen.interaction) ->
+                        listOf("<warn>The items differ: what you see is", "<warn>the first one, edits apply to all.")
+
+                    ClickSummary.hasOwn(items, screen.interaction) -> emptyList()
+
+                    else -> listOf("") + ClickSummary.lines(config, items, screen.interaction)
                 },
         )
 
@@ -76,10 +79,10 @@ object ItemActionMenuBuilder {
     ): EditorMenu {
         val pane = Pane(ActionFieldsPane.ADD_SIZE)
 
-        ActionFieldsPane.fillAdd(pane, port(context, player, config, screen.slots, screen.interaction))
+        ActionFieldsPane.fillAdd(pane, port(context, player, config, screen.slots, screen.interaction), screen.interaction)
         pane.back(context, player)
 
-        return pane.menu(Ui.title("Add to ${Clicks.short(screen.interaction)}", config.id))
+        return pane.menu(Ui.title("Add Action", config.id))
     }
 
     private fun port(

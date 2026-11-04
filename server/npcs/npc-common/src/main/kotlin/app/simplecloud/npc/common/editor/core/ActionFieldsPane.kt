@@ -8,6 +8,7 @@ import app.simplecloud.npc.common.editor.PromptTokens
 import app.simplecloud.npc.common.editor.menu.MenuClick
 import app.simplecloud.npc.common.editor.menu.Pane
 import app.simplecloud.npc.common.editor.npc.NpcFormat
+import app.simplecloud.npc.common.editor.ui.Clicks
 import app.simplecloud.npc.common.editor.ui.Layout
 import app.simplecloud.npc.common.editor.ui.Stepper
 import app.simplecloud.npc.common.editor.ui.Ui
@@ -16,12 +17,14 @@ import app.simplecloud.npc.common.utils.InputChecks
 import app.simplecloud.npc.core.config.NpcAnimation
 import app.simplecloud.npc.core.config.NpcConfig
 import app.simplecloud.npc.core.config.NpcConfig.ActionConfiguration
+import app.simplecloud.npc.core.interaction.PlayerInteraction
 import app.simplecloud.npc.core.platform.NpcPlayer
 import net.kyori.adventure.text.Component
 
 object ActionFieldsPane {
     const val SIZE = Layout.SIZE
     const val HEADER_SLOT = Layout.HEADER
+    private const val LAST_ROW_START = 37
     const val DELETE_SLOT = Layout.TOOL_RIGHT
 
     private const val COOLDOWN_SLOT = Layout.TOOL_LEFT
@@ -60,11 +63,11 @@ object ActionFieldsPane {
         val closeAdd: () -> Unit,
     )
 
-    private enum class Group(val tag: String) {
-        GO_TO("ɢᴏ ᴛᴏ"),
-        MESSAGE("ᴍᴇꜱꜱᴀɢᴇ"),
-        EFFECT("ᴇꜰꜰᴇᴄᴛ"),
-        ADVANCED("ᴀᴅᴠᴀɴᴄᴇᴅ"),
+    private enum class Group {
+        GO_TO,
+        MESSAGE,
+        EFFECT,
+        ADVANCED,
     }
 
     private class Block(
@@ -351,7 +354,7 @@ object ActionFieldsPane {
 
         val slot = slots.getOrNull(set.size)
         if (slot != null && free > 0) {
-            val hint = if (set.isEmpty()) "<hnt>Nothing is set for this click yet." else null
+            val hint = if (set.isEmpty()) "<hnt>No actions of its own yet." else null
             pane.left(slot, Ui.addHead("Add", listOfNotNull(hint, "<key>Left-click to pick what happens"))) {
                 port.openAdd()
             }
@@ -362,32 +365,49 @@ object ActionFieldsPane {
         }
     }
 
-    fun fillAdd(pane: Pane, port: Port) {
+    fun fillAdd(pane: Pane, port: Port, click: PlayerInteraction) {
         val all = blocks(port.scope)
+        pane[HEADER_SLOT] = Ui.item(
+            Clicks.material(click),
+            "<ttl>Add to ${Clicks.label(click)}",
+            listOf(
+                "<bd>Pick what this click does.",
+                "",
+                "<bd>Top row: <val>Where players go",
+                "<bd>Middle row: <val>What they see",
+                "<bd>Bottom row: <val>Effects, then advanced",
+            ),
+        )
 
-        val rows = listOf(listOf(Group.GO_TO), listOf(Group.MESSAGE), listOf(Group.EFFECT, Group.ADVANCED))
-        rows.forEachIndexed { row, groups ->
-            val entries = all.filter { it.group in groups }.take(Layout.ROW_SLOTS)
+        listOf(Group.GO_TO, Group.MESSAGE).forEachIndexed { row, group ->
+            val entries = all.filter { it.group == group }.take(Layout.ROW_SLOTS)
             Layout.list(entries.size, firstRow = row + 1, rows = 1).zip(entries).forEach { (slot, block) ->
                 addOption(pane, port, slot, block)
             }
+        }
+
+        val effects = all.filter { it.group == Group.EFFECT }
+        val advanced = all.filter { it.group == Group.ADVANCED }
+        val bottom = (effects + listOf(null) + advanced).take(Layout.ROW_SLOTS)
+        val start = LAST_ROW_START + (Layout.ROW_SLOTS - bottom.size) / 2
+        bottom.forEachIndexed { index, block ->
+            if (block != null) addOption(pane, port, start + index, block)
         }
     }
 
     private fun addOption(pane: Pane, port: Port, slot: Int, block: Block) {
         val action = port.action
-        val tag = "<hnt>${block.group.tag}"
         when {
-            isSet(block, action) -> pane[slot] = Ui.disabled(block.label, listOf(tag, "", "<hnt>Already added"), block.material)
+            isSet(block, action) -> pane[slot] = Ui.disabled(block.label, listOf("<hnt>Already added"), block.material)
 
-            !block.available(action) -> pane[slot] = Ui.disabled(block.label, listOf(tag, "", "<hnt>Set a permission first"), block.material)
+            !block.available(action) -> pane[slot] = Ui.disabled(block.label, listOf("<hnt>Set a permission first"), block.material)
 
             else -> pane.left(
                 slot,
                 Ui.item(
                     block.material,
                     "<ttl>${block.label}",
-                    listOf(tag, "", "<bd>${block.describe}", "", "<key>Left-click to add it"),
+                    listOf("<bd>${block.describe}", "", "<key>Left-click to add it"),
                 ),
             ) {
                 port.closeAdd()
