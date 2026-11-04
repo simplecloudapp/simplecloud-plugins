@@ -255,23 +255,24 @@ to type, and `interactive` words for cancel.
 ### Player chat, tab list names, name tags
 
 ```
-<brand><playername>:</brand> <#CDE3FF><message>
-<muted><playername>:</muted> <#E1E1E4><message>
+<#3B95FF>Admin</#3B95FF> <#5F5F63>┃</#5F5F63> <#8EC1FF><playername><#5F5F63>: <#CDE3FF><message>
+<#A1A7B5><playername><#5F5F63>: <#E1E1E4><message>
 ```
 
-- No rank tags by default. The rank shows only in the color of the name: brand for the team, `muted` for everyone
-  else. The formats keep `<prefix>` so a network can add a tag, but the default groups leave it empty.
-- Tab list and name tag: only the name in the rank color.
+- The team rank has a tag: the rank in brand, written normally, then a dark gray `┃`. Everyone else has no tag.
+- Tab list: the tag and the name in the rank tint, like chat without the message. Name tag: only the name.
 
 ### Tab list
 
-The footer's first line has a space at both ends, so the tab list is wide enough when only one column of players
-shows. Other lines have no extra spaces, because the client centers spaces too. The network name and the address are in
-small caps.
+The footer is one row with two ends: where the player can go next (the network's website) on the left, and the online
+count on the right. Both ends have the same shape: an icon, then the value in `highlight`. Sixteen spaces keep the ends
+apart, and two spaces at both ends of the row keep the tab list wide enough when only one column of players shows.
+Only show what a player wants to know; don't fill the row with the time, the ping or the current server. The network
+name in the header is in small caps.
 
 ```
 header: '<br><brand>ꜱɪᴍᴘʟᴇᴄʟᴏᴜᴅ<br>'
-footer: '<br> <highlight><online_players> <muted>online on your network <br><separator>ꜱɪᴍᴘʟᴇᴄʟᴏᴜᴅ.ᴀᴘᴘ<br>'
+footer: '<br>  <brand>⚡</brand> <highlight>simplecloud.app                <success>●</success> <highlight><online_players> <muted>Online  <br>'
 ```
 
 ### Server list and kick screens

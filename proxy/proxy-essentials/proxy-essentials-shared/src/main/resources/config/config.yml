@@ -80,6 +80,6 @@ tablist:
   - name: global
     layout:
       - header: '<br><brand>ꜱɪᴍᴘʟᴇᴄʟᴏᴜᴅ<br>'
-        footer: '<br> <highlight><online_players> <muted>online on your network <br><separator>ꜱɪᴍᴘʟᴇᴄʟᴏᴜᴅ.ᴀᴘᴘ<br>'
+        footer: '<br>  <brand>⚡</brand> <highlight>simplecloud.app                <success>●</success> <highlight><online_players> <muted>Online  <br>'
     # Interval in ticks after which the next layout entry is shown. Set to 0 to always show the first entry.
     update-time: 20
