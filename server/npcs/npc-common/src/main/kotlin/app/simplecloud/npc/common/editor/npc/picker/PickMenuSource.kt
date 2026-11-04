@@ -1,15 +1,29 @@
 package app.simplecloud.npc.common.editor.npc.picker
 
 import app.simplecloud.npc.common.editor.core.EmptyState
+import app.simplecloud.npc.common.editor.core.PickerHeader
 import app.simplecloud.npc.common.editor.core.PickerOption
 import app.simplecloud.npc.common.editor.core.PickerOptions
 import app.simplecloud.npc.common.editor.npc.NpcEditorContext
+import app.simplecloud.npc.common.editor.npc.NpcFormat
 import app.simplecloud.npc.common.editor.npc.PickerPurpose
+import app.simplecloud.npc.common.editor.ui.Clicks
 import app.simplecloud.npc.core.config.NpcConfig
 import app.simplecloud.npc.core.platform.NpcPlayer
 
 class PickMenuSource(override val purpose: PickerPurpose.PickMenu) : PickerSource {
-    override val title = "Open Menu"
+    override val title = "Pick A Menu"
+
+    override fun header(context: NpcEditorContext, config: NpcConfig) = PickerHeader(
+        "CHEST",
+        "Which Menu Opens?",
+        listOf(
+            "<bd>Opens when a player ${Clicks.verb(purpose.interaction)}",
+            "<val>${NpcFormat.displayName(config)}<bd>.",
+            "",
+            PickerHeader.now(config.findAction(purpose.interaction, purpose.joinState)?.openInventory),
+        ),
+    )
 
     override val empty = EmptyState(
         "No Menus Yet",

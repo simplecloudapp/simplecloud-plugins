@@ -1,5 +1,6 @@
 package app.simplecloud.npc.common.editor.npc.picker
 
+import app.simplecloud.npc.common.editor.core.PickerHeader
 import app.simplecloud.npc.common.editor.core.PickerOption
 import app.simplecloud.npc.common.editor.core.PickerResult
 import app.simplecloud.npc.common.editor.npc.NpcEditorContext
@@ -15,6 +16,16 @@ class AddJoinStateSource(override val purpose: PickerPurpose.AddJoinState) : Pic
     private val forHologram = purpose.forHologram
 
     override val title = if (forHologram) "Add Layout" else "Add Join State"
+
+    override fun header(context: NpcEditorContext, config: NpcConfig) = PickerHeader(
+        "PAPER",
+        if (forHologram) "Add A Layout" else "Add A Join State",
+        if (forHologram) {
+            listOf("<bd>Pick the join state the new", "<bd>hologram layout shows for.")
+        } else {
+            listOf("<bd>Pick the join state that gets", "<bd>its own click actions.")
+        } + listOf("", "<hnt>A join state is what the target", "<hnt>server is doing, e.g. ingame."),
+    )
 
     private fun present(config: NpcConfig): List<String> =
         if (forHologram) NpcFormat.hologramJoinStates(config) else NpcFormat.actionJoinStates(config)
@@ -43,7 +54,7 @@ class AddJoinStateSource(override val purpose: PickerPurpose.AddJoinState) : Pic
 
                 atCap -> PickerOption(label, Ui.unavailable(label, lore, "No free slot left here."), available = false)
 
-                else -> PickerOption(state, Ui.item("PAPER", "<ttl>$label", lore + listOf("", "<key>Left-click to add one")))
+                else -> PickerOption(state, Ui.item("PAPER", "<ttl>$label", lore + listOf("", "<key>Left-click to add it")))
             }
         }
     }

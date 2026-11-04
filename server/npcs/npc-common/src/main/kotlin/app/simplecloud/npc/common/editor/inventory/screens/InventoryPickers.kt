@@ -1,6 +1,7 @@
 package app.simplecloud.npc.common.editor.inventory.screens
 
 import app.simplecloud.npc.common.editor.core.EmptyState
+import app.simplecloud.npc.common.editor.core.PickerHeader
 import app.simplecloud.npc.common.editor.core.PickerOption
 import app.simplecloud.npc.common.editor.core.PickerOptions
 import app.simplecloud.npc.common.editor.core.PickerResult
@@ -18,6 +19,7 @@ import app.simplecloud.npc.common.editor.inventory.LiveGroups
 import app.simplecloud.npc.common.editor.inventory.StudioTargets
 import app.simplecloud.npc.common.editor.menu.EditorMenu
 import app.simplecloud.npc.common.editor.menu.Pane
+import app.simplecloud.npc.common.editor.ui.Clicks
 import app.simplecloud.npc.common.editor.ui.Layout
 import app.simplecloud.npc.common.editor.ui.Ui
 import app.simplecloud.npc.common.inventory.ItemClickActions
@@ -30,7 +32,7 @@ import app.simplecloud.npc.core.platform.NpcPlayer
 
 object InventoryPickers {
 
-    private val CATEGORY_SLOTS = (1..7).toList()
+    private val CATEGORY_SLOTS = listOf(1, 2, 3, 5, 6, 7)
     private val CATEGORY_ICONS = mapOf(
         "Blocks" to "GRASS_BLOCK",
         "Tools" to "IRON_PICKAXE",
@@ -38,7 +40,6 @@ object InventoryPickers {
         "Dyes" to "RED_DYE",
         "Panes" to "GLASS_PANE",
         "Heads" to "PLAYER_HEAD",
-        "Redstone" to "REDSTONE",
         InventoryEditorSession.RECENT_CATEGORY to "CLOCK",
         InventoryEditorSession.ALL_CATEGORY to "CHEST",
     )
@@ -126,15 +127,28 @@ object InventoryPickers {
         }
 
         val section = if (purpose is InventoryPickerPurpose.NewItem) "New Item" else "Material"
+        val forWhat = when (purpose) {
+            InventoryPickerPurpose.NewItem -> listOf("<bd>The new item sticks to your", "<bd>cursor; click a slot to place it.")
+
+            is InventoryPickerPurpose.LookMaterial ->
+                listOf("<bd>What entries of <val>${purpose.group} <bd>show while", "<bd>they are ${StateLooksMenuBuilder.label(purpose.state).lowercase()}.")
+
+            else -> listOf("<bd>What the item looks like", "<bd>in the menu.")
+        }
 
         return PickerSpec(
             title = Ui.title(section, config.id),
             screen = screen,
+            header = PickerHeader(
+                current ?: "ITEM_FRAME",
+                "Which Material?",
+                forWhat + listOf("", PickerHeader.now(if (current == null) null else Ui.pretty(current))),
+            ),
             options = listed.map { material ->
                 val selected = material == current
                 PickerOption(
                     material,
-                    Ui.option(material, Ui.pretty(material), listOf("<hnt>$material", ""), selected = selected),
+                    Ui.choice(material, Ui.pretty(material), emptyList(), selected, "use it"),
                     available = !selected,
                 )
             },
@@ -165,7 +179,13 @@ object InventoryPickers {
 
         slots.forEach { (name, slot) ->
             val selected = !filtered && session.materialCategory == name
-            pane.left(slot, Ui.option(CATEGORY_ICONS[name] ?: "PAPER", name, emptyList(), selected)) {
+            val icon = CATEGORY_ICONS[name] ?: "PAPER"
+            val tab = if (selected) {
+                Ui.item(icon, "<val>$name", listOf("<on>Shown below"), glowing = true)
+            } else {
+                Ui.item(icon, "<ttl>$name", listOf("<key>Left-click to show these"))
+            }
+            pane.left(slot, tab) {
                 session.materialCategory = name
                 session.pickerResult = null
                 session.pages[pageKey(screen)] = 0
@@ -185,11 +205,22 @@ object InventoryPickers {
         return PickerSpec(
             title = Ui.title(if (group == null) "New Live Group" else "Source of $group", config.id),
             screen = screen,
+            header = PickerHeader(
+                "HOPPER",
+                "Where Do Entries Come From?",
+                listOf(
+                    "<bd>A live group fills its slots",
+                    "<bd>with one entry per server or",
+                    "<bd>target, kept up to date.",
+                    "",
+                    PickerHeader.now(if (current == null) null else LiveGroups.describe(current).label),
+                ),
+            ),
             options = context.dataSourceTypes().map { type ->
                 val info = LiveGroups.describe(type)
                 PickerOption(
                     type,
-                    Ui.option(info.icon, info.label, info.lines.map { "<bd>$it" } + "", selected = type == current),
+                    Ui.choice(info.icon, info.label, info.lines.map { "<bd>$it" }, type == current, "use this source"),
                     available = type != current,
                 )
             },
@@ -221,22 +252,24 @@ object InventoryPickers {
         val current = LiveGroups.source(config, group)?.group ?: GroupServersSource.TARGET_GROUP
         val targetOption = PickerOption(
             GroupServersSource.TARGET_GROUP,
-            Ui.option(
+            Ui.choice(
                 "ARMOR_STAND",
                 "The NPC's Target",
-                listOf("<bd>Whatever group the NPC that", "<bd>opened the menu targets.", ""),
-                selected = current == GroupServersSource.TARGET_GROUP,
+                listOf("<bd>Whatever group the NPC that", "<bd>opened the menu targets."),
+                current == GroupServersSource.TARGET_GROUP,
+                "use it",
             ),
             available = current != GroupServersSource.TARGET_GROUP,
         )
         val groups = context.liveData.knownTargets().filter { it.group }.map { target ->
             PickerOption(
                 target.name,
-                Ui.option(
-                    "PAPER",
+                Ui.choice(
+                    "BOOKSHELF",
                     target.name,
-                    listOf("<bd>Live <val>${context.liveData.summaryOf(target.name).liveServers} <bd>servers", ""),
-                    selected = target.name.equals(current, true),
+                    listOf("<bd>Servers: <val>${context.liveData.summaryOf(target.name).liveServers}"),
+                    target.name.equals(current, true),
+                    "use this group",
                 ),
                 available = !target.name.equals(current, true),
             )
@@ -245,6 +278,18 @@ object InventoryPickers {
         return PickerSpec(
             title = Ui.title("Group of $group", config.id),
             screen = screen,
+            header = PickerHeader(
+                "BOOKSHELF",
+                "Which Group?",
+                listOf(
+                    "<bd>Every server of this group",
+                    "<bd>gets an entry in <val>$group<bd>.",
+                    "",
+                    PickerHeader.now(
+                        if (current == GroupServersSource.TARGET_GROUP) "The NPC's Target" else current,
+                    ),
+                ),
+            ),
             options = listOf(targetOption) + groups,
             onPick = { value ->
                 context.change(player, config.id) {
@@ -262,6 +307,11 @@ object InventoryPickers {
         screen: InventoryEditorScreen.Picker,
     ): PickerSpec<InventoryEditorScreen> = PickerSpec(
         title = Ui.title("Used By", config.id),
+        header = PickerHeader(
+            "ARMOR_STAND",
+            "NPCs That Open ${config.id}",
+            listOf("<bd>These NPCs have an Open Menu", "<bd>action for this menu."),
+        ),
         empty = EmptyState("No NPC Opens This Menu", listOf("<bd>Give an NPC an Open Menu action", "<bd>for this menu to see it here.")),
         screen = screen,
         options = InventoryHubMenuBuilder.usedBy(context, config.id).map { npc ->
@@ -286,8 +336,14 @@ object InventoryPickers {
         screen: InventoryEditorScreen.Picker,
         purpose: InventoryPickerPurpose.OpenInventory,
     ): PickerSpec<InventoryEditorScreen> = PickerSpec(
-        title = Ui.title("Open Menu", config.id),
+        title = Ui.title("Pick A Menu", config.id),
         screen = screen,
+        header = PickerHeader(
+            "CHEST",
+            "Which Menu Opens?",
+            clickedLines(purpose.slots, purpose.interaction, "Opens when a player") +
+                PickerHeader.now(currentAction(config, purpose.slots, purpose.interaction)?.openInventory),
+        ),
         options = PickerOptions.menus(
             context.inventoryRepository.findAll(),
             currentAction(config, purpose.slots, purpose.interaction)?.openInventory,
@@ -316,7 +372,13 @@ object InventoryPickers {
         }
 
         return PickerSpec(
-            title = Ui.title("Send To Server", config.id),
+            title = Ui.title("Pick A Server", config.id),
+            header = PickerHeader(
+                "MAP",
+                "Which Server?",
+                clickedLines(purpose.slots, purpose.interaction, "Players go there when they") +
+                    PickerHeader.now(currentAction(config, purpose.slots, purpose.interaction)?.sendToServer),
+            ),
             empty = EmptyState("No Servers Online", listOf("<bd>Start a server first, or type", "<bd>the name of one below.")),
             screen = screen,
             options = PickerOptions.servers(
@@ -358,7 +420,13 @@ object InventoryPickers {
         }
 
         return PickerSpec(
-            title = Ui.title("Pick Sound", config.id),
+            title = Ui.title("Pick A Sound", config.id),
+            header = PickerHeader(
+                "JUKEBOX",
+                "Which Sound?",
+                clickedLines(purpose.slots, purpose.interaction, "Plays when a player") +
+                    listOf(PickerHeader.now(action?.playSound), "<hnt>Right-click a sound to hear it."),
+            ),
             empty = EmptyState("No Sounds Found", listOf("<bd>Type the key of a sound below,", "<bd>e.g. entity.player.levelup.")),
             screen = screen,
             options = PickerOptions.sounds(catalog, filter, action?.playSound),
@@ -386,6 +454,12 @@ object InventoryPickers {
             },
             filteredNoun = "sounds",
         )
+    }
+
+    private fun clickedLines(slots: List<Int>, interaction: PlayerInteraction, lead: String): List<String> {
+        val item = if (slots.size == 1) "this item" else "these ${slots.size} items"
+        val verb = if (lead.endsWith("they")) Clicks.verb(interaction).removeSuffix("s") else Clicks.verb(interaction)
+        return listOf("<bd>$lead", "<bd>$verb $item.", "")
     }
 
     private fun currentAction(

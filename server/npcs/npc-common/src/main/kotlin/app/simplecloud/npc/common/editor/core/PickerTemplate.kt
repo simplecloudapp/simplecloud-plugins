@@ -21,6 +21,7 @@ class EmptyState(val title: String, val hint: List<String>) {
 class PickerSpec<S : Any>(
     val title: String,
     val screen: S,
+    val header: PickerHeader,
     val options: List<PickerOption>,
     val onPick: (String) -> Unit,
     val typeHint: List<String>? = DEFAULT_TYPE_HINT,
@@ -59,6 +60,7 @@ object PickerTemplate {
         val pages = Paginator(session.pages, pageKey(spec.screen), spec.options, Layout.ROW_SLOTS * spec.gridRows)
         val grid = Layout.list(pages.visible.size, rows = spec.gridRows)
         val pane = Pane(SIZE)
+        pane[Layout.HEADER] = spec.header.item()
 
         fun rerender() = host.render(player, spec.screen)
 

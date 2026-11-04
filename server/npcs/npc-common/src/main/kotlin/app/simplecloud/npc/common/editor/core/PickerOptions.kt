@@ -50,9 +50,9 @@ object PickerOptions {
         catalog.firstOrNull { it.equals(value, true) } ?: value
 
     fun statusText(status: ServerStatus): String = when (status) {
-        ServerStatus.ONLINE -> "<on>online"
-        ServerStatus.OFFLINE -> "<off>offline"
-        else -> "<warn>${status.name.lowercase()}"
+        ServerStatus.ONLINE -> "<on>Online"
+        ServerStatus.OFFLINE -> "<off>Offline"
+        else -> "<warn>${status.name.lowercase().replaceFirstChar(Char::uppercase)}"
     }
 
     fun sounds(catalog: List<String>, filter: String?, current: String?): List<PickerOption> = catalog
@@ -61,33 +61,31 @@ object PickerOptions {
             val selected = key.equals(current, true)
             PickerOption(
                 key,
-                Ui.option("NOTE_BLOCK", key, listOf("<key>Right-click to preview it", ""), selected),
+                Ui.choice("NOTE_BLOCK", key, listOf("<key>Right-click to hear it"), selected, "use this sound"),
                 available = !selected,
             )
         }
 
     fun servers(servers: List<LiveServer>, current: String?): List<PickerOption> = servers.map { server ->
-        val typeLine = "<bd>Type <val>server"
         val selected = server.name.equals(current, true)
         when {
             server.status == ServerStatus.OFFLINE -> PickerOption(
                 server.name,
-                Ui.disabled(server.name, listOf(typeLine, "", "<warn>Offline")),
+                Ui.unavailable(server.name, emptyList(), "Offline, so nobody can join it."),
                 available = false,
             )
 
             else -> PickerOption(
                 server.name,
-                Ui.option(
+                Ui.choice(
                     "MAP",
                     Msg.miniMessage.escapeTags(server.name),
                     listOf(
-                        typeLine,
-                        "<bd>Status ${statusText(server.status)}",
-                        "<bd>Players <val>${server.playerCount}",
-                        "",
+                        "<bd>Status: ${statusText(server.status)}",
+                        "<bd>Players: <val>${server.playerCount}",
                     ),
                     selected,
+                    "send players here",
                 ),
                 available = !selected,
             )
@@ -100,11 +98,12 @@ object PickerOptions {
             val selected = menu.id.equals(current, true)
             PickerOption(
                 menu.id,
-                Ui.option(
+                Ui.choice(
                     "CHEST",
                     Msg.miniMessage.escapeTags(menu.id),
-                    listOf("<bd>Rows <val>${menu.rows}", ""),
+                    listOf("<bd>Rows: <val>${menu.rows}", "<bd>Items: <val>${menu.items.size}"),
                     selected,
+                    "open this menu",
                 ),
                 available = !selected,
             )

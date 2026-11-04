@@ -1,11 +1,13 @@
 package app.simplecloud.npc.common.editor.npc.picker
 
 import app.simplecloud.npc.common.editor.core.EmptyState
+import app.simplecloud.npc.common.editor.core.PickerHeader
 import app.simplecloud.npc.common.editor.core.PickerOption
 import app.simplecloud.npc.common.editor.core.PickerOptions
 import app.simplecloud.npc.common.editor.core.PickerResult
 import app.simplecloud.npc.common.editor.core.ServerStatus
 import app.simplecloud.npc.common.editor.npc.NpcEditorContext
+import app.simplecloud.npc.common.editor.npc.NpcFormat
 import app.simplecloud.npc.common.editor.npc.PickerPurpose
 import app.simplecloud.npc.common.editor.npc.Refresh
 import app.simplecloud.npc.common.editor.ui.Ui
@@ -15,6 +17,17 @@ import app.simplecloud.npc.core.platform.NpcPlayer
 object AddTargetSource : PickerSource {
     override val purpose = PickerPurpose.AddTarget
     override val title = "Add Target"
+
+    override fun header(context: NpcEditorContext, config: NpcConfig) = PickerHeader(
+        "COMPASS",
+        "Add A Target",
+        listOf(
+            "<bd>Pick a group or server that",
+            "<val>${NpcFormat.displayName(config)} <bd>sends players to.",
+            "",
+            "<bd>Targets: <val>${config.targetServers.size} <bd>of <val>${NpcConfig.MAX_TARGETS}",
+        ),
+    )
 
     override val empty = EmptyState(
         "No Groups Or Servers",
@@ -51,7 +64,7 @@ object AddTargetSource : PickerSource {
                             typeLine,
                             "<bd>Servers: <val>${live.summaryOf(target.name).liveServers}",
                             "",
-                            "<key>Left-click to add one",
+                            "<key>Left-click to add this group",
                         ),
                     ),
                 )
@@ -68,7 +81,7 @@ object AddTargetSource : PickerSource {
                                 typeLine,
                                 "<bd>Status: ${PickerOptions.statusText(status)}",
                                 "",
-                                "<key>Left-click to add one",
+                                "<key>Left-click to add this server",
                             ),
                         ),
                     )

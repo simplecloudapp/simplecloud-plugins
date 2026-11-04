@@ -59,6 +59,13 @@ object Ui {
         glowing = selected,
     )
 
+    fun choice(material: String, name: String, lore: List<String>, current: Boolean, verb: String): NpcItem = item(
+        material,
+        if (current) "<val>$name" else "<ttl>$name",
+        lore + "" + if (current) "<on>Picked now" else "<key>Left-click to $verb",
+        glowing = current,
+    )
+
     fun disabled(name: String, lore: List<String>): NpcItem = item(DISABLED_MATERIAL, "<off>$name", lore)
 
     fun unavailable(name: String, lore: List<String>, reason: String): NpcItem =

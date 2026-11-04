@@ -19,6 +19,7 @@ object PickerMenuBuilder {
         val spec = PickerSpec<NpcEditorScreen>(
             title = Ui.title(source.title, NpcFormat.displayName(config)),
             screen = NpcEditorScreen.Picker(config.id, purpose),
+            header = source.header(context, config),
             options = source.options(context, player, config),
             onPick = { value -> source.apply(context, player, config, value) },
             typeHint = source.typeHint,

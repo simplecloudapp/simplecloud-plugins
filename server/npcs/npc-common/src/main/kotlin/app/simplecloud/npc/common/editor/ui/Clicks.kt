@@ -18,6 +18,13 @@ object Clicks {
         PlayerInteraction.SHIFT_RIGHT_CLICK -> "Shift + Right-click"
     }
 
+    fun verb(interaction: PlayerInteraction): String = when (interaction) {
+        PlayerInteraction.LEFT_CLICK -> "left-clicks"
+        PlayerInteraction.RIGHT_CLICK -> "right-clicks"
+        PlayerInteraction.SHIFT_LEFT_CLICK -> "shift-left-clicks"
+        PlayerInteraction.SHIFT_RIGHT_CLICK -> "shift-right-clicks"
+    }
+
     fun material(interaction: PlayerInteraction): String = when (interaction) {
         PlayerInteraction.LEFT_CLICK -> "STONE_BUTTON"
         PlayerInteraction.SHIFT_LEFT_CLICK -> "POLISHED_BLACKSTONE_BUTTON"

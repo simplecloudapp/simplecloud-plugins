@@ -1,6 +1,7 @@
 package app.simplecloud.npc.common.editor.npc.picker
 
 import app.simplecloud.npc.common.editor.core.EmptyState
+import app.simplecloud.npc.common.editor.core.PickerHeader
 import app.simplecloud.npc.common.editor.core.PickerOption
 import app.simplecloud.npc.common.editor.core.PickerOptions
 import app.simplecloud.npc.common.editor.core.PickerResult
@@ -8,21 +9,36 @@ import app.simplecloud.npc.common.editor.core.SoundTuning
 import app.simplecloud.npc.common.editor.menu.Pane
 import app.simplecloud.npc.common.editor.npc.NpcEditorContext
 import app.simplecloud.npc.common.editor.npc.NpcEditorScreen
+import app.simplecloud.npc.common.editor.npc.NpcFormat
 import app.simplecloud.npc.common.editor.npc.PickerPurpose
 import app.simplecloud.npc.common.editor.npc.SoundField
+import app.simplecloud.npc.common.editor.ui.Clicks
 import app.simplecloud.npc.core.config.NpcConfig
 import app.simplecloud.npc.core.platform.NpcPlayer
 
 class PickSoundSource(override val purpose: PickerPurpose.PickSound) : PickerSource {
     private val field = purpose.field
 
-    override val title = "Pick Sound"
+    override val title = "Pick A Sound"
 
     override val empty = EmptyState(
         "No Sounds Found",
         listOf("<bd>Type the key of a sound below,", "<bd>e.g. entity.player.levelup."),
     )
     override val filteredNoun = "sounds"
+
+    override fun header(context: NpcEditorContext, config: NpcConfig): PickerHeader {
+        val name = NpcFormat.displayName(config)
+        val plays = when (field) {
+            SoundField.Push -> listOf("<bd>Plays when <val>$name", "<bd>pushes a player back.")
+            is SoundField.Action -> listOf("<bd>Plays when a player", "<bd>${Clicks.verb(field.interaction)} <val>$name<bd>.")
+        }
+        return PickerHeader(
+            "JUKEBOX",
+            "Which Sound?",
+            plays + listOf("", PickerHeader.now(currentSound(config)), "<hnt>Right-click a sound to hear it."),
+        )
+    }
 
     override val typeHint: List<String> = PickerOptions.SOUND_TYPE_HINT
 
