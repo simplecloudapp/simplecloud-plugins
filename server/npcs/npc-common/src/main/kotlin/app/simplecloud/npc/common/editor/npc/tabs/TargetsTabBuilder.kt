@@ -27,7 +27,7 @@ object TargetsTabBuilder {
         targets.zip(TARGET_SLOTS).forEach { (target, slot) ->
             val summary = live.summaryOf(target)
             val state = when {
-                !summary.known -> "<hnt>Waiting for the cloud…"
+                !summary.known -> "<hnt>Waiting for the cloud."
                 summary.liveServers == 0 -> "<warn>Offline"
                 else -> "<val>${summary.liveServers} <hnt>servers · <val>${summary.players} <hnt>players"
             }

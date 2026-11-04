@@ -119,7 +119,7 @@ object CanvasRender {
                 listOfNotNull(
                     "<bd>What players see right now.",
                     when {
-                        live == null || live.loading -> "<hnt>Loading the cloud data..."
+                        live == null || live.loading -> "<hnt>Loading the cloud data."
                         live.cloudDown -> "<warn>The cloud is unreachable; live slots stay empty."
                         else -> null
                     },
@@ -175,7 +175,7 @@ object CanvasRender {
             )
         }
         tools[Toolbox.PICK] =
-            Ui.item("CHEST", "<ttl>Pick A Material...", listOf("<bd>Search every material.", "", "<key>Left <hnt>Open"))
+            Ui.item("CHEST", "<ttl>Pick A Material", listOf("<bd>Search every material.", "", "<key>Left <hnt>Open"))
         tools[Toolbox.HAND] = Ui.item(
             "LEATHER",
             "<ttl>From Your Inventory",

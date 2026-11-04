@@ -31,7 +31,7 @@ object InventoryHubMenuBuilder {
     private const val CLOSE_SLOT = 31
 
     private val HEADER_FILLER_SLOTS = (0..3) + (5..8)
-    private const val DEFAULT_TITLE = "<#0ea5e9>Menu"
+    private const val DEFAULT_TITLE = "Menu"
     private const val USED_BY_LISTED = 6
 
     fun usedBy(context: InventoryEditorContext, inventoryId: String): List<NpcConfig> =
@@ -89,7 +89,7 @@ object InventoryHubMenuBuilder {
                 "<ttl>Title",
                 listOf(
                     "<bd>Now: " + config.title,
-                    "<hnt>MiniMessage, e.g. <#0ea5e9><bold>Servers",
+                    "<hnt>Plain text keeps the vanilla title look.",
                     "",
                     "<key>Left <hnt>Type a new one in chat",
                     "<key>Q <hnt>Reset to the default",

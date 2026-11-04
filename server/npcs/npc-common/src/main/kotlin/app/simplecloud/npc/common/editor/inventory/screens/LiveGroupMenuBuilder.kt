@@ -38,8 +38,8 @@ object LiveGroupMenuBuilder {
 
     private val SORTS = listOf("NUMERICAL_ID", "PLAYER_COUNT")
     private val EMPTY_LOOK = InventoryItemConfiguration(
-        material = "GRAY_STAINED_GLASS_PANE",
-        name = "<#475569>Spinning up...",
+        material = "GRAY_DYE",
+        name = "<muted>No Servers Online",
     )
 
     fun build(
@@ -213,7 +213,7 @@ object LiveGroupMenuBuilder {
                     "<ttl>State Looks",
                     listOf(
                         if (looks == 0) "<off>None set" else "<bd><val>$looks <bd>states styled",
-                        "<hnt>Full, starting, offline… each its own look.",
+                        "<hnt>Full, starting and offline each get their own look.",
                         "",
                         "<key>Left <hnt>Open",
                     ),
