@@ -57,7 +57,7 @@ enum class MenuTemplate(val label: String, val icon: String, val description: Li
         )
 
         fun serverSelector(id: String): InventoryConfiguration {
-            val content = (10..16) + (19..25)
+            val content = (19..25) + (28..34)
             val live = content.mapIndexed { index, slot ->
                 InventoryItemConfiguration(
                     slot = slot,
@@ -108,15 +108,15 @@ enum class MenuTemplate(val label: String, val icon: String, val description: Li
             }
             val controls = listOf(
                 InventoryItemConfiguration(
-                    slot = 39,
-                    material = "ARROW",
+                    slot = 45,
+                    material = "LIGHT_BLUE_STAINED_GLASS_PANE",
                     name = "<interactive>Previous Page",
                     liveGroup = "servers",
                     pageControl = PageControl.PREVIOUS,
                 ),
                 InventoryItemConfiguration(
-                    slot = 41,
-                    material = "ARROW",
+                    slot = 53,
+                    material = "LIGHT_BLUE_STAINED_GLASS_PANE",
                     name = "<interactive>Next Page",
                     liveGroup = "servers",
                     pageControl = PageControl.NEXT,
@@ -134,7 +134,7 @@ enum class MenuTemplate(val label: String, val icon: String, val description: Li
             return InventoryConfiguration(
                 id = id,
                 title = "Servers",
-                rows = 5,
+                rows = 6,
                 items = (live + controls).toMutableList(),
             )
         }

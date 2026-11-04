@@ -24,8 +24,8 @@ class ExampleInventoryTest {
         val config = load()
         assertEquals("example", config.id)
         assertEquals(1, config.version)
-        assertEquals(5, config.rows)
-        assertEquals(22, config.items.size)
+        assertEquals(6, config.rows)
+        assertEquals(17, config.items.size)
         assertTrue(config.items.all { it.slot in 0 until config.size() })
         assertEquals(config.items.size, config.items.map { it.slot }.distinct().size, "no duplicate slots")
 
