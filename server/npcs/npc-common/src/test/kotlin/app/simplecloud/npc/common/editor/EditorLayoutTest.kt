@@ -144,10 +144,19 @@ class EditorLayoutTest {
         val menu = requireNotNull(context.inventoryRepository.find("example"))
 
         val report = StringBuilder()
+        val details = StringBuilder()
         val problems = mutableListOf<String>()
         fun record(name: String, rendered: EditorMenu?, checked: Boolean = true) {
             val shown = rendered ?: return
             report.append("== ${shown.title}  ($name)\n").append(grid(shown)).append("\n\n")
+            details.append("== ${shown.title}  ($name)\n")
+            shown.elements.toSortedMap().forEach { (slot, element) ->
+                val item = element.item
+                val glint = if (item.glowing) " (glint)" else ""
+                details.append("  slot $slot  ${item.material}$glint  ${item.name}\n")
+                item.lore.forEach { line -> details.append("      | $line\n") }
+            }
+            details.append("\n")
             if (checked) check(shown, problems)
         }
 
@@ -164,6 +173,7 @@ class EditorLayoutTest {
         }
 
         File("build/editor-layouts.txt").writeText(report.toString())
+        File("build/editor-layouts-detail.txt").writeText(details.toString())
         assertTrue(problems.isEmpty(), problems.joinToString("\n"))
     }
 

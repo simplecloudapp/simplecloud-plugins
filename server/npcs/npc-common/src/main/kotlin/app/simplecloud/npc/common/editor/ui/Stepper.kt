@@ -30,19 +30,25 @@ data class Stepper(
         return (value * factor).roundToInt() / factor
     }
 
-    fun item(value: Double): NpcItem {
-        val valueLine = valueLine?.invoke(value) ?: "<val>${fmt(value)}" + unit?.let { " <hnt>$it" }.orEmpty()
+    fun item(value: Double, mixed: Boolean = false): NpcItem {
+        val valueLine = when {
+            mixed -> "<warn>Mixed"
+            valueLine != null -> valueLine.invoke(value)
+            else -> "<val>${fmt(value)}" + if (unit == null) "" else " <hnt>$unit"
+        }
+        val mixedHint = if (mixed) listOf("<hnt>A click sets every selected item to the same value.") else emptyList()
         return Ui.item(
             material,
             "<ttl>$label",
-            listOf("$valueLine <hnt>(${fmt(min)} – ${fmt(max)})") + hints + listOf(
-                "<key>Left <hnt>+${fmt(step)} · <key>Right <hnt>-${fmt(step)} · <key>Shift <hnt>x$bigMultiplier",
+            listOf("$valueLine <hnt>(${fmt(min)} – ${fmt(max)})") + hints + mixedHint + listOf(
+                "",
+                "<key>Left-click +${fmt(step)} · Right-click -${fmt(step)} · Shift ×$bigMultiplier",
             ),
         )
     }
 
-    fun element(current: Double, commit: (Double) -> Unit): Element =
-        Element(item(current)) { click -> stepped(current, click)?.let(commit) }
+    fun element(current: Double, mixed: Boolean = false, commit: (Double) -> Unit): Element =
+        Element(item(current, mixed)) { click -> stepped(current, click)?.let(commit) }
 
     fun stepped(current: Double, click: MenuClick): Double? = when (click) {
         MenuClick.LEFT, MenuClick.RIGHT, MenuClick.SHIFT_LEFT, MenuClick.SHIFT_RIGHT ->

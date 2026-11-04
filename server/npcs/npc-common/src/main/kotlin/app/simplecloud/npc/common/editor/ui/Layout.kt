@@ -28,6 +28,7 @@ object Layout {
     private const val CONTROL_ROW = 45
 
     private const val COLUMNS = 9
+    private const val MIDDLE = 4
 
     /** Slots for [count] tools in the bottom row, side by side around the middle (and the page count there). */
     fun toolSlots(count: Int, middleTaken: Boolean): List<Int> {
@@ -51,10 +52,19 @@ object Layout {
         val capped = count.coerceIn(0, rows * ROW_SLOTS)
         return (0 until rows).flatMap { offset ->
             val inRow = (capped - offset * ROW_SLOTS).coerceIn(0, ROW_SLOTS)
-            val first = (ROW_SLOTS - inRow) / 2 + 1
             val start = (firstRow + offset + 1) * COLUMNS
-            (0 until inRow).map { start + first + it }
+            centered(inRow).map { start + it }
         }
+    }
+
+    /** Columns for [count] entries side by side, centered; an even count leaves the middle column empty. */
+    private fun centered(count: Int): List<Int> {
+        if (count % 2 == 1) {
+            val first = (ROW_SLOTS - count) / 2 + 1
+            return (first until first + count).toList()
+        }
+        val half = count / 2
+        return ((MIDDLE - half) until MIDDLE) + ((MIDDLE + 1)..(MIDDLE + half))
     }
 
     /**

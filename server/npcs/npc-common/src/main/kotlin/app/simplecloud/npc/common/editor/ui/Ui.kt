@@ -21,7 +21,7 @@ object Ui {
     ): NpcItem = NpcItem(
         material,
         Palette.expand(name),
-        lore.map(Palette::expand),
+        tidy(lore).map(Palette::expand),
         amount = amount,
         glowing = glowing,
     )
@@ -35,24 +35,34 @@ object Ui {
         glowing: Boolean = false,
     ): NpcItem = NpcItem.playerHead(
         name = Palette.expand(name),
-        lore = lore.map(Palette::expand),
+        lore = tidy(lore).map(Palette::expand),
         owner = owner,
         texture = texture,
         signature = signature,
         glowing = glowing,
     )
 
-    fun option(material: String, name: String, lore: List<String>, selected: Boolean): NpcItem = item(
+    fun option(
+        material: String,
+        name: String,
+        lore: List<String>,
+        selected: Boolean,
+        nameColor: String? = null,
+    ): NpcItem = item(
         material,
-        "<ttl>$name",
-        if (selected) listOf("<on>ꜱᴇʟᴇᴄᴛᴇᴅ", "") + lore else lore + listOf("", "<key>Left-click to select"),
+        when {
+            nameColor != null -> "$nameColor$name"
+            selected -> "<val>$name"
+            else -> "<ttl>$name"
+        },
+        lore + "" + if (selected) "<on>Selected" else "<key>Left-click to select",
         glowing = selected,
     )
 
     fun disabled(name: String, lore: List<String>): NpcItem = item(DISABLED_MATERIAL, "<off>$name", lore)
 
     fun unavailable(name: String, lore: List<String>, reason: String): NpcItem =
-        disabled(name, lore + listOf("<err>$reason"))
+        disabled(name, lore + listOf("", "<hnt>$reason"))
 
     fun field(material: String, label: String, valueLine: String?, setVerb: String): NpcItem = item(
         material,
@@ -75,7 +85,7 @@ object Ui {
         material ?: if (enabled) "LIME_DYE" else "GRAY_DYE",
         "<ttl>$label",
         listOf(if (enabled) "<on>On" else "<off>Off") + extraLore +
-            listOf(if (enabled) "<key>Left-click to turn off" else "<key>Left-click to turn on"),
+            listOf("", if (enabled) "<key>Left-click to turn it off" else "<key>Left-click to turn it on"),
         glowing = enabled,
     )
 
@@ -85,7 +95,7 @@ object Ui {
     fun back(to: String? = null): NpcItem = item(
         BACK_MATERIAL,
         "<key>Back",
-        listOfNotNull(if (to == null) null else "<bd>To <val>$to", "<hnt>Esc does the same."),
+        listOfNotNull(if (to == null) null else "<bd>To <val>${to.substringAfterLast(" · ")}", "<hnt>Esc does the same."),
     )
 
     fun previousPage(page: Int): NpcItem? =
@@ -110,6 +120,12 @@ object Ui {
         material.lowercase().split('_').joinToString(" ") { it.replaceFirstChar(Char::uppercase) }
 
     fun quote(text: String): String = "\"$text\""
+
+    /** Drops empty lines at the start and the end and collapses repeated ones, so tooltips never carry padding. */
+    private fun tidy(lore: List<String>): List<String> {
+        val lines = lore.dropWhile { it.isBlank() }.dropLastWhile { it.isBlank() }
+        return lines.filterIndexed { index, line -> line.isNotBlank() || lines[index - 1].isNotBlank() }
+    }
 }
 
 internal fun <T> List<T>.after(current: T): T = this[(indexOf(current) + 1) % size]
