@@ -251,7 +251,8 @@ to type, and `interactive` words for cancel.
 <muted><playername>:</muted> <#E1E1E4><message>
 ```
 
-- Tab list and name tag: the same tag and name without `:`, e.g. `<brand>ᴀᴅᴍɪɴ <playername>`, `<muted><playername>`.
+- Tab list: only the name in the rank color, no tag: `<brand><playername>`, `<muted><playername>`.
+- Name tag: the same tag and name as in chat, without `:`, e.g. `<brand>ᴀᴅᴍɪɴ <playername>`.
 - A rank tag is the rank name in small caps; the default rank has none.
 
 ### Tab list

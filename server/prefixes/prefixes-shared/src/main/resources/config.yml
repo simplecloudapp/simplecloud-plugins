@@ -22,7 +22,7 @@ features:
   # Format chat messages using the group's chat-format.
   chat: true
 
-  # Show the prefix, the colored player name and the suffix in the tab list,
+  # Show the player name in the group's color in the tab list,
   # sorted by group priority.
   tablist: true
 
