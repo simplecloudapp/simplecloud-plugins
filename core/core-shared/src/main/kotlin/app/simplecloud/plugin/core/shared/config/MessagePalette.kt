@@ -6,6 +6,8 @@ import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 
 object MessagePalette {
 
+    const val PREFIX = "<brand><b>⚡</b></brand>"
+
     val defaults: Map<String, String> = mapOf(
         "brand" to "#3B95FF",
         "interactive" to "#62ADFF",
