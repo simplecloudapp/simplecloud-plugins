@@ -7,6 +7,6 @@ frame-update-interval: 1000
 frames:
   - lines:
       - ''
-      - '<#F8FAFC><server-name>'
-      - '<#A3E635>ᴏɴʟɪɴᴇ <#94A3B8>· <player-count>/<max-players>'
+      - '<highlight><server-name>'
+      - '<success>ᴏɴʟɪɴᴇ <separator>· <muted><player-count>/<max-players>'
       - ''

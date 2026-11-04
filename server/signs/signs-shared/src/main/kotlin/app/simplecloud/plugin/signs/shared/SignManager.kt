@@ -6,7 +6,9 @@ import app.simplecloud.api.server.Server
 import app.simplecloud.api.server.ServerQuery
 import app.simplecloud.api.server.ServerState
 import app.simplecloud.plugin.core.shared.adventure.miniMessage
+import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
 import app.simplecloud.plugin.core.shared.config.DefaultConfigInstaller
+import app.simplecloud.plugin.signs.shared.config.MessageConfig
 import app.simplecloud.plugin.signs.shared.config.layout.LayoutConfig
 import app.simplecloud.plugin.signs.shared.config.location.LocationsConfig
 import app.simplecloud.plugin.signs.shared.config.location.SignLocation
@@ -26,6 +28,7 @@ class SignManager(
     val api: CloudApi,
     dataDirectory: Path,
     private val renderer: SignRenderer,
+    private val messages: ConfigurationFactory<MessageConfig>,
 ) {
 
     private val logger = LoggerFactory.getLogger(SignManager::class.java)
@@ -219,7 +222,7 @@ class SignManager(
         val frame = layout.frames[frameIndex.toInt()]
         val placeholders = SignPlaceholders.of(server, target)
         val sign = RenderedSign(
-            frame.lines.take(MAX_LINES).map { miniMessage.deserialize(it, placeholders) },
+            frame.lines.take(MAX_LINES).map { miniMessage.deserialize(it, placeholders, messages.get().tags) },
             layout.behindBlock,
             layout.glowingText,
         )

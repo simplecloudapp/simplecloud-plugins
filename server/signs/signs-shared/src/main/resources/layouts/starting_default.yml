@@ -6,6 +6,6 @@ glowing-text: true
 frames:
   - lines:
       - ''
-      - '<#F8FAFC><server-name>'
-      - '<shine:ꜱᴛᴀʀᴛɪɴɢ:#38BDF8:#E0F2FE>'
+      - '<highlight><server-name>'
+      - '<shine:ꜱᴛᴀʀᴛɪɴɢ:#3B95FF:#CFE4FF>'
       - ''

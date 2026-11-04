@@ -2,56 +2,78 @@
 version: 1
 
 # ───────────────────────────────────────────────────────────────────────────────
+# Palette
+# Colors used throughout the messages. Every entry is a tag, e.g. <brand>text or <error>text.
+# ───────────────────────────────────────────────────────────────────────────────
+palette:
+  brand: '#3B95FF'
+  interactive: '#62ADFF'
+  highlight: '#CFE4FF'
+  muted: '#A8A8AB'
+  separator: '#5F5F63'
+  info: '#4FA3FF'
+  success: '#6AD13C'
+  warning: '#FF9029'
+  error: '#F5464F'
+  mint: '#1FD98E'
+  violet: '#9566FF'
+  pink: '#E94BA6'
+  gold: '#F2C230'
+  cyan: '#22C3DB'
+  amber: '#FFA329'
+
+# ───────────────────────────────────────────────────────────────────────────────
 # Variables
 # Reusable variables that can be used throughout the messages.
 # Usage: <variable_name> will be replaced with the defined value.
 # ───────────────────────────────────────────────────────────────────────────────
 variables:
-  prefix: '<color:#38bdf8><bold>⚡</bold></color>'
+  prefix: '<brand><b>⚡</b></brand>'
 
 # ───────────────────────────────────────────────────────────────────────────────
 # Command Messages
 # ───────────────────────────────────────────────────────────────────────────────
 command:
   help:
-    title: '<prefix> <#FFFFFF>Commands of the SimpleCloud Signs plugin'
-    entry: '   <#A3A3A3><command>'
+    title: '<prefix> <info>Sign commands'
+    entry: '<separator>•</separator> <interactive><command>'
+    hover: '<interactive>Click to type this command'
 
   add:
-    success: '<prefix> <#FFFFFF>Sign for <#FBBF24><target></#FBBF24> was <#A3E635>created</#A3E635>.'
-    already-registered: '<prefix> <#DC2626>This sign is already registered.'
-    group-not-found: '<prefix> <#DC2626>There is no group named <#FBBF24><group></#FBBF24>.'
-    persistent-server-not-found: '<prefix> <#DC2626>There is no persistent server named <#FBBF24><persistent-server></#FBBF24>.'
+    success: '<prefix> <success>Created a sign for <target>!'
+    already-registered: '<prefix> <warning>This sign is already registered.'
+    group-not-found: '<prefix> <error>There is no group named <group>.'
+    persistent-server-not-found: '<prefix> <error>There is no persistent server named <persistent-server>.'
 
   remove:
-    success: '<prefix> <#A3E635>Sign was successfully removed.'
-    not-registered: '<prefix> <#DC2626>This sign is not registered.'
-    all-success: '<prefix> <#FFFFFF>Successfully removed <#FBBF24><amount></#FBBF24> sign(s) of <#FBBF24><target></#FBBF24>.'
-    none-registered: '<prefix> <#DC2626>No signs are registered for <#FBBF24><target></#FBBF24>.'
+    success: '<prefix> <success>Removed the sign.'
+    not-registered: '<prefix> <warning>This sign is not registered.'
+    all-success: '<prefix> <success>Removed the signs of <target> <separator>(</separator><amount><separator>)</separator>.'
+    none-registered: '<prefix> <warning>No signs are registered for <target>.'
 
   # <teleport>...</teleport> teleports the player to the sign when clicked.
   # <previous> and <next> are only shown if there is a previous or next page.
   list:
-    empty: '<prefix> <#DC2626>There are no signs registered.'
-    title: '<prefix> <#FFFFFF>Registered signs <#A3A3A3>(<amount>)'
-    entry: '<teleport><#A3A3A3>└─ <#FBBF24><target></#FBBF24> in <#FFFFFF><world></#FFFFFF> at <#FFFFFF><x> <y> <z></teleport>'
-    teleport-hover: '<#A3A3A3>Click to teleport'
-    footer: '<previous><#A3A3A3>[ <#FFFFFF><page>/<pages></#FFFFFF> ]<next>'
-    previous: '<#38BDF8>« Previous </#38BDF8>'
-    next: '<#38BDF8> Next »</#38BDF8>'
+    empty: '<prefix> <warning>No signs are registered.'
+    title: '<prefix> <info>Signs <separator>(</separator><amount><separator>)</separator>'
+    entry: '<teleport><separator>•</separator> <interactive><target> in <world> at <x> <y> <z></teleport>'
+    teleport-hover: '<interactive>Click to teleport'
+    footer: '<previous><info>Page <page>/<pages><next>'
+    previous: '<interactive>Previous</interactive>  '
+    next: '  <interactive>Next'
 
-  not-looking-at-sign: '<prefix> <#DC2626>To execute this command, you need to look at a sign.'
+  not-looking-at-sign: '<prefix> <error>Look at a sign to use this command.'
 
   exception:
-    syntax: '<prefix> <#DC2626>Use <#F8FAFC><command> <#DC2626>instead.'
-    permission: '<prefix> <#DC2626>You do not have permission to use this command.'
-    invalid-sender: '<prefix> <#DC2626>You cannot use this command.'
-    failed: '<prefix> <#DC2626>The command failed because <#F8FAFC><reason><#DC2626>.'
+    syntax: '<prefix> <error>Use <command> instead.'
+    permission: '<prefix> <error>You don''t have permission to use this command.'
+    invalid-sender: '<prefix> <error>You can''t use this command here.'
+    failed: '<prefix> <error>The command failed because <reason>.'
     argument:
-      invalid: '<prefix> <#DC2626>Invalid argument: <#F8FAFC><reason><#DC2626>.'
-      invalid-number: '<prefix> <#DC2626><#F8FAFC><value> <#DC2626>is not a valid number.'
-      number-too-small: '<prefix> <#DC2626>The number must be at least <#F8FAFC><min><#DC2626>.'
-      number-too-large: '<prefix> <#DC2626>The number must be at most <#F8FAFC><max><#DC2626>.'
-      invalid-boolean: '<prefix> <#DC2626>Use <#F8FAFC>true <#DC2626>or <#F8FAFC>false<#DC2626>.'
-      invalid-enum: '<prefix> <#DC2626><#F8FAFC><value> <#DC2626>is invalid. Use one of <#F8FAFC><options><#DC2626>.'
-      invalid-uuid: '<prefix> <#DC2626><#F8FAFC><value> <#DC2626>is not a valid UUID.'
+      invalid: '<prefix> <error>That argument is invalid: <reason>.'
+      invalid-number: '<prefix> <error><value> is not a number.'
+      number-too-small: '<prefix> <error>The number must be at least <min>.'
+      number-too-large: '<prefix> <error>The number must be at most <max>.'
+      invalid-boolean: '<prefix> <error>Use true or false.'
+      invalid-enum: '<prefix> <error><value> is not an option. Use one of <options>.'
+      invalid-uuid: '<prefix> <error><value> is not a valid UUID.'
