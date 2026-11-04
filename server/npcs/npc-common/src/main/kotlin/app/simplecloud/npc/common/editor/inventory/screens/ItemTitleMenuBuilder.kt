@@ -46,6 +46,9 @@ object ItemTitleMenuBuilder {
                     context.render(player, screen)
                 },
                 scope = scope(config, screen),
+                removable = config.items.any {
+                    it.slot in screen.slots && ItemClickActions.of(it, screen.interaction)?.sendTitle != null
+                },
                 removeAndBack = {
                     change { null }
                     context.back(player)

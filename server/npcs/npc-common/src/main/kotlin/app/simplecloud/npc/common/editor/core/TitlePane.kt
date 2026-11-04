@@ -51,6 +51,7 @@ object TitlePane {
         val edit: ((TitleConfiguration) -> TitleConfiguration) -> Unit,
         val removeAndBack: () -> Unit,
         val scope: List<String> = emptyList(),
+        val removable: Boolean = title != null,
     )
 
     fun normalized(title: TitleConfiguration): TitleConfiguration? =
@@ -113,7 +114,7 @@ object TitlePane {
             }
         }
 
-        if (port.title == null) {
+        if (!port.removable) {
             pane[REMOVE_SLOT] = Ui.disabled("Remove Title", listOf("<hnt>There is no title to remove."), "RED_CONCRETE")
             return
         }
