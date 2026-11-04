@@ -80,6 +80,6 @@ tablist:
   - name: global
     layout:
       - header: '<br><brand>ꜱɪᴍᴘʟᴇᴄʟᴏᴜᴅ<br>'
-        footer: '<br> <highlight><online_players> players <muted>are playing on your network <br> <separator>  ꜱɪᴍᴘʟᴇᴄʟᴏᴜᴅ.ᴀᴘᴘ<br>'
+        footer: '<br> <muted>Players on your network<separator>: <highlight><online_players> <br><separator>ꜱɪᴍᴘʟᴇᴄʟᴏᴜᴅ.ᴀᴘᴘ<br>'
     # Interval in ticks after which the next layout entry is shown. Set to 0 to always show the first entry.
     update-time: 20

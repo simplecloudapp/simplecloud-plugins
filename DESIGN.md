@@ -256,12 +256,13 @@ to type, and `interactive` words for cancel.
 
 ### Tab list
 
-The header and footer keep a space at the start and end of each line, and the footer sentence stays long, so the tab
-list is wide enough when only one column of players shows. The network name and the address are in small caps.
+The footer's first line has a space at both ends, so the tab list is wide enough when only one column of players
+shows. Other lines have no extra spaces, because the client centers spaces too. The network name and the address are in
+small caps.
 
 ```
 header: '<br><brand>ꜱɪᴍᴘʟᴇᴄʟᴏᴜᴅ<br>'
-footer: '<br> <highlight><online_players> players <muted>are playing on your network <br> <separator>  ꜱɪᴍᴘʟᴇᴄʟᴏᴜᴅ.ᴀᴘᴘ<br>'
+footer: '<br> <muted>Players on your network<separator>: <highlight><online_players> <br><separator>ꜱɪᴍᴘʟᴇᴄʟᴏᴜᴅ.ᴀᴘᴘ<br>'
 ```
 
 ### Server list and kick screens
