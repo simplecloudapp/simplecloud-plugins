@@ -101,10 +101,64 @@ class EditorLayoutTest {
         NpcEditorScreen.Confirm(id, ConfirmPurpose.RemoveJoinState("maintenance")),
     )
 
+    private fun npcParents(screen: NpcEditorScreen): List<NpcEditorScreen> {
+        val id = "limbo"
+        val actions = NpcEditorScreen.Tab(id, NpcTab.ACTIONS)
+        val action = NpcEditorScreen.ActionEditor(id, PlayerInteraction.RIGHT_CLICK, NpcConfig.DEFAULT_JOIN_STATE)
+        return when (screen) {
+            is NpcEditorScreen.SkinPicker, is NpcEditorScreen.Glow -> listOf(NpcEditorScreen.Tab(id, NpcTab.LOOKS))
+
+            is NpcEditorScreen.HologramFrames -> listOf(NpcEditorScreen.Tab(id, NpcTab.HOLOGRAM))
+
+            is NpcEditorScreen.ActionEditor -> listOf(actions)
+
+            is NpcEditorScreen.ActionBlocks, is NpcEditorScreen.TitleEditor -> listOf(actions, action)
+
+            is NpcEditorScreen.Picker -> when (screen.purpose) {
+                PickerPurpose.AddTarget -> listOf(NpcEditorScreen.Tab(id, NpcTab.TARGETS))
+                is PickerPurpose.PickSound -> listOf(NpcEditorScreen.Tab(id, NpcTab.BEHAVIOR))
+                is PickerPurpose.PickServer -> listOf(actions, action)
+                else -> listOf(NpcEditorScreen.Tab(id, NpcTab.HOLOGRAM))
+            }
+
+            else -> emptyList()
+        }
+    }
+
     private fun render(screen: NpcEditorScreen): EditorMenu? {
         editor.open(player, requireNotNull(context.npcRepository.find("limbo")))
+        npcParents(screen).forEach { editor.navigate(player, it) }
         if (screen != NpcEditorScreen.Tab("limbo", NpcTab.NPC)) editor.navigate(player, screen)
         return opener.last
+    }
+
+    private fun inventoryParents(id: String, screen: InventoryEditorScreen): List<InventoryEditorScreen> {
+        val studio = InventoryEditorScreen.Studio(id, listOf(19))
+        val click = InventoryEditorScreen.ItemAction(id, listOf(19), PlayerInteraction.LEFT_CLICK)
+        val group = InventoryEditorScreen.LiveGroup(id, "servers")
+        return when (screen) {
+            is InventoryEditorScreen.Lore, is InventoryEditorScreen.ItemAction -> listOf(studio)
+
+            is InventoryEditorScreen.ItemActionBlocks, is InventoryEditorScreen.ItemTitle -> listOf(studio, click)
+
+            is InventoryEditorScreen.StateLooks -> listOf(group)
+
+            is InventoryEditorScreen.StateLook -> listOf(group, InventoryEditorScreen.StateLooks(id, "servers"))
+
+            is InventoryEditorScreen.Picker -> when (screen.purpose) {
+                is InventoryPickerPurpose.Material -> listOf(studio)
+
+                is InventoryPickerPurpose.LiveSourceType, is InventoryPickerPurpose.LiveSourceGroup -> listOf(group)
+
+                is InventoryPickerPurpose.OpenInventory, is InventoryPickerPurpose.SendToServer,
+                is InventoryPickerPurpose.Sound,
+                -> listOf(studio, click)
+
+                else -> emptyList()
+            }
+
+            else -> emptyList()
+        }
     }
 
     private fun grid(menu: EditorMenu): String = (0 until menu.size / 9).joinToString("\n") { row ->
@@ -173,6 +227,7 @@ class EditorLayoutTest {
         record("Templates", opener.last)
         inventoryScreens(menu.id).forEach { screen ->
             inventories.open(player, menu)
+            inventoryParents(menu.id, screen).forEach { inventories.navigate(player, it) }
             if (screen != InventoryEditorScreen.Hub(menu.id)) inventories.navigate(player, screen)
             record(screen::class.simpleName.orEmpty(), opener.last)
         }

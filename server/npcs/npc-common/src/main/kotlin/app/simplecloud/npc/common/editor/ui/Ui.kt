@@ -8,6 +8,8 @@ object Ui {
         "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjBiNTVmNzQ2ODFjNjgyODNhMWMxY2U1MWYxYzgzYjUyZTI5NzFjOTFlZTM0ZWZjYjU5OGRmMzk5MGE3ZTcifX19"
 
     private const val TITLE_NAME_LENGTH = 18
+    private const val MAX_TITLE_LENGTH = 32
+    private const val MIN_NAME_LENGTH = 8
     private const val DISABLED_MATERIAL = "LIGHT_GRAY_DYE"
     private const val BACK_MATERIAL = "RED_STAINED_GLASS_PANE"
     private const val PAGE_MATERIAL = "BLUE_STAINED_GLASS_PANE"
@@ -127,7 +129,13 @@ object Ui {
     fun root(name: String): String = "Edit ${clipName(name)}"
 
     /** The title of a screen below the first one, e.g. `Edit limbo · Skin`. */
-    fun title(section: String, npcName: String): String = "Edit ${clipName(npcName)} · $section"
+    fun title(section: String, npcName: String): String {
+        val room = MAX_TITLE_LENGTH - "Edit  · ".length - section.length
+        if (room >= MIN_NAME_LENGTH || npcName.length <= room) return "Edit ${clip(npcName, minOf(room, TITLE_NAME_LENGTH))} · $section"
+        return "Edit ${clip(npcName, MIN_NAME_LENGTH)} · ${clip(section, MAX_TITLE_LENGTH - MIN_NAME_LENGTH - 9)}"
+    }
+
+    private fun clip(text: String, length: Int): String = if (text.length <= length) text else text.take(length - 1) + "…"
 
     private fun clipName(name: String): String =
         if (name.length <= TITLE_NAME_LENGTH) name else name.take(TITLE_NAME_LENGTH) + "…"

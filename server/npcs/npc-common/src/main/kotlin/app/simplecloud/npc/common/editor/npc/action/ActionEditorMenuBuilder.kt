@@ -54,7 +54,7 @@ object ActionEditorMenuBuilder {
             }
         }
 
-        return pane.menu(Ui.title(NpcFormat.cellName(interaction, joinState), NpcFormat.displayName(config)))
+        return pane.menu(Ui.title(Clicks.label(interaction), NpcFormat.displayName(config)))
     }
 
     fun buildBlocks(
@@ -67,10 +67,10 @@ object ActionEditorMenuBuilder {
         val editor = NpcEditorScreen.ActionEditor(config.id, interaction, joinState)
         val pane = Pane(ActionFieldsPane.ADD_SIZE)
 
-        ActionFieldsPane.fillAdd(pane, port(context, player, config, interaction, joinState, editor))
+        ActionFieldsPane.fillAdd(pane, port(context, player, config, interaction, joinState, editor), interaction)
         pane.back(context, player)
 
-        return pane.menu(Ui.title("Add to ${Clicks.short(interaction)}", NpcFormat.displayName(config)))
+        return pane.menu(Ui.title("Add Action", NpcFormat.displayName(config)))
     }
 
     private fun port(

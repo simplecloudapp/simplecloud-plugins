@@ -36,9 +36,6 @@ object NpcFormat {
             .map { it.lowercase() }
             .distinct()
 
-    fun cellName(interaction: PlayerInteraction, joinState: String): String =
-        "${Clicks.short(interaction)} · ${joinState(joinState)}"
-
     fun seconds(ticks: Int, decimals: Int = 1): String = String.format(Locale.ROOT, "%.${decimals}fs", ticks / 20.0)
 
     fun pacing(title: NpcConfig.TitleConfiguration): String =
