@@ -43,8 +43,8 @@ object SoundTuning {
     ) {
         if (requireSound && sound == null) {
             val hint = listOf("<hnt>Pick a sound first.")
-            pane[VOLUME_SLOT] = Ui.disabled(VOLUME.label, hint)
-            pane[PITCH_SLOT] = Ui.disabled(PITCH.label, hint)
+            pane[VOLUME_SLOT] = VOLUME.disabled(hint)
+            pane[PITCH_SLOT] = PITCH.disabled(hint)
         } else {
             pane[VOLUME_SLOT] = VOLUME.element(options.volume) { value ->
                 tune { it.copy(volume = value) }

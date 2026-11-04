@@ -11,6 +11,7 @@ object Ui {
     private const val DISABLED_MATERIAL = "LIGHT_GRAY_DYE"
     private const val BACK_MATERIAL = "RED_STAINED_GLASS_PANE"
     private const val PAGE_MATERIAL = "BLUE_STAINED_GLASS_PANE"
+    private const val ACTION = "<key>"
 
     fun item(
         material: String,
@@ -55,7 +56,7 @@ object Ui {
             selected -> "<val>$name"
             else -> "<ttl>$name"
         },
-        lore + "" + if (selected) "<on>Selected" else "<key>Left-click to select",
+        lore + "" + if (selected) "<on>Picked now" else "<key>Left-click to pick it",
         glowing = selected,
     )
 
@@ -73,7 +74,8 @@ object Ui {
         glowing = current,
     )
 
-    fun disabled(name: String, lore: List<String>): NpcItem = item(DISABLED_MATERIAL, "<off>$name", lore)
+    fun disabled(name: String, lore: List<String>, material: String = DISABLED_MATERIAL): NpcItem =
+        item(material, "<off>$name", lore)
 
     fun unavailable(name: String, lore: List<String>, reason: String): NpcItem =
         disabled(name, lore + listOf("", "<hnt>$reason"))
@@ -85,9 +87,8 @@ object Ui {
             valueLine ?: "<off>Not set",
             "",
             setVerb,
-            "<key>Press Q to clear it".takeIf { valueLine != null },
+            if (valueLine == null) null else "<key>Press Q to clear it",
         ),
-        glowing = valueLine != null,
     )
 
     fun toggle(
@@ -110,7 +111,7 @@ object Ui {
     fun back(to: String? = null): NpcItem = item(
         BACK_MATERIAL,
         "<key>Back",
-        listOfNotNull(if (to == null) null else "<bd>To <val>${to.substringAfterLast(" · ")}", "<hnt>Esc does the same."),
+        listOfNotNull(if (to == null) null else "<bd>To <val>${to.substringAfter(" · ", to)}", "<hnt>Esc does the same."),
     )
 
     fun previousPage(page: Int): NpcItem? =
@@ -131,14 +132,19 @@ object Ui {
     private fun clipName(name: String): String =
         if (name.length <= TITLE_NAME_LENGTH) name else name.take(TITLE_NAME_LENGTH) + "…"
 
-    fun pretty(material: String): String =
-        material.lowercase().split('_').joinToString(" ") { it.replaceFirstChar(Char::uppercase) }
+    private val SMALL_WORDS = setOf("a", "an", "and", "the", "of", "on", "to", "for", "in", "or", "with")
+
+    fun pretty(material: String): String = material.lowercase().split('_').mapIndexed { index, word ->
+        if (index > 0 && word in SMALL_WORDS) word else word.replaceFirstChar(Char::uppercase)
+    }.joinToString(" ")
 
     fun quote(text: String): String = "\"$text\""
 
     /** Drops empty lines at the start and the end and collapses repeated ones, so tooltips never carry padding. */
     private fun tidy(lore: List<String>): List<String> {
-        val lines = lore.dropWhile { it.isBlank() }.dropLastWhile { it.isBlank() }
+        val (actions, facts) = lore.partition { it.startsWith(ACTION) }
+        val text = facts.dropWhile { it.isBlank() }.dropLastWhile { it.isBlank() }
+        val lines = if (actions.isEmpty() || text.isEmpty()) text + actions else text + "" + actions
         return lines.filterIndexed { index, line -> line.isNotBlank() || lines[index - 1].isNotBlank() }
     }
 }

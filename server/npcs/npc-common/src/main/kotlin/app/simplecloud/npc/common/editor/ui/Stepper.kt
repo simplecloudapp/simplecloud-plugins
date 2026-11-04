@@ -50,6 +50,8 @@ data class Stepper(
         )
     }
 
+    fun disabled(hint: List<String>): NpcItem = Ui.disabled(label, hint, material)
+
     fun element(current: Double, mixed: Boolean = false, commit: (Double) -> Unit): Element =
         Element(item(current, mixed)) { click -> stepped(current, click)?.let(commit) }
 

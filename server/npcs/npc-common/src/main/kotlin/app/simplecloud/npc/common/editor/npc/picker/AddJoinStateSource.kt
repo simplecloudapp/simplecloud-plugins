@@ -19,7 +19,7 @@ class AddJoinStateSource(override val purpose: PickerPurpose.AddJoinState) : Pic
 
     override fun header(context: NpcEditorContext, config: NpcConfig) = PickerHeader(
         "PAPER",
-        "Add A Join State",
+        "Add a Join State",
         if (forHologram) {
             listOf("<bd>Pick the join state that gets", "<bd>its own hologram lines.")
         } else {

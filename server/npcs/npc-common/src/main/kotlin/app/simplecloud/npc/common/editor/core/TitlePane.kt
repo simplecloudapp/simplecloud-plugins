@@ -84,7 +84,7 @@ object TitlePane {
         val total = title.fadeIn + title.stay + title.fadeOut
         pane[PACING_SLOT] = Ui.item(
             "FILLED_MAP",
-            "<ttl>Title On Screen",
+            "<ttl>Title on Screen",
             listOf(
                 "<bd>Title: " + if (title.title.isBlank()) "<off>Not set" else "<val>${Ui.quote(title.title)}",
                 "<bd>Subtitle: " + if (title.subtitle.isBlank()) "<off>Not set" else "<val>${Ui.quote(title.subtitle)}",
@@ -97,7 +97,7 @@ object TitlePane {
         if (port.title == null) {
             val hint = listOf("<hnt>Set a title or subtitle first.")
             listOf(FADE_IN_SLOT to FADE_IN, STAY_SLOT to STAY, FADE_OUT_SLOT to FADE_OUT).forEach { (slot, stepper) ->
-                pane[slot] = Ui.disabled(stepper.label, hint)
+                pane[slot] = stepper.disabled(hint)
             }
         } else {
             pane[FADE_IN_SLOT] = FADE_IN.element(title.fadeIn.toDouble()) { value ->

@@ -19,7 +19,7 @@ import app.simplecloud.npc.core.platform.NpcPlayer
 class PickSoundSource(override val purpose: PickerPurpose.PickSound) : PickerSource {
     private val field = purpose.field
 
-    override val title = "Pick A Sound"
+    override val title = "Pick a Sound"
 
     override val empty = EmptyState(
         "No Sounds Found",
@@ -101,7 +101,6 @@ class PickSoundSource(override val purpose: PickerPurpose.PickSound) : PickerSou
             player,
             currentSound(config),
             soundOptions(config),
-            requireSound = field is SoundField.Action,
         ) { updated ->
             context.commit(player, config.id, screen) { fresh ->
                 if (field is SoundField.Action && currentSound(fresh) == null) return@commit null

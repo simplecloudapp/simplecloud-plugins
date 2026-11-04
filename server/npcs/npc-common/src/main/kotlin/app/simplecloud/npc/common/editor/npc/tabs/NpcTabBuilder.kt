@@ -32,7 +32,7 @@ object NpcTabBuilder {
             SUMMON_SLOT,
             Ui.item(
                 "ENDER_PEARL",
-                "<ttl>Summon To Me",
+                "<ttl>Summon to Me",
                 listOf("<bd>Now at <val>${NpcFormat.position(config.entity.location)}", "<key>Left-click to move it here"),
             ),
         ) {

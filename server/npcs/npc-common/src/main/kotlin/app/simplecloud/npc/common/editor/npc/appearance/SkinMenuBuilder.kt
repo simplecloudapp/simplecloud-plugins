@@ -74,7 +74,7 @@ object SkinMenuBuilder {
         ) { applySkin(context, player, config, NpcConfig.SkinConfiguration()) }
         pane.left(
             INPUT_SLOT,
-            Ui.item("OAK_SIGN", "<ttl>Type A Name", listOf("<bd>Any username or UUID.", "", "<key>Left-click to type it in chat")),
+            Ui.item("OAK_SIGN", "<ttl>Type a Name", listOf("<bd>Any username or UUID.", "", "<key>Left-click to type it in chat")),
         ) { promptSkin(context, player, config) }
 
         return pane.menu(Ui.title("Skin", NpcFormat.displayName(config)))

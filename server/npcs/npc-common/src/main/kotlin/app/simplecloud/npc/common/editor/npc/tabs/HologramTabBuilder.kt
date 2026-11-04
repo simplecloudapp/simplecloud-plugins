@@ -46,7 +46,7 @@ object HologramTabBuilder {
         fun edit(mutate: (NpcConfig.HologramConfigurationRoot) -> Unit) =
             context.commit(player, config.id, screen, Refresh.HOLOGRAM) { fresh -> fresh.also { mutate(it.hologram) } }
 
-        pane.left(TOGGLE_SLOT, Ui.toggle("Hologram", hologram.enabled, linkedHint(config), "GLOW_ITEM_FRAME")) {
+        pane.left(TOGGLE_SLOT, Ui.toggle("Hologram", hologram.enabled, linkedHint(config))) {
             edit { it.enabled = !it.enabled }
         }
         pane[HEIGHT_SLOT] = START_HEIGHT.element(hologram.startHeight) { value -> edit { it.startHeight = value } }

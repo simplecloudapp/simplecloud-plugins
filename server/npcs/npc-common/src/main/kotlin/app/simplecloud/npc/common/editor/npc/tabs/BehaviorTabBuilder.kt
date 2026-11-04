@@ -81,7 +81,7 @@ object BehaviorTabBuilder {
         fun editPushback(mutate: (NpcConfig.PushbackConfiguration) -> Unit) =
             context.commit(player, config.id, screen) { fresh -> fresh.also { mutate(it.pushback) } }
 
-        pane.left(LOOK_AT_SLOT, Ui.toggle("Look At Player", entity.lookAtPlayer, material = "ENDER_EYE")) {
+        pane.left(LOOK_AT_SLOT, Ui.toggle("Look at Player", entity.lookAtPlayer, material = "ENDER_EYE")) {
             editEntity { it.copy(lookAtPlayer = !it.lookAtPlayer) }
         }
         if (entity.lookAtPlayer) {
@@ -89,7 +89,7 @@ object BehaviorTabBuilder {
                 editEntity { it.copy(lookAtPlayerDistance = value) }
             }
         } else {
-            pane[LOOK_AT_RANGE_SLOT] = Ui.disabled(LOOK_AT_RANGE.label, listOf("<hnt>Turn on Look At Player first."))
+            pane[LOOK_AT_RANGE_SLOT] = LOOK_AT_RANGE.disabled(listOf("<hnt>Turn on Look at Player first."))
         }
         pane[RENDER_RANGE_SLOT] = RENDER_RANGE.element(entity.viewDistance) { value ->
             editEntity { it.copy(viewDistance = value) }
@@ -100,7 +100,7 @@ object BehaviorTabBuilder {
             Ui.toggle(
                 "Push",
                 pushback.enabled,
-                material = "PISTON",
+                material = null,
                 actions = tryActions(pushback.enabled),
             ),
         ) { click ->
@@ -118,9 +118,9 @@ object BehaviorTabBuilder {
 
         if (!pushback.enabled) {
             val hint = listOf("<hnt>Turn on Push first.")
-            pane[PUSH_STRENGTH_SLOT] = Ui.disabled(PUSH_STRENGTH.label, hint)
-            pane[PUSH_RADIUS_SLOT] = Ui.disabled(PUSH_RADIUS.label, hint)
-            pane[UPWARD_BOOST_SLOT] = Ui.disabled(UPWARD_BOOST.label, hint)
+            pane[PUSH_STRENGTH_SLOT] = PUSH_STRENGTH.disabled(hint)
+            pane[PUSH_RADIUS_SLOT] = PUSH_RADIUS.disabled(hint)
+            pane[UPWARD_BOOST_SLOT] = UPWARD_BOOST.disabled(hint)
             pane[PUSH_SOUND_SLOT] = Ui.disabled("Push Sound", hint)
         } else {
             pane[PUSH_STRENGTH_SLOT] = PUSH_STRENGTH.element(pushback.strength) { value ->

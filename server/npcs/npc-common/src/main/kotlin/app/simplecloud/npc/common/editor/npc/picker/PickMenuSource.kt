@@ -12,7 +12,7 @@ import app.simplecloud.npc.core.config.NpcConfig
 import app.simplecloud.npc.core.platform.NpcPlayer
 
 class PickMenuSource(override val purpose: PickerPurpose.PickMenu) : PickerSource {
-    override val title = "Pick A Menu"
+    override val title = "Pick a Menu"
 
     override fun header(context: NpcEditorContext, config: NpcConfig) = PickerHeader(
         "CHEST",

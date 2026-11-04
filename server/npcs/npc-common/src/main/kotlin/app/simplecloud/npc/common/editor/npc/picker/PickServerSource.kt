@@ -13,7 +13,7 @@ import app.simplecloud.npc.core.config.NpcConfig
 import app.simplecloud.npc.core.platform.NpcPlayer
 
 class PickServerSource(override val purpose: PickerPurpose.PickServer) : PickerSource {
-    override val title = "Pick A Server"
+    override val title = "Pick a Server"
 
     override fun header(context: NpcEditorContext, config: NpcConfig) = PickerHeader(
         "MAP",

@@ -41,8 +41,8 @@ class Pane(val size: Int) {
 
         val middleTaken = (navRow.first + MIDDLE_COLUMN) in placed
         val slots = Layout.toolSlots(tools.size, middleTaken)
-        val onlyRight = middleTaken && elements.keys.filter { it < 0 } == listOf(Layout.TOOL_RIGHT)
-        val shifted = if (onlyRight) slots.map { it + 2 } else slots
+        val onlyRight = elements.keys.filter { it < 0 } == listOf(Layout.TOOL_RIGHT)
+        val shifted = if (onlyRight) listOf(navRow.first + MIDDLE_COLUMN + 1) else slots
         shifted.zip(tools).forEach { (slot, tool) -> placed[slot] = tool }
         return placed
     }

@@ -102,7 +102,7 @@ object ActionFieldsPane {
         Block(
             Group.GO_TO,
             "COMPASS",
-            "Send To Server",
+            "Send to Server",
             "Sends the player to one server.",
             summary = { a -> a.sendToServer?.let { "<val>${NpcFormat.plain(it)}" } },
             edit = { it.pickServer() },
@@ -130,7 +130,7 @@ object ActionFieldsPane {
             edit = { port ->
                 chat(
                     port,
-                    "Transfer To Host",
+                    "Transfer to Host",
                     "Type the host to transfer to in chat, as host:port.",
                     port.action.transferToServer,
                     format = PromptFormat.PLAIN,
@@ -378,9 +378,9 @@ object ActionFieldsPane {
         val action = port.action
         val tag = "<hnt>${block.group.tag}"
         when {
-            isSet(block, action) -> pane[slot] = Ui.disabled(block.label, listOf(tag, "", "<hnt>Already added"))
+            isSet(block, action) -> pane[slot] = Ui.disabled(block.label, listOf(tag, "", "<hnt>Already added"), block.material)
 
-            !block.available(action) -> pane[slot] = Ui.disabled(block.label, listOf(tag, "", "<hnt>Set a permission first"))
+            !block.available(action) -> pane[slot] = Ui.disabled(block.label, listOf(tag, "", "<hnt>Set a permission first"), block.material)
 
             else -> pane.left(
                 slot,

@@ -103,7 +103,7 @@ object LooksTabBuilder {
             pane.left(
                 EQUIPMENT_SLOT,
                 Ui.item(
-                    "ARMOR_STAND",
+                    "IRON_CHESTPLATE",
                     "<ttl>Equipment",
                     listOf(
                         if (worn == 0) "<off>Nothing worn" else "<val>$worn <hnt>items worn",

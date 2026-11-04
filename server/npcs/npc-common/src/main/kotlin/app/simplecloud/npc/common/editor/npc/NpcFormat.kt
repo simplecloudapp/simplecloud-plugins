@@ -22,7 +22,7 @@ object NpcFormat {
 
     fun plain(text: String): String = Msg.miniMessage.escapeTags(text)
 
-    fun joinState(joinState: String): String = joinState.lowercase()
+    fun joinState(joinState: String): String = joinState.lowercase().replaceFirstChar(Char::uppercase)
 
     fun isDefaultJoinState(joinState: String): Boolean = joinState.equals(NpcConfig.DEFAULT_JOIN_STATE, true)
 

@@ -20,7 +20,7 @@ object AddTargetSource : PickerSource {
 
     override fun header(context: NpcEditorContext, config: NpcConfig) = PickerHeader(
         "COMPASS",
-        "Add A Target",
+        "Add a Target",
         listOf(
             "<bd>Pick a group or server that",
             "<val>${NpcFormat.displayName(config)} <bd>sends players to.",

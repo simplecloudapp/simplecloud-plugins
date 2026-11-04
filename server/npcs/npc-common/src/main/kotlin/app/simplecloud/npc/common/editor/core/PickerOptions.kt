@@ -84,10 +84,17 @@ object PickerOptions {
             val selected = key.equals(current, true)
             PickerOption(
                 key,
-                Ui.choice("NOTE_BLOCK", Ui.pretty(key), emptyList(), selected, "use this sound", listOf("<key>Right-click to hear it")),
+                Ui.choice("NOTE_BLOCK", soundName(key), listOf("<hnt>$key"), selected, "use this sound", listOf("<key>Right-click to hear it")),
                 available = !selected,
             )
         }
+
+    private val SOUND_GROUPS = setOf("BLOCK", "ENTITY", "UI", "ITEM", "AMBIENT", "MUSIC", "EVENT", "WEATHER")
+
+    private fun soundName(key: String): String {
+        val group = key.substringBefore('_')
+        return Ui.pretty(if (group in SOUND_GROUPS && '_' in key) key.substringAfter('_') else key)
+    }
 
     private fun ordered(catalog: List<String>, filter: String?): List<String> {
         if (filter != null) return catalog.filter { it.contains(filter, ignoreCase = true) }
@@ -114,7 +121,7 @@ object PickerOptions {
                         "<bd>Players: <val>${server.playerCount}",
                     ),
                     selected,
-                    "send players here",
+                    "pick this server",
                 ),
                 available = !selected,
             )
@@ -132,7 +139,7 @@ object PickerOptions {
                     Msg.miniMessage.escapeTags(menu.id),
                     listOf("<bd>Rows: <val>${menu.rows}", "<bd>Items: <val>${menu.items.size}"),
                     selected,
-                    "open this menu",
+                    "pick this menu",
                 ),
                 available = !selected,
             )

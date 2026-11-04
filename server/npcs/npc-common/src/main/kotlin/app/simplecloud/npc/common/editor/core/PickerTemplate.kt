@@ -14,7 +14,7 @@ class PickerOption(val value: String, val item: NpcItem, val available: Boolean 
 /** What a picker shows in the middle when there is nothing to pick: what is missing and what to do. */
 class EmptyState(val title: String, val hint: List<String>) {
     companion object {
-        val DEFAULT = EmptyState("Nothing To Pick", listOf("<bd>There is nothing to choose from yet."))
+        val DEFAULT = EmptyState("Nothing to Pick", listOf("<bd>There is nothing to choose from yet."))
     }
 }
 
@@ -80,7 +80,7 @@ object PickerTemplate {
 
         val typeHint = spec.typeHint
         if (typeHint != null) {
-            pane.left(TYPE_SLOT, Ui.item("OAK_SIGN", "<ttl>Type A Name", typeHint)) { promptTyped(host, player, spec) }
+            pane.left(TYPE_SLOT, Ui.item("OAK_SIGN", "<ttl>Type a Name", typeHint)) { promptTyped(host, player, spec) }
         }
 
         spec.extras(pane)
