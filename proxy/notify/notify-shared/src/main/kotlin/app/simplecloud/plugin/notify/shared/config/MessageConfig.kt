@@ -129,20 +129,23 @@ data class Notifications(
 data class Hover(
     val server: String = """
         <brand><server>
-        <br><muted>State: <highlight><state>
-        <br><muted>Address: <highlight><ip>:<port>
-        <br><muted>Players: <highlight><players>/<max>
-        <br><muted>Time: <highlight><time>
+
+        <muted>State: <highlight><state>
+        <muted>Address: <highlight><ip>:<port>
+        <muted>Players: <highlight><players>/<max>
+        <muted>Time: <highlight><time>
     """.trimIndent(),
 
     val group: String = """
         <brand><group>
-        <br><muted>Time: <highlight><time>
+
+        <muted>Time: <highlight><time>
     """.trimIndent(),
 
     val persistentServer: String = """
         <brand><server>
-        <br><muted>Time: <highlight><time>
+
+        <muted>Time: <highlight><time>
     """.trimIndent(),
 )
 
