@@ -34,7 +34,6 @@ object InventoryConfirms {
                     title = Ui.title("Delete Menu?", config.id),
                     screen = screen,
                     verb = "Delete",
-                    noun = "deletion",
                     head = Ui.item(
                         "CHEST",
                         "<err>Delete ${config.id}?",
@@ -45,7 +44,6 @@ object InventoryConfirms {
                             "",
                             "<err>The file goes. There is no undo.",
                         ),
-                        glowing = true,
                     ),
                     fire = {
                         context.inventoryManager.delete(config.id)
@@ -61,7 +59,6 @@ object InventoryConfirms {
                     title = Ui.title("Delete ${purpose.group}?", config.id),
                     screen = screen,
                     verb = "Delete",
-                    noun = "deletion",
                     head = Ui.item(
                         "PAPER",
                         "<err>Delete live group ${purpose.group}?",
@@ -70,7 +67,6 @@ object InventoryConfirms {
                             "",
                             "<hnt>Undo on the canvas brings it back.",
                         ),
-                        glowing = true,
                     ),
                     fire = {
                         context.change(player, config.id) { LiveGroups.delete(it, purpose.group) }

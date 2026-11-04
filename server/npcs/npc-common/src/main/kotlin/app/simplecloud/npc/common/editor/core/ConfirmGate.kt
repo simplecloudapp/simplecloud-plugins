@@ -11,7 +11,6 @@ class ConfirmSpec<S : Any>(
     val title: String,
     val screen: S,
     val verb: String,
-    val noun: String,
     val head: NpcItem,
     val fire: () -> Unit,
 )
@@ -24,42 +23,18 @@ object ConfirmGate {
     private const val FIRE_SLOT = 15
 
     fun <S : Any> build(host: EditorHost<S>, player: NpcPlayer, spec: ConfirmSpec<S>): EditorMenu {
-        val key = spec.screen.toString()
         val pane = Pane(SIZE)
 
-        pane.on(HEAD_SLOT, spec.head) { disarm(host, player, spec) }
-
-        pane.on(
-            KEEP_SLOT,
-            Ui.item("LIME_CONCRETE", "<on>Keep It", listOf("<key>Left-click to go back")),
-        ) { click ->
-            if (click == MenuClick.LEFT) host.back(player) else disarm(host, player, spec)
+        pane[HEAD_SLOT] = spec.head
+        pane.left(KEEP_SLOT, Ui.item("LIME_CONCRETE", "<on>Keep It", listOf("<key>Left-click to go back"))) {
+            host.back(player)
         }
-
-        pane.armed(
+        pane.left(
             FIRE_SLOT,
-            host,
-            player,
-            spec.screen,
-            key,
-            idle = Ui.item(
-                "RED_CONCRETE",
-                "<err>${spec.verb}",
-                listOf("<bd>Click twice to ${spec.verb.lowercase()} the ${spec.noun}.", "", "<key>Left-click to continue"),
-            ),
-            verb = spec.verb,
+            Ui.item("RED_CONCRETE", "<err>${spec.verb}", listOf("<key>Left-click to ${spec.verb.lowercase()} it")),
         ) { spec.fire() }
 
-        pane.otherwise { _, _ -> disarm(host, player, spec) }
-
         return pane.menu(spec.title)
-    }
-
-    private fun <S : Any> disarm(host: EditorHost<S>, player: NpcPlayer, spec: ConfirmSpec<S>) {
-        val session = host.session(player)
-        if (session.armedKey == null) return
-        session.disarm()
-        host.render(player, spec.screen)
     }
 }
 
