@@ -46,7 +46,7 @@ command:
   # Overview of all commands the sender is allowed to use.
   help:
     title: '<prefix> <info>Notify commands  <separator>/scnotify'
-    entry: '   <interactive><command></interactive> <muted><arguments>'
+    entry: '   <interactive><subcommand></interactive> <muted><arguments>'
     hover: '<highlight><description><br><muted>Usage: <highlight><usage><br><br><interactive>Click to type this command'
     empty: '<prefix> <warning>You can''t use any notify commands.'
     # Shown next to each command and in its hover, keyed by the usage without /scnotify.

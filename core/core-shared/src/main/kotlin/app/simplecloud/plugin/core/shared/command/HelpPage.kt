@@ -18,7 +18,8 @@ object HelpPage {
             val split = argumentStart.find(usage)?.range?.first ?: usage.length
             val literal = usage.substring(0, split)
             val row = TagResolver.resolver(
-                Placeholder.unparsed("command", literal),
+                Placeholder.unparsed("subcommand", literal),
+                Placeholder.unparsed("command", "$root $usage"),
                 Placeholder.unparsed("arguments", usage.substring(split).trim()),
             )
             val hover = TagResolver.resolver(

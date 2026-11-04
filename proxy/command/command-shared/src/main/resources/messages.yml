@@ -38,7 +38,7 @@ command:
   # Shown on /cloud
   help:
     title: '<prefix> <info>Cloud commands  <separator>/cloud'
-    entry: '   <interactive><command></interactive> <muted><arguments>'
+    entry: '   <interactive><subcommand></interactive> <muted><arguments>'
     hover: '<highlight><description><br><muted>Usage: <highlight><usage><br><br><interactive>Click to type this command'
     empty: '<prefix> <warning>You can''t use any cloud commands.'
     # Shown next to each command and in its hover, keyed by the usage without /cloud.

@@ -36,7 +36,7 @@ variables:
 command:
   help:
     title: '<prefix> <info>Prefixes commands  <separator>/scprefix'
-    entry: '   <interactive><command></interactive> <muted><arguments>'
+    entry: '   <interactive><subcommand></interactive> <muted><arguments>'
     hover: '<highlight><description><br><muted>Usage: <highlight><usage><br><br><interactive>Click to type this command'
     # Shown next to each command and in its hover, keyed by the usage without /scprefix.
     descriptions:
