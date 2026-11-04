@@ -17,12 +17,12 @@ import app.simplecloud.npc.core.platform.NpcPlayer
 import app.simplecloud.npc.core.render.Providers
 
 object LooksTabBuilder {
-    private const val SKIN_SLOT = 19
-    private const val NAME_SLOT = 21
-    private const val GLOW_SLOT = 23
-    private const val EQUIPMENT_SLOT = 25
-    private const val POSE_SLOT = 28
-    private const val SCALE_SLOT = 30
+    private const val SKIN_SLOT = 20
+    private const val NAME_SLOT = 22
+    private const val GLOW_SLOT = 24
+    private const val EQUIPMENT_SLOT = 29
+    private const val POSE_SLOT = 31
+    private const val SCALE_SLOT = 33
 
     private val SCALE = Stepper(
         label = "Size",

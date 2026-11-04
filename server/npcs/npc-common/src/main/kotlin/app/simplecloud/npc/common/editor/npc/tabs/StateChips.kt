@@ -19,9 +19,9 @@ class StateChips(
 )
 
 object StateChipRow {
-    private const val PREVIOUS_SLOT = 20
-    private val CHIP_SLOTS = 21..24
-    private const val NEXT_SLOT = 25
+    private const val PREVIOUS_SLOT = 19
+    private val CHIP_SLOTS = 20..23
+    private const val NEXT_SLOT = 24
     private const val SELECTED_MATERIAL = "LIGHT_BLUE_CONCRETE"
     private const val OTHER_MATERIAL = "WHITE_CONCRETE"
 

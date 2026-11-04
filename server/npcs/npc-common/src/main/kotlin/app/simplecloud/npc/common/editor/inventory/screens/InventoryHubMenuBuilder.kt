@@ -185,7 +185,7 @@ object InventoryHubMenuBuilder {
             if (moved) context.render(player, screen)
         }
 
-        return pane.menu(Ui.root("Menus", config.id))
+        return pane.menu(Ui.root(config.id))
     }
 
     private fun promptRename(context: InventoryEditorContext, player: NpcPlayer, config: InventoryConfiguration) {

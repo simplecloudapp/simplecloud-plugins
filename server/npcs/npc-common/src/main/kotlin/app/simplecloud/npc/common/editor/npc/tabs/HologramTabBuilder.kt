@@ -18,10 +18,10 @@ import app.simplecloud.npc.core.render.Providers
 import java.util.Locale
 
 object HologramTabBuilder {
-    private const val TOGGLE_SLOT = 18
-    private const val HEIGHT_SLOT = 19
-    private const val ADD_LAYOUT_SLOT = 26
-    private val LINE_SLOTS = (27..44).toList()
+    private const val TOGGLE_SLOT = 47
+    private const val HEIGHT_SLOT = 51
+    private const val ADD_LAYOUT_SLOT = 25
+    private val LINE_SLOTS = (28..34) + (37..43)
 
     private val START_HEIGHT = Stepper(
         label = "Height",

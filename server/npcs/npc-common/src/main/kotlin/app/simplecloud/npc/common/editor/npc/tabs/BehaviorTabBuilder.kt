@@ -13,10 +13,10 @@ import app.simplecloud.npc.core.config.NpcConfig
 import app.simplecloud.npc.core.platform.NpcPlayer
 
 object BehaviorTabBuilder {
-    private const val LOOK_AT_SLOT = 19
-    private const val LOOK_AT_RANGE_SLOT = 21
+    private const val LOOK_AT_SLOT = 21
+    private const val LOOK_AT_RANGE_SLOT = 22
     private const val RENDER_RANGE_SLOT = 23
-    private const val PUSH_SLOT = 28
+    private const val PUSH_SLOT = 29
     private const val PUSH_STRENGTH_SLOT = 30
     private const val PUSH_RADIUS_SLOT = 31
     private const val UPWARD_BOOST_SLOT = 32

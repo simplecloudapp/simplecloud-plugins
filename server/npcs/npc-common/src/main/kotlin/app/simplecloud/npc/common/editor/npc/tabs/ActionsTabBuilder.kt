@@ -14,7 +14,7 @@ import app.simplecloud.npc.core.interaction.PlayerInteraction
 import app.simplecloud.npc.core.platform.NpcPlayer
 
 object ActionsTabBuilder {
-    private const val ADD_STATE_SLOT = 26
+    private const val ADD_STATE_SLOT = 25
     private const val SUMMARY_LINES = 3
     private val CARDS = listOf(
         PlayerInteraction.LEFT_CLICK to 28,

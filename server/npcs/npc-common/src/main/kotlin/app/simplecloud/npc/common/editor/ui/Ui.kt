@@ -93,11 +93,11 @@ object Ui {
     fun pageIndicator(page: Int, pageCount: Int, lore: List<String>): NpcItem =
         item("PAPER", "<ttl>Page ${page + 1}/$pageCount", lore)
 
-    /** The title of an editor's first screen, e.g. `NPCs > limbo`. */
-    fun root(kind: String, name: String): String = "$kind > ${clipName(name)}"
+    /** The title of an editor's first screen, e.g. `Edit limbo`. */
+    fun root(name: String): String = "Edit ${clipName(name)}"
 
-    /** A breadcrumb title, e.g. `limbo > Skin`. */
-    fun title(section: String, npcName: String): String = "${clipName(npcName)} > $section"
+    /** The title of a screen below the first one, e.g. `Edit limbo · Skin`. */
+    fun title(section: String, npcName: String): String = "Edit ${clipName(npcName)} · $section"
 
     private fun clipName(name: String): String =
         if (name.length <= TITLE_NAME_LENGTH) name else name.take(TITLE_NAME_LENGTH) + "…"
