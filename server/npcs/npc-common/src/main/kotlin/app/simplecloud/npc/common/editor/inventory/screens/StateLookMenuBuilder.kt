@@ -5,7 +5,6 @@ import app.simplecloud.npc.common.editor.PromptFormat
 import app.simplecloud.npc.common.editor.PromptResult
 import app.simplecloud.npc.common.editor.PromptTokens
 import app.simplecloud.npc.common.editor.core.back
-import app.simplecloud.npc.common.editor.core.toggle
 import app.simplecloud.npc.common.editor.inventory.InventoryEditorContext
 import app.simplecloud.npc.common.editor.inventory.InventoryEditorScreen
 import app.simplecloud.npc.common.editor.inventory.InventoryPickerPurpose
@@ -71,30 +70,57 @@ object StateLookMenuBuilder {
         pane[Layout.HEADER] = StateLooksMenuBuilder.preview(template, state, look)
 
         val material = look?.material
-        val materialLine = if (material == null) null else "<bd>Now: <val>${Ui.pretty(material)}"
-        field(pane, MATERIAL_SLOT, Ui.field(material ?: template.material, "Material", materialLine, PICK), material != null, {
+        val materialItem = lookField(
+            material ?: template.material,
+            "Material",
+            shown(material, Ui::pretty),
+            Ui.pretty(template.material),
+            PICK,
+        )
+        field(pane, MATERIAL_SLOT, materialItem, material != null, {
             context.navigate(player, InventoryEditorScreen.Picker(config.id, InventoryPickerPurpose.LookMaterial(group, state)))
         }) { change { it.copy(material = null) } }
 
         val name = look?.name
-        val nameLine = if (name == null) null else "<bd>Now: <val>${Ui.quote(name)}"
-        field(pane, NAME_SLOT, Ui.field("NAME_TAG", "Name", nameLine, TYPE), name != null, {
+        val templateName = template.name
+        val nameItem = lookField(
+            "NAME_TAG",
+            "Name",
+            shown(name, Ui::quote),
+            if (templateName == null) "Default" else Ui.quote(templateName),
+            TYPE,
+        )
+        field(pane, NAME_SLOT, nameItem, name != null, {
             prompt("Look Name", "Type the name entries show while ${stateName.lowercase()}.", name ?: template.name) { text ->
                 change { it.copy(name = text) }
             }
         }) { change { it.copy(name = null) } }
 
         val lore = look?.lore
-        val loreLine = if (lore == null) null else "<bd>Lines: <val>${lore.size}"
-        field(pane, LORE_SLOT, Ui.field("WRITABLE_BOOK", "Lore", loreLine, TYPE), lore != null, {
+        val loreItem = lookField(
+            "WRITABLE_BOOK",
+            "Lore",
+            shown(lore) { "${it.size} lines" },
+            "${template.lore.size} lines",
+            TYPE,
+        )
+        field(pane, LORE_SLOT, loreItem, lore != null, {
             prompt("Look Lore", "Type the lore in chat, split lines with |.", (lore ?: template.lore).joinToString(" | ")) { text ->
                 change { it.copy(lore = text.split('|').map(String::trim).toMutableList()) }
             }
         }) { change { it.copy(lore = null) } }
 
-        val glowing = look?.glowing ?: template.glowing
-        pane.toggle(GLINT_SLOT, "Enchant Glint", glowing, material = "EXPERIENCE_BOTTLE") {
-            change { it.copy(glowing = !glowing) }
+        val glint = look?.glowing
+        val glowing = glint ?: template.glowing
+        val glintItem = lookField(
+            "EXPERIENCE_BOTTLE",
+            "Enchant Glint",
+            shown(glint, ::onOff),
+            onOff(template.glowing),
+            if (glowing) "<key>Left-click to turn it off" else "<key>Left-click to turn it on",
+        )
+        field(pane, GLINT_SLOT, glintItem, glint != null, { change { it.copy(glowing = !glowing) } }) {
+            change { it.copy(glowing = null) }
         }
 
         if (look != null) {
@@ -122,4 +148,19 @@ object StateLookMenuBuilder {
             }
         }
     }
+
+    private fun <T> shown(value: T?, format: (T) -> String): String? = if (value == null) null else format(value)
+
+    private fun onOff(on: Boolean): String = if (on) "On" else "Off"
+
+    private fun lookField(material: String, label: String, custom: String?, inherited: String, action: String): NpcItem =
+        Ui.item(
+            material,
+            "<ttl>$label",
+            listOfNotNull(
+                if (custom == null) "<bd>Same as the slot: <val>$inherited" else "<bd>Custom: <val>$custom",
+                action,
+                if (custom == null) null else "<key>Press Q to use the slot's again",
+            ),
+        )
 }
