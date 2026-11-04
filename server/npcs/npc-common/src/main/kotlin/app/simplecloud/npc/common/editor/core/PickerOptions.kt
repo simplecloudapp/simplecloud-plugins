@@ -7,7 +7,7 @@ import app.simplecloud.npc.core.inventory.InventoryConfiguration
 object PickerOptions {
 
     val SOUND_TYPE_HINT = listOf(
-        "<bd>Sound keys are a lot to page through.",
+        "<bd>Looking for a certain sound?",
         "",
         "<key>Left-click to type it in chat",
         "<hnt>A fragment filters the list above;",
@@ -55,16 +55,45 @@ object PickerOptions {
         else -> "<warn>${status.name.lowercase().replaceFirstChar(Char::uppercase)}"
     }
 
-    fun sounds(catalog: List<String>, filter: String?, current: String?): List<PickerOption> = catalog
-        .filter { filter == null || it.contains(filter, ignoreCase = true) }
+    private val COMMON_SOUNDS = listOf(
+        "UI_BUTTON_CLICK",
+        "ENTITY_EXPERIENCE_ORB_PICKUP",
+        "ENTITY_PLAYER_LEVELUP",
+        "BLOCK_NOTE_BLOCK_PLING",
+        "BLOCK_NOTE_BLOCK_BELL",
+        "BLOCK_NOTE_BLOCK_CHIME",
+        "BLOCK_AMETHYST_BLOCK_CHIME",
+        "ENTITY_VILLAGER_YES",
+        "ENTITY_VILLAGER_NO",
+        "BLOCK_CHEST_OPEN",
+        "BLOCK_ENDER_CHEST_OPEN",
+        "BLOCK_WOODEN_DOOR_OPEN",
+        "ENTITY_ENDERMAN_TELEPORT",
+        "ENTITY_ITEM_PICKUP",
+        "UI_TOAST_CHALLENGE_COMPLETE",
+        "BLOCK_BEACON_ACTIVATE",
+        "ENTITY_FIREWORK_ROCKET_LAUNCH",
+        "ENTITY_SLIME_JUMP",
+        "BLOCK_ANVIL_LAND",
+        "ENTITY_CHICKEN_EGG",
+        "BLOCK_BELL_USE",
+    )
+
+    fun sounds(catalog: List<String>, filter: String?, current: String?): List<PickerOption> = ordered(catalog, filter)
         .map { key ->
             val selected = key.equals(current, true)
             PickerOption(
                 key,
-                Ui.choice("NOTE_BLOCK", key, listOf("<key>Right-click to hear it"), selected, "use this sound"),
+                Ui.choice("NOTE_BLOCK", Ui.pretty(key), emptyList(), selected, "use this sound", listOf("<key>Right-click to hear it")),
                 available = !selected,
             )
         }
+
+    private fun ordered(catalog: List<String>, filter: String?): List<String> {
+        if (filter != null) return catalog.filter { it.contains(filter, ignoreCase = true) }
+        val common = COMMON_SOUNDS.filter { it in catalog }
+        return common + (catalog - common.toSet())
+    }
 
     fun servers(servers: List<LiveServer>, current: String?): List<PickerOption> = servers.map { server ->
         val selected = server.name.equals(current, true)

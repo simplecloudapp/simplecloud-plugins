@@ -26,6 +26,7 @@ import app.simplecloud.npc.common.editor.npc.SoundField
 import app.simplecloud.npc.common.editor.npc.TargetSummary
 import app.simplecloud.npc.common.editor.ui.Layout
 import app.simplecloud.npc.common.platform.EditorMenuOpener
+import app.simplecloud.npc.common.platform.PlatformCatalogs
 import app.simplecloud.npc.common.plugin.NpcPluginContext
 import app.simplecloud.npc.core.config.NpcConfig
 import app.simplecloud.npc.core.interaction.PlayerInteraction
@@ -77,6 +78,10 @@ class EditorLayoutTest {
         playerDirectory = NoPlayers,
         inventoryRepository = InventoryRepository(createTempDirectory("inventories")),
         npcRepository = NpcRepository(createTempDirectory("npcs")),
+        catalogs = object : PlatformCatalogs {
+            override fun materials(): List<String> = PlatformCatalogs.DEFAULT.materials()
+            override fun sounds(): List<String> = listOf("AMBIENT_CAVE", "BLOCK_NOTE_BLOCK_PLING", "UI_BUTTON_CLICK")
+        },
     )
 
     private val editor = NpcEditor(opener, ChatInputPrompts(), canvas, live) { context }
@@ -191,6 +196,7 @@ class EditorLayoutTest {
             InventoryEditorScreen.ItemTitle(id, slots, click),
             InventoryEditorScreen.LiveGroup(id, "servers"),
             InventoryEditorScreen.StateLooks(id, "servers"),
+            InventoryEditorScreen.StateLook(id, "servers", "FULL"),
             InventoryEditorScreen.Picker(id, InventoryPickerPurpose.Material(slots)),
             InventoryEditorScreen.Picker(id, InventoryPickerPurpose.NewLiveGroup),
             InventoryEditorScreen.Picker(id, InventoryPickerPurpose.LiveSourceType("servers")),

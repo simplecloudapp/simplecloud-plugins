@@ -93,7 +93,7 @@ object PickerTemplate {
         }
 
         pane.back(host, player)
-        pane.pager(pages, listOf("<bd>${spec.options.size} options", "<hnt>${pages.perPage} fit per page."), ::rerender)
+        pane.pager(pages, listOf("<bd>${spec.options.size} ${spec.filteredNoun}"), ::rerender)
 
         return pane.menu(spec.title)
     }
