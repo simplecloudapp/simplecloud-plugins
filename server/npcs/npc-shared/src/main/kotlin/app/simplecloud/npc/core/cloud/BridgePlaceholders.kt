@@ -1,18 +1,14 @@
 package app.simplecloud.npc.core.cloud
 
+import app.simplecloud.npc.core.text.NpcPalette
 import app.simplecloud.plugin.api.shared.placeholder.PlaceholderProvider
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 
 object BridgePlaceholders {
-    suspend fun append(bridge: ServerBridge, text: String, prefix: String = "target"): Component = when (bridge) {
-        is ServerBridge.OfPersistentServer ->
-            PlaceholderProvider.persistentServerPlaceholderProvider.append(bridge.persistentServer, text, prefix)
-
-        is ServerBridge.OfGroup -> PlaceholderProvider.groupPlaceholderProvider.append(bridge.group, text, prefix)
-
-        is ServerBridge.OfServer -> PlaceholderProvider.serverPlaceholderProvider.append(bridge.server, text, prefix)
-    }
+    /** Parses [text] with the palette tags and the placeholders of [bridge], e.g. <target_name>. */
+    suspend fun append(bridge: ServerBridge, text: String, prefix: String = "target"): Component =
+        NpcPalette.miniMessage.deserialize(text, resolver(bridge, prefix))
 
     suspend fun resolver(bridge: ServerBridge, prefix: String = "target"): TagResolver = when (bridge) {
         is ServerBridge.OfPersistentServer ->

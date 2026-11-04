@@ -26,7 +26,7 @@ object PromptTokens {
         PromptPlaceholder("<entry_numerical_id>", "Number, e.g. 2."),
         PromptPlaceholder("<entry_online_players>", "Players online."),
         PromptPlaceholder("<entry_max_players>", "Player slots."),
-        PromptPlaceholder("<entry_state>", "State, e.g. AVAILABLE."),
+        PromptPlaceholder("<entry_state>", "State, e.g. Available."),
         PromptPlaceholder("<entry_motd>", "Message of the day."),
         PromptPlaceholder("<entry_server>", "What joining connects to."),
     )
