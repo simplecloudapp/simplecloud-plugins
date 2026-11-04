@@ -9,6 +9,8 @@ import app.simplecloud.plugin.core.shared.adventure.tags
 import app.simplecloud.plugin.core.shared.command.CloudSender
 import app.simplecloud.plugin.core.shared.command.CloudSuggestions
 import app.simplecloud.plugin.core.shared.controller.ApiUtils
+import app.simplecloud.plugin.core.shared.pretty.PrettifyCase
+import app.simplecloud.plugin.core.shared.pretty.StringPrettifier
 import kotlinx.coroutines.future.await
 import org.incendo.cloud.CommandManager
 import org.incendo.cloud.kotlin.coroutines.extension.suspendingHandler
@@ -56,7 +58,7 @@ class ServerCommand<C : CloudSender>(
                     sender.sendMessage(messages.msg(messages.command.server.list.title, tags("count" to servers.size)))
                     servers.forEach { server ->
                         val serverName = displayName(server)
-                        val value = "${server.playerCount ?: 0}/${server.maxPlayers} - ${server.state.name.lowercase()}"
+                        val value = "${server.playerCount ?: 0}/${server.maxPlayers}, ${server.state.name.lowercase()}"
                         sender.sendMessage(messages.msg(messages.command.server.list.entry, tags("server" to serverName, "value" to value)))
                     }
                 }
@@ -69,8 +71,8 @@ class ServerCommand<C : CloudSender>(
         val groupName = server.group?.name
         val persistentServerName = server.persistentServer?.name
         return when {
-            !groupName.isNullOrBlank() -> "$groupName ${server.numericalId}"
-            !server.serverGroupId.isNullOrBlank() -> "${server.serverGroupId} ${server.numericalId}"
+            !groupName.isNullOrBlank() -> "$groupName-${server.numericalId}"
+            !server.serverGroupId.isNullOrBlank() -> "${server.serverGroupId}-${server.numericalId}"
             !persistentServerName.isNullOrBlank() -> persistentServerName
             !server.persistentServerId.isNullOrBlank() -> server.persistentServerId
             else -> server.serverId
@@ -99,9 +101,9 @@ class ServerCommand<C : CloudSender>(
                         sender.sendMessage(messages.msg(messages.command.server.error.notFound, tags("group" to group.name, "id" to id)))
                         return@suspendingHandler
                     }
-                    val serverName = "${group.name} $id"
+                    val serverName = "${group.name}-$id"
                     sender.sendMessage(messages.msg(messages.command.server.info.title, tags("server" to serverName)))
-                    sender.sendMessage(messages.msg(messages.command.server.info.entry, tags("key" to "State", "value" to server.state.name)))
+                    sender.sendMessage(messages.msg(messages.command.server.info.entry, tags("key" to "State", "value" to StringPrettifier.prettify(server.state.name, PrettifyCase.SENTENCE))))
                     sender.sendMessage(messages.msg(messages.command.server.info.entry, tags("key" to "Memory", "value" to "${server.minMemory}-${server.maxMemory} MB")))
                     sender.sendMessage(messages.msg(messages.command.server.info.entry, tags("key" to "Players", "value" to "${server.playerCount ?: 0}/${server.maxPlayers}")))
                 }

@@ -116,13 +116,13 @@ class PlayerCommand<C : CloudSender>(
                     )
                     listOf<Pair<String, Any?>>(
                         "Name" to player.name,
-                        "Display Name" to player.displayName,
-                        "Online" to player.isOnline,
+                        "Display name" to player.displayName,
+                        "Online" to if (player.isOnline) "Yes" else "No",
                         "Server" to player.connectedServerName,
                         "Proxy" to player.connectedProxyName,
-                        "Online Time" to player.onlineTimeSeconds.seconds,
-                        "First Seen" to player.firstSeen,
-                        "Last Seen" to player.lastSeen,
+                        "Online time" to player.onlineTimeSeconds.seconds,
+                        "First seen" to player.firstSeen,
+                        "Last seen" to player.lastSeen,
                     ).forEach { (key, value) ->
                         sender.sendMessage(
                             messages.msg(messages.command.player.info.entry, tags("key" to key, "value" to value)),

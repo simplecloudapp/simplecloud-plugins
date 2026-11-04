@@ -8,7 +8,7 @@ import app.simplecloud.plugin.command.shared.command.commands.ServerCommand
 import app.simplecloud.plugin.command.shared.utilities.CommandPermissions
 import app.simplecloud.plugin.core.shared.command.CloudSender
 import app.simplecloud.plugin.core.shared.command.CommandExceptionHandler
-import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
+import app.simplecloud.plugin.core.shared.command.HelpEntry
 import org.incendo.cloud.CommandManager
 import org.incendo.cloud.permission.Permission
 
@@ -50,7 +50,7 @@ class CloudCommandHandler<C : CloudSender>(
                     sender.sendMessage(messages.msg(messages.command.help.title))
                     entries.forEach { (command, _) ->
                         sender.sendMessage(
-                            messages.msg(messages.command.help.entry, Placeholder.unparsed("command", command)),
+                            HelpEntry.create(messages, messages.command.help.entry, messages.command.help.hover, command),
                         )
                     }
                 }

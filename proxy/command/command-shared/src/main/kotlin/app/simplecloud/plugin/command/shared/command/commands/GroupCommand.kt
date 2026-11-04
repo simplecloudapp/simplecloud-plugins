@@ -8,6 +8,8 @@ import app.simplecloud.plugin.core.shared.adventure.tags
 import app.simplecloud.plugin.core.shared.command.CloudSender
 import app.simplecloud.plugin.core.shared.command.CloudSuggestions
 import app.simplecloud.plugin.core.shared.controller.ApiUtils
+import app.simplecloud.plugin.core.shared.pretty.PrettifyCase
+import app.simplecloud.plugin.core.shared.pretty.StringPrettifier
 import kotlinx.coroutines.*
 import kotlinx.coroutines.future.await
 import org.incendo.cloud.CommandManager
@@ -77,10 +79,10 @@ class GroupCommand<C : CloudSender>(
                     }
                     val servers = api.server().getServersByGroup(group.name).await().filter { it.state != ServerState.STOPPED }
                     sender.sendMessage(messages.msg(messages.command.group.info.title, tags("group" to group.name)))
-                    sender.sendMessage(messages.msg(messages.command.group.info.entry, tags("key" to "Type", "value" to group.type.name)))
+                    sender.sendMessage(messages.msg(messages.command.group.info.entry, tags("key" to "Type", "value" to StringPrettifier.prettify(group.type.name, PrettifyCase.SENTENCE))))
                     sender.sendMessage(messages.msg(messages.command.group.info.entry, tags("key" to "Memory", "value" to "${group.minMemory}-${group.maxMemory} MB")))
-                    sender.sendMessage(messages.msg(messages.command.group.info.entry, tags("key" to "Max Players", "value" to group.maxPlayers)))
-                    sender.sendMessage(messages.msg(messages.command.group.info.entry, tags("key" to "Running Servers", "value" to servers.size)))
+                    sender.sendMessage(messages.msg(messages.command.group.info.entry, tags("key" to "Max players", "value" to group.maxPlayers)))
+                    sender.sendMessage(messages.msg(messages.command.group.info.entry, tags("key" to "Running servers", "value" to servers.size)))
                 }
                 .permission(Permission.permission(CommandPermissions.GROUP_INFO))
                 .build(),
