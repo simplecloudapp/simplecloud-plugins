@@ -13,6 +13,6 @@ object PlayerMessages {
             if (custom.isNotBlank()) player.sendMessage(Msg.miniMessage.deserialize(custom))
             return
         }
-        CommandMessages.send(player, NO_PERMISSION, "${Msg.errorPrefix()}You are not allowed to do that.")
+        CommandMessages.send(player, NO_PERMISSION, "${Msg.errorPrefix()}You don't have permission to do that.")
     }
 }

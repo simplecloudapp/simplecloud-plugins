@@ -106,7 +106,7 @@ object SkinMenuBuilder {
         label: String,
         fetch: suspend () -> NpcConfig.SkinConfiguration?,
     ) {
-        player.sendInfo("Looking up the skin for {}...", label)
+        player.sendInfo("Looking up the skin of {}.", label)
 
         BackgroundTasks.launch {
             val skin = fetch()

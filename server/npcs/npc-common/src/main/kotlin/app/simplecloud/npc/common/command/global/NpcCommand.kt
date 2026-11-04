@@ -188,7 +188,7 @@ class NpcCommand<C : NpcCommandSender>(
             return
         }
 
-        sender.sendInfo("Looking up the skin for {}...", input)
+        sender.sendInfo("Looking up the skin of {}.", input)
         BackgroundTasks.launch {
             val skin = pluginContext.npcManager.lookupSkin(input) ?: run {
                 sender.sendError("Could not find a skin for {}.", input)
@@ -227,14 +227,12 @@ class NpcCommand<C : NpcCommandSender>(
         val entries = configs.sortedBy { it.id }.map {
             val id = Msg.miniMessage.escapeTags(it.id)
             val targets = Msg.miniMessage.escapeTags(it.targetServers.joinToString())
-            "<click:run_command:'/$COMMAND_LABEL info $id'><hover:show_text:'${Msg.MUTED}Click to show details'>" +
-                "${Msg.ACCENT}$id ${Msg.MUTED}($targets)</hover></click>"
+            "<click:run_command:'/$COMMAND_LABEL info $id'><hover:show_text:'${Msg.INTERACTIVE}Click to show details'>" +
+                "${Msg.INTERACTIVE}$id ${Msg.SUBTLE}(${Msg.INFO}$targets${Msg.SUBTLE})</hover></click>"
         }
         val lines = buildList {
-            add("${Msg.infoPrefix()}All Registered NPCs ${Msg.MUTED}(${configs.size})")
-            add(Msg.SEPARATOR)
+            add("${Msg.infoPrefix()}NPCs ${Msg.SUBTLE}(${Msg.INFO}${configs.size}${Msg.SUBTLE})")
             addAll(Msg.tree(entries))
-            add(Msg.SEPARATOR)
         }
         sender.sendMessage(Msg.miniMessage.deserialize(lines.joinToString("\n")))
     }

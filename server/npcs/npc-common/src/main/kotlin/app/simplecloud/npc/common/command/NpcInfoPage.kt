@@ -36,20 +36,13 @@ object NpcInfoPage {
         )
 
         return buildList {
-            add("${Msg.infoPrefix()}NPC ${Msg.ACCENT}${esc(id)}${nameSuffix(config)}  $badge  $editButton $moveButton")
-            add(Msg.SEPARATOR)
-            sections.forEachIndexed { index, lines ->
-                val last = index == sections.lastIndex
+            add("${Msg.infoPrefix()}NPC ${esc(id)}${nameSuffix(config)}  $badge  $editButton  $moveButton")
+            sections.forEach { lines ->
                 lines.forEachIndexed { line, text ->
-                    val branch = when {
-                        line > 0 -> if (last) "   " else "│  "
-                        last -> "└─ "
-                        else -> "├─ "
-                    }
+                    val branch = if (line > 0) "   " else "• "
                     add("${Msg.SUBTLE}$branch$text")
                 }
             }
-            add(Msg.SEPARATOR)
         }.joinToString("\n")
     }
 
@@ -59,30 +52,30 @@ object NpcInfoPage {
     private fun statusBadge(config: NpcConfig, status: NpcStatus, snapshot: CloudSnapshot): String {
         val targetDerived = status == NpcStatus.TARGET_MISSING || status == NpcStatus.TARGET_AMBIGUOUS
         if (targetDerived && config.targetServers.isNotEmpty() && !snapshot.known) {
-            return hover("${Msg.MUTED}● Checking…", "The cloud lists have not been read yet.")
+            return hover("${Msg.MUTED}Checking", "The cloud lists have not been read yet.")
         }
 
         return when (status) {
             NpcStatus.COMPLETE ->
-                hover("$OK● FUNCTIONAL", "Everything is fine.")
+                hover("${OK}Ready", "Everything is fine.")
 
             NpcStatus.NEEDS_RELOCATION ->
                 hover(
-                    "${Msg.WARNING}● Needs relocation",
+                    "${Msg.WARNING}Needs relocation",
                     "Its old position could not be taken over. Stand where it should appear and click Move here.",
                 )
 
             NpcStatus.TARGET_AMBIGUOUS -> {
                 val names = namesWith(config, snapshot) { it == TargetResolution.Ambiguous }
                 hover(
-                    "${Msg.ERROR}● Ambiguous target: ${esc(names)}",
+                    "${Msg.ERROR}Ambiguous target: ${esc(names)}",
                     "A group and a persistent server share this name. Rename one of them.",
                 )
             }
 
             NpcStatus.TARGET_MISSING -> if (config.targetServers.isEmpty()) {
                 hover(
-                    "${Msg.ERROR}● No target",
+                    "${Msg.ERROR}No target",
                     "Clicks have nowhere to send players. " +
                         "Add one with /$COMMAND_LABEL edit ${config.id} target add <target>.",
                     escape = true,
@@ -90,7 +83,7 @@ object NpcInfoPage {
             } else {
                 val names = namesWith(config, snapshot) { it == TargetResolution.NotFound }
                 hover(
-                    "${Msg.ERROR}● Target missing: ${esc(names)}",
+                    "${Msg.ERROR}Target missing: ${esc(names)}",
                     "No group or persistent server with this name exists in the cloud.",
                 )
             }
@@ -113,7 +106,7 @@ object NpcInfoPage {
     }
 
     private fun targetLive(target: String, snapshot: CloudSnapshot): String {
-        if (!snapshot.known) return "${Msg.SUBTLE}loading…"
+        if (!snapshot.known) return "${Msg.SUBTLE}loading"
         val resolution = TargetResolver.resolve(target, snapshot)
         if (resolution !is TargetResolution.Found) return "${Msg.ERROR}not found"
         val servers = snapshot.servers.filter { server ->
@@ -226,7 +219,7 @@ object NpcInfoPage {
     private fun row(label: String, value: String) = "$KEY${ChatPixels.pad(label, LABEL_WIDTH)}  $value"
 
     private fun button(label: String, command: String, tip: String, run: Boolean): String =
-        click("${Msg.INFO}[$label]", command, tip, run)
+        click("${Msg.INTERACTIVE}$label", command, tip, run)
 
     private fun click(content: String, command: String, tip: String, run: Boolean): String {
         val action = if (run) "run_command" else "suggest_command"
@@ -235,9 +228,9 @@ object NpcInfoPage {
 
     private fun hover(content: String, tip: String, escape: Boolean = false, formatted: Boolean = false): String {
         val text = when {
-            escape -> "${Msg.MUTED}${esc(tip)}"
+            escape -> "${Msg.INTERACTIVE}${esc(tip)}"
             formatted -> "$TEXT$tip"
-            else -> "${Msg.MUTED}$tip"
+            else -> "${Msg.INTERACTIVE}$tip"
         }
 
         return "<hover:show_text:'${arg(text)}'>$content</hover>"

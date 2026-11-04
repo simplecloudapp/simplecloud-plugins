@@ -6,15 +6,15 @@ import app.simplecloud.npc.core.cloud.CloudUnavailableException
 import app.simplecloud.npc.core.cloud.JoinStateResolver
 import app.simplecloud.npc.core.cloud.ServerBridgeResolver
 import app.simplecloud.npc.core.config.NpcConfig
+import app.simplecloud.npc.core.text.NpcPalette
 import app.simplecloud.npc.core.text.PlayerPlaceholders
 import kotlinx.coroutines.CancellationException
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 
 object HologramLineResolver {
 
-    private val miniMessage = MiniMessage.miniMessage()
+    private val miniMessage = NpcPalette.miniMessage
 
     class ResolvedLine(val line: HologramLine, val text: Component, val personal: PersonalText?)
 

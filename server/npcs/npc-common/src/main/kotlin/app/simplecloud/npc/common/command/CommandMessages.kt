@@ -8,6 +8,7 @@ import app.simplecloud.npc.common.text.substitute
 import app.simplecloud.npc.core.NpcLog
 import app.simplecloud.npc.core.config.ActionFields
 import app.simplecloud.npc.core.platform.NpcCommandSender
+import app.simplecloud.npc.core.text.NpcPalette
 import org.spongepowered.configurate.ConfigurationNode
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader
 import java.nio.file.Path
@@ -45,8 +46,9 @@ object CommandMessages {
         NpcFailure.entries.forEach { add(failure(it).first) }
     }
 
-    private const val DEFAULT_PREFIX = "<#38bdf8><b>⚡</b>"
+    private const val DEFAULT_PREFIX = Msg.PREFIX
     private val OLD_DEFAULT_PREFIXES = listOf(
+        "<#38bdf8><b>⚡</b>",
         "<#0EA5E9>⚡ NPC <#475569>|",
         "<#0EA5E9><bold>NPCs</bold> <#475569>|",
         "<#0EA5E9>SimpleCloud NPC <#475569>|",
@@ -84,6 +86,11 @@ object CommandMessages {
             val variables = root.node("variables").childrenMap().mapNotNull { (key, node) ->
                 node.string?.let { key.toString() to it }
             }.toMap()
+            val palette = root.node("palette").childrenMap().mapNotNull { (key, node) ->
+                val value = node.string ?: return@mapNotNull null
+                key.toString() to value
+            }.toMap()
+            NpcPalette.update(palette)
             loaded = Loaded(root, variables)
         }.onFailure { NpcLog.logger.log(Level.WARNING, "Could not load messages.yml", it) }.isSuccess
     }
@@ -115,7 +122,7 @@ object CommandMessages {
             is NpcOperationResult.Success -> send(
                 sender,
                 success.path,
-                "${Msg.successPrefix()}${success.verb} NPC ${Msg.ACCENT}<id>${Msg.SUCCESS}.",
+                "${Msg.successPrefix()}${success.verb} NPC <id>.",
                 mapOf("id" to result.config.id),
             )
 
@@ -125,11 +132,12 @@ object CommandMessages {
 
     fun sendHelp(sender: NpcCommandSender, topic: String? = null) {
         val normalizedTopic = topic?.lowercase()
-        val fallbackLines = helpPage(normalizedTopic) ?: run {
+        val fallbackLines = helpPage(normalizedTopic)
+        if (fallbackLines == null) {
             send(
                 sender,
                 "command.help.unknown",
-                "${Msg.errorPrefix()}Unknown help topic. ${Msg.MUTED}Try: ${Msg.ACCENT}<topics>",
+                "${Msg.errorPrefix()}There is no help topic like that. Try one of <topics>.",
                 mapOf("topics" to helpTopics.joinToString()),
             )
             return
@@ -137,11 +145,11 @@ object CommandMessages {
 
         val page = normalizedTopic ?: "main"
         val title = if (normalizedTopic == null) {
-            render("command.help.title", "${Msg.infoPrefix()}Commands of SimpleCloud NPCs")
+            render("command.help.title", "${Msg.infoPrefix()}NPC commands")
         } else {
             render(
                 "command.help.topic-title",
-                "${Msg.infoPrefix()}Help: ${Msg.ACCENT}<topic>",
+                "${Msg.infoPrefix()}NPC commands: <topic>",
                 mapOf("topic" to normalizedTopic),
             )
         }
@@ -258,69 +266,69 @@ object CommandMessages {
         else -> null
     }
 
-    // Sign-style help line: indented, grey, the description shows on hover; a click fills the chat.
     private fun command(suggestion: String, usage: String, description: String? = null): String {
         val escaped = suggestion.replace("'", "\\'")
         val tip = listOfNotNull(
             description?.let { "${Msg.INFO}${Msg.miniMessage.escapeTags(it)}" },
-            "${Msg.MUTED}Click to fill in chat",
+            "${Msg.INTERACTIVE}Click to type this command",
         ).joinToString("\n").replace("'", "\\'")
-        val hover = "<hover:show_text:'$tip'>${note(usage)}</hover>"
+        val line = "${Msg.SUBTLE}• ${Msg.INTERACTIVE}${Msg.miniMessage.escapeTags(usage)}"
+        val hover = "<hover:show_text:'$tip'>$line</hover>"
 
         return "<click:suggest_command:'$escaped'>$hover</click>"
     }
 
-    private fun note(text: String): String = "   ${Msg.MUTED}${Msg.miniMessage.escapeTags(text)}"
+    private fun note(text: String): String = "  ${Msg.MUTED}${Msg.miniMessage.escapeTags(text)}"
 
     private fun failure(failure: NpcFailure): Pair<String, String> = when (failure) {
         NpcFailure.INVALID_ID ->
             "command.npc.error.invalid-id" to
-                "${Msg.errorPrefix()}NPC id ${Msg.ACCENT}<detail> ${Msg.ERROR}is invalid."
+                "${Msg.errorPrefix()}<detail> is not a valid NPC id."
 
         NpcFailure.ALREADY_EXISTS ->
             "command.npc.error.already-exists" to
-                "${Msg.errorPrefix()}NPC ${Msg.ACCENT}<detail> ${Msg.ERROR}already exists."
+                "${Msg.errorPrefix()}NPC <detail> already exists."
 
         NpcFailure.NOT_FOUND ->
             "command.npc.error.not-found" to
-                "${Msg.errorPrefix()}NPC ${Msg.ACCENT}<detail> ${Msg.ERROR}was not found."
+                "${Msg.errorPrefix()}NPC <detail> was not found."
 
         NpcFailure.TARGET_NOT_FOUND ->
             "command.target.error.not-found" to
-                "${Msg.errorPrefix()}Target ${Msg.ACCENT}<detail> ${Msg.ERROR}was not found."
+                "${Msg.errorPrefix()}Target <detail> was not found."
 
         NpcFailure.TARGET_AMBIGUOUS ->
             "command.target.error.ambiguous" to
-                "${Msg.errorPrefix()}Target ${Msg.ACCENT}<detail> ${Msg.ERROR}" +
-                "exists as both a group and persistent server. Rename one of them."
+                "${Msg.errorPrefix()}Target <detail> is both a group and a persistent server. " +
+                "Rename one of them."
 
         NpcFailure.TARGET_ALREADY_USED ->
             "command.target.error.already-used" to
-                "${Msg.errorPrefix()}Target ${Msg.ACCENT}<detail> ${Msg.ERROR}is already used by this NPC."
+                "${Msg.errorPrefix()}This NPC already uses target <detail>."
 
         NpcFailure.TARGET_LIMIT ->
             "command.target.error.limit" to
-                "${Msg.errorPrefix()}This NPC already has the maximum of ${Msg.ACCENT}<detail> ${Msg.ERROR}targets."
+                "${Msg.errorPrefix()}This NPC already has the most targets it can have (<detail>)."
 
         NpcFailure.CREATE_FAILED ->
             "command.npc.create.failed" to
-                "${Msg.errorPrefix()}Could not create the NPC${Msg.ACCENT}<detail-suffix>"
+                "${Msg.errorPrefix()}Couldn't create the NPC<detail-suffix>"
 
         NpcFailure.PROVIDER_UNAVAILABLE ->
             "command.provider.error.unavailable" to
-                "${Msg.errorPrefix()}Provider ${Msg.ACCENT}<detail> ${Msg.ERROR}is unavailable."
+                "${Msg.errorPrefix()}Provider <detail> is not available."
 
         NpcFailure.PROVIDER_NPC_NOT_FOUND ->
             "command.provider.error.external-npc-missing" to
-                "${Msg.errorPrefix()}Provider NPC ${Msg.ACCENT}<detail> ${Msg.ERROR}was not found."
+                "${Msg.errorPrefix()}The provider has no NPC <detail>."
 
         NpcFailure.PROVIDER_NPC_ALREADY_LINKED ->
             "command.provider.error.already-linked" to
-                "${Msg.errorPrefix()}Provider NPC ${Msg.ACCENT}<detail> ${Msg.ERROR}is already linked."
+                "${Msg.errorPrefix()}Provider NPC <detail> is already linked."
 
         NpcFailure.NOT_LINKED ->
             "command.npc.error.not-linked" to
-                "${Msg.errorPrefix()}NPC ${Msg.ACCENT}<detail> ${Msg.ERROR}is not a linked NPC, use delete."
+                "${Msg.errorPrefix()}NPC <detail> is not linked. Use delete instead."
     }
 
     private fun failureMessage(result: NpcOperationResult.Failure): String {

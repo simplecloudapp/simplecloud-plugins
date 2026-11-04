@@ -29,13 +29,11 @@ class NpcActionCommand<C : NpcCommandSender>(pluginContext: NpcPluginContext) : 
         val entries = visibleActions.map {
             val interaction = it.interactionType.name.lowercase()
             val types = it.configuredTypes().joinToString()
-            "${Msg.KEY}$interaction ${Msg.MUTED}(${it.joinState}) ${Msg.SUBTLE}→ ${Msg.INFO}$types"
+            "${Msg.INFO}$interaction ${Msg.SUBTLE}(${Msg.INFO}${it.joinState}${Msg.SUBTLE}): ${Msg.INFO}$types"
         }
         val lines = buildList {
-            add("${Msg.infoPrefix()}Actions for ${Msg.ACCENT}$id")
-            add(Msg.SEPARATOR)
+            add("${Msg.infoPrefix()}Actions of NPC $id")
             addAll(Msg.tree(entries))
-            add(Msg.SEPARATOR)
         }
 
         sender.sendMessage(Msg.miniMessage.deserialize(lines.joinToString("\n")))

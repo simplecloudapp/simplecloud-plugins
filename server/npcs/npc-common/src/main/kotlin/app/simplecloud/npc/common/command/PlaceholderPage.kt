@@ -159,7 +159,6 @@ object PlaceholderPage {
 
         return buildList {
             add("${Msg.infoPrefix()}Placeholders  ${tabs(category)}")
-            add(Msg.SEPARATOR)
             add("  ${Msg.MUTED}${category.usedIn}")
             sections.forEach { section ->
                 add("")
@@ -169,27 +168,26 @@ object PlaceholderPage {
             add("")
             category.note?.let { add("  ${Msg.SUBTLE}$it") }
             add("  ${Msg.SUBTLE}Click a placeholder to copy it.")
-            add(Msg.SEPARATOR)
         }.joinToString("\n")
     }
 
     private fun tabs(active: Category): String = CATEGORIES.joinToString(" ${Msg.SUBTLE}· ") { category ->
         if (category == active) {
-            "${Msg.ACCENT}<u>${category.title}</u>"
+            "${Msg.INFO}<u>${category.title}</u>"
         } else {
             val command = "/$COMMAND_LABEL placeholders ${category.key}"
             val tip = "${Msg.MUTED}${category.usedIn}"
             "<click:run_command:'${arg(command)}'><hover:show_text:'${arg(tip)}'>" +
-                "${Msg.MUTED}${category.title}</hover></click>"
+                "${Msg.INTERACTIVE}${category.title}</hover></click>"
         }
     }
 
     private fun tokenRow(token: Token, width: Int): String {
         val padding = " ".repeat(((width - ChatPixels.width(token.token)).coerceAtLeast(0) + 3) / 4)
-        val tip = "$TEXT${esc(token.token)}\n${Msg.MUTED}${esc(token.description)}\n\n${Msg.SUBTLE}Click to copy"
+        val tip = "$TEXT${esc(token.token)}\n${Msg.MUTED}${esc(token.description)}\n\n${Msg.INTERACTIVE}Click to copy"
 
         return "<click:copy_to_clipboard:'${arg(token.token)}'><hover:show_text:'${arg(tip)}'>" +
-            "$TEXT${esc(token.token)}$padding  ${Msg.MUTED}${esc(token.description)}</hover></click>"
+            "${Msg.INTERACTIVE}${esc(token.token)}$padding  ${Msg.MUTED}${esc(token.description)}</hover></click>"
     }
 
     private fun arg(text: String) = text.replace("\\", "\\\\").replace("'", "\\'")
