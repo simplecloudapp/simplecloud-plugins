@@ -28,7 +28,7 @@ Character: calm, clear, blue. Every string in every plugin must look like it cam
 | Panels | not used yet; when added, buttons without brackets, accept in success, decline in error |
 | Tone | friendly, second person, `!` only for good news |
 | Tags | small caps, plain text |
-| Rank format | team ranks show the rank in small caps, then name and `:` in brand, message in `#CDE3FF`; everyone else shows name and `:` in `#A1A7B5`, message in `#E1E1E4`. No brackets, no `»`, no `\|` |
+| Rank format | no rank tags: team ranks show name and `:` in brand, message in `#CDE3FF`; everyone else shows name and `:` in `#A1A7B5`, message in `#E1E1E4`. No brackets, no `»`, no `\|` |
 | Sidebar | none |
 | Menus | NPC menus stay vanilla: plain titles, no glass pane frames |
 | Menu actions | `Click to join`: a short sentence in `interactive` |
@@ -252,14 +252,13 @@ to type, and `interactive` words for cancel.
 ### Player chat, tab list names, name tags
 
 ```
-<brand>ᴏᴡɴᴇʀ <playername>:</brand> <#CDE3FF><message>
-<brand>ᴀᴅᴍɪɴ <playername>:</brand> <#CDE3FF><message>
+<brand><playername>:</brand> <#CDE3FF><message>
 <muted><playername>:</muted> <#E1E1E4><message>
 ```
 
-- Tab list: only the name in the rank color, no tag: `<brand><playername>`, `<muted><playername>`.
-- Name tag: the same tag and name as in chat, without `:`, e.g. `<brand>ᴀᴅᴍɪɴ <playername>`.
-- A rank tag is the rank name in small caps; the default rank has none.
+- No rank tags by default. The rank shows only in the color of the name: brand for the team, `muted` for everyone
+  else. The formats keep `<prefix>` so a network can add a tag, but the default groups leave it empty.
+- Tab list and name tag: only the name in the rank color.
 
 ### Tab list
 
@@ -382,7 +381,7 @@ No plugin plays a sound by default; NPC actions only play the sounds an owner ad
 - Any prefix other than the bold lightning, or a missing space after it.
 - Highlighted values inside a chat line, or two line colors in one message (toggle state words excepted).
 - `»`, `|`, or `-` as separators or bullets, in chat formats and lists alike.
-- Rank tags in brackets, bold rank names, or a rank tag for the default rank.
+- Rank tags in the default config, rank tags in brackets, or bold rank names.
 - Colored or bold menu titles, glass pane frames, and filler items in player menus.
 - `...` for loading or pending states; say the state (`Starting`).
 - Pure white (`#FFFFFF`, `#F8FAFC`) or named colors (`<red>`, `<green>`, `<gold>`) in message strings. The one

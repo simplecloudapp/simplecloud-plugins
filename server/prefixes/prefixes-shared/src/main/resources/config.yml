@@ -80,22 +80,22 @@ groups:
   priority: 100
   # Permission required to use this group.
   permission: 'simplecloud.prefix.group.owner'
-  prefix: '<#3B95FF>ᴏᴡɴᴇʀ '
+  prefix: ''
   suffix: ''
   # Used by the <color> placeholder and player name coloring.
   color: '<#3B95FF>'
   # Name shown above the player's head, e.g. '<prefix><color><playername>'.
-  display-name: '<prefix><color><playername>'
+  display-name: '<color><playername>'
   # Format used when features.chat is enabled.
   chat-format: '<prefix><color><playername><suffix>: <#CDE3FF><message>'
 
 - name: admin
   priority: 90
   permission: 'simplecloud.prefix.group.admin'
-  prefix: '<#3B95FF>ᴀᴅᴍɪɴ '
+  prefix: ''
   suffix: ''
   color: '<#3B95FF>'
-  display-name: '<prefix><color><playername>'
+  display-name: '<color><playername>'
   chat-format: '<prefix><color><playername><suffix>: <#CDE3FF><message>'
 
 - name: default
