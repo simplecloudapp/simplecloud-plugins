@@ -185,15 +185,15 @@ count in `info`. An entry that does something on click is `interactive` and has 
 ```
 
 Help lists stay simple. The title names the plugin and ends with the root command in `separator`; each row is
-indented by two spaces and shows only the subcommand in `interactive` and its arguments in `muted`. The description
+indented by three spaces, so it lines up with the title text after the prefix, and shows only the subcommand in `interactive` and its arguments in `muted`. The description
 lives in the hover, with the full usage and the click hint; a click types the command into the chat. Pages of
 sub-topics are a normal row (`help <topic>`), never a note.
 
 ```
 <prefix> <info>NPC commands  <separator>/scnpcs
-  <interactive>create</interactive> <muted><id> <target>
-  <interactive>edit</interactive> <muted>[id]
-  <interactive>help</interactive> <muted><topic>
+   <interactive>create</interactive> <muted><id> <target>
+   <interactive>edit</interactive> <muted>[id]
+   <interactive>help</interactive> <muted><topic>
 ```
 
 Descriptions are short (about 25 characters), sentence case, without a final period.

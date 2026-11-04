@@ -271,7 +271,7 @@ object CommandMessages {
     private fun renderHelp(lines: List<HelpLine>): List<String> = lines.map { line ->
         when (line) {
             is HelpLine.Command -> commandLine(line)
-            is HelpLine.Note -> "  ${Msg.MUTED}${Msg.miniMessage.escapeTags(line.text)}"
+            is HelpLine.Note -> "   ${Msg.MUTED}${Msg.miniMessage.escapeTags(line.text)}"
         }
     }
 
@@ -286,7 +286,7 @@ object CommandMessages {
             "",
             "${Msg.INTERACTIVE}Click to type this command",
         ).joinToString("\n")
-        val line = "  ${Msg.INTERACTIVE}${esc(literal)} ${Msg.MUTED}${esc(arguments)}"
+        val line = "   ${Msg.INTERACTIVE}${esc(literal)} ${Msg.MUTED}${esc(arguments)}"
 
         return "<click:suggest_command:'${arg("$CMD $literal ")}'><hover:show_text:'${arg(tip)}'>$line</hover></click>"
     }

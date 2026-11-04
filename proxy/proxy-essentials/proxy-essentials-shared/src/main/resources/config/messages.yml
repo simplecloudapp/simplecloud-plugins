@@ -59,7 +59,7 @@ kick:
 command:
   help:
     header: '<prefix> <info>Proxy commands  <separator>/scproxy'
-    entry: '  <interactive><command></interactive> <muted><arguments>'
+    entry: '   <interactive><command></interactive> <muted><arguments>'
     hover: '<highlight><description><br><muted>Usage: <highlight><usage><br><br><interactive>Click to type this command'
     # Shown next to each command and in its hover, keyed by the usage without /scproxy.
     descriptions:
@@ -94,7 +94,7 @@ command:
 
     help:
       header: '<prefix> <info>Join state commands  <separator>/scproxy'
-      entry: '  <interactive><command></interactive> <muted><arguments>'
+      entry: '   <interactive><command></interactive> <muted><arguments>'
       hover: '<highlight><description><br><muted>Usage: <highlight><usage><br><br><interactive>Click to type this command'
       # Shown next to each command and in its hover, keyed by the usage without /scproxy.
       descriptions:
@@ -115,7 +115,7 @@ command:
   layout:
     help:
       header: '<prefix> <info>Layout commands  <separator>/scproxy'
-      entry: '  <interactive><command></interactive> <muted><arguments>'
+      entry: '   <interactive><command></interactive> <muted><arguments>'
       hover: '<highlight><description><br><muted>Usage: <highlight><usage><br><br><interactive>Click to type this command'
       # Shown next to each command and in its hover, keyed by the usage without /scproxy.
       descriptions:

@@ -7,7 +7,7 @@ interface HelpMessages {
     val descriptions: Map<String, String>
 
     companion object {
-        const val ENTRY = "  <interactive><command></interactive> <muted><arguments>"
+        const val ENTRY = "   <interactive><command></interactive> <muted><arguments>"
         const val HOVER = "<highlight><description><br><muted>Usage: <highlight><usage><br><br><interactive>Click to type this command"
     }
 }

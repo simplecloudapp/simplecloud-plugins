@@ -72,4 +72,4 @@ player:
 #   help:
 #     pages:
 #       main:
-#         - '  <interactive>create <muted><id> <target>'
+#         - '   <interactive>create <muted><id> <target>'
