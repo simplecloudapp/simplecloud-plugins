@@ -66,12 +66,12 @@ follow it yet and will be changed to match this file.
 | brand | `#3B95FF` | the prefix, the network name, hover titles, the team's rank format |
 | interactive | `#62ADFF` | clickable words and list entries, hover action lines |
 | highlight | `#CFE4FF` | values in hovers, the brightest text |
-| muted | `#A8A8AB` | keys in hovers, quiet hints, second lines of kick screens and the MOTD |
+| muted | `#A8A8AB` | keys in hovers, quiet hints, command arguments, stopped and deleted things, second lines of kick screens and the MOTD |
 | separator | `#5F5F63` | `( )`, `:`, `/`, `•` |
-| info | `#4FA3FF` | the line color of every normal message |
+| info | `#4FA3FF` | the line color of every normal message, actions in progress |
 | success | `#6AD13C` | completed actions, online servers |
 | warning | `#FF9029` | no-ops, empty results, maintenance, temporary refusals |
-| error | `#F5464F` | failures, missing permission, invalid input, full servers, stopped or deleted things |
+| error | `#F5464F` | failures, missing permission, invalid input, full servers |
 
 Rules:
 
@@ -155,7 +155,7 @@ No other decorative symbols: no `»`, `«`, `┃`, `|`, `-`, `├─`, `└─` 
 
 ```
 <prefix> <info>Starting 2 servers for group lobby.
-<prefix> <success>Prefixes was reloaded!
+<prefix> <success>Reloaded the prefixes!
 <prefix> <warning>Group lobby has no running servers.
 <prefix> <error>You don't have permission to use this command.
 <prefix> <error>Use /cloud group start <group> instead.
@@ -183,25 +183,30 @@ count in `info`. An entry that does something on click is `interactive` and has 
 <interactive>Previous</interactive>  <info>Page 2/5</info>  <interactive>Next
 ```
 
-Help lists: a title, then one command per line in `interactive`; clicking suggests the command.
+Help lists: a title, then one command per line. The command itself is `interactive`, its arguments `muted`; clicking
+types the command into the chat. Notes after the list are `muted`, without a bullet.
 
 ```
 <prefix> <info>Notify commands
 <separator>•</separator> <interactive>/scnotify list
-<separator>•</separator> <interactive>/scnotify enable <type>
+<separator>•</separator> <interactive>/scnotify enable</interactive> <muted><type>
 ```
 
 ### Notifications
 
-The line color follows the event: starting and created in `info`, available in `success`, stopping in `warning`,
-stopped and deleted in `error`. The name of the thing carries the hover.
+The line color follows the event. Something in progress (starting, stopping, created) is `info`, available is
+`success`, and gone (stopped, deleted) is `muted`, like offline everywhere else. A server that stops is not an error;
+`error` is only for failures. The name of the thing carries the hover.
 
 ```
 <prefix> <info>Server lobby-1 is starting.
 <prefix> <success>Server lobby-1 is now available.
-<prefix> <warning>Server lobby-1 is stopping.
-<prefix> <error>Group bedwars was deleted.
+<prefix> <info>Server lobby-1 is stopping.
+<prefix> <muted>Server lobby-1 has stopped.
 ```
+
+Command feedback follows the same rule: an action that was only started is `info` (`Stopping server lobby-1.`), one
+that is done is `success` (`Reloaded the prefixes!`).
 
 ### Hovers
 
@@ -251,24 +256,27 @@ to type, and `interactive` words for cancel.
 
 ### Tab list
 
+The header and footer keep a space at the start and end of each line, and the footer sentence stays long, so the tab
+list is wide enough when only one column of players shows. The address is in small caps.
+
 ```
 header: '<br><brand>SimpleCloud<br>'
-footer: '<br><info><online_players> players online<br><muted>simplecloud.app<br>'
+footer: '<br> <highlight><online_players> players <muted>are playing on your network <br> <separator>  ꜱɪᴍᴘʟᴇᴄʟᴏᴜᴅ.ᴀᴘᴘ<br>'
 ```
 
 ### Server list and kick screens
 
-- MOTD line 1 is the network name in brand, centered; line 2 is one short sentence in `muted`, or the join state in its
-  color.
+- MOTD line 1 is the network name in brand, centered; line 2 is one short phrase in small caps, in `muted` or in the
+  join state's color.
 - The version text only shows a state: `<warning>Maintenance`.
-- The player list hover is plain: the network's address in `muted`.
+- The player list hover is plain: the network's address in small caps, in `muted`.
 
 ```
 line1: '<center><brand>SimpleCloud</center>'
-line2: '<center><muted>A network powered by simplecloud.app</center>'
+line2: '<center><muted>ᴀ ɴᴇᴛᴡᴏʀᴋ ᴘᴏᴡᴇʀᴇᴅ ʙʏ ꜱɪᴍᴘʟᴇᴄʟᴏᴜᴅ.ᴀᴘᴘ</center>'
 
 line1: '<center><brand>SimpleCloud</center>'
-line2: '<center><warning>In maintenance, back soon.</center>'
+line2: '<center><warning>ɪɴ ᴍᴀɪɴᴛᴇɴᴀɴᴄᴇ, ʙᴀᴄᴋ ꜱᴏᴏɴ</center>'
 ```
 
 Kick screens: no prefix. Line 1 says what happened in its state color, an empty line, then what to do in `muted`.
@@ -356,7 +364,7 @@ No plugin plays a sound by default; NPC actions only play the sounds an owner ad
 - End every sentence with a period, or `!` for good news. No `...`.
 - Address the reader as "you". Name the thing: `Group lobby`, not "the target".
 - Failures say what is missing or what to do: `Use /cloud group start <group> instead.`, never `Error!`.
-- Name a plugin inside the sentence when it matters (`Prefixes was reloaded!`), never as a label in front of it.
+- Name a plugin inside the sentence when it matters (`Reloaded the prefixes!`), never as a label in front of it.
 - Skip "SimpleCloud" and "Successfully" in feedback: `Notify was reloaded!`, not
   `Successfully reloaded SimpleCloud Notify.`
 

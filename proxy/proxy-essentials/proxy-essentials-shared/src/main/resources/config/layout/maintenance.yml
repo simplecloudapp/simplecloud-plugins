@@ -19,7 +19,7 @@ motd:
   layouts:
     - name: maintenance
       line1: '<center><brand>SimpleCloud</center>'
-      line2: '<center><warning>In maintenance, back soon.</center>'
+      line2: '<center><warning>ɪɴ ᴍᴀɪɴᴛᴇɴᴀɴᴄᴇ, ʙᴀᴄᴋ ꜱᴏᴏɴ</center>'
 
 server-icon:
   enabled: true
@@ -30,7 +30,7 @@ player-list:
   enabled: true
   player-list:
     - ''
-    - '<muted>simplecloud.app'
+    - '<muted>ꜱɪᴍᴘʟᴇᴄʟᴏᴜᴅ.ᴀᴘᴘ'
     - ''
 
 # Server version text and player slots configuration.
