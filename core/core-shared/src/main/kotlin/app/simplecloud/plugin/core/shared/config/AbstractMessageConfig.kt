@@ -25,9 +25,9 @@ abstract class AbstractMessageConfig {
         )
     }
 
-    /** Parses the [message] with the [tags] and the [extra] resolvers. */
+    /** Parses the [message] with the [extra] resolvers and the [tags]. Extra resolvers win over tags with the same name. */
     fun msg(
         message: String,
         vararg extra: TagResolver,
-    ): Component = miniMessage.deserialize(message, TagResolver.resolver(tags, *extra))
+    ): Component = miniMessage.deserialize(message, TagResolver.resolver(*extra, tags))
 }
