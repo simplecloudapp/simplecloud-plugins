@@ -72,13 +72,13 @@ object StateLookMenuBuilder {
 
         val material = look?.material
         val materialLine = if (material == null) null else "<bd>Now: <val>${Ui.pretty(material)}"
-        field(pane, MATERIAL_SLOT, Ui.field(material ?: template.material, "Material", materialLine, PICK), {
+        field(pane, MATERIAL_SLOT, Ui.field(material ?: template.material, "Material", materialLine, PICK), material != null, {
             context.navigate(player, InventoryEditorScreen.Picker(config.id, InventoryPickerPurpose.LookMaterial(group, state)))
         }) { change { it.copy(material = null) } }
 
         val name = look?.name
         val nameLine = if (name == null) null else "<bd>Now: <val>${Ui.quote(name)}"
-        field(pane, NAME_SLOT, Ui.field("NAME_TAG", "Name", nameLine, TYPE), {
+        field(pane, NAME_SLOT, Ui.field("NAME_TAG", "Name", nameLine, TYPE), name != null, {
             prompt("Look Name", "Type the name entries show while ${stateName.lowercase()}.", name ?: template.name) { text ->
                 change { it.copy(name = text) }
             }
@@ -86,7 +86,7 @@ object StateLookMenuBuilder {
 
         val lore = look?.lore
         val loreLine = if (lore == null) null else "<bd>Lines: <val>${lore.size}"
-        field(pane, LORE_SLOT, Ui.field("WRITABLE_BOOK", "Lore", loreLine, TYPE), {
+        field(pane, LORE_SLOT, Ui.field("WRITABLE_BOOK", "Lore", loreLine, TYPE), lore != null, {
             prompt("Look Lore", "Type the lore in chat, split lines with |.", (lore ?: template.lore).joinToString(" | ")) { text ->
                 change { it.copy(lore = text.split('|').map(String::trim).toMutableList()) }
             }
@@ -101,7 +101,7 @@ object StateLookMenuBuilder {
             pane.left(
                 RESET_SLOT,
                 Ui.item(
-                    "BARRIER",
+                    "RED_CONCRETE",
                     "<err>Reset Look",
                     listOf("<bd>Entries look the same", "<bd>as the slot again.", "", "<key>Left-click to reset it"),
                 ),
@@ -113,11 +113,11 @@ object StateLookMenuBuilder {
         return pane.menu(Ui.title("$stateName Look", config.id))
     }
 
-    private fun field(pane: Pane, slot: Int, item: NpcItem, edit: () -> Unit, clear: () -> Unit) {
+    private fun field(pane: Pane, slot: Int, item: NpcItem, set: Boolean, edit: () -> Unit, clear: () -> Unit) {
         pane.on(slot, item) { click ->
             when (click) {
                 MenuClick.LEFT -> edit()
-                MenuClick.DROP -> if (item.glowing) clear()
+                MenuClick.DROP -> if (set) clear()
                 else -> Unit
             }
         }
