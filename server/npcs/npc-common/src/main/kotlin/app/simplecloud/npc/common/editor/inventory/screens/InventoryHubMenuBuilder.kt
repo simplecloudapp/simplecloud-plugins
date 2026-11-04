@@ -28,9 +28,7 @@ object InventoryHubMenuBuilder {
     private const val DUPLICATE_SLOT = 22
     private const val DELETE_SLOT = 24
     private const val UNDO_SLOT = 27
-    private const val CLOSE_SLOT = 31
 
-    private val HEADER_FILLER_SLOTS = (0..3) + (5..8)
     private const val DEFAULT_TITLE = "Menu"
     private const val USED_BY_LISTED = 6
 
@@ -91,8 +89,8 @@ object InventoryHubMenuBuilder {
                     "<bd>Now: " + config.title,
                     "<hnt>Plain text keeps the vanilla title look.",
                     "",
-                    "<key>Left <hnt>Type a new one in chat",
-                    "<key>Q <hnt>Reset to the default",
+                    "<key>Left-click to type a new one in chat",
+                    "<key>Press Q to reset to the default",
                 ),
             ),
         ) { click ->
@@ -115,7 +113,7 @@ object InventoryHubMenuBuilder {
                 listOf(
                     "<bd>Id <val>${config.id}",
                     "",
-                    "<key>Left <hnt>Type a new id in chat",
+                    "<key>Left-click to type a new id in chat",
                 ),
             ),
         ) { promptRename(context, player, config) }
@@ -147,7 +145,7 @@ object InventoryHubMenuBuilder {
             Ui.item(
                 "MAP",
                 "<ttl>Duplicate",
-                listOf("<bd>A copy with a new id, opened here.", "", "<key>Left <hnt>Duplicate"),
+                listOf("<bd>A copy with a new id, opened here.", "", "<key>Left-click to duplicate it"),
             ),
         ) { duplicate(context, player, config) }
 
@@ -187,11 +185,7 @@ object InventoryHubMenuBuilder {
             if (moved) context.render(player, screen)
         }
 
-        pane.left(CLOSE_SLOT, Ui.close()) { context.close(player) }
-        pane.fill(HEADER_FILLER_SLOTS)
-        pane.fillNavRow()
-
-        return pane.menu(Ui.title("⚡ Menu Editor", config.id))
+        return pane.menu(Ui.root("Menus", config.id))
     }
 
     private fun promptRename(context: InventoryEditorContext, player: NpcPlayer, config: InventoryConfiguration) {

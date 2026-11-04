@@ -34,7 +34,7 @@ object NpcTabBuilder {
             Ui.item(
                 "ENDER_PEARL",
                 "<ttl>Summon To Me",
-                listOf("<bd>Now at <val>${NpcFormat.position(config.entity.location)}", "<key>Left <hnt>Move it here"),
+                listOf("<bd>Now at <val>${NpcFormat.position(config.entity.location)}", "<key>Left-click to move it here"),
             ),
         ) {
             context.npcManager.teleport(config.id, player.location())
@@ -46,7 +46,7 @@ object NpcTabBuilder {
             Ui.item(
                 "SPAWNER",
                 "<ttl>Duplicate",
-                listOf("<bd>A copy appears where you stand.", "<key>Left <hnt>Name the copy"),
+                listOf("<bd>A copy appears where you stand.", "<key>Left-click to name the copy"),
             ),
         ) { promptDuplicate(context, player, config, screen) }
 
@@ -56,7 +56,7 @@ object NpcTabBuilder {
             player,
             screen,
             "delete-npc",
-            idle = Ui.item("BARRIER", "<err>Delete NPC", listOf("<err>There is no undo.", "<key>Left <hnt>Delete")),
+            idle = Ui.item("BARRIER", "<err>Delete NPC", listOf("<err>There is no undo.", "<key>Left-click to delete it")),
             verb = "Delete ${NpcFormat.displayName(config)}",
         ) {
             context.npcManager.delete(config.id)

@@ -60,7 +60,7 @@ object ActionsTabBuilder {
                 Ui.item(
                     "LIGHT_GRAY_CONCRETE",
                     "<ttl>${Clicks.label(interaction)}",
-                    listOf("<off>Nothing happens", "<key>Left <hnt>Set up"),
+                    listOf("<off>Nothing happens", "<key>Left-click to set it up"),
                 )
             } else {
                 val summary =
@@ -68,7 +68,7 @@ object ActionsTabBuilder {
                 Ui.item(
                     "LIME_CONCRETE",
                     "<on>${Clicks.label(interaction)}",
-                    summary.take(SUMMARY_LINES) + listOf("<key>Left <hnt>Edit"),
+                    summary.take(SUMMARY_LINES) + listOf("<key>Left-click to edit it"),
                 )
             }
             pane.left(slot, item) {

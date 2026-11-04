@@ -45,7 +45,7 @@ object ActionEditorMenuBuilder {
                 player,
                 screen,
                 "delete-action",
-                idle = Ui.item("RED_CONCRETE", "<err>Delete Action", listOf("<key>Left <hnt>Remove everything")),
+                idle = Ui.item("RED_CONCRETE", "<err>Delete Action", listOf("<key>Left-click to remove everything")),
                 verb = "Delete this action",
             ) {
                 context.commitAndBack(player, config.id) { fresh ->
@@ -54,7 +54,6 @@ object ActionEditorMenuBuilder {
                 }
             }
         }
-        pane.fillNavRow()
 
         return pane.menu(Ui.title(NpcFormat.cellName(interaction, joinState), NpcFormat.displayName(config)))
     }
@@ -71,7 +70,6 @@ object ActionEditorMenuBuilder {
 
         ActionFieldsPane.fillAdd(pane, port(context, player, config, interaction, joinState, editor))
         pane.back(context, player)
-        pane.fillNavRow()
 
         return pane.menu(Ui.title("Add to ${Clicks.short(interaction)}", NpcFormat.displayName(config)))
     }

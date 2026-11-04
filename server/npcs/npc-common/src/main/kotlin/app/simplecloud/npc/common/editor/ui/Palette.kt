@@ -5,7 +5,7 @@ object Palette {
     private val TOKENS = listOf(
         "<ttl>" to "<brand>",
         "<bd>" to "<muted>",
-        "<hnt>" to "<separator>",
+        "<hnt>" to "<muted>",
         "<val>" to "<highlight>",
         "<key>" to "<interactive>",
         "<on>" to "<success>",

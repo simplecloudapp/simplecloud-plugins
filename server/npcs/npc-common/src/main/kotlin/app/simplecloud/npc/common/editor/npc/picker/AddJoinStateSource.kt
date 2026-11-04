@@ -43,7 +43,7 @@ class AddJoinStateSource(override val purpose: PickerPurpose.AddJoinState) : Pic
 
                 atCap -> PickerOption(label, Ui.unavailable(label, lore, "No free slot left here."), available = false)
 
-                else -> PickerOption(state, Ui.item("PAPER", "<ttl>$label", lore + listOf("", "<key>Left <hnt>Add")))
+                else -> PickerOption(state, Ui.item("PAPER", "<ttl>$label", lore + listOf("", "<key>Left-click to add one")))
             }
         }
     }

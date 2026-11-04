@@ -90,7 +90,6 @@ object HologramFramesMenuBuilder {
             }
         }
         pane.back(context, player)
-        pane.fillNavRow()
 
         val title = "Rotating · ${NpcFormat.joinState(screen.joinState)} #${screen.line + 1}"
 

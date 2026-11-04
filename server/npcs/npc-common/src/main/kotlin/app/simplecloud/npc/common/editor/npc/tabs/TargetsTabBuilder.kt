@@ -47,7 +47,7 @@ object TargetsTabBuilder {
         }
 
         if (targets.size < NpcConfig.MAX_TARGETS) {
-            val add = Ui.addHead("Add Target", listOf("<key>Left <hnt>Pick a group or server"))
+            val add = Ui.addHead("Add Target", listOf("<key>Left-click to pick a group or server"))
             pane.left(TARGET_SLOTS[targets.size], add) {
                 context.navigate(player, NpcEditorScreen.Picker(config.id, PickerPurpose.AddTarget))
             }

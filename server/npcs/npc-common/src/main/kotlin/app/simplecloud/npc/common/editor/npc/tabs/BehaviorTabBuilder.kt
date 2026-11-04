@@ -94,7 +94,7 @@ object BehaviorTabBuilder {
             Ui.toggle(
                 "Push",
                 pushback.enabled,
-                listOf("<key>Right <hnt>Try it on me").takeIf { pushback.enabled }.orEmpty(),
+                listOf("<key>Right-click to try it on me").takeIf { pushback.enabled }.orEmpty(),
                 material = "PISTON",
             ),
         ) { click ->
@@ -129,7 +129,7 @@ object BehaviorTabBuilder {
                     "<ttl>Push Sound",
                     listOf(
                         sound?.let { "<val>$it" } ?: "<off>None",
-                        if (sound == null) "<key>Left <hnt>Choose" else "<key>Left <hnt>Change · <key>Right <err>Off",
+                        if (sound == null) "<key>Left-click to choose one" else "<key>Left <hnt>Change · <key>Right <err>Off",
                     ),
                     glowing = sound != null,
                 ),

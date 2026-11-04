@@ -50,7 +50,6 @@ object TitleEditorMenuBuilder {
         )
 
         pane.back(context, player)
-        pane.fillNavRow()
 
         return pane.menu(Ui.title("Title", NpcFormat.displayName(config)))
     }

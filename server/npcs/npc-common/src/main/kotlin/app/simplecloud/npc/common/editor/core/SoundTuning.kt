@@ -59,7 +59,7 @@ object SoundTuning {
                 listOf(
                     sound?.let { "<bd>Sound <val>$it" } ?: "<bd>Sound <off>none picked yet",
                     NpcFormat.soundSettings(options),
-                    "<key>Left <hnt>Play it to me",
+                    "<key>Left-click to play it to me",
                 ),
             ),
         ) { sound?.let { player.playSound(it, options) } }

@@ -14,7 +14,6 @@ object GlowMenuBuilder {
     private const val SIZE = 27
 
     private val COLOR_SLOTS = (0..7) + (9..16)
-    private val FILLER_SLOTS = listOf(8, 17)
 
     fun build(context: NpcEditorContext, player: NpcPlayer, config: NpcConfig): EditorMenu {
         val current = NpcFormat.glowColor(config.entity)
@@ -30,8 +29,6 @@ object GlowMenuBuilder {
         }
 
         pane.back(context, player)
-        pane.fill(FILLER_SLOTS)
-        pane.fillNavRow()
 
         return pane.menu(Ui.title("Glow Color", NpcFormat.displayName(config)))
     }

@@ -98,11 +98,11 @@ object StateLooksMenuBuilder {
                         look?.lore?.let { "<bd>Lore <val>${it.size} <bd>lines" },
                         look?.glowing?.let { "<bd>Glint <val>${if (it) "on" else "off"}" },
                         "",
-                        "<key>Left <hnt>Material",
-                        "<key>Right <hnt>Name",
+                        "<key>Left-click to change the material",
+                        "<key>Right-click to change the name",
                         "<key>Shift+Left <hnt>Glint ${if (glowing) "off" else "on"}",
                         "<key>Shift+Right <hnt>Lore, lines split by |",
-                        "<key>Q <hnt>Back to the slot's look".takeIf { look != null },
+                        "<key>Press Q to go back to the slot's look".takeIf { look != null },
                     ).map(Palette::expand),
                     glowing = glowing,
                     amount = 1,
@@ -142,7 +142,6 @@ object StateLooksMenuBuilder {
         }
 
         pane.back(context, player)
-        pane.fillNavRow()
 
         return pane.menu(Ui.title("State Looks", group))
     }

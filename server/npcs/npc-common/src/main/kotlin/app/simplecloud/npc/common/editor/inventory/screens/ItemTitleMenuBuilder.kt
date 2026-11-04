@@ -53,7 +53,6 @@ object ItemTitleMenuBuilder {
         )
 
         pane.back(context, player)
-        pane.fillNavRow()
 
         return pane.menu(Ui.title("Title", Clicks.label(screen.interaction)))
     }

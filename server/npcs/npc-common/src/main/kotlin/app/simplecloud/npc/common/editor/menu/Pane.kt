@@ -31,19 +31,9 @@ class Pane(val size: Int) {
         fallback = handler
     }
 
-    fun fill(slots: Iterable<Int>, material: String = GRAY_PANE, onClick: ((MenuClick) -> Unit)? = null) {
-        val pane = Element(filler(material), onClick ?: {})
-        slots.forEach { slot -> elements.putIfAbsent(slot, pane) }
-    }
-
-    fun fillNavRow() = fill(navRow)
-
     fun menu(title: String): EditorMenu = EditorMenu(title, size, elements.toMap(), fallback)
 
     companion object {
         const val GRAY_PANE = "GRAY_STAINED_GLASS_PANE"
-        const val RED_PANE = "RED_STAINED_GLASS_PANE"
-
-        private fun filler(material: String): NpcItem = NpcItem(material, " ", hideTooltip = true)
     }
 }

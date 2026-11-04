@@ -29,7 +29,7 @@ class PickerSpec<S : Any>(
         val DEFAULT_TYPE_HINT = listOf(
             "<bd>Not in the list above?",
             "",
-            "<key>Left <hnt>Type it in chat",
+            "<key>Left-click to type it in chat",
         )
     }
 }
@@ -78,7 +78,6 @@ object PickerTemplate {
 
         pane.back(host, player)
         pane.pager(pages, listOf("<bd>${spec.options.size} options", "<hnt>${pages.perPage} fit per page."), ::rerender)
-        pane.fillNavRow()
 
         return pane.menu(spec.title)
     }
@@ -118,7 +117,7 @@ object PickerTemplate {
         is PickerResult.Rejected -> Ui.item(
             "RED_DYE",
             "<err>${result.headline}: <val>${Ui.quote(result.typed)}",
-            listOf("<hnt>${result.reason}", "<key>Q <hnt>Dismiss"),
+            listOf("<hnt>${result.reason}", "<key>Press Q to dismiss it"),
         )
 
         is PickerResult.Filtered -> Ui.item(
@@ -129,7 +128,7 @@ object PickerTemplate {
                 "",
                 "<hnt>Pick one above, or type more.",
                 "",
-                "<key>Q <hnt>Clear filter",
+                "<key>Press Q to clear the filter",
             ),
         )
 
@@ -141,7 +140,7 @@ object PickerTemplate {
                 "",
                 "<hnt>Pick one above, or type the full name.",
                 "",
-                "<key>Q <hnt>Dismiss",
+                "<key>Press Q to dismiss it",
             ),
         )
     }

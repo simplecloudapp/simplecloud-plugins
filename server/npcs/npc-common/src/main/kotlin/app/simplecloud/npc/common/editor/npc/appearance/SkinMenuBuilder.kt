@@ -22,7 +22,6 @@ object SkinMenuBuilder {
     private const val SIZE = 54
 
     private val GRID_SLOTS = 0..35
-    private val SEPARATOR_ROW = 36..44
     private const val RESET_SLOT = 51
     private const val INPUT_SLOT = 53
 
@@ -41,13 +40,12 @@ object SkinMenuBuilder {
                 GRID_SLOTS.first + index,
                 Ui.head(
                     if (selected) "<on>${onlinePlayer.name}" else "<ttl>${onlinePlayer.name}",
-                    listOf(if (selected) "<on>In use" else "<key>Left <hnt>Use this skin"),
+                    listOf(if (selected) "<on>In use" else "<key>Left-click to use this skin"),
                     owner = onlinePlayer.uniqueId,
                     glowing = selected,
                 ),
             ) { applySkin(context, player, config, context.renderer.captureSkin(onlinePlayer)) }
         }
-        pane.fill(SEPARATOR_ROW)
 
         pane.back(context, player)
         pane.pager(pages, listOf("<bd>${online.size} players online", "<hnt>${pages.perPage} skins fit per page.")) {
@@ -59,14 +57,13 @@ object SkinMenuBuilder {
             Ui.item(
                 "BARRIER",
                 "<err>Reset Skin",
-                listOf("<bd>Now <val>${NpcFormat.skinLabel(config.entity.skin)}", "<key>Left <hnt>Back to default"),
+                listOf("<bd>Now <val>${NpcFormat.skinLabel(config.entity.skin)}", "<key>Left-click to reset it to the default"),
             ),
         ) { applySkin(context, player, config, NpcConfig.SkinConfiguration()) }
         pane.left(
             INPUT_SLOT,
-            Ui.item("WRITABLE_BOOK", "<ttl>Username Or UUID", listOf("<key>Left <hnt>Type it in chat")),
+            Ui.item("WRITABLE_BOOK", "<ttl>Username Or UUID", listOf("<key>Left-click to type it in chat")),
         ) { promptSkin(context, player, config) }
-        pane.fillNavRow()
 
         return pane.menu(Ui.title("Skin", NpcFormat.displayName(config)))
     }

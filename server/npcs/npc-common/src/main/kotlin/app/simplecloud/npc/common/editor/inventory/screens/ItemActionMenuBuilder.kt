@@ -40,7 +40,7 @@ object ItemActionMenuBuilder {
             Ui.item(
                 "RED_CONCRETE",
                 "<err>Clear This Click",
-                listOf("<hnt>Undo on the canvas brings it back.", "<key>Left <hnt>Clear"),
+                listOf("<hnt>Undo on the canvas brings it back.", "<key>Left-click to clear it"),
             ),
         ) {
             context.change(player, config.id) { fresh ->
@@ -53,7 +53,6 @@ object ItemActionMenuBuilder {
         }
 
         pane.back(context, player)
-        pane.fillNavRow()
 
         return pane.menu(Ui.title(Clicks.label(screen.interaction), "item"))
     }
@@ -68,7 +67,6 @@ object ItemActionMenuBuilder {
 
         ActionFieldsPane.fillAdd(pane, port(context, player, config, screen.slots, screen.interaction))
         pane.back(context, player)
-        pane.fillNavRow()
 
         return pane.menu(Ui.title("Add to ${Clicks.short(screen.interaction)}", "item"))
     }

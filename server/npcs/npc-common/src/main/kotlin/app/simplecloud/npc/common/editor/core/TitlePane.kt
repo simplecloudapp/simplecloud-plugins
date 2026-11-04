@@ -107,7 +107,7 @@ object TitlePane {
             Ui.item(
                 "RED_CONCRETE",
                 "<err>Remove Title",
-                listOf("<hnt>Other parts of the action stay.", "<key>Left <hnt>Remove"),
+                listOf("<hnt>Other parts of the action stay.", "<key>Left-click to remove it"),
             ),
         ) { port.removeAndBack() }
     }
@@ -117,7 +117,7 @@ object TitlePane {
         "<ttl>$label",
         listOf(
             if (value.isBlank()) "<off>Not set" else "<val>${Ui.quote(value)}",
-            "<key>Left <hnt>Edit in chat",
+            "<key>Left-click to edit it in chat",
         ),
     )
 }

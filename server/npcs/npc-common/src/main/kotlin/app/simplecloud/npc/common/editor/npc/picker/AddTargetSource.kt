@@ -45,7 +45,7 @@ object AddTargetSource : PickerSource {
                             typeLine,
                             "<bd>Live <val>${live.summaryOf(target.name).liveServers} <bd>servers",
                             "",
-                            "<key>Left <hnt>Add",
+                            "<key>Left-click to add one",
                         ),
                     ),
                 )
@@ -62,7 +62,7 @@ object AddTargetSource : PickerSource {
                                 typeLine,
                                 "<bd>Status ${PickerOptions.statusText(status)}",
                                 "",
-                                "<key>Left <hnt>Add",
+                                "<key>Left-click to add one",
                             ),
                         ),
                     )

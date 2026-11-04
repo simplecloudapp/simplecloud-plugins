@@ -23,9 +23,6 @@ object ConfirmGate {
     private const val KEEP_SLOT = 11
     private const val FIRE_SLOT = 15
 
-    private val RED_SLOTS = (0..8) + (18..26)
-    private val GRAY_SLOTS = listOf(9, 10, 12, 13, 14, 16, 17)
-
     fun <S : Any> build(host: EditorHost<S>, player: NpcPlayer, spec: ConfirmSpec<S>): EditorMenu {
         val key = spec.screen.toString()
         val pane = Pane(SIZE)
@@ -34,7 +31,7 @@ object ConfirmGate {
 
         pane.on(
             KEEP_SLOT,
-            Ui.item("GREEN_CONCRETE", "<on><b>Keep It", listOf("<key>Left <hnt>Go back")),
+            Ui.item("LIME_CONCRETE", "<on>Keep It", listOf("<key>Left-click to go back")),
         ) { click ->
             if (click == MenuClick.LEFT) host.back(player) else disarm(host, player, spec)
         }
@@ -47,15 +44,12 @@ object ConfirmGate {
             key,
             idle = Ui.item(
                 "RED_CONCRETE",
-                "<err><b>${spec.verb}",
-                listOf("<key>Left <hnt>Arm the ${spec.noun}, then click again"),
+                "<err>${spec.verb}",
+                listOf("<bd>Click twice to ${spec.verb.lowercase()} the ${spec.noun}.", "", "<key>Left-click to continue"),
             ),
             verb = spec.verb,
         ) { spec.fire() }
 
-        val cancel: (MenuClick) -> Unit = { disarm(host, player, spec) }
-        pane.fill(RED_SLOTS, Pane.RED_PANE, cancel)
-        pane.fill(GRAY_SLOTS, onClick = cancel)
         pane.otherwise { _, _ -> disarm(host, player, spec) }
 
         return pane.menu(spec.title)
@@ -110,8 +104,8 @@ fun <S : Any> Pane.armed(
     val item = if (session.isArmed(key)) {
         Ui.item(
             "TNT",
-            "<err><b>Click again",
-            listOf("<warn>${Arming.remainingSeconds(session)}s left", "<key>Left <err>$verb"),
+            "<err>Click Again",
+            listOf("<warn>${Arming.remainingSeconds(session)}s left", "", "<key>Left-click to ${verb.lowercase()}"),
             glowing = true,
         )
     } else {

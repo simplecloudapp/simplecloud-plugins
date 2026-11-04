@@ -41,7 +41,7 @@ object StateChipRow {
             val removable = !NpcFormat.isDefaultJoinState(state)
             val label = NpcFormat.joinState(state)
             val hints = listOfNotNull(
-                "<key>Left <hnt>Show".takeIf { !selected },
+                "<key>Left-click to show it".takeIf { !selected },
                 "<key>Right <err>Remove".takeIf { removable },
             ).joinToString(" <hnt>· ").ifEmpty { null }
             val lore = listOfNotNull(
@@ -52,7 +52,7 @@ object StateChipRow {
             )
 
             val live = if (state == chips.live) "<on>● " else ""
-            val name = if (selected) "$live<ttl><b>$label" else "$live<bd>$label"
+            val name = if (selected) "$live<val>$label" else "$live<bd>$label"
             val material = if (selected) SELECTED_MATERIAL else OTHER_MATERIAL
             pane.on(CHIP_SLOTS.first + index, Ui.item(material, name, lore, glowing = selected)) { click ->
                 when (click) {
@@ -63,12 +63,16 @@ object StateChipRow {
             }
         }
 
-        if (pages.pageCount > 1) {
-            pane.left(PREVIOUS_SLOT, Ui.previousPage(pages.page)) {
+        val previous = Ui.previousPage(pages.page)
+        if (previous != null) {
+            pane.left(PREVIOUS_SLOT, previous) {
                 pages.turn(-1)
                 context.render(player, screen)
             }
-            pane.left(NEXT_SLOT, Ui.nextPage(pages.page, pages.pageCount)) {
+        }
+        val next = Ui.nextPage(pages.page, pages.pageCount)
+        if (next != null) {
+            pane.left(NEXT_SLOT, next) {
                 pages.turn(1)
                 context.render(player, screen)
             }

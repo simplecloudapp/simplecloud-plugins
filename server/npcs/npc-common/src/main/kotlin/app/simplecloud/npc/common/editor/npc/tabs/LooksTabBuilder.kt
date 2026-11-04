@@ -48,7 +48,7 @@ object LooksTabBuilder {
                 SKIN_SLOT,
                 Ui.head(
                     "<ttl>Skin",
-                    listOf("<val>${NpcFormat.skinLabel(entity.skin)}", "<key>Left <hnt>Choose"),
+                    listOf("<val>${NpcFormat.skinLabel(entity.skin)}", "<key>Left-click to choose one"),
                     texture = entity.skin.texture,
                     signature = entity.skin.signature,
                 ),
@@ -57,7 +57,7 @@ object LooksTabBuilder {
             pane[SKIN_SLOT] = Ui.disabled("Skin", listOf("<hnt>${entity.provider} shows each viewer their own skin."))
         }
 
-        pane.left(NAME_SLOT, Ui.item("NAME_TAG", "<ttl>Name", listOf("<val>$name", "<key>Left <hnt>Change"))) {
+        pane.left(NAME_SLOT, Ui.item("NAME_TAG", "<ttl>Name", listOf("<val>$name", "<key>Left-click to change it"))) {
             context.textPrompts.open(
                 player,
                 title = "Display Name",
@@ -101,7 +101,7 @@ object LooksTabBuilder {
                     "<ttl>Equipment",
                     listOf(
                         if (worn == 0) "<off>Nothing worn" else "<val>$worn <hnt>items worn",
-                        "<key>Left <hnt>Dress it",
+                        "<key>Left-click to dress it",
                     ),
                     glowing = worn > 0,
                 ),
@@ -112,7 +112,7 @@ object LooksTabBuilder {
                 Ui.item(
                     "LEATHER_BOOTS",
                     "<ttl>Pose",
-                    listOf("<val>${poseLabel(entity.pose)}", "<key>Left <hnt>Next pose"),
+                    listOf("<val>${poseLabel(entity.pose)}", "<key>Left-click to show the next pose"),
                 ),
             ) {
                 context.commit(player, config.id, screen, Refresh.ALL) { fresh ->

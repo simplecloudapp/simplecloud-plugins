@@ -64,7 +64,6 @@ object LiveGroupMenuBuilder {
 
         if (LiveGroups.members(config, group).isEmpty()) {
             pane.back(context, player)
-            pane.fillNavRow()
             return pane.menu(Ui.title("Live Group", group))
         }
 
@@ -87,7 +86,7 @@ object LiveGroupMenuBuilder {
             Ui.item(
                 info?.icon ?: "BARRIER",
                 "<ttl>Source",
-                listOf("<bd>Now: <val>${info?.label ?: "none"}", "", "<key>Left <hnt>Change"),
+                listOf("<bd>Now: <val>${info?.label ?: "none"}", "", "<key>Left-click to change it"),
             ),
         ) { pick(InventoryPickerPurpose.LiveSourceType(group)) }
 
@@ -96,14 +95,14 @@ object LiveGroupMenuBuilder {
             val targetLabel = if (target == GroupServersSource.TARGET_GROUP) "the opening NPC's target" else target
             pane.left(
                 GROUP_SLOT,
-                Ui.item("PAPER", "<ttl>Which Group", listOf("<bd>Now: <val>$targetLabel", "", "<key>Left <hnt>Change")),
+                Ui.item("PAPER", "<ttl>Which Group", listOf("<bd>Now: <val>$targetLabel", "", "<key>Left-click to change it")),
             ) { pick(InventoryPickerPurpose.LiveSourceGroup(group)) }
 
             val sort = source.sort?.uppercase() ?: SORTS.first()
             val sortLabel = if (sort == "PLAYER_COUNT") "most players first" else "by number"
             pane.left(
                 SORT_SLOT,
-                Ui.item("HOPPER", "<ttl>Order", listOf("<bd>Now: <val>$sortLabel", "", "<key>Left <hnt>Switch")),
+                Ui.item("HOPPER", "<ttl>Order", listOf("<bd>Now: <val>$sortLabel", "", "<key>Left-click to switch")),
             ) {
                 val next = SORTS.after(sort)
                 change { LiveGroups.setSource(it, group) { s -> s.copy(sort = next) } }
@@ -141,7 +140,7 @@ object LiveGroupMenuBuilder {
                     emptyLook?.let { "<bd>Shows " + (it.name ?: it.material) } ?: "<off>Stays empty",
                     "",
                     "<key>Left <hnt>${if (emptyLook == null) "Show a placeholder" else "Leave empty slots empty"}",
-                    "<key>Right <hnt>Type the placeholder's name",
+                    "<key>Right-click to type the placeholder's name",
                 ),
             ),
         ) { click ->
@@ -177,7 +176,7 @@ object LiveGroupMenuBuilder {
             Ui.item(
                 "ANVIL",
                 "<ttl>Rename",
-                listOf("<bd>Now: <val>$group", "", "<key>Left <hnt>Type a new name in chat"),
+                listOf("<bd>Now: <val>$group", "", "<key>Left-click to type a new name in chat"),
             ),
         ) {
             context.chatPrompt(
@@ -215,7 +214,7 @@ object LiveGroupMenuBuilder {
                         if (looks == 0) "<off>None set" else "<bd><val>$looks <bd>states styled",
                         "<hnt>Full, starting and offline each get their own look.",
                         "",
-                        "<key>Left <hnt>Open",
+                        "<key>Left-click to open it",
                     ),
                     glowing = looks > 0,
                 ),
@@ -235,7 +234,6 @@ object LiveGroupMenuBuilder {
         }
 
         pane.back(context, player)
-        pane.fillNavRow()
 
         return pane.menu(Ui.title("Live Group", group))
     }

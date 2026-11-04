@@ -42,7 +42,6 @@ object StudioMenuBuilder {
     private const val CLICK_TAB = 2
     private const val LIVE_TAB = 3
     private const val PREVIEW_SLOT = 6
-    private val HEADER_FILLER = listOf(0, 4, 5, 7, 8)
 
     private const val MATERIAL_SLOT = 19
     private const val NAME_SLOT = 20
@@ -101,7 +100,6 @@ object StudioMenuBuilder {
         val pane = Pane(SIZE)
         if (first == null) {
             pane.back(context, player)
-            pane.fillNavRow()
             return pane.menu("Item Studio · nothing here")
         }
         val isLive = items.any { it.liveGroup != null && it.pageControl == null }
@@ -129,7 +127,6 @@ object StudioMenuBuilder {
         pane[PREVIEW_SLOT] = livePreview
             ?.let { it.copy(lore = it.lore + Palette.expand("<hnt>Live preview from the canvas")) }
             ?: preview(first)
-        pane.fill(HEADER_FILLER)
 
         when (tab) {
             StudioTab.LOOK -> look(context, player, config, screen, items, pane, ::edit)
@@ -151,7 +148,7 @@ object StudioMenuBuilder {
             Ui.item(
                 "TNT",
                 "<err>Delete",
-                listOf("<bd>Removes $deleted.", "<hnt>Undo on the canvas brings it back.", "", "<key>Left <hnt>Delete"),
+                listOf("<bd>Removes $deleted.", "<hnt>Undo on the canvas brings it back.", "", "<key>Left-click to delete it"),
             ),
         ) {
             context.change(player, config.id) { cfg ->
@@ -161,7 +158,6 @@ object StudioMenuBuilder {
             context.back(player)
         }
         pane.back(context, player)
-        pane.fillNavRow()
 
         val title = first.name?.let(Msg.miniMessage::stripTags)?.takeIf { it.isNotBlank() }
             ?: Ui.pretty(first.material)
@@ -190,7 +186,7 @@ object StudioMenuBuilder {
             Ui.item(
                 (material as? Shared.Same)?.value ?: "BUNDLE",
                 "<ttl>Material",
-                listOf(valueLine(material) { Ui.pretty(it) }, "", "<key>Left <hnt>Pick another"),
+                listOf(valueLine(material) { Ui.pretty(it) }, "", "<key>Left-click to pick another"),
             ),
         ) { context.navigate(player, InventoryEditorScreen.Picker(config.id, InventoryPickerPurpose.Material(slots))) }
 
@@ -247,7 +243,7 @@ object StudioMenuBuilder {
                             .ifEmpty { listOf("<off>No lore") }
                             .take(6)
                             .map { "<bd>" + it.ifBlank { " " } }
-                } + listOf("", "<key>Left <hnt>Edit the lines"),
+                } + listOf("", "<key>Left-click to edit the lines"),
             ),
         ) { context.navigate(player, InventoryEditorScreen.Lore(config.id, slots)) }
 
@@ -297,7 +293,7 @@ object StudioMenuBuilder {
                         "<hnt>a username or UUID, or whoever opens the menu.",
                         "",
                         "<key>Left <hnt>Type it in chat  <key>Right <hnt>Viewer's head",
-                        "<key>Q <hnt>Clear",
+                        "<key>Press Q to clear it",
                     ),
                 ),
             ) { click ->
@@ -371,7 +367,7 @@ object StudioMenuBuilder {
                     Clicks.material(interaction),
                     "<ttl>${Clicks.label(interaction)}",
                     configured.map { "<bd>· <val>$it" }.ifEmpty { listOf("<off>Nothing") } +
-                        listOf("", "<key>Left <hnt>Edit"),
+                        listOf("", "<key>Left-click to edit it"),
                     glowing = configured.isNotEmpty(),
                 ),
             ) { context.navigate(player, InventoryEditorScreen.ItemAction(config.id, slots, interaction)) }
@@ -413,7 +409,7 @@ object StudioMenuBuilder {
                     "<bd>Source <val>$sourceLabel",
                     "<bd><val>${LiveGroups.contentSlots(config, group).size} <bd>slots",
                     "",
-                    "<key>Left <hnt>Group settings",
+                    "<key>Left-click to open the group settings",
                 ),
             ),
         ) { context.navigate(player, InventoryEditorScreen.LiveGroup(config.id, group)) }

@@ -54,7 +54,6 @@ object LoreMenuBuilder {
         LinesPane.place(pane, lines, LINE_SLOTS)
         if (targets.size > 1) pane[NOTE_SLOT] = Ui.item("PAPER", "<warn>Applies to ${targets.size} items")
         pane.back(context, player)
-        pane.fillNavRow()
 
         val itemName = first?.name?.let(Msg.miniMessage::stripTags)?.ifBlank { null } ?: "item"
 

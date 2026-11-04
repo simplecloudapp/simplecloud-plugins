@@ -349,9 +349,10 @@ object ActionFieldsPane {
         }
 
         val free = blocks(port.scope).count { !isSet(it, action) && it.available(action) }
-        BLOCK_SLOTS.getOrNull(set.size)?.takeIf { free > 0 }?.let { slot ->
+        val slot = BLOCK_SLOTS.getOrNull(set.size)
+        if (slot != null && free > 0) {
             val hint = if (set.isEmpty()) "<hnt>Nothing happens on this click yet." else null
-            pane.left(slot, Ui.addHead("Add", listOfNotNull(hint, "<key>Left <hnt>Pick what happens"))) {
+            pane.left(slot, Ui.addHead("Add", listOfNotNull(hint, "<key>Left-click to pick what happens"))) {
                 port.openAdd()
             }
         }
@@ -382,7 +383,7 @@ object ActionFieldsPane {
                         Ui.item(
                             block.material,
                             "<ttl>${block.label}",
-                            listOf("<bd>${block.describe}", "<key>Left <hnt>Add"),
+                            listOf("<bd>${block.describe}", "<key>Left-click to add one"),
                         ),
                     ) {
                         port.closeAdd()

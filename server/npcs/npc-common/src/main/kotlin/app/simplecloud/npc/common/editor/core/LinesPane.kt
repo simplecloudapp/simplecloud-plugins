@@ -44,7 +44,7 @@ object LinesPane {
         }
 
         if (lines.size < max) {
-            pane.left(slots[lines.size], Ui.addHead(addLabel, listOf("<key>Left <hnt>Type the text in chat"))) {
+            pane.left(slots[lines.size], Ui.addHead(addLabel, listOf("<key>Left-click to type the text in chat"))) {
                 list.prompt(null, null, { typed ->
                     list.edit { fresh ->
                         if (fresh.size >= max) return@edit false

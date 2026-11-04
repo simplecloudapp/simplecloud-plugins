@@ -24,14 +24,10 @@ object TemplatesMenuBuilder {
                 Ui.item(
                     template.icon,
                     "<ttl>${template.label}",
-                    template.description.map { "<bd>$it" } + listOf("", "<key>Left <hnt>Create and open the canvas"),
+                    template.description.map { "<bd>$it" } + listOf("", "<key>Left-click to create and open the canvas"),
                 ),
             ) { create(context, player, template) }
         }
-
-        pane.left(pane.navRow.first + 4, Ui.close()) { context.close(player) }
-        pane.fill(0..8)
-        pane.fillNavRow()
 
         return pane.menu("New Menu · pick a start")
     }

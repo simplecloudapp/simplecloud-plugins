@@ -184,12 +184,12 @@ class EquipmentCanvas(
         items[COPY_SLOT] = Ui.item(
             "LEATHER_CHESTPLATE",
             "<ttl>Copy My Armor",
-            listOf("<bd>Dresses the NPC in the armor", "<bd>you are wearing right now.", "", "<key>Left <hnt>Copy"),
+            listOf("<bd>Dresses the NPC in the armor", "<bd>you are wearing right now.", "", "<key>Left-click to copy it"),
         )
         items[CLEAR_SLOT] = if (equipment.filled().isEmpty()) {
             Ui.disabled("Take Everything Off", listOf("<hnt>The NPC wears nothing."))
         } else {
-            Ui.item("BUCKET", "<err>Take Everything Off", listOf("", "<key>Left <hnt>Clear all slots"))
+            Ui.item("BUCKET", "<err>Take Everything Off", listOf("", "<key>Left-click to clear all slots"))
         }
         items[HELP_SLOT] = Ui.item("BOOK", "<ttl>Controls", HELP)
 

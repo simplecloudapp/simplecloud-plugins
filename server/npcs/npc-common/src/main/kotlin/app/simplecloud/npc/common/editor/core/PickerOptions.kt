@@ -9,7 +9,7 @@ object PickerOptions {
     val SOUND_TYPE_HINT = listOf(
         "<bd>Sound keys are a lot to page through.",
         "",
-        "<key>Left <hnt>Type it in chat",
+        "<key>Left-click to type it in chat",
         "<hnt>A fragment filters the list above;",
         "<hnt>an exact key is picked straight away.",
     )
@@ -17,7 +17,7 @@ object PickerOptions {
     val MATERIAL_TYPE_HINT = listOf(
         "<bd>Search every material.",
         "",
-        "<key>Left <hnt>Type it in chat",
+        "<key>Left-click to type it in chat",
         "<hnt>A fragment filters the list;",
         "<hnt>an exact name is picked straight away.",
     )
@@ -61,7 +61,7 @@ object PickerOptions {
             val selected = key.equals(current, true)
             PickerOption(
                 key,
-                Ui.option("NOTE_BLOCK", key, listOf("<key>Right <hnt>Preview", ""), selected),
+                Ui.option("NOTE_BLOCK", key, listOf("<key>Right-click to preview it", ""), selected),
                 available = !selected,
             )
         }
