@@ -1,0 +1,11 @@
+name: 'starting_default'
+rule: 'STARTING'
+priority: 6
+glowing-text: true
+
+frames:
+  - lines:
+      - ''
+      - '<#F8FAFC><server-name>'
+      - '<shine:ꜱᴛᴀʀᴛɪɴɢ:#38BDF8:#E0F2FE>'
+      - ''

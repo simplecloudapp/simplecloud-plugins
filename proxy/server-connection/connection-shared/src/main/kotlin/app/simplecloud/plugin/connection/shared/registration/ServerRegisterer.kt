@@ -5,7 +5,7 @@ import app.simplecloud.api.cache.QueryKey
 import app.simplecloud.api.event.Subscription
 import app.simplecloud.api.group.GroupServerType
 import app.simplecloud.api.internal.CloudApiImpl
-import app.simplecloud.api.internal.integration.player.ServerNameRegistry
+import app.simplecloud.api.proxy.ProxyServerNames
 import app.simplecloud.api.server.Server
 import app.simplecloud.api.server.ServerQuery
 import app.simplecloud.api.server.ServerState
@@ -18,31 +18,29 @@ import kotlinx.coroutines.future.await
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.slf4j.LoggerFactory
-import java.util.Optional
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicBoolean
-import java.util.function.Function
+import java.util.concurrent.atomic.AtomicReference
 import kotlin.time.Duration.Companion.seconds
 
 class ServerRegisterer(
     private val api: CloudApi,
-    private val registry: ServerRegistry,
+    registry: ServerRegistry,
     private val config: ConfigurationFactory<ConnectionConfig>,
 ) {
 
     private val logger = LoggerFactory.getLogger(ServerRegisterer::class.java)
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private val subscriptions: MutableList<Subscription> = mutableListOf()
-    private val registeredServers = ConcurrentHashMap<String, RegisteredServer>()
+    private val registrations = ProxyServerRegistrations(registry)
+    private val lookupRegistration = AtomicReference<ProxyServerNames.Registration?>()
     private val stoppingServers = ConcurrentHashMap.newKeySet<String>()
     private val syncMutex = Mutex()
     private val syncRequired = AtomicBoolean(true)
     private val changedDuringSync = ConcurrentHashMap.newKeySet<String>()
 
-    private val serverNames = Function<String, Optional<String>> { id -> Optional.ofNullable(registeredServers[id]?.proxyName) }
-
     fun start() {
-        ServerNameRegistry.register(serverNames)
+        lookupRegistration.set(ProxyServerNames.register(registrations))
         subscriptions.add(
             api.event().server().onStateChanged { event ->
                 val server = event.server ?: return@onStateChanged
@@ -68,11 +66,11 @@ class ServerRegisterer(
 
         subscriptions.add(
             api.event().server().onUpdated { event ->
-                val previousRegistration = registeredServers[event.serverId] ?: return@onUpdated
+                val previousServer = registrations.find(event.serverId) ?: return@onUpdated
                 val server = event.server ?: return@onUpdated
                 scope.launch {
                     val registeredServer = convertToRegisteredServer(server) ?: return@launch
-                    if (registeredServer.proxyName != previousRegistration.proxyName) {
+                    if (registeredServer.proxyName != previousServer.proxyName) {
                         markChanged(registeredServer.serverId)
                         register(registeredServer)
                     }
@@ -105,13 +103,13 @@ class ServerRegisterer(
     }
 
     fun stop() {
-        ServerNameRegistry.unregister(serverNames)
+        lookupRegistration.getAndSet(null)?.close()
         subscriptions.forEach { subscription -> subscription.close() }
         subscriptions.clear()
         scope.cancel()
     }
 
-    fun getStoppingServerNames(): Set<String> = registeredServers.values
+    fun getStoppingServerNames(): Set<String> = registrations.findAll()
         .filter { server -> server.serverId in stoppingServers }
         .map { server -> server.proxyName }
         .toSet()
@@ -122,7 +120,7 @@ class ServerRegisterer(
     }
 
     suspend fun refresh() {
-        registeredServers.values.forEach { server ->
+        registrations.findAll().forEach { server ->
             register(server.copy(proxyName = resolveProxyName(server)))
         }
         sync()
@@ -153,9 +151,10 @@ class ServerRegisterer(
 
             val serverIds = servers.map { server -> server.serverId }.toSet()
             synchronized(changedDuringSync) {
-                registeredServers.keys
+                val staleServerIds = registrations.findAll()
+                    .map { server -> server.serverId }
                     .filter { serverId -> serverId !in serverIds && serverId !in changedDuringSync }
-                    .forEach { serverId -> unregister(serverId) }
+                staleServerIds.forEach { serverId -> unregister(serverId) }
                 servers
                     .filter { server -> server.serverId !in changedDuringSync }
                     .forEach { server -> register(server) }
@@ -192,39 +191,12 @@ class ServerRegisterer(
             return
         }
 
-        val previousRegistration = registeredServers[server.serverId]
-
-        if (previousRegistration?.proxyName == server.proxyName) {
-            logger.info("Refreshing server ${server.serverId} (${server.proxyName})...")
-        } else {
-            if (previousRegistration != null) {
-                logger.info("Replacing stale registration ${previousRegistration.serverId} (${previousRegistration.proxyName}) with ${server.proxyName}...")
-                registeredServers.remove(server.serverId)
-                releaseProxyName(previousRegistration)
-            }
-            logger.info("Registering server ${server.serverId} (${server.proxyName})...")
-        }
-
-        registry.register(server.proxyName, server)
-        registeredServers[server.serverId] = server
+        registrations.register(server)
     }
 
     private fun unregister(serverId: String) {
         stoppingServers.remove(serverId)
-        val registeredServer = registeredServers.remove(serverId) ?: return
-        logger.info("Unregistering server $serverId (${registeredServer.proxyName})...")
-        releaseProxyName(registeredServer)
-    }
-
-    private fun releaseProxyName(server: RegisteredServer) {
-        val remaining = registeredServers.values.firstOrNull { other -> other.proxyName == server.proxyName }
-        if (remaining == null) {
-            registry.unregister(server.proxyName, server)
-            return
-        }
-
-        logger.info("Keeping ${server.proxyName} registered for ${remaining.serverId}")
-        registry.register(remaining.proxyName, remaining)
+        registrations.unregister(serverId)
     }
 
     private fun convertToRegisteredServer(server: Server): RegisteredServer? {

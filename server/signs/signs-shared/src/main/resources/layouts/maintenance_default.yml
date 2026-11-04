@@ -1,0 +1,12 @@
+name: 'maintenance_default'
+rule: 'MAINTENANCE'
+priority: 20
+glowing-text: true
+frame-update-interval: 1000
+
+frames:
+  - lines:
+      - ''
+      - '<#F8FAFC><server-name>'
+      - '<#F59E0B>ᴍᴀɪɴᴛᴇɴᴀɴᴄᴇ'
+      - ''

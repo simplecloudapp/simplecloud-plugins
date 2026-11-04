@@ -1,0 +1,12 @@
+name: 'empty_default'
+rule: 'EMPTY'
+priority: 10
+glowing-text: true
+frame-update-interval: 1000
+
+frames:
+  - lines:
+      - ''
+      - '<#F8FAFC><server-name>'
+      - '<#A3E635>ᴏɴʟɪɴᴇ <#94A3B8>· <player-count>/<max-players>'
+      - ''

@@ -1,0 +1,57 @@
+# The messages format version. Do not change this value.
+version: 1
+
+# ───────────────────────────────────────────────────────────────────────────────
+# Variables
+# Reusable variables that can be used throughout the messages.
+# Usage: <variable_name> will be replaced with the defined value.
+# ───────────────────────────────────────────────────────────────────────────────
+variables:
+  prefix: '<color:#38bdf8><bold>⚡</bold></color>'
+
+# ───────────────────────────────────────────────────────────────────────────────
+# Command Messages
+# ───────────────────────────────────────────────────────────────────────────────
+command:
+  help:
+    title: '<prefix> <#FFFFFF>Commands of the SimpleCloud Signs plugin'
+    entry: '   <#A3A3A3><command>'
+
+  add:
+    success: '<prefix> <#FFFFFF>Sign for <#FBBF24><target></#FBBF24> was <#A3E635>created</#A3E635>.'
+    already-registered: '<prefix> <#DC2626>This sign is already registered.'
+    group-not-found: '<prefix> <#DC2626>There is no group named <#FBBF24><group></#FBBF24>.'
+    persistent-server-not-found: '<prefix> <#DC2626>There is no persistent server named <#FBBF24><persistent-server></#FBBF24>.'
+
+  remove:
+    success: '<prefix> <#A3E635>Sign was successfully removed.'
+    not-registered: '<prefix> <#DC2626>This sign is not registered.'
+    all-success: '<prefix> <#FFFFFF>Successfully removed <#FBBF24><amount></#FBBF24> sign(s) of <#FBBF24><target></#FBBF24>.'
+    none-registered: '<prefix> <#DC2626>No signs are registered for <#FBBF24><target></#FBBF24>.'
+
+  # <teleport>...</teleport> teleports the player to the sign when clicked.
+  # <previous> and <next> are only shown if there is a previous or next page.
+  list:
+    empty: '<prefix> <#DC2626>There are no signs registered.'
+    title: '<prefix> <#FFFFFF>Registered signs <#A3A3A3>(<amount>)'
+    entry: '<teleport><#A3A3A3>└─ <#FBBF24><target></#FBBF24> in <#FFFFFF><world></#FFFFFF> at <#FFFFFF><x> <y> <z></teleport>'
+    teleport-hover: '<#A3A3A3>Click to teleport'
+    footer: '<previous><#A3A3A3>[ <#FFFFFF><page>/<pages></#FFFFFF> ]<next>'
+    previous: '<#38BDF8>« Previous </#38BDF8>'
+    next: '<#38BDF8> Next »</#38BDF8>'
+
+  not-looking-at-sign: '<prefix> <#DC2626>To execute this command, you need to look at a sign.'
+
+  exception:
+    syntax: '<prefix> <#DC2626>Use <#F8FAFC><command> <#DC2626>instead.'
+    permission: '<prefix> <#DC2626>You do not have permission to use this command.'
+    invalid-sender: '<prefix> <#DC2626>You cannot use this command.'
+    failed: '<prefix> <#DC2626>The command failed because <#F8FAFC><reason><#DC2626>.'
+    argument:
+      invalid: '<prefix> <#DC2626>Invalid argument: <#F8FAFC><reason><#DC2626>.'
+      invalid-number: '<prefix> <#DC2626><#F8FAFC><value> <#DC2626>is not a valid number.'
+      number-too-small: '<prefix> <#DC2626>The number must be at least <#F8FAFC><min><#DC2626>.'
+      number-too-large: '<prefix> <#DC2626>The number must be at most <#F8FAFC><max><#DC2626>.'
+      invalid-boolean: '<prefix> <#DC2626>Use <#F8FAFC>true <#DC2626>or <#F8FAFC>false<#DC2626>.'
+      invalid-enum: '<prefix> <#DC2626><#F8FAFC><value> <#DC2626>is invalid. Use one of <#F8FAFC><options><#DC2626>.'
+      invalid-uuid: '<prefix> <#DC2626><#F8FAFC><value> <#DC2626>is not a valid UUID.'
