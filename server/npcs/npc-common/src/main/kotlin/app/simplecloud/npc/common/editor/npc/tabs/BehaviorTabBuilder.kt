@@ -168,5 +168,5 @@ object BehaviorTabBuilder {
     }
 
     private fun tryActions(enabled: Boolean): List<String> =
-        if (enabled) listOf("<key>Right-click to try it on me") else emptyList()
+        if (enabled) listOf("<key>Right-click to test it on yourself") else emptyList()
 }

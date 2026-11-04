@@ -55,7 +55,7 @@ object NpcTabBuilder {
             player,
             screen,
             "delete-npc",
-            idle = Ui.item("RED_CONCRETE", "<err>Delete NPC", listOf("<err>There is no undo.", "", "<key>Left-click to delete it")),
+            idle = Ui.item("RED_CONCRETE", "<err>Delete NPC", listOf("<err>There is no undo.", "", "<key>Left-click twice to delete it")),
             verb = "Delete ${NpcFormat.displayName(config)}",
         ) {
             context.npcManager.delete(config.id)

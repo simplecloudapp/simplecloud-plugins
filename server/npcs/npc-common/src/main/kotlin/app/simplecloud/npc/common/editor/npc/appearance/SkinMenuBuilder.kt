@@ -58,7 +58,7 @@ object SkinMenuBuilder {
         if (online.isEmpty()) {
             pane[EMPTY_SLOT] = Ui.item(
                 "LIGHT_GRAY_DYE",
-                "<off>No Players Online",
+                "<off>No Other Players Online",
                 listOf("<bd>Type a username or UUID below", "<bd>to use that player's skin."),
             )
         }

@@ -83,7 +83,7 @@ object ItemActionMenuBuilder {
         ActionFieldsPane.fillAdd(pane, port(context, player, config, screen.slots, screen.interaction), screen.interaction, listOf(editing))
         pane.back(context, player)
 
-        return pane.menu(Ui.title("Add Action", config.id))
+        return pane.menu(Ui.title("Add to ${Clicks.short(screen.interaction)}", config.id))
     }
 
     private fun port(

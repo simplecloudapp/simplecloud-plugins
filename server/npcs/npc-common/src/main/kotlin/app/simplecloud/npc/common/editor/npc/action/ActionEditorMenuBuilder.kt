@@ -70,7 +70,7 @@ object ActionEditorMenuBuilder {
         ActionFieldsPane.fillAdd(pane, port(context, player, config, interaction, joinState, editor), interaction)
         pane.back(context, player)
 
-        return pane.menu(Ui.title("Add Action", NpcFormat.displayName(config)))
+        return pane.menu(Ui.title("Add to ${Clicks.short(interaction)}", NpcFormat.displayName(config)))
     }
 
     private fun port(

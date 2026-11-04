@@ -160,7 +160,7 @@ object StateLookMenuBuilder {
             listOfNotNull(
                 if (custom == null) "<bd>Same as the slot: <val>$inherited" else "<bd>Custom: <val>$custom",
                 action,
-                if (custom == null) null else "<key>Press Q to use the slot's again",
+                if (custom == null) null else "<key>Press Q to match the slot again",
             ),
         )
 }

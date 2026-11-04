@@ -129,13 +129,14 @@ object StudioMenuBuilder {
             group == null -> "<bd>Editing: <val>${targets.size} slots"
             else -> "<bd>Editing: <val>${targets.size} slots <bd>of <val>$group"
         }
-        val intro = listOf(Palette.expand("<hnt>Preview with sample values:"))
+        val intro = listOf(Palette.expand(if (livePreview == null) "<hnt>Preview only, with sample values:" else "<hnt>Preview only, live:"))
         val previewLore = listOfNotNull(
             "",
             editing,
             if (targets.size > 1) "<hnt>Fields that differ show as Mixed." else null,
         )
-        pane[PREVIEW_SLOT] = shown.copy(lore = intro + shown.lore + previewLore.map(Palette::expand), hideTooltip = false)
+        val scopeLore = previewLore.drop(1).map(Palette::expand) + Palette.expand("")
+        pane[PREVIEW_SLOT] = shown.copy(lore = scopeLore + intro + shown.lore, hideTooltip = false)
 
         if (group != null) {
             val only = session.thisSlotOnly

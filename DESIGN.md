@@ -399,7 +399,7 @@ B . . T P T . . N     B: Back (or Previous Page), T: tools, P: page count, N: Ne
 - When several items are edited at once, the screen says so, and a field whose values differ shows `Mixed`.
 
 The editor is an admin tool built from menus and tooltips. It uses the same roles, except that descriptions are
-`muted` instead of `highlight`, so values stand out: item names in `brand`, descriptions and keys in `muted`, values in `highlight`, quiet hints in `separator`, click keys (`Left`, `Right`, `Q`) in
+`muted` instead of `highlight`, so values stand out: item names in `brand`, descriptions and keys in `muted`, values in `highlight`, quiet hints in `muted` as well (`separator` is too dark on the tooltip), click keys (`Left`, `Right`, `Q`) in
 `interactive`, and the state colors for on, off, warnings, and errors.
 
 ### Sounds
