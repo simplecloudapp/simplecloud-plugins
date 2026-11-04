@@ -64,6 +64,7 @@ sealed interface InventoryEditorScreen {
 
     data class LiveGroup(override val inventoryId: String, val group: String) : Bound
     data class StateLooks(override val inventoryId: String, val group: String) : Bound
+    data class StateLook(override val inventoryId: String, val group: String, val state: String) : Bound
     data class Picker(override val inventoryId: String, val purpose: InventoryPickerPurpose) : Bound
     data class Confirm(override val inventoryId: String, val purpose: InventoryConfirmPurpose) : Bound
 }

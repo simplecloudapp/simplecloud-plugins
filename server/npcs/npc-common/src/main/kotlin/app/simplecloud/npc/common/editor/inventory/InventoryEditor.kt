@@ -11,6 +11,7 @@ import app.simplecloud.npc.common.editor.inventory.screens.ItemActionMenuBuilder
 import app.simplecloud.npc.common.editor.inventory.screens.ItemTitleMenuBuilder
 import app.simplecloud.npc.common.editor.inventory.screens.LiveGroupMenuBuilder
 import app.simplecloud.npc.common.editor.inventory.screens.LoreMenuBuilder
+import app.simplecloud.npc.common.editor.inventory.screens.StateLookMenuBuilder
 import app.simplecloud.npc.common.editor.inventory.screens.StateLooksMenuBuilder
 import app.simplecloud.npc.common.editor.inventory.screens.StudioMenuBuilder
 import app.simplecloud.npc.common.editor.inventory.screens.TemplatesMenuBuilder
@@ -115,6 +116,8 @@ class InventoryEditor(
             is InventoryEditorScreen.LiveGroup -> LiveGroupMenuBuilder.build(context, player, config, bound.group)
 
             is InventoryEditorScreen.StateLooks -> StateLooksMenuBuilder.build(context, player, config, bound.group)
+
+            is InventoryEditorScreen.StateLook -> StateLookMenuBuilder.build(context, player, config, bound)
 
             is InventoryEditorScreen.Picker -> InventoryPickers.build(context, player, config, bound.purpose)
 
