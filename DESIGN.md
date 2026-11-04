@@ -332,9 +332,16 @@ Clicking a target that cannot be joined sends one chat message with the prefix:
 
 ### Menus
 
-- The title is one plain noun without color tags, so it keeps vanilla's title gray: `Servers`.
-- Item names never italic. A server or group is named in `brand`; controls (Previous Page, Next Page, Close) in
+- The title is one plain noun without color tags, so it keeps vanilla's title gray: `Servers`. Deeper screens use
+  a breadcrumb: `NPCs > limbo`, `limbo > Skin`. No symbols in titles.
+- Item names never italic. A server or group is named in `brand`; controls (Previous Page, Next Page, Back) in
   `interactive`.
+- Content stays in the inner seven columns. A menu's main action sits alone in the middle of the top row.
+- The bottom row is the control row: Previous Page in the first slot (Back on the first page of a submenu), Next Page
+  in the last, a page count in the middle. Previous and Next are light blue glass panes and only show when that page
+  exists; Back is a red glass pane. No close button: Escape closes every menu.
+- Tabs sit in the top row, centered; the active tab has the glint and its name in `highlight`.
+- Action lines are short sentences: `Left-click to open`, `Right-click to preview`, `Press Q to clear`.
 - Tooltip order: name, description in `highlight`, facts as `<muted>Key: <highlight>value`, one action line in
   `interactive`. A state that blocks the action replaces the action line, in the state color.
 - No glass pane frames or filler. Empty slots stay empty.
