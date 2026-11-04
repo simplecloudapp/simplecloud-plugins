@@ -22,22 +22,39 @@ object Layout {
     const val TOOL_LEFT = -1
     const val TOOL_RIGHT = -2
 
+    /** The marker of the tool at [position] (0 for the leftmost); [TOOL_LEFT] and [TOOL_RIGHT] are positions 0 and 1. */
+    fun tool(position: Int): Int = -1 - position
+
     private const val CONTROL_ROW = 45
 
     private const val COLUMNS = 9
 
-    /** Slots for [count] tools in the bottom row: one in the middle, pairs at columns 3 and 7, around the page count. */
+    /** Slots for [count] tools in the bottom row, side by side around the middle (and the page count there). */
     fun toolSlots(count: Int, middleTaken: Boolean): List<Int> {
         val columns = when {
             count <= 0 -> emptyList()
-            middleTaken -> listOf(2, 6, 1, 7)
+            middleTaken -> listOf(3, 5, 2, 6)
             count == 1 -> listOf(4)
-            count == 2 -> listOf(2, 6)
-            count == 3 -> listOf(2, 4, 6)
-            else -> listOf(1, 3, 5, 7)
+            count == 2 -> listOf(3, 5)
+            count == 3 -> listOf(3, 4, 5)
+            else -> listOf(2, 3, 5, 6)
         }
 
-        return columns.take(count).map { CONTROL_ROW + it }
+        return columns.take(count).sorted().map { CONTROL_ROW + it }
+    }
+
+    /**
+     * Slots for a list of [count] entries in [rows] content rows from [firstRow] (1 to 3) on: rows of seven, every row
+     * centered, so a short list sits in the middle like single settings do.
+     */
+    fun list(count: Int, firstRow: Int = 1, rows: Int = 3): List<Int> {
+        val capped = count.coerceIn(0, rows * ROW_SLOTS)
+        return (0 until rows).flatMap { offset ->
+            val inRow = (capped - offset * ROW_SLOTS).coerceIn(0, ROW_SLOTS)
+            val first = (ROW_SLOTS - inRow) / 2 + 1
+            val start = (firstRow + offset + 1) * COLUMNS
+            (0 until inRow).map { start + first + it }
+        }
     }
 
     /**

@@ -144,7 +144,7 @@ object StateLooksMenuBuilder {
 
         pane.back(context, player)
 
-        return pane.menu(Ui.title("State Looks", group))
+        return pane.menu(Ui.title("Looks of $group", config.id))
     }
 
     fun label(state: String): String = when (state) {

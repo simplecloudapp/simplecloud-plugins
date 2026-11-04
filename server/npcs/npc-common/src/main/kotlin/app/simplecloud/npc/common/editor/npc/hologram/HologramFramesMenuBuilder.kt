@@ -25,7 +25,6 @@ object HologramFramesMenuBuilder {
     private const val SIZE = Layout.SIZE
     private const val INTERVAL_SLOT = Layout.TOOL_LEFT
     private const val REFRESH_SLOT = Layout.TOOL_RIGHT
-    private val FRAME_SLOTS = Layout.CONTENT
 
     private val INTERVAL = Stepper(
         label = "Interval",
@@ -79,7 +78,7 @@ object HologramFramesMenuBuilder {
                 promptFrame(context, player, screen, current, onText, onDelete)
             },
         )
-        LinesPane.place(pane, frames, FRAME_SLOTS, "Add Text")
+        LinesPane.place(pane, frames, addLabel = "Add Text")
 
         val interval = line?.interval ?: HologramLine.DEFAULT_FRAME_INTERVAL
         pane[INTERVAL_SLOT] = INTERVAL.element(interval) { value ->

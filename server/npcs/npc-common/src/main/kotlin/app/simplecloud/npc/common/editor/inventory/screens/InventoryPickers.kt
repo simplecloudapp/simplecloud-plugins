@@ -17,6 +17,7 @@ import app.simplecloud.npc.common.editor.inventory.LiveGroups
 import app.simplecloud.npc.common.editor.inventory.StudioTargets
 import app.simplecloud.npc.common.editor.menu.EditorMenu
 import app.simplecloud.npc.common.editor.menu.Pane
+import app.simplecloud.npc.common.editor.ui.Layout
 import app.simplecloud.npc.common.editor.ui.Ui
 import app.simplecloud.npc.common.inventory.ItemClickActions
 import app.simplecloud.npc.common.inventory.source.GroupServersSource
@@ -28,7 +29,7 @@ import app.simplecloud.npc.core.platform.NpcPlayer
 
 object InventoryPickers {
 
-    private val CATEGORY_SLOTS = (0..8).toList()
+    private val CATEGORY_SLOTS = (1..7).toList()
 
     fun build(
         context: InventoryEditorContext,
@@ -146,10 +147,11 @@ object InventoryPickers {
     ) {
         val session = context.session(player)
         val filtered = session.pickerResult is PickerResult.Filtered
-        val names = listOf(InventoryEditorSession.RECENT_CATEGORY) + CommonMaterials.CATEGORIES.map { it.first } +
-            InventoryEditorSession.ALL_CATEGORY
+        val tabs = CommonMaterials.CATEGORIES.map { it.first }
+        val filters = listOf(InventoryEditorSession.RECENT_CATEGORY, InventoryEditorSession.ALL_CATEGORY)
+        val slots = tabs.zip(CATEGORY_SLOTS) + filters.mapIndexed { index, name -> name to Layout.tool(index + 1) }
 
-        names.zip(CATEGORY_SLOTS).forEach { (name, slot) ->
+        slots.forEach { (name, slot) ->
             val selected = !filtered && session.materialCategory == name
             pane.left(slot, Ui.option("NAME_TAG", name, emptyList(), selected)) {
                 session.materialCategory = name

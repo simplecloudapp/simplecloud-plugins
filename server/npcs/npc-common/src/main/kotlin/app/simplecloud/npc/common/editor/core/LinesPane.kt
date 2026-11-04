@@ -24,9 +24,11 @@ class LineAction(val label: String, val onClick: (index: Int) -> Unit)
 object LinesPane {
     const val SIZE = Layout.SIZE
 
-    fun <T> place(pane: Pane, list: LineList<T>, slots: List<Int>, addLabel: String = "Add Line") {
+    fun <T> place(pane: Pane, list: LineList<T>, firstRow: Int = 1, rows: Int = 3, addLabel: String = "Add Line") {
         val lines = list.lines
-        val max = slots.size
+        val max = rows * Layout.ROW_SLOTS
+        val shown = lines.size.coerceAtMost(max)
+        val slots = Layout.list(shown + if (shown < max) 1 else 0, firstRow, rows)
 
         lines.take(max).forEachIndexed { index, line ->
             val text = list.textOf(line)

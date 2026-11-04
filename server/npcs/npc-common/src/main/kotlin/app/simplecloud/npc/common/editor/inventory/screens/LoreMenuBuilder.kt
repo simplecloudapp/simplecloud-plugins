@@ -21,7 +21,6 @@ import app.simplecloud.npc.core.platform.NpcPlayer
 
 object LoreMenuBuilder {
     private const val NOTE_SLOT = Layout.HEADER
-    private val LINE_SLOTS = Layout.CONTENT
 
     fun build(
         context: InventoryEditorContext,
@@ -52,13 +51,11 @@ object LoreMenuBuilder {
                 promptLine(context, player, screen, current, tokens, onText, onDelete)
             },
         )
-        LinesPane.place(pane, lines, LINE_SLOTS)
+        LinesPane.place(pane, lines)
         if (targets.size > 1) pane[NOTE_SLOT] = Ui.item("PAPER", "<warn>Applies to ${targets.size} items")
         pane.back(context, player)
 
-        val itemName = first?.name?.let(Msg.miniMessage::stripTags)?.ifBlank { null } ?: "item"
-
-        return pane.menu(Ui.title("Lore", itemName))
+        return pane.menu(Ui.title("Lore", config.id))
     }
 
     private fun promptLine(

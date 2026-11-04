@@ -54,6 +54,6 @@ object ItemTitleMenuBuilder {
 
         pane.back(context, player)
 
-        return pane.menu(Ui.title("Title", Clicks.label(screen.interaction)))
+        return pane.menu(Ui.title("${Clicks.label(screen.interaction)} · Title", config.id))
     }
 }

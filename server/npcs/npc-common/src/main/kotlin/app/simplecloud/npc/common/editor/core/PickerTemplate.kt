@@ -39,15 +39,16 @@ class PickerSpec<S : Any>(
 object PickerTemplate {
     const val SIZE = Layout.SIZE
 
-    const val TYPE_SLOT = Layout.TOOL_RIGHT
-    const val RESULT_SLOT = Layout.TOOL_LEFT
+    private const val TYPE_POSITION = 3
+    val TYPE_SLOT = Layout.tool(TYPE_POSITION)
+    val RESULT_SLOT = Layout.tool(0)
 
     private const val RESULT_TTL_TICKS = 60L
 
     fun <S : Any> build(host: EditorHost<S>, player: NpcPlayer, spec: PickerSpec<S>): EditorMenu {
         val session = host.session(player)
-        val grid = Layout.CONTENT.take(Layout.ROW_SLOTS * spec.gridRows)
-        val pages = Paginator(session.pages, pageKey(spec.screen), spec.options, grid.size)
+        val pages = Paginator(session.pages, pageKey(spec.screen), spec.options, Layout.ROW_SLOTS * spec.gridRows)
+        val grid = Layout.list(pages.visible.size, rows = spec.gridRows)
         val pane = Pane(SIZE)
 
         fun rerender() = host.render(player, spec.screen)

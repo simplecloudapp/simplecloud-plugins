@@ -58,7 +58,7 @@ object InventoryConfirms {
             is InventoryConfirmPurpose.DeleteLiveGroup -> {
                 val slots = LiveGroups.members(config, purpose.group).size
                 ConfirmSpec<InventoryEditorScreen>(
-                    title = Ui.title("Delete Live Group?", purpose.group),
+                    title = Ui.title("Delete ${purpose.group}?", config.id),
                     screen = screen,
                     verb = "Delete",
                     noun = "deletion",

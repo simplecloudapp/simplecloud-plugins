@@ -25,10 +25,8 @@ object ActionFieldsPane {
     const val DELETE_SLOT = Layout.TOOL_RIGHT
 
     private const val COOLDOWN_SLOT = Layout.TOOL_LEFT
-    private val BLOCK_SLOTS = Layout.CONTENT
 
     const val ADD_SIZE = Layout.SIZE
-    private const val ADD_COLUMNS = 6
 
     private const val SILENT = "silent"
     private val ANIMATIONS = NpcAnimation.entries
@@ -62,11 +60,11 @@ object ActionFieldsPane {
         val closeAdd: () -> Unit,
     )
 
-    private enum class Group(val label: String, val material: String) {
-        GO_TO("Go To", "LIGHT_BLUE_STAINED_GLASS_PANE"),
-        MESSAGE("Message", "YELLOW_STAINED_GLASS_PANE"),
-        EFFECT("Effect", "LIME_STAINED_GLASS_PANE"),
-        ADVANCED("Advanced", "ORANGE_STAINED_GLASS_PANE"),
+    private enum class Group(val tag: String) {
+        GO_TO("ɢᴏ ᴛᴏ"),
+        MESSAGE("ᴍᴇꜱꜱᴀɢᴇ"),
+        EFFECT("ᴇꜰꜰᴇᴄᴛ"),
+        ADVANCED("ᴀᴅᴠᴀɴᴄᴇᴅ"),
     }
 
     private class Block(
@@ -332,7 +330,10 @@ object ActionFieldsPane {
         val action = port.action
         val set = blocks(port.scope).filter { isSet(it, action) }
 
-        set.zip(BLOCK_SLOTS).forEach { (block, slot) ->
+        val free = blocks(port.scope).count { !isSet(it, action) && it.available(action) }
+        val slots = Layout.list(set.size + if (free > 0) 1 else 0)
+
+        set.zip(slots).forEach { (block, slot) ->
             val lore = listOfNotNull(
                 block.summary(action),
                 listOfNotNull(
@@ -349,8 +350,7 @@ object ActionFieldsPane {
             }
         }
 
-        val free = blocks(port.scope).count { !isSet(it, action) && it.available(action) }
-        val slot = BLOCK_SLOTS.getOrNull(set.size)
+        val slot = slots.getOrNull(set.size)
         if (slot != null && free > 0) {
             val hint = if (set.isEmpty()) "<hnt>Nothing happens on this click yet." else null
             pane.left(slot, Ui.addHead("Add", listOfNotNull(hint, "<key>Left-click to pick what happens"))) {
@@ -364,33 +364,35 @@ object ActionFieldsPane {
     }
 
     fun fillAdd(pane: Pane, port: Port) {
-        val action = port.action
         val all = blocks(port.scope)
 
-        Group.entries.forEachIndexed { row, group ->
-            val first = (row + 1) * 9 + 1
-            pane[first] = Ui.item(group.material, "<ttl>${group.label}")
+        val rows = listOf(listOf(Group.GO_TO), listOf(Group.MESSAGE), listOf(Group.EFFECT, Group.ADVANCED))
+        rows.forEachIndexed { row, groups ->
+            val entries = all.filter { it.group in groups }.take(Layout.ROW_SLOTS)
+            Layout.list(entries.size, firstRow = row + 1, rows = 1).zip(entries).forEach { (slot, block) ->
+                addOption(pane, port, slot, block)
+            }
+        }
+    }
 
-            all.filter { it.group == group }.take(ADD_COLUMNS).forEachIndexed { column, block ->
-                val slot = first + 1 + column
-                when {
-                    isSet(block, action) -> pane[slot] = Ui.disabled(block.label, listOf("<hnt>Already added"))
+    private fun addOption(pane: Pane, port: Port, slot: Int, block: Block) {
+        val action = port.action
+        val tag = "<hnt>${block.group.tag}"
+        when {
+            isSet(block, action) -> pane[slot] = Ui.disabled(block.label, listOf(tag, "", "<hnt>Already added"))
 
-                    !block.available(action) ->
-                        pane[slot] = Ui.disabled(block.label, listOf("<hnt>Set a permission first"))
+            !block.available(action) -> pane[slot] = Ui.disabled(block.label, listOf(tag, "", "<hnt>Set a permission first"))
 
-                    else -> pane.left(
-                        slot,
-                        Ui.item(
-                            block.material,
-                            "<ttl>${block.label}",
-                            listOf("<bd>${block.describe}", "<key>Left-click to add one"),
-                        ),
-                    ) {
-                        port.closeAdd()
-                        block.add(port)
-                    }
-                }
+            else -> pane.left(
+                slot,
+                Ui.item(
+                    block.material,
+                    "<ttl>${block.label}",
+                    listOf(tag, "", "<bd>${block.describe}", "", "<key>Left-click to add it"),
+                ),
+            ) {
+                port.closeAdd()
+                block.add(port)
             }
         }
     }

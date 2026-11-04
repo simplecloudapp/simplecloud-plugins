@@ -54,7 +54,7 @@ object ItemActionMenuBuilder {
 
         pane.back(context, player)
 
-        return pane.menu(Ui.title(Clicks.label(screen.interaction), "item"))
+        return pane.menu(Ui.title(Clicks.label(screen.interaction), config.id))
     }
 
     fun buildBlocks(
@@ -68,7 +68,7 @@ object ItemActionMenuBuilder {
         ActionFieldsPane.fillAdd(pane, port(context, player, config, screen.slots, screen.interaction))
         pane.back(context, player)
 
-        return pane.menu(Ui.title("Add to ${Clicks.short(screen.interaction)}", "item"))
+        return pane.menu(Ui.title("Add to ${Clicks.short(screen.interaction)}", config.id))
     }
 
     private fun port(

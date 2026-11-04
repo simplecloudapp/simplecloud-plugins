@@ -10,6 +10,7 @@ import app.simplecloud.npc.common.editor.npc.NpcTab
 import app.simplecloud.npc.common.editor.npc.PickerPurpose
 import app.simplecloud.npc.common.editor.npc.Refresh
 import app.simplecloud.npc.common.editor.npc.hologram.HologramLineEditor
+import app.simplecloud.npc.common.editor.ui.Layout
 import app.simplecloud.npc.common.editor.ui.Stepper
 import app.simplecloud.npc.common.editor.ui.Ui
 import app.simplecloud.npc.core.config.NpcConfig
@@ -18,9 +19,8 @@ import app.simplecloud.npc.core.render.Providers
 import java.util.Locale
 
 object HologramTabBuilder {
-    private const val TOGGLE_SLOT = 47
-    private const val HEIGHT_SLOT = 51
-    private val LINE_SLOTS = (28..34) + (37..43)
+    private const val TOGGLE_SLOT = Layout.TOOL_LEFT
+    private const val HEIGHT_SLOT = Layout.TOOL_RIGHT
 
     private val START_HEIGHT = Stepper(
         label = "Height",
@@ -78,7 +78,7 @@ object HologramTabBuilder {
             ),
         )
 
-        LinesPane.place(pane, HologramLineEditor.lines(context, player, config, selected, screen), LINE_SLOTS)
+        LinesPane.place(pane, HologramLineEditor.lines(context, player, config, selected, screen), firstRow = 2, rows = 2)
 
         return TabFrame.menu(pane, config)
     }

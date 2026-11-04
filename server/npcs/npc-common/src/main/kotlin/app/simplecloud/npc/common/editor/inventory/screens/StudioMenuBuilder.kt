@@ -160,10 +160,7 @@ object StudioMenuBuilder {
         }
         pane.back(context, player)
 
-        val title = first.name?.let(Msg.miniMessage::stripTags)?.takeIf { it.isNotBlank() }
-            ?: Ui.pretty(first.material)
-
-        return pane.menu(Ui.title("Item Studio", title))
+        return pane.menu(Ui.title("Item Studio", config.id))
     }
 
     private fun preview(item: InventoryItemConfiguration): NpcItem {

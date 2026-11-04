@@ -65,7 +65,7 @@ object LiveGroupMenuBuilder {
 
         if (LiveGroups.members(config, group).isEmpty()) {
             pane.back(context, player)
-            return pane.menu(Ui.title("Live Group", group))
+            return pane.menu(Ui.title("Live Group $group", config.id))
         }
 
         pane[HEADER_SLOT] = Ui.item(
@@ -236,6 +236,6 @@ object LiveGroupMenuBuilder {
 
         pane.back(context, player)
 
-        return pane.menu(Ui.title("Live Group", group))
+        return pane.menu(Ui.title("Live Group $group", config.id))
     }
 }

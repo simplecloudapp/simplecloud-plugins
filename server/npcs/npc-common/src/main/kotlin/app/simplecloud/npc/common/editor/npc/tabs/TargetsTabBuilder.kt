@@ -15,7 +15,6 @@ import app.simplecloud.npc.core.config.NpcConfig
 import app.simplecloud.npc.core.platform.NpcPlayer
 
 object TargetsTabBuilder {
-    private val TARGET_SLOTS = (19..25) + (28..34)
     private const val STRATEGY_SLOT = Layout.TOOL_LEFT
 
     fun build(context: NpcEditorContext, player: NpcPlayer, config: NpcConfig): EditorMenu {
@@ -25,7 +24,10 @@ object TargetsTabBuilder {
         val targets = config.targetServers
         val removable = targets.size > 1
 
-        targets.zip(TARGET_SLOTS).forEach { (target, slot) ->
+        val canAdd = targets.size < NpcConfig.MAX_TARGETS
+        val slots = Layout.list(targets.size + if (canAdd) 1 else 0, rows = 2)
+
+        targets.zip(slots).forEach { (target, slot) ->
             val summary = live.summaryOf(target)
             val state = when {
                 !summary.known -> "<hnt>Waiting for the cloud."
@@ -47,9 +49,9 @@ object TargetsTabBuilder {
             }
         }
 
-        if (targets.size < NpcConfig.MAX_TARGETS) {
+        if (canAdd) {
             val add = Ui.addHead("Add Target", listOf("<key>Left-click to pick a group or server"))
-            pane.left(TARGET_SLOTS[targets.size], add) {
+            pane.left(slots[targets.size], add) {
                 context.navigate(player, NpcEditorScreen.Picker(config.id, PickerPurpose.AddTarget))
             }
         }

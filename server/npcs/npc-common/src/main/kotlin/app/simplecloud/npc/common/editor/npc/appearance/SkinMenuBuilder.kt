@@ -22,7 +22,6 @@ import app.simplecloud.npc.core.platform.NpcPlayer
 object SkinMenuBuilder {
     private const val SIZE = Layout.SIZE
 
-    private val GRID_SLOTS = Layout.CONTENT
     private const val RESET_SLOT = Layout.TOOL_LEFT
     private const val INPUT_SLOT = Layout.TOOL_RIGHT
 
@@ -32,13 +31,14 @@ object SkinMenuBuilder {
             context.playerDirectory.onlinePlayers().sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.name })
         val current = config.entity.skin.sourcePlayer
         val screen = NpcEditorScreen.SkinPicker(config.id)
-        val pages = Paginator(session.pages, pageKey(screen), online, GRID_SLOTS.count())
+        val pages = Paginator(session.pages, pageKey(screen), online, Layout.CONTENT.size)
+        val grid = Layout.list(pages.visible.size)
         val pane = Pane(SIZE)
 
         pages.visible.forEachIndexed { index, onlinePlayer ->
             val selected = onlinePlayer.name.equals(current, true)
             pane.left(
-                GRID_SLOTS[index],
+                grid[index],
                 Ui.head(
                     if (selected) "<on>${onlinePlayer.name}" else "<ttl>${onlinePlayer.name}",
                     listOf(if (selected) "<on>In use" else "<key>Left-click to use this skin"),
