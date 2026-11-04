@@ -9,6 +9,7 @@ import app.simplecloud.npc.common.editor.inventory.InventoryPickerPurpose
 import app.simplecloud.npc.common.editor.menu.EditorMenu
 import app.simplecloud.npc.common.editor.menu.MenuClick
 import app.simplecloud.npc.common.editor.menu.Pane
+import app.simplecloud.npc.common.editor.ui.Layout
 import app.simplecloud.npc.common.editor.ui.Ui
 import app.simplecloud.npc.common.text.sendSuccess
 import app.simplecloud.npc.core.config.ConfigIds
@@ -18,16 +19,16 @@ import app.simplecloud.npc.core.platform.NpcPlayer
 import net.kyori.adventure.text.Component
 
 object InventoryHubMenuBuilder {
-    private const val SIZE = 36
+    private const val SIZE = Layout.SIZE
 
-    private const val SNAPSHOT_SLOT = 4
-    private const val CANVAS_SLOT = 11
-    private const val TITLE_SLOT = 13
-    private const val RENAME_SLOT = 15
-    private const val USED_BY_SLOT = 20
-    private const val DUPLICATE_SLOT = 22
-    private const val DELETE_SLOT = 24
-    private const val UNDO_SLOT = 27
+    private const val SNAPSHOT_SLOT = Layout.HEADER
+    private const val CANVAS_SLOT = 20
+    private const val TITLE_SLOT = 22
+    private const val RENAME_SLOT = 24
+    private const val USED_BY_SLOT = 29
+    private const val DUPLICATE_SLOT = 31
+    private const val DELETE_SLOT = 33
+    private const val UNDO_SLOT = Layout.TOOL_LEFT
 
     private const val DEFAULT_TITLE = "Menu"
     private const val USED_BY_LISTED = 6

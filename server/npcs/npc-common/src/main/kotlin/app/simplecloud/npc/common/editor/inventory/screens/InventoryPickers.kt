@@ -28,7 +28,7 @@ import app.simplecloud.npc.core.platform.NpcPlayer
 
 object InventoryPickers {
 
-    private val CATEGORY_SLOTS = listOf(27, 28, 29, 30, 32, 33, 34, 35, 36)
+    private val CATEGORY_SLOTS = (0..8).toList()
 
     fun build(
         context: InventoryEditorContext,
@@ -115,7 +115,7 @@ object InventoryPickers {
         val section = if (purpose is InventoryPickerPurpose.NewItem) "New Item" else "Material"
 
         return PickerSpec(
-            title = "$section · ${config.id}",
+            title = Ui.title(section, config.id),
             screen = screen,
             options = listed.map { material ->
                 val selected = material == current
@@ -169,7 +169,7 @@ object InventoryPickers {
     ): PickerSpec<InventoryEditorScreen> {
         val current = group?.let { LiveGroups.source(config, it)?.type }
         return PickerSpec(
-            title = if (group == null) "New Live Group · ${config.id}" else "Source · $group",
+            title = Ui.title(if (group == null) "New Live Group" else "Source of $group", config.id),
             screen = screen,
             options = context.dataSourceTypes().map { type ->
                 val info = LiveGroups.describe(type)
@@ -229,7 +229,7 @@ object InventoryPickers {
         }
 
         return PickerSpec(
-            title = "Group · $group",
+            title = Ui.title("Group of $group", config.id),
             screen = screen,
             options = listOf(targetOption) + groups,
             onPick = { value ->
@@ -247,7 +247,7 @@ object InventoryPickers {
         config: InventoryConfiguration,
         screen: InventoryEditorScreen.Picker,
     ): PickerSpec<InventoryEditorScreen> = PickerSpec(
-        title = "Used By · ${config.id}",
+        title = Ui.title("Used By", config.id),
         screen = screen,
         options = InventoryHubMenuBuilder.usedBy(context, config.id).map { npc ->
             PickerOption(
@@ -271,7 +271,7 @@ object InventoryPickers {
         screen: InventoryEditorScreen.Picker,
         purpose: InventoryPickerPurpose.OpenInventory,
     ): PickerSpec<InventoryEditorScreen> = PickerSpec(
-        title = "Open Menu · ${config.id}",
+        title = Ui.title("Open Menu", config.id),
         screen = screen,
         options = PickerOptions.menus(
             context.inventoryRepository.findAll(),
@@ -301,7 +301,7 @@ object InventoryPickers {
         }
 
         return PickerSpec(
-            title = "Send To Server · ${config.id}",
+            title = Ui.title("Send To Server", config.id),
             screen = screen,
             options = PickerOptions.servers(
                 context.liveData.servers(),
@@ -342,7 +342,7 @@ object InventoryPickers {
         }
 
         return PickerSpec(
-            title = "Pick Sound · ${config.id}",
+            title = Ui.title("Pick Sound", config.id),
             screen = screen,
             options = PickerOptions.sounds(catalog, filter, action?.playSound),
             onPick = ::pick,
@@ -354,6 +354,7 @@ object InventoryPickers {
                 }
             },
             onRightClick = { option -> player.playSound(option.value, options) },
+            gridRows = 2,
             extras = { pane ->
                 SoundTuning.place(pane, player, action?.playSound, options) { updated ->
                     val changed = context.change(player, config.id) { fresh ->

@@ -4,6 +4,7 @@ import app.simplecloud.npc.common.editor.PromptFormat
 import app.simplecloud.npc.common.editor.PromptTokens
 import app.simplecloud.npc.common.editor.menu.Pane
 import app.simplecloud.npc.common.editor.npc.NpcFormat
+import app.simplecloud.npc.common.editor.ui.Layout
 import app.simplecloud.npc.common.editor.ui.Stepper
 import app.simplecloud.npc.common.editor.ui.Ui
 import app.simplecloud.npc.common.item.NpcItem
@@ -11,18 +12,18 @@ import app.simplecloud.npc.core.config.NpcConfig.TitleConfiguration
 import app.simplecloud.npc.core.platform.NpcPlayer
 
 object TitlePane {
-    const val SIZE = 27
+    const val SIZE = Layout.SIZE
 
     private val fadeRange = TitleConfiguration.FADE_RANGE.toDoubleRange()
     private val stayRange = TitleConfiguration.STAY_RANGE.toDoubleRange()
 
-    private const val TITLE_SLOT = 2
-    private const val SUBTITLE_SLOT = 4
-    private const val PACING_SLOT = 6
-    private const val FADE_IN_SLOT = 10
-    private const val STAY_SLOT = 12
-    private const val FADE_OUT_SLOT = 14
-    private const val REMOVE_SLOT = 16
+    private const val TITLE_SLOT = 21
+    private const val SUBTITLE_SLOT = 23
+    private const val PACING_SLOT = Layout.HEADER
+    private const val FADE_IN_SLOT = 29
+    private const val STAY_SLOT = 31
+    private const val FADE_OUT_SLOT = 33
+    private const val REMOVE_SLOT = Layout.TOOL_RIGHT
 
     private val DEFAULTS = TitleConfiguration()
 

@@ -4,6 +4,7 @@ import app.simplecloud.npc.common.editor.menu.EditorMenu
 import app.simplecloud.npc.common.editor.menu.MenuClick
 import app.simplecloud.npc.common.editor.menu.Paginator
 import app.simplecloud.npc.common.editor.menu.Pane
+import app.simplecloud.npc.common.editor.ui.Layout
 import app.simplecloud.npc.common.editor.ui.Ui
 import app.simplecloud.npc.common.item.NpcItem
 import app.simplecloud.npc.core.platform.NpcPlayer
@@ -24,6 +25,7 @@ class PickerSpec<S : Any>(
     val onRightClick: (PickerOption) -> Unit = {},
     val extras: (Pane) -> Unit = {},
     val filteredNoun: String = "options",
+    val gridRows: Int = 3,
 ) {
     companion object {
         val DEFAULT_TYPE_HINT = listOf(
@@ -35,23 +37,23 @@ class PickerSpec<S : Any>(
 }
 
 object PickerTemplate {
-    const val SIZE = 54
+    const val SIZE = Layout.SIZE
 
-    val GRID_SLOTS = 0..26
-    const val TYPE_SLOT = 31
-    const val RESULT_SLOT = 40
+    const val TYPE_SLOT = Layout.TOOL_RIGHT
+    const val RESULT_SLOT = Layout.TOOL_LEFT
 
     private const val RESULT_TTL_TICKS = 60L
 
     fun <S : Any> build(host: EditorHost<S>, player: NpcPlayer, spec: PickerSpec<S>): EditorMenu {
         val session = host.session(player)
-        val pages = Paginator(session.pages, pageKey(spec.screen), spec.options, GRID_SLOTS.count())
+        val grid = Layout.CONTENT.take(Layout.ROW_SLOTS * spec.gridRows)
+        val pages = Paginator(session.pages, pageKey(spec.screen), spec.options, grid.size)
         val pane = Pane(SIZE)
 
         fun rerender() = host.render(player, spec.screen)
 
         pages.visible.forEachIndexed { index, option ->
-            pane.on(GRID_SLOTS.first + index, option.item) { click ->
+            pane.on(grid[index], option.item) { click ->
                 when (click) {
                     MenuClick.RIGHT -> spec.onRightClick(option)
                     MenuClick.LEFT -> if (option.available) spec.onPick(option.value)

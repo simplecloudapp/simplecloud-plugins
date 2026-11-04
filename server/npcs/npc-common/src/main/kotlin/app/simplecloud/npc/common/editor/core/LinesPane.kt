@@ -2,6 +2,7 @@ package app.simplecloud.npc.common.editor.core
 
 import app.simplecloud.npc.common.editor.menu.MenuClick
 import app.simplecloud.npc.common.editor.menu.Pane
+import app.simplecloud.npc.common.editor.ui.Layout
 import app.simplecloud.npc.common.editor.ui.Palette
 import app.simplecloud.npc.common.editor.ui.Ui
 import app.simplecloud.npc.common.item.NpcItem
@@ -21,7 +22,7 @@ class LineList<T>(
 class LineAction(val label: String, val onClick: (index: Int) -> Unit)
 
 object LinesPane {
-    const val SIZE = 36
+    const val SIZE = Layout.SIZE
 
     fun <T> place(pane: Pane, list: LineList<T>, slots: List<Int>, addLabel: String = "Add Line") {
         val lines = list.lines

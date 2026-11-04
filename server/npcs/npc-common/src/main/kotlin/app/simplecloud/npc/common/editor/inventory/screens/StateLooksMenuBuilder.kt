@@ -12,6 +12,7 @@ import app.simplecloud.npc.common.editor.inventory.LiveGroups
 import app.simplecloud.npc.common.editor.menu.EditorMenu
 import app.simplecloud.npc.common.editor.menu.MenuClick
 import app.simplecloud.npc.common.editor.menu.Pane
+import app.simplecloud.npc.common.editor.ui.Layout
 import app.simplecloud.npc.common.editor.ui.Palette
 import app.simplecloud.npc.common.editor.ui.Ui
 import app.simplecloud.npc.common.inventory.source.GroupServersSource
@@ -23,7 +24,7 @@ import app.simplecloud.npc.core.inventory.InventoryConfiguration.StateLook
 import app.simplecloud.npc.core.platform.NpcPlayer
 
 object StateLooksMenuBuilder {
-    private const val SIZE = 45
+    private const val SIZE = Layout.SIZE
 
     private const val HEADER_SLOT = 4
     private val STATE_SLOTS = listOf(19, 21, 23, 25)

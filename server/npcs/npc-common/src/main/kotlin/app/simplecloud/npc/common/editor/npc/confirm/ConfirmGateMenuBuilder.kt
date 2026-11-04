@@ -55,7 +55,7 @@ object ConfirmGateMenuBuilder {
 
             Ui.item(
                 "PAPER",
-                "<err><b>Remove ${NpcFormat.joinState(purpose.joinState)}?",
+                "<err>Remove ${NpcFormat.joinState(purpose.joinState)}?",
                 listOf(
                     layout?.let { "<bd>Hologram layout <val>yes <bd>· <val>${it.lines.size} <bd>lines" }
                         ?: "<bd>Hologram layout <off>none",
@@ -71,7 +71,7 @@ object ConfirmGateMenuBuilder {
             val lines = config.hologram.findLayout(purpose.joinState)?.lines?.size ?: 0
             Ui.item(
                 "PAPER",
-                "<err><b>Remove ${NpcFormat.joinState(purpose.joinState)} layout?",
+                "<err>Remove ${NpcFormat.joinState(purpose.joinState)} layout?",
                 listOf(
                     "<bd><val>$lines <bd>hologram lines",
                     "<hnt>Actions for ${NpcFormat.joinState(purpose.joinState)} are kept.",

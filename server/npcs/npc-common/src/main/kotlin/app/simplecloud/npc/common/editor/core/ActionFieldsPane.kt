@@ -8,6 +8,7 @@ import app.simplecloud.npc.common.editor.PromptTokens
 import app.simplecloud.npc.common.editor.menu.MenuClick
 import app.simplecloud.npc.common.editor.menu.Pane
 import app.simplecloud.npc.common.editor.npc.NpcFormat
+import app.simplecloud.npc.common.editor.ui.Layout
 import app.simplecloud.npc.common.editor.ui.Stepper
 import app.simplecloud.npc.common.editor.ui.Ui
 import app.simplecloud.npc.common.editor.ui.after
@@ -19,15 +20,15 @@ import app.simplecloud.npc.core.platform.NpcPlayer
 import net.kyori.adventure.text.Component
 
 object ActionFieldsPane {
-    const val SIZE = 45
-    const val HEADER_SLOT = 4
-    const val DELETE_SLOT = 44
+    const val SIZE = Layout.SIZE
+    const val HEADER_SLOT = Layout.HEADER
+    const val DELETE_SLOT = Layout.TOOL_RIGHT
 
-    private const val COOLDOWN_SLOT = 40
-    private val BLOCK_SLOTS = (10..16) + (19..25) + (28..34)
+    private const val COOLDOWN_SLOT = Layout.TOOL_LEFT
+    private val BLOCK_SLOTS = Layout.CONTENT
 
-    const val ADD_SIZE = 45
-    private const val ADD_COLUMNS = 8
+    const val ADD_SIZE = Layout.SIZE
+    private const val ADD_COLUMNS = 6
 
     private const val SILENT = "silent"
     private val ANIMATIONS = NpcAnimation.entries
@@ -367,8 +368,8 @@ object ActionFieldsPane {
         val all = blocks(port.scope)
 
         Group.entries.forEachIndexed { row, group ->
-            val first = row * 9
-            pane[first] = Ui.item(group.material, "<ttl><b>${group.label}")
+            val first = (row + 1) * 9 + 1
+            pane[first] = Ui.item(group.material, "<ttl>${group.label}")
 
             all.filter { it.group == group }.take(ADD_COLUMNS).forEachIndexed { column, block ->
                 val slot = first + 1 + column

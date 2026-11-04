@@ -5,6 +5,7 @@ import app.simplecloud.npc.common.editor.inventory.InventoryEditorScreen
 import app.simplecloud.npc.common.editor.inventory.MenuTemplate
 import app.simplecloud.npc.common.editor.menu.EditorMenu
 import app.simplecloud.npc.common.editor.menu.Pane
+import app.simplecloud.npc.common.editor.ui.Layout
 import app.simplecloud.npc.common.editor.ui.Ui
 import app.simplecloud.npc.common.text.sendError
 import app.simplecloud.npc.common.text.sendSuccess
@@ -12,8 +13,8 @@ import app.simplecloud.npc.core.config.ConfigIds
 import app.simplecloud.npc.core.platform.NpcPlayer
 
 object TemplatesMenuBuilder {
-    private const val SIZE = 27
-    private val TEMPLATE_SLOTS = 11..15
+    private const val SIZE = Layout.SIZE
+    private val TEMPLATE_SLOTS = Layout.row(1, 5)
 
     fun build(context: InventoryEditorContext, player: NpcPlayer): EditorMenu {
         val pane = Pane(SIZE)
@@ -29,7 +30,7 @@ object TemplatesMenuBuilder {
             ) { create(context, player, template) }
         }
 
-        return pane.menu("New Menu · pick a start")
+        return pane.menu("New Menu")
     }
 
     private fun create(context: InventoryEditorContext, player: NpcPlayer, template: MenuTemplate) {

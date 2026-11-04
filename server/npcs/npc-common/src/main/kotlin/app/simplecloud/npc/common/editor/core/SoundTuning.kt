@@ -8,9 +8,9 @@ import app.simplecloud.npc.core.config.NpcConfig.SoundOptions
 import app.simplecloud.npc.core.platform.NpcPlayer
 
 object SoundTuning {
-    private const val VOLUME_SLOT = 29
-    private const val PITCH_SLOT = 33
-    private const val PREVIEW_SLOT = 42
+    private const val VOLUME_SLOT = 38
+    private const val PREVIEW_SLOT = 40
+    private const val PITCH_SLOT = 42
 
     val DEFAULTS = SoundOptions()
 

@@ -9,6 +9,7 @@ import app.simplecloud.npc.common.editor.menu.Pane
 import app.simplecloud.npc.common.editor.npc.NpcEditorContext
 import app.simplecloud.npc.common.editor.npc.NpcEditorScreen
 import app.simplecloud.npc.common.editor.npc.NpcFormat
+import app.simplecloud.npc.common.editor.ui.Layout
 import app.simplecloud.npc.common.editor.ui.Ui
 import app.simplecloud.npc.common.manager.NpcOperationResult
 import app.simplecloud.npc.common.text.sendError
@@ -19,11 +20,11 @@ import app.simplecloud.npc.core.config.NpcConfig
 import app.simplecloud.npc.core.platform.NpcPlayer
 
 object SkinMenuBuilder {
-    private const val SIZE = 54
+    private const val SIZE = Layout.SIZE
 
-    private val GRID_SLOTS = 0..35
-    private const val RESET_SLOT = 51
-    private const val INPUT_SLOT = 53
+    private val GRID_SLOTS = Layout.CONTENT
+    private const val RESET_SLOT = Layout.TOOL_LEFT
+    private const val INPUT_SLOT = Layout.TOOL_RIGHT
 
     fun build(context: NpcEditorContext, player: NpcPlayer, config: NpcConfig): EditorMenu {
         val session = context.session(player)
@@ -37,7 +38,7 @@ object SkinMenuBuilder {
         pages.visible.forEachIndexed { index, onlinePlayer ->
             val selected = onlinePlayer.name.equals(current, true)
             pane.left(
-                GRID_SLOTS.first + index,
+                GRID_SLOTS[index],
                 Ui.head(
                     if (selected) "<on>${onlinePlayer.name}" else "<ttl>${onlinePlayer.name}",
                     listOf(if (selected) "<on>In use" else "<key>Left-click to use this skin"),

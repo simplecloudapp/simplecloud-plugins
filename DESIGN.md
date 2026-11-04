@@ -367,6 +367,22 @@ Clicking a target that cannot be joined sends one chat message with the prefix:
 
 ### NPC editor
 
+Every editor menu has the same shape, so it can be learned once:
+
+```
+. . . . H . . . .     H: the thing being edited (or tabs, centered)
+. . . . . . . . .     empty
+. C C C C C C C .     content: inner seven columns, rows 3 to 5
+. C C C C C C C .     single settings centered (1 to 4 with gaps), groups side by side
+. C C C C C C C .
+B . T . P . T . N     B: Back (or Previous Page), T: tools, P: page count, N: Next Page
+```
+
+- Six rows on every screen except the small confirm dialog.
+- Back always sits in the bottom-left corner, names the screen it returns to, and Esc does the same. The first
+  screen has no Back; Esc closes it.
+- The title says what is edited and where you are: `Edit limbo`, `Edit limbo · Skin`.
+
 The editor is an admin tool built from menus and tooltips. It uses the same roles: item names in `brand`, descriptions
 and keys in `muted`, values in `highlight`, quiet hints in `separator`, click keys (`Left`, `Right`, `Q`) in
 `interactive`, and the state colors for on, off, warnings, and errors.

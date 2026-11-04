@@ -13,14 +13,15 @@ import app.simplecloud.npc.common.editor.inventory.InventoryEditorScreen
 import app.simplecloud.npc.common.editor.inventory.StudioTargets
 import app.simplecloud.npc.common.editor.menu.EditorMenu
 import app.simplecloud.npc.common.editor.menu.Pane
+import app.simplecloud.npc.common.editor.ui.Layout
 import app.simplecloud.npc.common.editor.ui.Ui
 import app.simplecloud.npc.common.text.Msg
 import app.simplecloud.npc.core.inventory.InventoryConfiguration
 import app.simplecloud.npc.core.platform.NpcPlayer
 
 object LoreMenuBuilder {
-    private const val NOTE_SLOT = 31
-    private val LINE_SLOTS = (0..26).toList()
+    private const val NOTE_SLOT = Layout.HEADER
+    private val LINE_SLOTS = Layout.CONTENT
 
     fun build(
         context: InventoryEditorContext,

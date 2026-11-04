@@ -69,6 +69,8 @@ class PickSoundSource(override val purpose: PickerPurpose.PickSound) : PickerSou
         player.playSound(option.value, soundOptions(config))
     }
 
+    override val gridRows: Int get() = 2
+
     override fun extras(context: NpcEditorContext, player: NpcPlayer, config: NpcConfig, pane: Pane) {
         val screen = NpcEditorScreen.Picker(config.id, purpose)
 

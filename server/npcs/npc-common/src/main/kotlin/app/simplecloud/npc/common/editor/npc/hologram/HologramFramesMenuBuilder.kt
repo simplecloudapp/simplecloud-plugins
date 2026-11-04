@@ -13,6 +13,7 @@ import app.simplecloud.npc.common.editor.npc.NpcEditorContext
 import app.simplecloud.npc.common.editor.npc.NpcEditorScreen
 import app.simplecloud.npc.common.editor.npc.NpcFormat
 import app.simplecloud.npc.common.editor.npc.Refresh
+import app.simplecloud.npc.common.editor.ui.Layout
 import app.simplecloud.npc.common.editor.ui.Stepper
 import app.simplecloud.npc.common.editor.ui.Ui
 import app.simplecloud.npc.core.config.NpcConfig
@@ -21,10 +22,10 @@ import app.simplecloud.npc.core.platform.NpcPlayer
 import app.simplecloud.npc.core.text.PlayerPlaceholders
 
 object HologramFramesMenuBuilder {
-    private const val SIZE = 27
-    private const val INTERVAL_SLOT = 22
-    private const val REFRESH_SLOT = 24
-    private val FRAME_SLOTS = (0..17).toList()
+    private const val SIZE = Layout.SIZE
+    private const val INTERVAL_SLOT = Layout.TOOL_LEFT
+    private const val REFRESH_SLOT = Layout.TOOL_RIGHT
+    private val FRAME_SLOTS = Layout.CONTENT
 
     private val INTERVAL = Stepper(
         label = "Interval",
@@ -91,7 +92,7 @@ object HologramFramesMenuBuilder {
         }
         pane.back(context, player)
 
-        val title = "Rotating · ${NpcFormat.joinState(screen.joinState)} #${screen.line + 1}"
+        val title = "Rotating Line ${screen.line + 1} (${NpcFormat.joinState(screen.joinState)})"
 
         return pane.menu(Ui.title(title, NpcFormat.displayName(config)))
     }

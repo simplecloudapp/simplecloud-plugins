@@ -6,14 +6,15 @@ import app.simplecloud.npc.common.editor.menu.Pane
 import app.simplecloud.npc.common.editor.npc.NpcEditorContext
 import app.simplecloud.npc.common.editor.npc.NpcFormat
 import app.simplecloud.npc.common.editor.npc.Refresh
+import app.simplecloud.npc.common.editor.ui.Layout
 import app.simplecloud.npc.common.editor.ui.Ui
 import app.simplecloud.npc.core.config.NpcConfig
 import app.simplecloud.npc.core.platform.NpcPlayer
 
 object GlowMenuBuilder {
-    private const val SIZE = 27
+    private const val SIZE = Layout.SIZE
 
-    private val COLOR_SLOTS = (0..7) + (9..16)
+    private val COLOR_SLOTS = Layout.row(1, 7) + Layout.row(2, 7) + Layout.row(3, 2)
 
     fun build(context: NpcEditorContext, player: NpcPlayer, config: NpcConfig): EditorMenu {
         val current = NpcFormat.glowColor(config.entity)

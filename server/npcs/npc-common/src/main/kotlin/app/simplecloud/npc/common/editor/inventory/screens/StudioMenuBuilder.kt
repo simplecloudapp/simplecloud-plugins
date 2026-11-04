@@ -19,6 +19,7 @@ import app.simplecloud.npc.common.editor.menu.EditorMenu
 import app.simplecloud.npc.common.editor.menu.MenuClick
 import app.simplecloud.npc.common.editor.menu.Pane
 import app.simplecloud.npc.common.editor.ui.Clicks
+import app.simplecloud.npc.common.editor.ui.Layout
 import app.simplecloud.npc.common.editor.ui.Palette
 import app.simplecloud.npc.common.editor.ui.Stepper
 import app.simplecloud.npc.common.editor.ui.Ui
@@ -36,12 +37,12 @@ import app.simplecloud.npc.core.platform.NpcPlayer
 import net.kyori.adventure.text.Component
 
 object StudioMenuBuilder {
-    private const val SIZE = 45
+    private const val SIZE = Layout.SIZE
 
-    private const val LOOK_TAB = 1
-    private const val CLICK_TAB = 2
-    private const val LIVE_TAB = 3
-    private const val PREVIEW_SLOT = 6
+    private const val LOOK_TAB = 2
+    private const val CLICK_TAB = 4
+    private const val LIVE_TAB = 6
+    private const val PREVIEW_SLOT = Layout.TOOL_LEFT
 
     private const val MATERIAL_SLOT = 19
     private const val NAME_SLOT = 20
@@ -53,10 +54,10 @@ object StudioMenuBuilder {
     private const val HEAD_SLOT = 31
 
     private val CLICK_SLOTS = mapOf(
-        PlayerInteraction.LEFT_CLICK to 20,
+        PlayerInteraction.LEFT_CLICK to 19,
         PlayerInteraction.RIGHT_CLICK to 21,
         PlayerInteraction.SHIFT_LEFT_CLICK to 23,
-        PlayerInteraction.SHIFT_RIGHT_CLICK to 24,
+        PlayerInteraction.SHIFT_RIGHT_CLICK to 25,
     )
     private const val CLICK_INFO_SLOT = 31
 
@@ -65,7 +66,7 @@ object StudioMenuBuilder {
     private const val PLACEHOLDERS_SLOT = 24
 
     private const val COUNT_SLOT = 40
-    private const val DELETE_SLOT = 44
+    private const val DELETE_SLOT = Layout.TOOL_RIGHT
 
     private val AMOUNT = Stepper(
         label = "Amount",
@@ -100,7 +101,7 @@ object StudioMenuBuilder {
         val pane = Pane(SIZE)
         if (first == null) {
             pane.back(context, player)
-            return pane.menu("Item Studio · nothing here")
+            return pane.menu("Item Studio")
         }
         val isLive = items.any { it.liveGroup != null && it.pageControl == null }
         val tab = if (screen.tab == StudioTab.LIVE && !isLive) StudioTab.LOOK else screen.tab

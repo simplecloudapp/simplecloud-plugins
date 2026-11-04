@@ -33,6 +33,7 @@ object PickerMenuBuilder {
             onRightClick = { option -> source.onRightClick(context, player, config, option) },
             extras = { pane -> source.extras(context, player, config, pane) },
             filteredNoun = source.filteredNoun,
+            gridRows = source.gridRows,
         )
 
         return PickerTemplate.build(context, player, spec)

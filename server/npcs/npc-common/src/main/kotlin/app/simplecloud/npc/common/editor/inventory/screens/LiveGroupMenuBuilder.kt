@@ -15,6 +15,7 @@ import app.simplecloud.npc.common.editor.inventory.LiveGroups
 import app.simplecloud.npc.common.editor.menu.EditorMenu
 import app.simplecloud.npc.common.editor.menu.MenuClick
 import app.simplecloud.npc.common.editor.menu.Pane
+import app.simplecloud.npc.common.editor.ui.Layout
 import app.simplecloud.npc.common.editor.ui.Ui
 import app.simplecloud.npc.common.editor.ui.after
 import app.simplecloud.npc.common.inventory.source.GroupServersSource
@@ -24,17 +25,17 @@ import app.simplecloud.npc.core.platform.NpcPlayer
 import net.kyori.adventure.text.Component
 
 object LiveGroupMenuBuilder {
-    private const val SIZE = 45
+    private const val SIZE = Layout.SIZE
 
-    private const val HEADER_SLOT = 4
-    private const val SOURCE_SLOT = 10
-    private const val GROUP_SLOT = 12
-    private const val SORT_SLOT = 14
-    private const val EMPTY_SLOT = 16
-    private val STATE_SLOTS = 19..25
-    private const val RENAME_SLOT = 30
-    private const val DELETE_SLOT = 32
-    private const val LOOKS_SLOT = 34
+    private const val HEADER_SLOT = Layout.HEADER
+    private const val SOURCE_SLOT = 19
+    private const val GROUP_SLOT = 21
+    private const val SORT_SLOT = 23
+    private const val EMPTY_SLOT = 25
+    private val STATE_SLOTS = 28..34
+    private const val RENAME_SLOT = 38
+    private const val DELETE_SLOT = 40
+    private const val LOOKS_SLOT = 42
 
     private val SORTS = listOf("NUMERICAL_ID", "PLAYER_COUNT")
     private val EMPTY_LOOK = InventoryItemConfiguration(

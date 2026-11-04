@@ -37,7 +37,7 @@ object InventoryConfirms {
                     noun = "deletion",
                     head = Ui.item(
                         "CHEST",
-                        "<err><b>Delete ${config.id}?",
+                        "<err>Delete ${config.id}?",
                         listOf(
                             "<bd><val>${config.items.size} <bd>items · " +
                                 "<val>${config.liveGroups().size} <bd>live groups",
@@ -64,7 +64,7 @@ object InventoryConfirms {
                     noun = "deletion",
                     head = Ui.item(
                         "PAPER",
-                        "<err><b>Delete live group ${purpose.group}?",
+                        "<err>Delete live group ${purpose.group}?",
                         listOf(
                             "<bd><val>$slots <bd>slots, page arrows included.",
                             "",

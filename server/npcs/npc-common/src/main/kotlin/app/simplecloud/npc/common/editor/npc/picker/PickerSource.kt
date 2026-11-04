@@ -29,6 +29,9 @@ interface PickerSource {
 
     fun extras(context: NpcEditorContext, player: NpcPlayer, config: NpcConfig, pane: Pane) = Unit
 
+    /** Rows of the option grid; pickers with settings below the grid use fewer. */
+    val gridRows: Int get() = 3
+
     companion object {
         fun of(purpose: PickerPurpose): PickerSource = when (purpose) {
             PickerPurpose.AddTarget -> AddTargetSource
