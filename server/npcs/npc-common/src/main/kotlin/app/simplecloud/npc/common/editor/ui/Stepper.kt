@@ -34,7 +34,9 @@ data class Stepper(
         val valueLine = when {
             mixed -> "<warn>Mixed"
             valueLine != null -> valueLine.invoke(value)
-            else -> "<val>${fmt(value)}" + if (unit == null) "" else " <hnt>$unit"
+            unit == null -> "<val>${fmt(value)}"
+            unit.length == 1 -> "<val>${fmt(value)}$unit"
+            else -> "<val>${fmt(value)} <hnt>$unit"
         }
         val mixedHint = if (mixed) listOf("<hnt>A click sets every selected item to the same value.") else emptyList()
         return Ui.item(
@@ -42,7 +44,8 @@ data class Stepper(
             "<ttl>$label",
             listOf("$valueLine <hnt>(${fmt(min)} – ${fmt(max)})") + hints + mixedHint + listOf(
                 "",
-                "<key>Left-click +${fmt(step)} · Right-click -${fmt(step)} · Shift ×$bigMultiplier",
+                "<key>Left-click +${fmt(step)} · Right-click −${fmt(step)}",
+                "<key>Shift-click for ×$bigMultiplier steps",
             ),
         )
     }

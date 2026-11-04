@@ -59,10 +59,17 @@ object Ui {
         glowing = selected,
     )
 
-    fun choice(material: String, name: String, lore: List<String>, current: Boolean, verb: String): NpcItem = item(
+    fun choice(
+        material: String,
+        name: String,
+        lore: List<String>,
+        current: Boolean,
+        verb: String,
+        actions: List<String> = emptyList(),
+    ): NpcItem = item(
         material,
         if (current) "<val>$name" else "<ttl>$name",
-        lore + "" + if (current) "<on>Picked now" else "<key>Left-click to $verb",
+        lore + "" + (if (current) "<on>Picked now" else "<key>Left-click to $verb") + actions,
         glowing = current,
     )
 
@@ -88,11 +95,12 @@ object Ui {
         enabled: Boolean,
         extraLore: List<String> = emptyList(),
         material: String? = null,
+        actions: List<String> = emptyList(),
     ): NpcItem = item(
         material ?: if (enabled) "LIME_DYE" else "GRAY_DYE",
         "<ttl>$label",
         listOf(if (enabled) "<on>On" else "<off>Off") + extraLore +
-            listOf("", if (enabled) "<key>Left-click to turn it off" else "<key>Left-click to turn it on"),
+            listOf("", if (enabled) "<key>Left-click to turn it off" else "<key>Left-click to turn it on") + actions,
         glowing = enabled,
     )
 

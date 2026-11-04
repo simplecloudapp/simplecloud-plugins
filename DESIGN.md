@@ -375,21 +375,28 @@ Every editor menu has the same shape, so it can be learned once:
 . C C C C C C C .     content: inner seven columns, rows 3 to 5
 . C C C C C C C .     single settings centered (1 to 4 with gaps), groups side by side
 . C C C C C C C .
-B . T . P . T . N     B: Back (or Previous Page), T: tools, P: page count, N: Next Page
+B . . T P T . . N     B: Back (or Previous Page), T: tools, P: page count, N: Next Page
 ```
 
 - Six rows on every screen except the small confirm dialog.
 - Tools that change how the content is shown or used (sort, strategy, search, preview, delete) go in the bottom row,
-  never between the content: one tool in the middle, two at columns 3 and 7 (around the page count when there is
-  one). Back and the page panes keep the corners.
+  never between the content, side by side around the middle: one tool in the middle, two on both sides of it (or of
+  the page count). Delete, Remove and Clear are always the right tool. Back and the page panes keep the corners.
 - A setting that does not apply right now stays in its slot, grayed out with the reason (`Turn on Push first.`), so
   the shape never jumps. A row of chips and its add button is one centered run.
 - Back always sits in the bottom-left corner, names the screen it returns to, and Esc does the same. The first
   screen has no Back; Esc closes it.
 - The title says what is edited and where you are: `Edit limbo`, `Edit limbo · Skin`.
+- A picker says in its header what is picked, what for, and what is picked now (`Now: example`); every option names
+  what a click does (`Left-click to open this menu`), and the current one says `Picked now`.
+- Every item that does something ends with an action line. Facts that do nothing have no action line and are
+  grouped into one item (a book), never dressed up as buttons.
+- One meaning per icon: every number setting has its own item (a slime block for strength, a feather for upward
+  boost), Delete is always TNT, info is always a book.
+- When several items are edited at once, the screen says so, and a field whose values differ shows `Mixed`.
 
-The editor is an admin tool built from menus and tooltips. It uses the same roles: item names in `brand`, descriptions
-and keys in `muted`, values in `highlight`, quiet hints in `separator`, click keys (`Left`, `Right`, `Q`) in
+The editor is an admin tool built from menus and tooltips. It uses the same roles, except that descriptions are
+`muted` instead of `highlight`, so values stand out: item names in `brand`, descriptions and keys in `muted`, values in `highlight`, quiet hints in `separator`, click keys (`Left`, `Right`, `Q`) in
 `interactive`, and the state colors for on, off, warnings, and errors.
 
 ### Sounds
