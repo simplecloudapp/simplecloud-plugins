@@ -24,6 +24,7 @@ object SkinMenuBuilder {
 
     private const val RESET_SLOT = Layout.TOOL_LEFT
     private const val INPUT_SLOT = Layout.TOOL_RIGHT
+    private const val EMPTY_SLOT = 31
 
     fun build(context: NpcEditorContext, player: NpcPlayer, config: NpcConfig): EditorMenu {
         val session = context.session(player)
@@ -40,7 +41,7 @@ object SkinMenuBuilder {
             pane.left(
                 grid[index],
                 Ui.head(
-                    if (selected) "<on>${onlinePlayer.name}" else "<ttl>${onlinePlayer.name}",
+                    if (selected) "<val>${onlinePlayer.name}" else "<ttl>${onlinePlayer.name}",
                     listOf(if (selected) "<on>In use" else "<key>Left-click to use this skin"),
                     owner = onlinePlayer.uniqueId,
                     glowing = selected,
@@ -48,22 +49,32 @@ object SkinMenuBuilder {
             ) { applySkin(context, player, config, context.renderer.captureSkin(onlinePlayer)) }
         }
 
+        pane[Layout.HEADER] = Ui.head(
+            "<ttl>Current Skin",
+            listOf("<bd>Now: <val>${NpcFormat.skinLabel(config.entity.skin)}"),
+            texture = config.entity.skin.texture,
+            signature = config.entity.skin.signature,
+        )
+        if (online.isEmpty()) {
+            pane[EMPTY_SLOT] = Ui.item(
+                "LIGHT_GRAY_DYE",
+                "<off>No Players Online",
+                listOf("<bd>Type a username or UUID below", "<bd>to use that player's skin."),
+            )
+        }
+
         pane.back(context, player)
-        pane.pager(pages, listOf("<bd>${online.size} players online", "<hnt>${pages.perPage} skins fit per page.")) {
+        pane.pager(pages, listOf("<bd>Players online: <val>${online.size}")) {
             context.render(player, screen)
         }
 
         pane.left(
             RESET_SLOT,
-            Ui.item(
-                "BARRIER",
-                "<err>Reset Skin",
-                listOf("<bd>Now <val>${NpcFormat.skinLabel(config.entity.skin)}", "<key>Left-click to reset it to the default"),
-            ),
+            Ui.item("ARMOR_STAND", "<ttl>Default Skin", listOf("<key>Left-click to use the default skin")),
         ) { applySkin(context, player, config, NpcConfig.SkinConfiguration()) }
         pane.left(
             INPUT_SLOT,
-            Ui.item("WRITABLE_BOOK", "<ttl>Username Or UUID", listOf("<key>Left-click to type it in chat")),
+            Ui.item("OAK_SIGN", "<ttl>Type A Name", listOf("<bd>Any username or UUID.", "", "<key>Left-click to type it in chat")),
         ) { promptSkin(context, player, config) }
 
         return pane.menu(Ui.title("Skin", NpcFormat.displayName(config)))

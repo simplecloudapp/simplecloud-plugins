@@ -34,6 +34,7 @@ object PickerMenuBuilder {
             extras = { pane -> source.extras(context, player, config, pane) },
             filteredNoun = source.filteredNoun,
             gridRows = source.gridRows,
+            empty = source.empty,
         )
 
         return PickerTemplate.build(context, player, spec)

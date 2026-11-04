@@ -1,5 +1,6 @@
 package app.simplecloud.npc.common.editor.npc.picker
 
+import app.simplecloud.npc.common.editor.core.EmptyState
 import app.simplecloud.npc.common.editor.core.PickerOption
 import app.simplecloud.npc.common.editor.core.PickerResult
 import app.simplecloud.npc.common.editor.core.PickerSpec
@@ -31,6 +32,8 @@ interface PickerSource {
 
     /** Rows of the option grid; pickers with settings below the grid use fewer. */
     val gridRows: Int get() = 3
+
+    val empty: EmptyState get() = EmptyState.DEFAULT
 
     companion object {
         fun of(purpose: PickerPurpose): PickerSource = when (purpose) {

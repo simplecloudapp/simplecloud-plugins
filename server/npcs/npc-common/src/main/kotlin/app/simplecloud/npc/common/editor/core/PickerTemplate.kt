@@ -11,6 +11,13 @@ import app.simplecloud.npc.core.platform.NpcPlayer
 
 class PickerOption(val value: String, val item: NpcItem, val available: Boolean = true)
 
+/** What a picker shows in the middle when there is nothing to pick: what is missing and what to do. */
+class EmptyState(val title: String, val hint: List<String>) {
+    companion object {
+        val DEFAULT = EmptyState("Nothing To Pick", listOf("<bd>There is nothing to choose from yet."))
+    }
+}
+
 class PickerSpec<S : Any>(
     val title: String,
     val screen: S,
@@ -26,6 +33,7 @@ class PickerSpec<S : Any>(
     val extras: (Pane) -> Unit = {},
     val filteredNoun: String = "options",
     val gridRows: Int = 3,
+    val empty: EmptyState = EmptyState.DEFAULT,
 ) {
     companion object {
         val DEFAULT_TYPE_HINT = listOf(
@@ -40,6 +48,7 @@ object PickerTemplate {
     const val SIZE = Layout.SIZE
 
     private const val TYPE_POSITION = 3
+    private const val EMPTY_SLOT = 31
     val TYPE_SLOT = Layout.tool(TYPE_POSITION)
     val RESULT_SLOT = Layout.tool(0)
 
@@ -63,11 +72,13 @@ object PickerTemplate {
             }
         }
 
+        if (spec.options.isEmpty()) {
+            pane[EMPTY_SLOT] = Ui.item("LIGHT_GRAY_DYE", "<off>${spec.empty.title}", spec.empty.hint)
+        }
+
         val typeHint = spec.typeHint
-        if (typeHint == null) {
-            pane[TYPE_SLOT] = Ui.disabled("Type A Name", listOf("<hnt>${spec.typingUnavailable}"))
-        } else {
-            pane.left(TYPE_SLOT, Ui.item("ANVIL", "<ttl>Type A Name", typeHint)) { promptTyped(host, player, spec) }
+        if (typeHint != null) {
+            pane.left(TYPE_SLOT, Ui.item("OAK_SIGN", "<ttl>Type A Name", typeHint)) { promptTyped(host, player, spec) }
         }
 
         spec.extras(pane)

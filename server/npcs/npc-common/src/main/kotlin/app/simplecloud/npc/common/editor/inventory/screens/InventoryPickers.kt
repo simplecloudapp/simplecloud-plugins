@@ -1,5 +1,6 @@
 package app.simplecloud.npc.common.editor.inventory.screens
 
+import app.simplecloud.npc.common.editor.core.EmptyState
 import app.simplecloud.npc.common.editor.core.PickerOption
 import app.simplecloud.npc.common.editor.core.PickerOptions
 import app.simplecloud.npc.common.editor.core.PickerResult
@@ -30,6 +31,17 @@ import app.simplecloud.npc.core.platform.NpcPlayer
 object InventoryPickers {
 
     private val CATEGORY_SLOTS = (1..7).toList()
+    private val CATEGORY_ICONS = mapOf(
+        "Blocks" to "GRASS_BLOCK",
+        "Tools" to "IRON_PICKAXE",
+        "Food" to "APPLE",
+        "Dyes" to "RED_DYE",
+        "Panes" to "GLASS_PANE",
+        "Heads" to "PLAYER_HEAD",
+        "Redstone" to "REDSTONE",
+        InventoryEditorSession.RECENT_CATEGORY to "CLOCK",
+        InventoryEditorSession.ALL_CATEGORY to "CHEST",
+    )
 
     fun build(
         context: InventoryEditorContext,
@@ -153,7 +165,7 @@ object InventoryPickers {
 
         slots.forEach { (name, slot) ->
             val selected = !filtered && session.materialCategory == name
-            pane.left(slot, Ui.option("NAME_TAG", name, emptyList(), selected)) {
+            pane.left(slot, Ui.option(CATEGORY_ICONS[name] ?: "PAPER", name, emptyList(), selected)) {
                 session.materialCategory = name
                 session.pickerResult = null
                 session.pages[pageKey(screen)] = 0
@@ -250,11 +262,12 @@ object InventoryPickers {
         screen: InventoryEditorScreen.Picker,
     ): PickerSpec<InventoryEditorScreen> = PickerSpec(
         title = Ui.title("Used By", config.id),
+        empty = EmptyState("No NPC Opens This Menu", listOf("<bd>Give an NPC an Open Menu action", "<bd>for this menu to see it here.")),
         screen = screen,
         options = InventoryHubMenuBuilder.usedBy(context, config.id).map { npc ->
             PickerOption(
                 npc.id,
-                Ui.item("ARMOR_STAND", "<ttl>${npc.id}", listOf("", "<key>Left <info>Open its editor")),
+                Ui.item("ARMOR_STAND", "<ttl>${npc.id}", listOf("<key>Left-click to open its editor")),
             )
         },
         typeHint = null,
@@ -304,6 +317,7 @@ object InventoryPickers {
 
         return PickerSpec(
             title = Ui.title("Send To Server", config.id),
+            empty = EmptyState("No Servers Online", listOf("<bd>Start a server first, or type", "<bd>the name of one below.")),
             screen = screen,
             options = PickerOptions.servers(
                 context.liveData.servers(),
@@ -345,6 +359,7 @@ object InventoryPickers {
 
         return PickerSpec(
             title = Ui.title("Pick Sound", config.id),
+            empty = EmptyState("No Sounds Found", listOf("<bd>Type the key of a sound below,", "<bd>e.g. entity.player.levelup.")),
             screen = screen,
             options = PickerOptions.sounds(catalog, filter, action?.playSound),
             onPick = ::pick,

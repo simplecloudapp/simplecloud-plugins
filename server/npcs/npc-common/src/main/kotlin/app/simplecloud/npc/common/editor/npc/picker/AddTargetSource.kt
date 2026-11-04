@@ -1,5 +1,6 @@
 package app.simplecloud.npc.common.editor.npc.picker
 
+import app.simplecloud.npc.common.editor.core.EmptyState
 import app.simplecloud.npc.common.editor.core.PickerOption
 import app.simplecloud.npc.common.editor.core.PickerOptions
 import app.simplecloud.npc.common.editor.core.PickerResult
@@ -15,13 +16,18 @@ object AddTargetSource : PickerSource {
     override val purpose = PickerPurpose.AddTarget
     override val title = "Add Target"
 
+    override val empty = EmptyState(
+        "No Groups Or Servers",
+        listOf("<bd>The cloud has none yet, or type", "<bd>the name of one below."),
+    )
+
     override fun options(context: NpcEditorContext, player: NpcPlayer, config: NpcConfig): List<PickerOption> {
         val live = context.liveData
         val servers = live.servers()
         val atCap = config.targetServers.size >= NpcConfig.MAX_TARGETS
 
         return live.knownTargets().map { target ->
-            val typeLine = "<bd>Type <val>${if (target.group) "group" else "server"}"
+            val typeLine = "<bd>Type: <val>${if (target.group) "Group" else "Server"}"
             val used = config.targetServers.any { it.equals(target.name, true) }
             when {
                 used -> PickerOption(
@@ -39,11 +45,11 @@ object AddTargetSource : PickerSource {
                 target.group -> PickerOption(
                     target.name,
                     Ui.item(
-                        "PAPER",
+                        "BOOKSHELF",
                         "<ttl>${target.name}",
                         listOf(
                             typeLine,
-                            "<bd>Live <val>${live.summaryOf(target.name).liveServers} <bd>servers",
+                            "<bd>Servers: <val>${live.summaryOf(target.name).liveServers}",
                             "",
                             "<key>Left-click to add one",
                         ),
@@ -60,7 +66,7 @@ object AddTargetSource : PickerSource {
                             "<ttl>${target.name}",
                             listOf(
                                 typeLine,
-                                "<bd>Status ${PickerOptions.statusText(status)}",
+                                "<bd>Status: ${PickerOptions.statusText(status)}",
                                 "",
                                 "<key>Left-click to add one",
                             ),

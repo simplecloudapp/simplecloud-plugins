@@ -1,5 +1,6 @@
 package app.simplecloud.npc.common.editor.npc.picker
 
+import app.simplecloud.npc.common.editor.core.EmptyState
 import app.simplecloud.npc.common.editor.core.PickerOption
 import app.simplecloud.npc.common.editor.core.PickerOptions
 import app.simplecloud.npc.common.editor.core.PickerResult
@@ -16,6 +17,11 @@ class PickSoundSource(override val purpose: PickerPurpose.PickSound) : PickerSou
     private val field = purpose.field
 
     override val title = "Pick Sound"
+
+    override val empty = EmptyState(
+        "No Sounds Found",
+        listOf("<bd>Type the key of a sound below,", "<bd>e.g. entity.player.levelup."),
+    )
     override val filteredNoun = "sounds"
 
     override val typeHint: List<String> = PickerOptions.SOUND_TYPE_HINT
