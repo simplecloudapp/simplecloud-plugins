@@ -102,6 +102,7 @@ abstract class ScreenStackEditor<S : Any, T : EditorSession<S>>(
             val menu = build(player, screen) ?: return@runSync close(player)
 
             session.menu = menu
+            session.titles[screen] = menu.title
             opener.open(
                 player,
                 menu,

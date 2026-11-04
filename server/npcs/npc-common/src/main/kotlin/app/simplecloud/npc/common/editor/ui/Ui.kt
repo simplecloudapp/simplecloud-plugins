@@ -82,7 +82,11 @@ object Ui {
     fun addHead(label: String, lore: List<String> = emptyList()): NpcItem =
         head("<ttl>$label", lore, texture = ADD_HEAD_TEXTURE)
 
-    fun back(): NpcItem = item(BACK_MATERIAL, "<key>Back")
+    fun back(to: String? = null): NpcItem = item(
+        BACK_MATERIAL,
+        "<key>Back",
+        listOfNotNull(if (to == null) null else "<bd>To <val>$to", "<hnt>Esc does the same."),
+    )
 
     fun previousPage(page: Int): NpcItem? =
         if (page <= 0) null else item(PAGE_MATERIAL, "<key>Previous Page", listOf("<bd>Page <val>$page"))

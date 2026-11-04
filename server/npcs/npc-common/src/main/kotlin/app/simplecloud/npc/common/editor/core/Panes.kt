@@ -5,8 +5,12 @@ import app.simplecloud.npc.common.editor.menu.Pane
 import app.simplecloud.npc.common.editor.ui.Ui
 import app.simplecloud.npc.core.platform.NpcPlayer
 
-fun Pane.back(host: EditorHost<*>, player: NpcPlayer) =
-    left(navRow.first, Ui.back()) { host.back(player) }
+fun <S : Any> Pane.back(host: EditorHost<S>, player: NpcPlayer) {
+    val stack = host.session(player).stack
+    val parent = stack.getOrNull(stack.size - 2)
+    val title = if (parent == null) null else host.session(player).titles[parent]
+    left(navRow.first, Ui.back(title)) { host.back(player) }
+}
 
 fun Pane.toggle(
     slot: Int,
