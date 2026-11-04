@@ -39,16 +39,24 @@ class AddJoinStateSource(override val purpose: PickerPurpose.AddJoinState) : Pic
 
         return JoinStates.offered(config, liveTargets.keys).map { state ->
             val label = NpcFormat.joinState(state)
-            val hasLines = config.hologram.findLayout(state) != null
-            val hasClicks = config.actions.any { it.joinState.equals(state, true) }
-            val usedLine = "<bd>Hologram lines: " + (if (hasLines) "<val>Yes" else "<off>No") +
-                " <bd>· Click actions: " + if (hasClicks) "<val>Yes" else "<off>No"
+            val count = if (forHologram) {
+                config.hologram.findLayout(state)?.lines?.size ?: 0
+            } else {
+                config.actions.count { it.joinState.equals(state, true) && !it.isEmpty() }
+            }
+            val usedLine = (if (forHologram) "<bd>Hologram lines: " else "<bd>Clicks set: ") +
+                if (count == 0) "<off>None" else "<val>$count"
             val liveLine = liveTargets[state]?.let { "<on>Live now <hnt>on ${it.joinToString(", ")}" }
             val lore = listOfNotNull(usedLine, liveLine)
             when {
                 state in present -> PickerOption(
                     label,
-                    Ui.unavailable(label, lore, if (forHologram) "It already has hologram lines." else "It already has click actions.", "PAPER"),
+                    Ui.unavailable(
+                        label,
+                        lore,
+                        if (NpcFormat.isDefaultJoinState(state)) "Always there: it is the default." else "Already set up here.",
+                        "PAPER",
+                    ),
                     available = false,
                 )
 
@@ -68,9 +76,9 @@ class AddJoinStateSource(override val purpose: PickerPurpose.AddJoinState) : Pic
                 PickerResult.Rejected("Invalid", typed, "Letters, digits, _ and - only, up to 24 characters.")
 
             state in present && forHologram ->
-                PickerResult.Rejected("Already present", typed, "That join state already has a layout.")
+                PickerResult.Rejected("Already present", typed, "That join state is already set up.")
 
-            state in present -> PickerResult.Rejected("Already present", typed, "That join state already has a column.")
+            state in present -> PickerResult.Rejected("Already present", typed, "That join state is already set up.")
 
             !forHologram && present.size >= NpcConfig.MAX_JOIN_STATES ->
                 PickerResult.Rejected(

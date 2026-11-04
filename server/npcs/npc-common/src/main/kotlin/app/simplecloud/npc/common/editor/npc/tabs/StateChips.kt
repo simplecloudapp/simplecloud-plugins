@@ -75,7 +75,8 @@ object StateChipRow {
             "<key>Left-click to show it".takeIf { !selected },
             "<key>Right-click to remove it".takeIf { removable },
         )
-        val name = if (selected) "<val>${NpcFormat.joinState(state)}" else "<ttl>${NpcFormat.joinState(state)}"
+        val label = NpcFormat.joinState(state) + if (removable) "" else " · Default"
+        val name = if (selected) "<val>$label" else "<ttl>$label"
         val material = if (selected) SELECTED_MATERIAL else OTHER_MATERIAL
         pane.on(slot, Ui.item(material, name, lore, glowing = selected)) { click ->
             when (click) {
