@@ -27,7 +27,6 @@ object StateLooksMenuBuilder {
     private const val SIZE = Layout.SIZE
 
     private const val HEADER_SLOT = 4
-    private val STATE_SLOTS = listOf(19, 21, 23, 25)
     private const val NO_STATES_SLOT = 22
 
     fun statesFor(sourceType: String?): List<String> = when (sourceType) {
@@ -76,33 +75,38 @@ object StateLooksMenuBuilder {
 
         pane[HEADER_SLOT] = Ui.item(
             "PAINTING",
-            "<ttl>State Looks <hnt>· <val>$group",
+            "<ttl>Looks Of $group",
             listOf(
-                "<bd>How an entry looks while its server",
-                "<bd>is full, starting or offline.",
+                "<bd>How an entry looks while its server is",
+                "<bd>" + states.joinToString(", ") { label(it).lowercase() } + ".",
+                "",
                 "<hnt>Anything not set keeps the slot's own look.",
             ),
         )
 
-        states.zip(STATE_SLOTS).forEach { (state, slot) ->
+        states.zip(Layout.row(1, states.size)).forEach { (state, slot) ->
             val look = source?.lookFor(state)
             val preview = ItemIconResolver.icon(look?.let { ItemIconResolver.styled(template, it) } ?: template)
             val glowing = look?.glowing ?: template.glowing
+            val lookMaterial = look?.material
+            val lookName = look?.name
+            val lookLore = look?.lore
+            val lookGlint = look?.glowing
             pane.on(
                 slot,
                 preview.copy(
-                    name = Palette.expand("<ttl>${label(state)}"),
+                    name = Palette.expand("${stateColor(state)}${label(state)}"),
                     lore = listOfNotNull(
                         if (look == null) "<off>Uses the slot's own look" else "<on>Own look set",
-                        look?.material?.let { "<bd>Material <val>$it" },
-                        look?.name?.let { "<bd>Name <val>${Ui.quote(it)}" },
-                        look?.lore?.let { "<bd>Lore <val>${it.size} <bd>lines" },
-                        look?.glowing?.let { "<bd>Glint <val>${if (it) "on" else "off"}" },
+                        if (lookMaterial == null) null else "<bd>Material: <val>${Ui.pretty(lookMaterial)}",
+                        if (lookName == null) null else "<bd>Name: <val>${Ui.quote(lookName)}",
+                        if (lookLore == null) null else "<bd>Lore: <val>${lookLore.size} lines",
+                        if (lookGlint == null) null else "<bd>Glint: <val>${if (lookGlint) "On" else "Off"}",
                         "",
                         "<key>Left-click to change the material",
                         "<key>Right-click to change the name",
-                        "<key>Shift+Left <hnt>Glint ${if (glowing) "off" else "on"}",
-                        "<key>Shift+Right <hnt>Lore, lines split by |",
+                        "<key>Shift-click to turn the glint ${if (glowing) "off" else "on"}",
+                        "<key>Shift-right-click to change the lore",
                         "<key>Press Q to go back to the slot's look".takeIf { look != null },
                     ).map(Palette::expand),
                     glowing = glowing,
@@ -145,6 +149,14 @@ object StateLooksMenuBuilder {
         pane.back(context, player)
 
         return pane.menu(Ui.title("Looks of $group", config.id))
+    }
+
+    private fun stateColor(state: String): String = when (state) {
+        "AVAILABLE" -> "<success>"
+        EntryStates.FULL -> "<error>"
+        "INGAME" -> "<warning>"
+        EntryStates.OFFLINE -> "<muted>"
+        else -> "<info>"
     }
 
     fun label(state: String): String = when (state) {

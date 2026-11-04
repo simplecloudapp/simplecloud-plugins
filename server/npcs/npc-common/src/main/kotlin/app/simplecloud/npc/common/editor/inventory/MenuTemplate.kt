@@ -10,7 +10,7 @@ import app.simplecloud.npc.core.inventory.InventoryConfiguration.SourceConfigura
 import app.simplecloud.npc.core.inventory.InventoryConfiguration.StateLook
 
 enum class MenuTemplate(val label: String, val icon: String, val description: List<String>) {
-    BLANK("Blank", "WHITE_STAINED_GLASS_PANE", listOf("Three empty rows.")),
+    BLANK("Blank", "ITEM_FRAME", listOf("Three empty rows.")),
     SERVER_SELECTOR(
         "Server Selector",
         "COMPASS",

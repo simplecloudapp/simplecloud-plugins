@@ -32,10 +32,9 @@ object LiveGroupMenuBuilder {
     private const val GROUP_SLOT = 22
     private const val EMPTY_SLOT = 24
     private const val SORT_SLOT = Layout.TOOL_LEFT
-    private val STATE_SLOTS = 28..34
-    private const val RENAME_SLOT = 38
-    private const val DELETE_SLOT = 40
-    private const val LOOKS_SLOT = 42
+    private const val RENAME_SLOT = 39
+    private const val DELETE_SLOT = Layout.TOOL_RIGHT
+    private const val LOOKS_SLOT = 41
 
     private val SORTS = listOf("NUMERICAL_ID", "PLAYER_COUNT")
     private val EMPTY_LOOK = InventoryItemConfiguration(
@@ -69,14 +68,14 @@ object LiveGroupMenuBuilder {
         }
 
         pane[HEADER_SLOT] = Ui.item(
-            "${color}_STAINED_GLASS_PANE",
-            "<ttl>Live Group <val>$group",
-            listOfNotNull(
-                "<bd><val>${LiveGroups.contentSlots(config, group).size} <bd>slots",
+            "${color}_DYE",
+            "<ttl>Live Group $group",
+            listOf(
+                "<bd>Slots: <val>${LiveGroups.contentSlots(config, group).size}",
                 if (LiveGroups.lacksPageControls(config, group)) {
-                    "<warn>No page arrows: extra entries are hidden."
+                    "<warn>No page buttons: extra entries are hidden."
                 } else {
-                    "<bd>Has page arrows"
+                    "<bd>Page buttons: <val>Yes"
                 },
             ),
         )
@@ -112,7 +111,7 @@ object LiveGroupMenuBuilder {
             val chosen = source.states.map { it.uppercase() }.toSet()
             val noneHint = listOfNotNull("<hnt>None picked: everything but stopping.".takeIf { chosen.isEmpty() })
             val states = ServerState.entries.filterNot { it.name.startsWith("UNKNOWN") }
-            states.zip(STATE_SLOTS.toList()).forEach { (state, slot) ->
+            states.zip(Layout.list(states.size, firstRow = 2, rows = 1)).forEach { (state, slot) ->
                 val on = state.name in chosen
                 pane.toggle(
                     slot,
@@ -135,12 +134,12 @@ object LiveGroupMenuBuilder {
         pane.on(
             EMPTY_SLOT,
             Ui.item(
-                emptyLook?.material ?: "LIGHT_GRAY_STAINED_GLASS_PANE",
+                emptyLook?.material ?: "GRAY_DYE",
                 "<ttl>When A Slot Is Empty",
                 listOf(
                     emptyLook?.let { "<bd>Shows " + (it.name ?: it.material) } ?: "<off>Stays empty",
                     "",
-                    "<key>Left <hnt>${if (emptyLook == null) "Show a placeholder" else "Leave empty slots empty"}",
+                    "<key>Left-click to ${if (emptyLook == null) "show a placeholder" else "leave empty slots empty"}",
                     "<key>Right-click to type the placeholder's name",
                 ),
             ),
@@ -227,7 +226,7 @@ object LiveGroupMenuBuilder {
             Ui.item(
                 "TNT",
                 "<err>Delete Group",
-                listOf("<bd>Removes all its slots and arrows.", "", "<key>Left <hnt>Asks first"),
+                listOf("<bd>Removes all its slots and arrows.", "", "<key>Left-click to delete it"),
             ),
         ) {
             val purpose = InventoryConfirmPurpose.DeleteLiveGroup(group)

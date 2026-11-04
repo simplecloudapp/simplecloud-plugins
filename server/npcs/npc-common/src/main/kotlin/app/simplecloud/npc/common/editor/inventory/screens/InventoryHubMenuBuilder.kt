@@ -76,7 +76,7 @@ object InventoryHubMenuBuilder {
                 listOf(
                     "<bd>Menu editor",
                     "",
-                    "<key>Left <info>Open",
+                    "<key>Left-click to open the canvas",
                 ),
             ),
         ) { context.navigate(player, InventoryEditorScreen.Canvas(config.id)) }
@@ -131,7 +131,7 @@ object InventoryHubMenuBuilder {
                         listOfNotNull(
                             (users.size - USED_BY_LISTED).takeIf { it > 0 }?.let { "<hnt>and $it more" },
                             "",
-                            "<key>Left <info>Jump to one of them",
+                            "<key>Left-click to open one of them",
                         )
                 },
             ),
@@ -158,7 +158,7 @@ object InventoryHubMenuBuilder {
                 listOf(
                     if (users.isEmpty()) "<hnt>No NPC opens it." else "<warn>${users.size} NPC(s) still open it.",
                     "",
-                    "<key>Left <hnt>Asks first",
+                    "<key>Left-click to delete it",
                 ),
             ),
         ) {
@@ -174,7 +174,8 @@ object InventoryHubMenuBuilder {
                 listOf(
                     "<bd><val>${history.undoCount} <bd>steps back · <val>${history.redoCount} <bd>forward",
                     "",
-                    "<key>Left <hnt>Undo  <key>Right <hnt>Redo",
+                    "<key>Left-click to undo",
+                    "<key>Right-click to redo",
                 ),
             ),
         ) { click ->

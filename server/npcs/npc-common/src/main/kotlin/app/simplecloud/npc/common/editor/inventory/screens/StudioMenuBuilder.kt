@@ -123,7 +123,7 @@ object StudioMenuBuilder {
 
         tabItem(LOOK_TAB, StudioTab.LOOK, "PAINTING", "Look")
         tabItem(CLICK_TAB, StudioTab.CLICK, "LEVER", "Click")
-        tabItem(LIVE_TAB, StudioTab.LIVE, "LIME_STAINED_GLASS_PANE", "Live", enabled = isLive)
+        tabItem(LIVE_TAB, StudioTab.LIVE, "OBSERVER", "Live", enabled = isLive)
         val livePreview = session.live?.slots?.get(first.slot)?.takeIf { session.mode == CanvasMode.LIVE }
         pane[PREVIEW_SLOT] = livePreview
             ?.let { it.copy(lore = it.lore + Palette.expand("<hnt>Live preview from the canvas")) }
@@ -201,7 +201,8 @@ object StudioMenuBuilder {
                     },
                     "<hnt>MiniMessage and <entry_*> placeholders work.",
                     "",
-                    "<key>Left <hnt>Type it in chat  <key>Q <hnt>Clear",
+                    "<key>Left-click to type it in chat",
+                    "<key>Press Q to clear it",
                 ),
             ),
         ) { click ->
@@ -245,27 +246,26 @@ object StudioMenuBuilder {
             ),
         ) { context.navigate(player, InventoryEditorScreen.Lore(config.id, slots)) }
 
-        val amount = (StudioTargets.shared(items) { it.amount } as? Shared.Same)?.value ?: 1
-        pane[AMOUNT_SLOT] = AMOUNT.element(amount.toDouble()) { value ->
+        val sharedAmount = StudioTargets.shared(items) { it.amount }
+        val amount = (sharedAmount as? Shared.Same)?.value ?: 1
+        pane[AMOUNT_SLOT] = AMOUNT.element(amount.toDouble(), mixed = sharedAmount is Shared.Mixed) { value ->
             edit { it.copy(amount = value.toInt()) }
         }
 
         val glint = (StudioTargets.shared(items) { it.glowing } as? Shared.Same)?.value
-        pane.toggle(GLINT_SLOT, "Enchant Glint", glint == true, material = "EXPERIENCE_BOTTLE") {
+        pane.left(GLINT_SLOT, mixedToggle("Enchant Glint", glint, "EXPERIENCE_BOTTLE", emptyList())) {
             edit { it.copy(glowing = glint != true) }
         }
 
         val hidden = (StudioTargets.shared(items) { it.hideTooltip } as? Shared.Same)?.value
-        pane.toggle(
-            TOOLTIP_SLOT,
-            "Hide Tooltip",
-            hidden == true,
-            extraLore = listOf("<hnt>For decoration; hovering shows nothing."),
-            material = "GLASS_PANE",
-        ) { edit { it.copy(hideTooltip = hidden != true) } }
+        val hideHint = listOf("<hnt>For decoration; hovering shows nothing.")
+        pane.left(TOOLTIP_SLOT, mixedToggle("Hide Tooltip", hidden, "GLASS", hideHint)) {
+            edit { it.copy(hideTooltip = hidden != true) }
+        }
 
-        val model = (StudioTargets.shared(items) { it.customModelData } as? Shared.Same)?.value ?: 0
-        pane[MODEL_SLOT] = MODEL_DATA.element(model.toDouble()) { value ->
+        val sharedModel = StudioTargets.shared(items) { it.customModelData }
+        val model = (sharedModel as? Shared.Same)?.value ?: 0
+        pane[MODEL_SLOT] = MODEL_DATA.element(model.toDouble(), mixed = sharedModel is Shared.Mixed) { value ->
             edit { it.copy(customModelData = value.toInt().takeIf { data -> data > 0 }) }
         }
 
@@ -290,7 +290,8 @@ object StudioMenuBuilder {
                         "<hnt>A texture value (e.g. from minecraft-heads.com),",
                         "<hnt>a username or UUID, or whoever opens the menu.",
                         "",
-                        "<key>Left <hnt>Type it in chat  <key>Right <hnt>Viewer's head",
+                        "<key>Left-click to type it in chat",
+                        "<key>Right-click to use the viewer's head",
                         "<key>Press Q to clear it",
                     ),
                 ),
@@ -465,5 +466,15 @@ object StudioMenuBuilder {
                 },
             ),
         )
+    }
+
+    private fun mixedToggle(label: String, value: Boolean?, material: String, hints: List<String>) = when (value) {
+        null -> Ui.item(
+            material,
+            "<ttl>$label",
+            listOf("<warn>Mixed") + hints + listOf("", "<key>Left-click to turn it on for all"),
+        )
+
+        else -> Ui.toggle(label, value, hints, material)
     }
 }

@@ -30,7 +30,6 @@ object ItemActionMenuBuilder {
             Clicks.material(screen.interaction),
             "<ttl>${Clicks.label(screen.interaction)}",
             listOfNotNull("<warn>Applies to ${slots.size} items".takeIf { slots.size > 1 }),
-            glowing = true,
         )
 
         ActionFieldsPane.fill(pane, port(context, player, config, slots, screen.interaction))
