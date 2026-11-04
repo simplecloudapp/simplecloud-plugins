@@ -227,7 +227,7 @@ object LiveGroupMenuBuilder {
         pane.left(
             DELETE_SLOT,
             Ui.item(
-                "BARRIER",
+                "RED_CONCRETE",
                 "<err>Delete Group",
                 listOf("<bd>Removes all its slots and arrows.", "", "<key>Left-click to delete it"),
             ),

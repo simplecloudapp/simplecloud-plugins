@@ -78,7 +78,7 @@ fun <S : Any> Pane.armed(
     val session = host.session(player)
     val item = if (session.isArmed(key)) {
         Ui.item(
-            "BARRIER",
+            "RED_CONCRETE",
             "<err>Click Again",
             listOf("<warn>${Arming.remainingSeconds(session)}s left", "", "<key>Left-click to ${verb.lowercase()}"),
             glowing = true,

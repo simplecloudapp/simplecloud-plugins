@@ -116,7 +116,7 @@ object TitlePane {
         pane.left(
             REMOVE_SLOT,
             Ui.item(
-                "BARRIER",
+                "RED_CONCRETE",
                 "<err>Remove Title",
                 listOf("<hnt>Other parts of the action stay.", "<key>Left-click to remove it"),
             ),

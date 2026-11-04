@@ -207,7 +207,7 @@ object CanvasRender {
                 ?: "<hnt>Places the last item you dropped.",
         )
         tools[Toolbox.HOTBAR + Toolbox.KEY_ERASE] =
-            key(2, "BARRIER", "Erase", "<bd>Deletes the item (or the selection).")
+            key(2, "RED_CONCRETE", "Erase", "<bd>Deletes the item (or the selection).")
         tools[Toolbox.HOTBAR + Toolbox.KEY_COPY] = key(3, "SHEARS", "Copy", "<bd>Puts a copy on your cursor.")
         tools[Toolbox.HOTBAR + Toolbox.KEY_LIVE] = key(
             4,
