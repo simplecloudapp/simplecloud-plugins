@@ -4,6 +4,7 @@ import app.simplecloud.api.player.CloudPlayer
 import app.simplecloud.plugin.core.shared.command.CloudSender
 import app.simplecloud.plugin.core.shared.command.CloudSuggestions
 import app.simplecloud.plugin.core.shared.command.CommandExceptionHandler
+import app.simplecloud.plugin.core.shared.command.HelpEntry
 import app.simplecloud.plugin.notify.shared.NotifyPlugin
 import app.simplecloud.plugin.notify.shared.notification.NotificationType
 import app.simplecloud.plugin.notify.shared.utilities.NotifyPermissions
@@ -123,7 +124,7 @@ class NotifyCommand<C : CloudSender>(
 
         sender.sendMessage(formatter.message(messages.command.help.title))
         usable.forEach { usage ->
-            sender.sendMessage(formatter.message(messages.command.help.entry, Placeholder.unparsed("command", usage)))
+            sender.sendMessage(HelpEntry.create(messages, messages.command.help.entry, messages.command.help.hover, usage))
         }
     }
 
