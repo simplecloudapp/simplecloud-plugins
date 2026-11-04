@@ -11,7 +11,7 @@ object Msg {
     const val WARNING = "<warning>"
     const val SUCCESS = "<success>"
     const val INFO = "<info>"
-    const val KEY = "<info>"
+    const val KEY = "<muted>"
     const val INTERACTIVE = "<interactive>"
     const val HIGHLIGHT = "<highlight>"
 

@@ -54,15 +54,15 @@ command:
   remove:
     success: '<prefix> <success>Removed the sign.'
     not-registered: '<prefix> <warning>This sign is not registered.'
-    all-success: '<prefix> <success>Removed the signs of <target> <separator>(</separator><amount><separator>)</separator>.'
+    all-success: '<prefix> <success>Removed the signs of <target> <separator>(</separator><muted><amount></muted><separator>)</separator>.'
     none-registered: '<prefix> <warning>No signs are registered for <target>.'
 
   # <teleport>...</teleport> teleports the player to the sign when clicked.
   # <previous> and <next> are only shown if there is a previous or next page.
   list:
     empty: '<prefix> <warning>No signs are registered.'
-    title: '<prefix> <info>Signs <separator>(</separator><amount><separator>)</separator>'
-    entry: '<teleport><separator>•</separator> <interactive><target> in <world> at <x> <y> <z></teleport>'
+    title: '<prefix> <info>Signs <separator>(</separator><muted><amount></muted><separator>)</separator>'
+    entry: '<teleport><separator>•</separator> <interactive><target> <muted>in <world> at <x> <y> <z></teleport>'
     teleport-hover: '<interactive>Click to teleport'
     footer: '<previous><info>Page <page>/<pages><next>'
     previous: '<interactive>Previous</interactive>  '

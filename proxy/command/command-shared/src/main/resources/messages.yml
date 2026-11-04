@@ -66,12 +66,12 @@ command:
   # /cloud group ...
   group:
     list:
-      title: '<prefix> <info>Groups <separator>(</separator><count><separator>)</separator>'
-      entry: '<separator>•</separator> <info><group> <separator>(</separator><online>/<total> online<separator>)</separator>'
+      title: '<prefix> <info>Groups <separator>(</separator><muted><count></muted><separator>)</separator>'
+      entry: '<separator>•</separator> <highlight><group> <separator>(</separator><muted><online>/<total> online</muted><separator>)</separator>'
       empty: '<prefix> <warning>No groups were found.'
     info:
       title: '<prefix> <info>Group <group>'
-      entry: '<separator>•</separator> <info><key><separator>:</separator> <value>'
+      entry: '<separator>•</separator> <muted><key><separator>:</separator> <highlight><value>'
     start:
       success: '<prefix> <info>Sent the start request for <count> servers of group <group>.'
       partial: '<prefix> <warning>Started only <count>/<total> servers for group <group> because <reason>.'
@@ -88,12 +88,12 @@ command:
   # /cloud server ...
   server:
     list:
-      title: '<prefix> <info>Servers <separator>(</separator><count><separator>)</separator>'
-      entry: '<separator>•</separator> <info><server> <separator>(</separator><value><separator>)</separator>'
+      title: '<prefix> <info>Servers <separator>(</separator><muted><count></muted><separator>)</separator>'
+      entry: '<separator>•</separator> <highlight><server> <separator>(</separator><muted><value></muted><separator>)</separator>'
       empty: '<prefix> <warning>No running servers were found.'
     info:
       title: '<prefix> <info>Server <server>'
-      entry: '<separator>•</separator> <info><key><separator>:</separator> <value>'
+      entry: '<separator>•</separator> <muted><key><separator>:</separator> <highlight><value>'
     start:
       requested: '<prefix> <info>Sent the start request for a new server of group <group>.'
     stop:
@@ -108,12 +108,12 @@ command:
   # <head:<playername>:true> shows the head of the player
   player:
     list:
-      title: '<prefix> <info>Players <separator>(</separator><count><separator>)</separator>'
-      entry: '<separator>•</separator> <info><white><head:<playername>:true></white> <displayname> <separator>(</separator><value><separator>)</separator>'
+      title: '<prefix> <info>Players <separator>(</separator><muted><count></muted><separator>)</separator>'
+      entry: '<separator>•</separator> <highlight><white><head:<playername>:true></white> <displayname> <separator>(</separator><muted><value></muted><separator>)</separator>'
       empty: '<prefix> <warning>No players were found on this target.'
     info:
       title: '<prefix> <info>Player <white><head:<playername>:true></white> <displayname>'
-      entry: '<separator>•</separator> <info><key><separator>:</separator> <value>'
+      entry: '<separator>•</separator> <muted><key><separator>:</separator> <highlight><value>'
     send:
       success: '<prefix> <success>Sent <white><head:<playername>:true></white> <displayname> to <target>.'
       success-all: '<prefix> <success>Sent <count> players to <target>.'

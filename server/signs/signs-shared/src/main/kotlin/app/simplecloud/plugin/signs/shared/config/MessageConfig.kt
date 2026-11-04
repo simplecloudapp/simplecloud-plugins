@@ -58,16 +58,16 @@ data class CommandRemoveMessages(
     val success: String = "<prefix> <success>Removed the sign.",
     val notRegistered: String = "<prefix> <warning>This sign is not registered.",
     val allSuccess: String =
-        "<prefix> <success>Removed the signs of <target> <separator>(</separator><amount><separator>)</separator>.",
+        "<prefix> <success>Removed the signs of <target> <separator>(</separator><muted><amount></muted><separator>)</separator>.",
     val noneRegistered: String = "<prefix> <warning>No signs are registered for <target>.",
 )
 
 @ConfigSerializable
 data class CommandListMessages(
     val empty: String = "<prefix> <warning>No signs are registered.",
-    val title: String = "<prefix> <info>Signs <separator>(</separator><amount><separator>)</separator>",
+    val title: String = "<prefix> <info>Signs <separator>(</separator><muted><amount></muted><separator>)</separator>",
     val entry: String =
-        "<teleport><separator>•</separator> <interactive><target> in <world> at <x> <y> <z></teleport>",
+        "<teleport><separator>•</separator> <interactive><target> <muted>in <world> at <x> <y> <z></teleport>",
     val teleportHover: String = "<interactive>Click to teleport",
     val footer: String = "<previous><info>Page <page>/<pages><next>",
     val previous: String = "<interactive>Previous</interactive>  ",

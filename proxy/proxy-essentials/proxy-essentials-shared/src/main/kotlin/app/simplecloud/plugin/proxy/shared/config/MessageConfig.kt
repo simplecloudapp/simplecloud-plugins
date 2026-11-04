@@ -104,11 +104,11 @@ data class JoinStateMessages(
 data class JoinStateListMessages(
     val groups: ListMessages = ListMessages(
         header = "<prefix> <info>Groups and their join states",
-        entry = "<separator>•</separator> <info><group> <separator>(</separator><state><separator>)</separator>",
+        entry = "<separator>•</separator> <highlight><group> <separator>(</separator><muted><state></muted><separator>)</separator>",
     ),
     val states: ListMessages = ListMessages(
         header = "<prefix> <info>Join states",
-        entry = "<separator>•</separator> <info><state> <separator>(</separator><join_permission><separator>)</separator>",
+        entry = "<separator>•</separator> <highlight><state> <separator>(</separator><muted><join_permission></muted><separator>)</separator>",
     ),
 )
 
@@ -123,7 +123,7 @@ data class LayoutMessages(
     ),
     val info: ListMessages = ListMessages(
         header = "<prefix> <info>Layout of group <group>",
-        entry = "<separator>•</separator> <info><layout>",
+        entry = "<separator>•</separator> <highlight><layout>",
     ),
     val set: UpdateMessages = UpdateMessages(
         updateSuccess = "<prefix> <success>Updated the layout of the group.",

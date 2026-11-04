@@ -106,11 +106,11 @@ command:
     list:
       groups:
         header: '<prefix> <info>Groups and their join states'
-        entry: '<separator>•</separator> <info><group> <separator>(</separator><state><separator>)</separator>'
+        entry: '<separator>•</separator> <highlight><group> <separator>(</separator><muted><state></muted><separator>)</separator>'
 
       states:
         header: '<prefix> <info>Join states'
-        entry: '<separator>•</separator> <info><state> <separator>(</separator><join_permission><separator>)</separator>'
+        entry: '<separator>•</separator> <highlight><state> <separator>(</separator><muted><join_permission></muted><separator>)</separator>'
 
   layout:
     help:
@@ -124,7 +124,7 @@ command:
 
     info:
       header: '<prefix> <info>Layout of group <group>'
-      entry: '<separator>•</separator> <info><layout>'
+      entry: '<separator>•</separator> <highlight><layout>'
 
     set:
       update-success: '<prefix> <success>Updated the layout of the group.'

@@ -162,17 +162,18 @@ No other decorative symbols: no `»`, `«`, `┃`, `|`, `-`, `├─`, `└─` 
 <prefix> <error>Use /cloud group start <group> instead.
 ```
 
-Lists and info blocks: a title line with the prefix, then one entry per line, indented with a bullet. Entries are
-`info`; separators stay `separator`.
+Lists and info blocks: a title line with the prefix in `info`, then one entry per line, indented with a bullet. Only
+the title is blue: entries are `highlight`, details and counts `muted`, keys `muted` with values in `highlight`;
+separators stay `separator`. Clickable entries are `interactive`, their details `muted`.
 
 ```
-<prefix> <info>Groups <separator>(</separator>3<separator>)</separator>
-<separator>•</separator> <info>lobby <separator>(</separator>12/20 online<separator>)</separator>
-<separator>•</separator> <info>bedwars <separator>(</separator>0/40 online<separator>)</separator>
+<prefix> <info>Groups <separator>(</separator><muted>3</muted><separator>)</separator>
+<separator>•</separator> <highlight>lobby <separator>(</separator><muted>12/20 online</muted><separator>)</separator>
+<separator>•</separator> <highlight>bedwars <separator>(</separator><muted>0/40 online</muted><separator>)</separator>
 
 <prefix> <info>Server lobby-1
-<separator>•</separator> <info>State<separator>:</separator> Available
-<separator>•</separator> <info>Players<separator>:</separator> 12/20
+<separator>•</separator> <muted>State<separator>:</separator> <highlight>Available
+<separator>•</separator> <muted>Players<separator>:</separator> <highlight>12/20
 ```
 
 An empty list is one `warning` line instead of the title: `<prefix> <warning>No groups were found.`

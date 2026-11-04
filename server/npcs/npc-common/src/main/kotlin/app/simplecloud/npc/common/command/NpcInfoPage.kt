@@ -15,7 +15,7 @@ import java.util.Locale
 
 object NpcInfoPage {
 
-    private const val TEXT = Msg.INFO
+    private const val TEXT = Msg.HIGHLIGHT
     private const val KEY = Msg.KEY
     private const val OK = Msg.SUCCESS
 

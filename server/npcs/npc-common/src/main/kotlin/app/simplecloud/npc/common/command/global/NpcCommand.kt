@@ -228,10 +228,10 @@ class NpcCommand<C : NpcCommandSender>(
             val id = Msg.miniMessage.escapeTags(it.id)
             val targets = Msg.miniMessage.escapeTags(it.targetServers.joinToString())
             "<click:run_command:'/$COMMAND_LABEL info $id'><hover:show_text:'${Msg.INTERACTIVE}Click to show details'>" +
-                "${Msg.INTERACTIVE}$id ${Msg.SUBTLE}(${Msg.INFO}$targets${Msg.SUBTLE})</hover></click>"
+                "${Msg.INTERACTIVE}$id ${Msg.SUBTLE}(${Msg.MUTED}$targets${Msg.SUBTLE})</hover></click>"
         }
         val lines = buildList {
-            add("${Msg.infoPrefix()}NPCs ${Msg.SUBTLE}(${Msg.INFO}${configs.size}${Msg.SUBTLE})")
+            add("${Msg.infoPrefix()}NPCs ${Msg.SUBTLE}(${Msg.MUTED}${configs.size}${Msg.SUBTLE})")
             addAll(Msg.tree(entries))
         }
         sender.sendMessage(Msg.miniMessage.deserialize(lines.joinToString("\n")))

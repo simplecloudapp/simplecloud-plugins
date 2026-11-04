@@ -69,15 +69,15 @@ data class GroupSection(
 
 @ConfigSerializable
 data class GroupListSection(
-    val title: String = "<prefix> <info>Groups <separator>(</separator><count><separator>)</separator>",
-    val entry: String = "<separator>•</separator> <info><group> <separator>(</separator><online>/<total> online<separator>)</separator>",
+    val title: String = "<prefix> <info>Groups <separator>(</separator><muted><count></muted><separator>)</separator>",
+    val entry: String = "<separator>•</separator> <highlight><group> <separator>(</separator><muted><online>/<total> online</muted><separator>)</separator>",
     val empty: String = "<prefix> <warning>No groups were found.",
 )
 
 @ConfigSerializable
 data class GroupInfoSection(
     val title: String = "<prefix> <info>Group <group>",
-    val entry: String = "<separator>•</separator> <info><key><separator>:</separator> <value>",
+    val entry: String = "<separator>•</separator> <muted><key><separator>:</separator> <highlight><value>",
 )
 
 @ConfigSerializable
@@ -112,15 +112,15 @@ data class ServerSection(
 
 @ConfigSerializable
 data class ServerListSection(
-    val title: String = "<prefix> <info>Servers <separator>(</separator><count><separator>)</separator>",
-    val entry: String = "<separator>•</separator> <info><server> <separator>(</separator><value><separator>)</separator>",
+    val title: String = "<prefix> <info>Servers <separator>(</separator><muted><count></muted><separator>)</separator>",
+    val entry: String = "<separator>•</separator> <highlight><server> <separator>(</separator><muted><value></muted><separator>)</separator>",
     val empty: String = "<prefix> <warning>No running servers were found.",
 )
 
 @ConfigSerializable
 data class ServerInfoSection(
     val title: String = "<prefix> <info>Server <server>",
-    val entry: String = "<separator>•</separator> <info><key><separator>:</separator> <value>",
+    val entry: String = "<separator>•</separator> <muted><key><separator>:</separator> <highlight><value>",
 )
 
 @ConfigSerializable
@@ -152,15 +152,15 @@ data class PlayerSection(
 
 @ConfigSerializable
 data class PlayerListSection(
-    val title: String = "<prefix> <info>Players <separator>(</separator><count><separator>)</separator>",
-    val entry: String = "<separator>•</separator> <info><white><head:<playername>:true></white> <displayname> <separator>(</separator><value><separator>)</separator>",
+    val title: String = "<prefix> <info>Players <separator>(</separator><muted><count></muted><separator>)</separator>",
+    val entry: String = "<separator>•</separator> <highlight><white><head:<playername>:true></white> <displayname> <separator>(</separator><muted><value></muted><separator>)</separator>",
     val empty: String = "<prefix> <warning>No players were found on this target.",
 )
 
 @ConfigSerializable
 data class PlayerInfoSection(
     val title: String = "<prefix> <info>Player <white><head:<playername>:true></white> <displayname>",
-    val entry: String = "<separator>•</separator> <info><key><separator>:</separator> <value>",
+    val entry: String = "<separator>•</separator> <muted><key><separator>:</separator> <highlight><value>",
 )
 
 @ConfigSerializable
