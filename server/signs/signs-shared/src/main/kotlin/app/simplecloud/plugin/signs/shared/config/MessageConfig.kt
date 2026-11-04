@@ -33,7 +33,7 @@ data class CommandMessages(
 @ConfigSerializable
 data class CommandHelpMessages(
     val title: String = "<prefix> <info>Sign commands",
-    val entry: String = "<separator>•</separator> <interactive><command>",
+    val entry: String = "<separator>•</separator> <interactive><command></interactive> <muted><arguments>",
     val hover: String = "<interactive>Click to type this command",
 )
 

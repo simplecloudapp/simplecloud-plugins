@@ -30,6 +30,7 @@ object CommandMessages {
     val helpTopics = listOf("create", "link", "edit", "target", "hologram", "action", "pushback", "admin", "inventory")
 
     private const val CMD = "/$COMMAND_LABEL"
+    private val ARGUMENT_START = Regex(""" [<\[]""")
 
     @Volatile
     private var messagesPath: Path? = null
@@ -272,13 +273,16 @@ object CommandMessages {
             description?.let { "${Msg.INFO}${Msg.miniMessage.escapeTags(it)}" },
             "${Msg.INTERACTIVE}Click to type this command",
         ).joinToString("\n").replace("'", "\\'")
-        val line = "${Msg.SUBTLE}• ${Msg.INTERACTIVE}${Msg.miniMessage.escapeTags(usage)}"
+        val split = ARGUMENT_START.find(usage)?.range?.first ?: usage.length
+        val literal = Msg.miniMessage.escapeTags(usage.substring(0, split))
+        val arguments = Msg.miniMessage.escapeTags(usage.substring(split).trim())
+        val line = "${Msg.SUBTLE}• ${Msg.INTERACTIVE}$literal ${Msg.MUTED}$arguments"
         val hover = "<hover:show_text:'$tip'>$line</hover>"
 
         return "<click:suggest_command:'$escaped'>$hover</click>"
     }
 
-    private fun note(text: String): String = "  ${Msg.MUTED}${Msg.miniMessage.escapeTags(text)}"
+    private fun note(text: String): String = "${Msg.MUTED}${Msg.miniMessage.escapeTags(text)}"
 
     private fun failure(failure: NpcFailure): Pair<String, String> = when (failure) {
         NpcFailure.INVALID_ID ->

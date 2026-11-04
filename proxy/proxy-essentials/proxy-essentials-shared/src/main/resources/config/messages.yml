@@ -59,7 +59,7 @@ kick:
 command:
   help:
     header: '<prefix> <info>Proxy commands'
-    entry: '<separator>•</separator> <interactive><command>'
+    entry: '<separator>•</separator> <interactive><command></interactive> <muted><arguments>'
     hover: '<interactive>Click to type this command'
 
   failure: '<prefix> <error>The command failed. Check the console.'
@@ -85,7 +85,7 @@ command:
 
     help:
       header: '<prefix> <info>Join state commands'
-      entry: '<separator>•</separator> <interactive><command>'
+      entry: '<separator>•</separator> <interactive><command></interactive> <muted><arguments>'
       hover: '<interactive>Click to type this command'
 
     list:
@@ -100,7 +100,7 @@ command:
   layout:
     help:
       header: '<prefix> <info>Layout commands'
-      entry: '<separator>•</separator> <interactive><command>'
+      entry: '<separator>•</separator> <interactive><command></interactive> <muted><arguments>'
       hover: '<interactive>Click to type this command'
 
     info:

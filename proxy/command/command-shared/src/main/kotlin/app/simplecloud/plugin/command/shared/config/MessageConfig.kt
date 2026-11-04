@@ -30,7 +30,7 @@ data class CommandSection(
 @ConfigSerializable
 data class HelpSection(
     val title: String = "<prefix> <info>Cloud commands",
-    val entry: String = "<separator>•</separator> <interactive><command>",
+    val entry: String = "<separator>•</separator> <interactive><command></interactive> <muted><arguments>",
     val hover: String = "<interactive>Click to type this command",
     val empty: String = "<prefix> <warning>You can't use any cloud commands.",
 )

@@ -47,7 +47,7 @@ command:
   # Placeholders: <command>
   help:
     title: '<prefix> <info>Notify commands'
-    entry: '<separator>•</separator> <interactive><command>'
+    entry: '<separator>•</separator> <interactive><command></interactive> <muted><arguments>'
     hover: '<interactive>Click to type this command'
     empty: '<prefix> <warning>You can''t use any notify commands.'
 

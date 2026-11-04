@@ -38,7 +38,7 @@ data class Command(
 @ConfigSerializable
 data class Help(
     val title: String = "<prefix> <info>Notify commands",
-    val entry: String = "<separator>•</separator> <interactive><command>",
+    val entry: String = "<separator>•</separator> <interactive><command></interactive> <muted><arguments>",
     val hover: String = "<interactive>Click to type this command",
     val empty: String = "<prefix> <warning>You can't use any notify commands.",
 )

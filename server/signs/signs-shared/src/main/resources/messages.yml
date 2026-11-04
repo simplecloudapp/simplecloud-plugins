@@ -36,7 +36,7 @@ variables:
 command:
   help:
     title: '<prefix> <info>Sign commands'
-    entry: '<separator>•</separator> <interactive><command>'
+    entry: '<separator>•</separator> <interactive><command></interactive> <muted><arguments>'
     hover: '<interactive>Click to type this command'
 
   add:

@@ -48,7 +48,7 @@ data class KickMessages(
 data class CommandMessages(
     val help: ListMessages = ListMessages(
         header = "<prefix> <info>Proxy commands",
-        entry = "<separator>•</separator> <interactive><command>",
+        entry = "<separator>•</separator> <interactive><command></interactive> <muted><arguments>",
     ),
     val failure: String = "<prefix> <error>The command failed. Check the console.",
     val invalidTargetType: String = "<prefix> <error>Use group or ps as the target type.",
@@ -81,7 +81,7 @@ data class JoinStateMessages(
     ),
     val help: ListMessages = ListMessages(
         header = "<prefix> <info>Join state commands",
-        entry = "<separator>•</separator> <interactive><command>",
+        entry = "<separator>•</separator> <interactive><command></interactive> <muted><arguments>",
     ),
     val list: JoinStateListMessages = JoinStateListMessages(),
 )
@@ -102,7 +102,7 @@ data class JoinStateListMessages(
 data class LayoutMessages(
     val help: ListMessages = ListMessages(
         header = "<prefix> <info>Layout commands",
-        entry = "<separator>•</separator> <interactive><command>",
+        entry = "<separator>•</separator> <interactive><command></interactive> <muted><arguments>",
     ),
     val info: ListMessages = ListMessages(
         header = "<prefix> <info>Layout of group <group>",
