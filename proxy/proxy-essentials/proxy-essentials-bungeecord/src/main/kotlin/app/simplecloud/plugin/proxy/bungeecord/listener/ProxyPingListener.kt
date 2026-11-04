@@ -55,7 +55,7 @@ class ProxyPingListener(
                 essentials.playerCountService.getMaxPlayers(),
             )
             val samplePlayers = if (layout.playerList.enabled && layout.playerList.playerList.isNotEmpty()) {
-                layout.playerList.playerList.map { ServerPing.PlayerInfo(it, UUID.randomUUID()) }.toTypedArray()
+                layout.playerList.playerList.map { ServerPing.PlayerInfo(essentials.messageFormatter.formatLegacy(it), UUID.randomUUID()) }.toTypedArray()
             } else {
                 response.players.sample
             }

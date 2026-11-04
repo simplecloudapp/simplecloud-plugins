@@ -1,12 +1,33 @@
 version: '2'
 
 # ───────────────────────────────────────────────────────────────────────────────
+# Palette
+# Colors used throughout the messages. Every entry is a tag, e.g. <brand>text or <error>text.
+# ───────────────────────────────────────────────────────────────────────────────
+palette:
+  brand: '#3B95FF'
+  interactive: '#62ADFF'
+  highlight: '#CFE4FF'
+  muted: '#A8A8AB'
+  separator: '#5F5F63'
+  info: '#4FA3FF'
+  success: '#6AD13C'
+  warning: '#FF9029'
+  error: '#F5464F'
+  mint: '#1FD98E'
+  violet: '#9566FF'
+  pink: '#E94BA6'
+  gold: '#F2C230'
+  cyan: '#22C3DB'
+  amber: '#FFA329'
+
+# ───────────────────────────────────────────────────────────────────────────────
 # Variables
 # Reusable variables that can be used throughout the messages.
 # Usage: <variable_name> will be replaced with the defined value.
 # ───────────────────────────────────────────────────────────────────────────────
 variables:
-  prefix: '<color:#38bdf8><bold>⚡</bold></color>'
+  prefix: '<brand><b>⚡</b></brand>'
 
 # ───────────────────────────────────────────────────────────────────────────────
 # Format
@@ -18,92 +39,91 @@ format:
   time: 'HH:mm:ss'
   ping-colors:
     - ping: 0
-      color: '<green>'
-    - ping: 50
-      color: '<yellow>'
+      color: '<success>'
     - ping: 100
-      color: '<gold>'
-    - ping: 150
-      color: '<red>'
+      color: '<warning>'
     - ping: 200
-      color: '<dark_red>'
+      color: '<error>'
 
 # ───────────────────────────────────────────────────────────────────────────────
 # Kick Messages
 # ───────────────────────────────────────────────────────────────────────────────
 kick:
-  no-permission: '<#DC2626>The network is currently in maintenance mode. Please try again later.'
-  network-full: '<#DC2626>The network is currently full. Please try again later.'
-  no-join-state: '<#DC2626>No join state found for server. Please try again later.'
+  no-permission: '<warning>The network is in maintenance.<br><br><muted>Try again later.'
+  network-full: '<error>The network is full.<br><br><muted>Try again in a few minutes.'
+  no-join-state: '<error>This server can''t be joined right now.<br><br><muted>Try again later.'
 
 # ───────────────────────────────────────────────────────────────────────────────
 # Command Messages
 # ───────────────────────────────────────────────────────────────────────────────
 command:
   help:
-    header: '<prefix> <#0EA5E9>SimpleCloud ProxyEssentials commands'
-    entry: '<#E2E8F0><command>'
+    header: '<prefix> <info>Proxy commands'
+    entry: '<separator>•</separator> <interactive><command>'
+    hover: '<interactive>Click to type this command'
 
-  failure: '<prefix> <#DC2626>The command failed, check the console for details.'
-  invalid-target-type: '<prefix> <#DC2626>Use <#F8FAFC>group <#DC2626>or <#F8FAFC>ps <#DC2626>as target type.'
-  persistent-server-id: '<prefix> <#DC2626>Persistent servers do not have an id.'
-  target-not-found: '<prefix> <#DC2626>Target <#F8FAFC><target> <#DC2626>was not found.'
+  failure: '<prefix> <error>The command failed. Check the console.'
+  invalid-target-type: '<prefix> <error>Use group or ps as the target type.'
+  persistent-server-id: '<prefix> <error>Persistent servers don''t have an id.'
+  target-not-found: '<prefix> <error>Target <target> was not found.'
 
   reload:
-    start: '<prefix> <#0EA5E9>Reloading ProxyEssentials configurations...'
-    success: '<prefix> <#A3E635>ProxyEssentials configurations were reloaded.'
-    failure: '<prefix> <#DC2626>ProxyEssentials configurations could not be reloaded: <#F8FAFC><error>'
+    start: '<prefix> <info>Reloading the proxy configuration.'
+    success: '<prefix> <success>Reloaded the proxy configuration!'
+    failure: '<prefix> <error>Couldn''t reload the proxy configuration because <reason>.'
 
   join-state:
     server:
-      update-success: '<prefix> <#A3E635>Join state of server was updated.'
-      update-failure: '<prefix> <#DC2626>Join state of server could not be updated.'
-      update-no-change: '<prefix> <#F59E0B>Join state of server did not change.'
+      update-success: '<prefix> <success>Updated the join state of the server.'
+      update-failure: '<prefix> <error>Couldn''t update the join state of the server.'
+      update-no-change: '<prefix> <warning>The server already has this join state.'
 
     group:
-      update-success: '<prefix> <#A3E635>Join state of group was updated.'
-      update-failure: '<prefix> <#DC2626>Join state of group could not be updated.'
-      update-no-change: '<prefix> <#F59E0B>Join state of group did not change.'
+      update-success: '<prefix> <success>Updated the join state of the group.'
+      update-failure: '<prefix> <error>Couldn''t update the join state of the group.'
+      update-no-change: '<prefix> <warning>The group already has this join state.'
 
     help:
-      header: '<prefix> <#0EA5E9>Join state commands'
-      entry: '<#E2E8F0><command>'
+      header: '<prefix> <info>Join state commands'
+      entry: '<separator>•</separator> <interactive><command>'
+      hover: '<interactive>Click to type this command'
 
     list:
       groups:
-        header: '<prefix> <#0EA5E9>Groups with their join states'
-        entry: '   <#475569>- <#F8FAFC><group> <#475569>(<#E2E8F0><state><#475569>)'
+        header: '<prefix> <info>Groups and their join states'
+        entry: '<separator>•</separator> <info><group> <separator>(</separator><state><separator>)</separator>'
 
       states:
-        header: '<prefix> <#0EA5E9>Available join states'
-        entry: '   <#475569>- <#F8FAFC><state> <#475569>(<#E2E8F0><join_permission><#475569>)'
+        header: '<prefix> <info>Join states'
+        entry: '<separator>•</separator> <info><state> <separator>(</separator><join_permission><separator>)</separator>'
 
   layout:
     help:
-      header: '<prefix> <#0EA5E9>Layout commands'
-      entry: '<#E2E8F0><command>'
+      header: '<prefix> <info>Layout commands'
+      entry: '<separator>•</separator> <interactive><command>'
+      hover: '<interactive>Click to type this command'
 
     info:
-      header: '<prefix> <#0EA5E9>Layout of group <#F8FAFC><group>'
-      entry: '   <#475569>- <#F8FAFC><layout>'
+      header: '<prefix> <info>Layout of group <group>'
+      entry: '<separator>•</separator> <info><layout>'
 
     set:
-      update-success: '<prefix> <#A3E635>Layout of group was updated.'
-      update-failure: '<prefix> <#DC2626>Layout of group could not be updated.'
-      update-no-change: '<prefix> <#F59E0B>Layout of group did not change.'
+      update-success: '<prefix> <success>Updated the layout of the group.'
+      update-failure: '<prefix> <error>Couldn''t update the layout of the group.'
+      update-no-change: '<prefix> <warning>The group already has this layout.'
 
   # Shown when a command fails or is used wrong.
   # Placeholders: <command>, <reason>, <value>, <min>, <max>, <options>
   exception:
-    syntax: '<prefix> <#DC2626>Use <#F8FAFC><command> <#DC2626>instead.'
-    permission: '<prefix> <#DC2626>You do not have permission to use this command.'
-    invalid-sender: '<prefix> <#DC2626>You cannot use this command.'
-    failed: '<prefix> <#DC2626>The command failed because <#F8FAFC><reason><#DC2626>.'
+    syntax: '<prefix> <error>Use <command> instead.'
+    permission: '<prefix> <error>You don''t have permission to use this command.'
+    invalid-sender: '<prefix> <error>You can''t use this command here.'
+    failed: '<prefix> <error>The command failed because <reason>.'
     argument:
-      invalid: '<prefix> <#DC2626>Invalid argument: <#F8FAFC><reason><#DC2626>.'
-      invalid-number: '<prefix> <#DC2626><#F8FAFC><value> <#DC2626>is not a valid number.'
-      number-too-small: '<prefix> <#DC2626>The number must be at least <#F8FAFC><min><#DC2626>.'
-      number-too-large: '<prefix> <#DC2626>The number must be at most <#F8FAFC><max><#DC2626>.'
-      invalid-boolean: '<prefix> <#DC2626>Use <#F8FAFC>true <#DC2626>or <#F8FAFC>false<#DC2626>.'
-      invalid-enum: '<prefix> <#DC2626><#F8FAFC><value> <#DC2626>is invalid. Use one of <#F8FAFC><options><#DC2626>.'
-      invalid-uuid: '<prefix> <#DC2626><#F8FAFC><value> <#DC2626>is not a valid UUID.'
+      invalid: '<prefix> <error>That argument is invalid: <reason>.'
+      invalid-number: '<prefix> <error><value> is not a number.'
+      number-too-small: '<prefix> <error>The number must be at least <min>.'
+      number-too-large: '<prefix> <error>The number must be at most <max>.'
+      invalid-boolean: '<prefix> <error>Use true or false.'
+      invalid-enum: '<prefix> <error><value> is not an option. Use one of <options>.'
+      invalid-uuid: '<prefix> <error><value> is not a valid UUID.'

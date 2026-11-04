@@ -145,7 +145,7 @@ class LayoutCommand<C : CloudSender>(
 
         sender.sendMessage(plugin.messageFormatter.format(help.header))
         commands.forEach {
-            sender.sendMessage(plugin.messageFormatter.format(help.entry, Placeholder.unparsed("command", it)))
+            sender.sendMessage(plugin.messageFormatter.formatHelpEntry(help, it))
         }
     }
 

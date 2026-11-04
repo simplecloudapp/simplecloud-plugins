@@ -18,8 +18,8 @@ motd:
   # Wrap a line in <center>...</center> to center it using vanilla font metrics.
   layouts:
     - name: maintenance
-      line1: '<color:#ACACAC>A simplecloud.app network in maintenance'
-      line2: ' '
+      line1: '<center><brand>SimpleCloud</center>'
+      line2: '<center><warning>In maintenance, back soon.</center>'
 
 server-icon:
   enabled: true
@@ -30,14 +30,14 @@ player-list:
   enabled: true
   player-list:
     - ''
-    - 'simplecloud.app'
+    - '<muted>simplecloud.app'
     - ''
 
 # Server version text and player slots configuration.
 version:
   name:
     enabled: true
-    text: '<#DC2626>Maintenance'
+    text: '<warning>Maintenance'
   slots:
     enabled: true
     # REAL - Displays the actual number of online players

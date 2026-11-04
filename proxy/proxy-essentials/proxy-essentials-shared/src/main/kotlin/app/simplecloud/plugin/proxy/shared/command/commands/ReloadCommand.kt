@@ -29,7 +29,7 @@ class ReloadCommand<C : CloudSender>(
                         sender.sendMessage(formatter.format(plugin.messages.get().command.reload.success))
                     } catch (e: Exception) {
                         logger.error("Could not reload Proxy Essentials", e)
-                        val error = Placeholder.unparsed("error", e.message ?: e.javaClass.simpleName)
+                        val error = Placeholder.unparsed("reason", e.message ?: e.javaClass.simpleName)
                         sender.sendMessage(formatter.format(plugin.messages.get().command.reload.failure, error))
                     }
                 }

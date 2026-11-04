@@ -49,7 +49,7 @@ class ProxyPingListener(
                 builder.clearSamplePlayers()
                 builder.samplePlayers(
                     *layout.playerList.playerList.map {
-                        ServerPing.SamplePlayer(it, UUID.randomUUID())
+                        ServerPing.SamplePlayer(essentials.messageFormatter.formatLegacy(it), UUID.randomUUID())
                     }.toTypedArray(),
                 )
             }
