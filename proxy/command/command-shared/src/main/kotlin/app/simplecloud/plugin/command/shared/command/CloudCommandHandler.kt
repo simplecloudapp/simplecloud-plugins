@@ -33,7 +33,7 @@ class CloudCommandHandler<C : CloudSender>(
                         "server info <group> <id>" to CommandPermissions.SERVER_INFO,
                         "server start <group>" to CommandPermissions.SERVER_START,
                         "server stop <group> <id>" to CommandPermissions.SERVER_STOP,
-                        "player list <group|ps> <target>" to CommandPermissions.PLAYER_LIST,
+                        "player list [<group|ps> <target>]" to CommandPermissions.PLAYER_LIST,
                         "player info <player>" to CommandPermissions.PLAYER_INFO,
                         "player send <player> <group|ps> <target>" to CommandPermissions.PLAYER_SEND,
                         "player sendall <group|ps> <target>" to CommandPermissions.PLAYER_SEND,

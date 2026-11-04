@@ -51,7 +51,7 @@ command:
       'server info <group> <id>': 'Show a server'
       'server start <group>': 'Start a new server'
       'server stop <group> <id>': 'Stop a server'
-      'player list <group|ps> <target>': 'List the players on a target'
+      'player list [<group|ps> <target>]': 'List the online players'
       'player info <player>': 'Show a player'
       'player send <player> <group|ps> <target>': 'Send a player to a target'
       'player sendall <group|ps> <target>': 'Send all players to a target'
@@ -110,7 +110,7 @@ command:
     list:
       title: '<prefix> <info>Players <separator>(</separator><muted><count></muted><separator>)</separator>'
       entry: '<separator>•</separator> <highlight><white><head:<playername>:true></white> <displayname> <separator>(</separator><muted><value></muted><separator>)</separator>'
-      empty: '<prefix> <warning>No players were found on this target.'
+      empty: '<prefix> <warning>No players were found.'
     info:
       title: '<prefix> <info>Player <white><head:<playername>:true></white> <displayname>'
       entry: '<separator>•</separator> <muted><key><separator>:</separator> <highlight><value>'

@@ -43,7 +43,7 @@ data class HelpSection(
         "server info <group> <id>" to "Show a server",
         "server start <group>" to "Start a new server",
         "server stop <group> <id>" to "Stop a server",
-        "player list <group|ps> <target>" to "List the players on a target",
+        "player list [<group|ps> <target>]" to "List the online players",
         "player info <player>" to "Show a player",
         "player send <player> <group|ps> <target>" to "Send a player to a target",
         "player sendall <group|ps> <target>" to "Send all players to a target",
@@ -154,7 +154,7 @@ data class PlayerSection(
 data class PlayerListSection(
     val title: String = "<prefix> <info>Players <separator>(</separator><muted><count></muted><separator>)</separator>",
     val entry: String = "<separator>•</separator> <highlight><white><head:<playername>:true></white> <displayname> <separator>(</separator><muted><value></muted><separator>)</separator>",
-    val empty: String = "<prefix> <warning>No players were found on this target.",
+    val empty: String = "<prefix> <warning>No players were found.",
 )
 
 @ConfigSerializable
