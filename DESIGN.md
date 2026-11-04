@@ -184,14 +184,20 @@ count in `info`. An entry that does something on click is `interactive` and has 
 <interactive>Previous</interactive>  <info>Page 2/5</info>  <interactive>Next
 ```
 
-Help lists: a title, then one command per line. The command itself is `interactive`, its arguments `muted`; clicking
-types the command into the chat. Notes after the list are `muted`, without a bullet.
+Help lists work like a CLI help page. The title names the plugin and ends with the root command in `separator`; each
+row is indented by two spaces and shows the subcommand in `interactive`, its arguments in `muted`, and a short
+description in `muted`, all descriptions in one aligned column. Rows too wide for the chat (320 px) keep their
+description in the hover only. The hover shows the description, the full usage, and the click hint; a click types the
+command into the chat. Pages of sub-topics are a normal row (`help <topic>`), never a note.
 
 ```
-<prefix> <info>Notify commands
-<separator>•</separator> <interactive>/scnotify list
-<separator>•</separator> <interactive>/scnotify enable</interactive> <muted><type>
+<prefix> <info>NPC commands  <separator>/scnpcs
+  <interactive>create</interactive> <muted><id> <target></muted>    <muted>Create an NPC where you stand
+  <interactive>edit</interactive> <muted>[id]</muted>               <muted>Open the editor
+  <interactive>help</interactive> <muted><topic></muted>            <muted>More commands by topic
 ```
+
+Descriptions are short (about 25 characters), sentence case, without a final period.
 
 ### Notifications
 
