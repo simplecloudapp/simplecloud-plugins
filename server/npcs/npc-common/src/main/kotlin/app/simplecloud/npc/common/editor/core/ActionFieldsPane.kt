@@ -27,7 +27,7 @@ object ActionFieldsPane {
     private const val LAST_ROW_START = 37
     const val DELETE_SLOT = Layout.TOOL_RIGHT
 
-    private const val COOLDOWN_SLOT = Layout.TOOL_LEFT
+    private const val COOLDOWN_SLOT = Layout.TOOL_MIDDLE
 
     const val ADD_SIZE = Layout.SIZE
 
@@ -355,7 +355,7 @@ object ActionFieldsPane {
         val slot = slots.getOrNull(set.size)
         if (slot != null && free > 0) {
             val hint = if (set.isEmpty()) "<hnt>No actions of its own yet." else null
-            pane.left(slot, Ui.addHead("Add", listOfNotNull(hint, "<key>Left-click to pick what happens"))) {
+            pane.left(slot, Ui.addHead("Add Action", listOfNotNull(hint, "<key>Left-click to pick what happens"))) {
                 port.openAdd()
             }
         }
@@ -365,7 +365,7 @@ object ActionFieldsPane {
         }
     }
 
-    fun fillAdd(pane: Pane, port: Port, click: PlayerInteraction) {
+    fun fillAdd(pane: Pane, port: Port, click: PlayerInteraction, scope: List<String> = emptyList()) {
         val all = blocks(port.scope)
         pane[HEADER_SLOT] = Ui.item(
             Clicks.material(click),
@@ -376,7 +376,8 @@ object ActionFieldsPane {
                 "<bd>Top row: <val>Where players go",
                 "<bd>Middle row: <val>What they see",
                 "<bd>Bottom row: <val>Effects, then advanced",
-            ),
+                "",
+            ) + scope,
         )
 
         listOf(Group.GO_TO, Group.MESSAGE).forEachIndexed { row, group ->

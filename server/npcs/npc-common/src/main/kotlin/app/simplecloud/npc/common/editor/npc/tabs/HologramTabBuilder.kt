@@ -20,7 +20,7 @@ import java.util.Locale
 
 object HologramTabBuilder {
     private const val TOGGLE_SLOT = Layout.TOOL_LEFT
-    private const val HEIGHT_SLOT = Layout.TOOL_RIGHT
+    private const val HEIGHT_SLOT = Layout.TOOL_MIDDLE
 
     private val START_HEIGHT = Stepper(
         label = "Height",
@@ -46,7 +46,7 @@ object HologramTabBuilder {
         fun edit(mutate: (NpcConfig.HologramConfigurationRoot) -> Unit) =
             context.commit(player, config.id, screen, Refresh.HOLOGRAM) { fresh -> fresh.also { mutate(it.hologram) } }
 
-        pane.left(TOGGLE_SLOT, Ui.toggle("Hologram", hologram.enabled, linkedHint(config))) {
+        pane.left(TOGGLE_SLOT, Ui.toggle("Show Hologram", hologram.enabled, linkedHint(config))) {
             edit { it.enabled = !it.enabled }
         }
         pane[HEIGHT_SLOT] = START_HEIGHT.element(hologram.startHeight) { value -> edit { it.startHeight = value } }

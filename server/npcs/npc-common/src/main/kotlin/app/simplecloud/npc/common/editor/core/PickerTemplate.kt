@@ -5,6 +5,7 @@ import app.simplecloud.npc.common.editor.menu.MenuClick
 import app.simplecloud.npc.common.editor.menu.Paginator
 import app.simplecloud.npc.common.editor.menu.Pane
 import app.simplecloud.npc.common.editor.ui.Layout
+import app.simplecloud.npc.common.editor.ui.Palette
 import app.simplecloud.npc.common.editor.ui.Ui
 import app.simplecloud.npc.common.item.NpcItem
 import app.simplecloud.npc.core.platform.NpcPlayer
@@ -21,7 +22,7 @@ class EmptyState(val title: String, val hint: List<String>) {
 class PickerSpec<S : Any>(
     val title: String,
     val screen: S,
-    val header: PickerHeader,
+    val header: PickerHeader?,
     val options: List<PickerOption>,
     val onPick: (String) -> Unit,
     val typeHint: List<String>? = DEFAULT_TYPE_HINT,
@@ -48,10 +49,8 @@ class PickerSpec<S : Any>(
 object PickerTemplate {
     const val SIZE = Layout.SIZE
 
-    private const val TYPE_POSITION = 3
     private const val EMPTY_SLOT = 31
-    val TYPE_SLOT = Layout.tool(TYPE_POSITION)
-    val RESULT_SLOT = Layout.tool(0)
+    private const val TYPE_SLOT = Layout.TOOL_LEFT
 
     private const val RESULT_TTL_TICKS = 60L
 
@@ -60,7 +59,8 @@ object PickerTemplate {
         val pages = Paginator(session.pages, pageKey(spec.screen), spec.options, Layout.ROW_SLOTS * spec.gridRows)
         val grid = Layout.list(pages.visible.size, rows = spec.gridRows)
         val pane = Pane(SIZE)
-        pane[Layout.HEADER] = spec.header.item()
+        val header = spec.header
+        if (header != null) pane[Layout.HEADER] = header.item()
 
         fun rerender() = host.render(player, spec.screen)
 
@@ -79,18 +79,28 @@ object PickerTemplate {
         }
 
         val typeHint = spec.typeHint
-        if (typeHint != null) {
-            pane.left(TYPE_SLOT, Ui.item("OAK_SIGN", "<ttl>Type a Name", typeHint)) { promptTyped(host, player, spec) }
+        val result = session.pickerResult
+        val typeItem = when {
+            result != null -> resultItem(result, spec.filteredNoun, typeHint != null)
+            typeHint != null -> Ui.item("OAK_SIGN", "<ttl>Type a Name", typeHint)
+            else -> null
+        }
+        if (typeItem != null) {
+            pane.on(TYPE_SLOT, typeItem) { click ->
+                when {
+                    click == MenuClick.DROP && result != null -> {
+                        session.pickerResult = null
+                        rerender()
+                    }
+
+                    click == MenuClick.LEFT && typeHint != null -> promptTyped(host, player, spec)
+
+                    else -> Unit
+                }
+            }
         }
 
         spec.extras(pane)
-
-        session.pickerResult?.let { result ->
-            pane.on(RESULT_SLOT, resultItem(result, spec.filteredNoun), MenuClick.DROP) {
-                session.pickerResult = null
-                rerender()
-            }
-        }
 
         pane.back(host, player)
         pane.pager(pages, listOf("<bd>${spec.options.size} ${spec.filteredNoun}"), ::rerender)
@@ -127,8 +137,18 @@ object PickerTemplate {
         }
     }
 
-    private fun resultItem(result: PickerResult, filteredNoun: String): NpcItem = when (result) {
-        is PickerResult.Added -> Ui.item("LIME_DYE", "<on>Added: <val>${result.label}", listOf("<hnt>${result.detail}"))
+    private fun resultItem(result: PickerResult, filteredNoun: String, canType: Boolean): NpcItem {
+        val item = resultOnly(result, filteredNoun)
+        if (!canType) return item
+        return item.copy(lore = item.lore + Palette.expand("<key>Left-click to type again"))
+    }
+
+    private fun resultOnly(result: PickerResult, filteredNoun: String): NpcItem = when (result) {
+        is PickerResult.Added -> Ui.item(
+            "LIME_DYE",
+            "<on>Added: <val>${result.label}",
+            listOf("<hnt>${result.detail}", "<key>Press Q to dismiss it"),
+        )
 
         is PickerResult.Rejected -> Ui.item(
             "RED_DYE",

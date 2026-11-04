@@ -23,8 +23,8 @@ import app.simplecloud.npc.core.text.PlayerPlaceholders
 
 object HologramFramesMenuBuilder {
     private const val SIZE = Layout.SIZE
-    private const val INTERVAL_SLOT = Layout.TOOL_LEFT
-    private const val REFRESH_SLOT = Layout.TOOL_RIGHT
+    private const val INTERVAL_SLOT = Layout.TOOL_MIDDLE
+    private const val REFRESH_SLOT = Layout.TOOL_LEFT
 
     private val INTERVAL = Stepper(
         label = "Interval",

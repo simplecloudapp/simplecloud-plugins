@@ -379,9 +379,12 @@ B . . T P T . . N     B: Back (or Previous Page), T: tools, P: page count, N: Ne
 ```
 
 - Six rows on every screen except the small confirm dialog.
-- Tools that change how the content is shown or used (sort, strategy, search, preview, delete) go in the bottom row,
-  never between the content, side by side around the middle: one tool in the middle, two on both sides of it (or of
-  the page count). Delete, Remove and Clear are always the right tool. Back and the page panes keep the corners.
+- Tools go in the bottom row, never between the content, and each kind has its own slot so it can be learned: find,
+  scope, sort and strategy left of the middle; the page count, or one setting for the whole screen (Cooldown,
+  Interval, Height), in the middle; Delete, Remove and Reset right of the middle. Back and the page panes keep the
+  corners.
+- A picker's result (Added, Filtered, Not found) shows in the search slot until it is dismissed with Q.
+- Disabled items keep their own icon with a muted name and the reason; the light gray dye only marks an empty list.
 - A setting that does not apply right now stays in its slot, grayed out with the reason (`Turn on Push first.`), so
   the shape never jumps. A row of chips and its add button is one centered run.
 - Back always sits in the bottom-left corner, names the screen it returns to, and Esc does the same. The first

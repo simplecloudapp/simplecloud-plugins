@@ -22,8 +22,8 @@ import app.simplecloud.npc.core.platform.NpcPlayer
 object SkinMenuBuilder {
     private const val SIZE = Layout.SIZE
 
-    private const val RESET_SLOT = Layout.TOOL_LEFT
-    private const val INPUT_SLOT = Layout.TOOL_RIGHT
+    private const val RESET_SLOT = Layout.TOOL_RIGHT
+    private const val INPUT_SLOT = Layout.TOOL_LEFT
     private const val EMPTY_SLOT = 31
 
     fun build(context: NpcEditorContext, player: NpcPlayer, config: NpcConfig): EditorMenu {
