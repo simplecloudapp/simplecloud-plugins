@@ -28,10 +28,10 @@ object LiveGroupMenuBuilder {
     private const val SIZE = Layout.SIZE
 
     private const val HEADER_SLOT = Layout.HEADER
-    private const val SOURCE_SLOT = 19
-    private const val GROUP_SLOT = 21
-    private const val SORT_SLOT = 23
-    private const val EMPTY_SLOT = 25
+    private const val SOURCE_SLOT = 20
+    private const val GROUP_SLOT = 22
+    private const val EMPTY_SLOT = 24
+    private const val SORT_SLOT = Layout.TOOL_LEFT
     private val STATE_SLOTS = 28..34
     private const val RENAME_SLOT = 38
     private const val DELETE_SLOT = 40

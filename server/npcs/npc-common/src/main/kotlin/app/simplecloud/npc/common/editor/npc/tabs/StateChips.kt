@@ -6,7 +6,9 @@ import app.simplecloud.npc.common.editor.menu.Pane
 import app.simplecloud.npc.common.editor.npc.NpcEditorContext
 import app.simplecloud.npc.common.editor.npc.NpcEditorScreen
 import app.simplecloud.npc.common.editor.npc.NpcFormat
+import app.simplecloud.npc.common.editor.ui.Layout
 import app.simplecloud.npc.common.editor.ui.Ui
+import app.simplecloud.npc.common.item.NpcItem
 import app.simplecloud.npc.core.platform.NpcPlayer
 
 class StateChips(
@@ -16,14 +18,16 @@ class StateChips(
     val detail: (String) -> String?,
     val select: (String) -> Unit,
     val remove: (String) -> Unit,
+    val add: StateChipRow.Add? = null,
 )
 
+/** The chips of all join states and the add button, as one centered run in the first content row. */
 object StateChipRow {
-    private const val PREVIOUS_SLOT = 19
-    private val CHIP_SLOTS = 20..23
-    private const val NEXT_SLOT = 24
+    private const val VISIBLE_CHIPS = 4
     private const val SELECTED_MATERIAL = "LIGHT_BLUE_CONCRETE"
     private const val OTHER_MATERIAL = "WHITE_CONCRETE"
+
+    class Add(val item: NpcItem, val onClick: () -> Unit)
 
     fun place(
         pane: Pane,
@@ -33,48 +37,49 @@ object StateChipRow {
         key: String,
         chips: StateChips,
     ) {
-        if (chips.states.size <= 1) return
-        val pages = Paginator(context.session(player).pages, key, chips.states, CHIP_SLOTS.count())
+        val add = chips.add
+        val showChips = chips.states.size > 1
+        val pages = Paginator(context.session(player).pages, key, chips.states, VISIBLE_CHIPS)
+        val previous = if (showChips) Ui.previousPage(pages.page) else null
+        val next = if (showChips) Ui.nextPage(pages.page, pages.pageCount) else null
+        val visible = if (showChips) pages.visible else emptyList()
+        val count = listOfNotNull(previous, next, add).size + visible.size
+        val slots = Layout.row(1, count).iterator()
 
-        pages.visible.forEachIndexed { index, state ->
-            val selected = state == chips.selected
-            val removable = !NpcFormat.isDefaultJoinState(state)
-            val label = NpcFormat.joinState(state)
-            val hints = listOfNotNull(
-                "<key>Left-click to show it".takeIf { !selected },
-                "<key>Right <err>Remove".takeIf { removable },
-            ).joinToString(" <hnt>· ").ifEmpty { null }
-            val lore = listOfNotNull(
-                chips.detail(state),
-                "<on>Live now".takeIf { state == chips.live },
-                "<hnt>Shown below".takeIf { selected },
-                hints,
-            )
-
-            val live = if (state == chips.live) "<on>● " else ""
-            val name = if (selected) "$live<val>$label" else "$live<bd>$label"
-            val material = if (selected) SELECTED_MATERIAL else OTHER_MATERIAL
-            pane.on(CHIP_SLOTS.first + index, Ui.item(material, name, lore, glowing = selected)) { click ->
-                when (click) {
-                    MenuClick.LEFT -> if (!selected) chips.select(state)
-                    MenuClick.RIGHT -> if (removable) chips.remove(state)
-                    else -> Unit
-                }
-            }
-        }
-
-        val previous = Ui.previousPage(pages.page)
         if (previous != null) {
-            pane.left(PREVIOUS_SLOT, previous) {
+            pane.left(slots.next(), previous) {
                 pages.turn(-1)
                 context.render(player, screen)
             }
         }
-        val next = Ui.nextPage(pages.page, pages.pageCount)
+        visible.forEach { state -> chip(pane, slots.next(), chips, state) }
         if (next != null) {
-            pane.left(NEXT_SLOT, next) {
+            pane.left(slots.next(), next) {
                 pages.turn(1)
                 context.render(player, screen)
+            }
+        }
+        if (add != null) pane.left(slots.next(), add.item, add.onClick)
+    }
+
+    private fun chip(pane: Pane, slot: Int, chips: StateChips, state: String) {
+        val selected = state == chips.selected
+        val removable = !NpcFormat.isDefaultJoinState(state)
+        val lore = listOfNotNull(
+            chips.detail(state),
+            "<on>Live now".takeIf { state == chips.live },
+            "<hnt>Shown below".takeIf { selected },
+            "",
+            "<key>Left-click to show it".takeIf { !selected },
+            "<key>Right-click to remove it".takeIf { removable },
+        )
+        val name = if (selected) "<val>${NpcFormat.joinState(state)}" else "<ttl>${NpcFormat.joinState(state)}"
+        val material = if (selected) SELECTED_MATERIAL else OTHER_MATERIAL
+        pane.on(slot, Ui.item(material, name, lore, glowing = selected)) { click ->
+            when (click) {
+                MenuClick.LEFT -> if (!selected) chips.select(state)
+                MenuClick.RIGHT -> if (removable) chips.remove(state)
+                else -> Unit
             }
         }
     }

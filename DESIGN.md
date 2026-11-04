@@ -379,6 +379,10 @@ B . T . P . T . N     B: Back (or Previous Page), T: tools, P: page count, N: Ne
 ```
 
 - Six rows on every screen except the small confirm dialog.
+- Tools that change how the content is shown or used (sort, strategy, search, preview, delete) go in the tool slots
+  of the bottom row, never between the content.
+- A setting that does not apply right now stays in its slot, grayed out with the reason (`Turn on Push first.`), so
+  the shape never jumps. A row of chips and its add button is one centered run.
 - Back always sits in the bottom-left corner, names the screen it returns to, and Esc does the same. The first
   screen has no Back; Esc closes it.
 - The title says what is edited and where you are: `Edit limbo`, `Edit limbo · Skin`.

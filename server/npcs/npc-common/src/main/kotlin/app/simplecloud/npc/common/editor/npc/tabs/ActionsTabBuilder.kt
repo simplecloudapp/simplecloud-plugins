@@ -14,7 +14,6 @@ import app.simplecloud.npc.core.interaction.PlayerInteraction
 import app.simplecloud.npc.core.platform.NpcPlayer
 
 object ActionsTabBuilder {
-    private const val ADD_STATE_SLOT = 25
     private const val SUMMARY_LINES = 3
     private val CARDS = listOf(
         PlayerInteraction.LEFT_CLICK to 28,
@@ -51,6 +50,14 @@ object ActionsTabBuilder {
                 remove = { state ->
                     context.navigate(player, NpcEditorScreen.Confirm(config.id, ConfirmPurpose.RemoveJoinState(state)))
                 },
+                add = if (states.size < NpcConfig.MAX_JOIN_STATES) {
+                    StateChipRow.Add(Ui.addHead("Add Join State", listOf("<hnt>Other clicks for another join state"))) {
+                        val purpose = PickerPurpose.AddJoinState(forHologram = false)
+                        context.navigate(player, NpcEditorScreen.Picker(config.id, purpose))
+                    }
+                } else {
+                    null
+                },
             ),
         )
 
@@ -73,14 +80,6 @@ object ActionsTabBuilder {
             }
             pane.left(slot, item) {
                 context.navigate(player, NpcEditorScreen.ActionEditor(config.id, interaction, selected))
-            }
-        }
-
-        if (states.size < NpcConfig.MAX_JOIN_STATES) {
-            val add = Ui.addHead("Add Join State", listOf("<hnt>Other clicks for another join state"))
-            pane.left(ADD_STATE_SLOT, add) {
-                val purpose = PickerPurpose.AddJoinState(forHologram = false)
-                context.navigate(player, NpcEditorScreen.Picker(config.id, purpose))
             }
         }
 

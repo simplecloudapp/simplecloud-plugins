@@ -337,7 +337,7 @@ object ActionFieldsPane {
                 block.summary(action),
                 listOfNotNull(
                     block.editHint?.let { "<key>Left <hnt>$it" },
-                    "<key>Right <err>Remove",
+                    "<key>Right-click to remove it",
                 ).joinToString(" <hnt>· "),
             )
             pane.on(slot, Ui.item(block.material, "<ttl>${block.label}", lore, glowing = true)) { click ->

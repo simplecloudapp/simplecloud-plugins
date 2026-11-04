@@ -20,7 +20,6 @@ import java.util.Locale
 object HologramTabBuilder {
     private const val TOGGLE_SLOT = 47
     private const val HEIGHT_SLOT = 51
-    private const val ADD_LAYOUT_SLOT = 25
     private val LINE_SLOTS = (28..34) + (37..43)
 
     private val START_HEIGHT = Stepper(
@@ -73,14 +72,13 @@ object HologramTabBuilder {
                         context.navigate(player, NpcEditorScreen.Confirm(config.id, ConfirmPurpose.RemoveLayout(state)))
                     }
                 },
+                add = StateChipRow.Add(Ui.addHead("Add Layout", listOf("<hnt>Other lines for another join state"))) {
+                    context.navigate(player, NpcEditorScreen.Picker(config.id, PickerPurpose.AddJoinState(forHologram = true)))
+                },
             ),
         )
 
         LinesPane.place(pane, HologramLineEditor.lines(context, player, config, selected, screen), LINE_SLOTS)
-
-        pane.left(ADD_LAYOUT_SLOT, Ui.addHead("Add Layout", listOf("<hnt>Other lines for another join state"))) {
-            context.navigate(player, NpcEditorScreen.Picker(config.id, PickerPurpose.AddJoinState(forHologram = true)))
-        }
 
         return TabFrame.menu(pane, config)
     }

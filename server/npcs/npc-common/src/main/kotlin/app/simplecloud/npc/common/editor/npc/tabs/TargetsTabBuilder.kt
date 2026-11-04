@@ -7,6 +7,7 @@ import app.simplecloud.npc.common.editor.npc.NpcEditorScreen
 import app.simplecloud.npc.common.editor.npc.NpcTab
 import app.simplecloud.npc.common.editor.npc.PickerPurpose
 import app.simplecloud.npc.common.editor.npc.Refresh
+import app.simplecloud.npc.common.editor.ui.Layout
 import app.simplecloud.npc.common.editor.ui.Ui
 import app.simplecloud.npc.common.editor.ui.after
 import app.simplecloud.npc.core.config.JoinStrategy
@@ -15,7 +16,7 @@ import app.simplecloud.npc.core.platform.NpcPlayer
 
 object TargetsTabBuilder {
     private val TARGET_SLOTS = (19..25) + (28..34)
-    private const val STRATEGY_SLOT = 40
+    private const val STRATEGY_SLOT = Layout.TOOL_LEFT
 
     fun build(context: NpcEditorContext, player: NpcPlayer, config: NpcConfig): EditorMenu {
         val live = context.liveData
@@ -34,7 +35,7 @@ object TargetsTabBuilder {
             val lore = listOf(
                 "<hnt>${if (summary.isGroup) "Group" else "Server"}",
                 state,
-                if (removable) "<key>Right <err>Remove" else "<hnt>The last target stays.",
+                if (removable) "<key>Right-click to remove it" else "<hnt>The last target stays.",
             )
             pane.on(slot, Ui.item(if (summary.isGroup) "BOOKSHELF" else "BOOK", "<ttl>$target", lore)) { click ->
                 if (click != MenuClick.RIGHT || !removable) return@on

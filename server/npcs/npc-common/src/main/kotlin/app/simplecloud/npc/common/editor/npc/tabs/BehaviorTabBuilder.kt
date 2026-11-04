@@ -84,6 +84,8 @@ object BehaviorTabBuilder {
             pane[LOOK_AT_RANGE_SLOT] = LOOK_AT_RANGE.element(entity.lookAtPlayerDistance) { value ->
                 editEntity { it.copy(lookAtPlayerDistance = value) }
             }
+        } else {
+            pane[LOOK_AT_RANGE_SLOT] = Ui.disabled(LOOK_AT_RANGE.label, listOf("<hnt>Turn on Look At Player first."))
         }
         pane[RENDER_RANGE_SLOT] = RENDER_RANGE.element(entity.viewDistance) { value ->
             editEntity { it.copy(viewDistance = value) }
@@ -110,7 +112,13 @@ object BehaviorTabBuilder {
             }
         }
 
-        if (pushback.enabled) {
+        if (!pushback.enabled) {
+            val hint = listOf("<hnt>Turn on Push first.")
+            pane[PUSH_STRENGTH_SLOT] = Ui.disabled(PUSH_STRENGTH.label, hint)
+            pane[PUSH_RADIUS_SLOT] = Ui.disabled(PUSH_RADIUS.label, hint)
+            pane[UPWARD_BOOST_SLOT] = Ui.disabled(UPWARD_BOOST.label, hint)
+            pane[PUSH_SOUND_SLOT] = Ui.disabled("Push Sound", hint)
+        } else {
             pane[PUSH_STRENGTH_SLOT] = PUSH_STRENGTH.element(pushback.strength) { value ->
                 editPushback { it.strength = value }
             }
@@ -129,7 +137,7 @@ object BehaviorTabBuilder {
                     "<ttl>Push Sound",
                     listOf(
                         sound?.let { "<val>$it" } ?: "<off>None",
-                        if (sound == null) "<key>Left-click to choose one" else "<key>Left <hnt>Change · <key>Right <err>Off",
+                        if (sound == null) "<key>Left-click to choose one" else "<key>Left-click to change · Right-click to turn off",
                     ),
                     glowing = sound != null,
                 ),
