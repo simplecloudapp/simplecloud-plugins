@@ -32,12 +32,17 @@ object TitlePane {
     private fun ticksLine(ticks: Double) =
         "<val>${NpcFormat.seconds(ticks.toInt(), 2)} <hnt>· ${ticks.toInt()} ticks"
 
-    private val FADE_IN = ticksStepper("Fade In", fadeRange, 1.0, DEFAULTS.fadeIn)
-    private val STAY = ticksStepper("Stay", stayRange, 5.0, DEFAULTS.stay)
-    private val FADE_OUT = ticksStepper("Fade Out", fadeRange, 1.0, DEFAULTS.fadeOut)
+    private val FADE_IN = ticksStepper("Fade In", fadeRange, 1.0, DEFAULTS.fadeIn, "GLOWSTONE_DUST")
+    private val STAY = ticksStepper("Stay", stayRange, 5.0, DEFAULTS.stay, "CLOCK")
+    private val FADE_OUT = ticksStepper("Fade Out", fadeRange, 1.0, DEFAULTS.fadeOut, "GUNPOWDER")
 
-    private fun ticksStepper(label: String, range: ClosedFloatingPointRange<Double>, step: Double, default: Int) =
-        Stepper(label, range, step, default.toDouble(), 0, bigMultiplier = 5, valueLine = ::ticksLine)
+    private fun ticksStepper(
+        label: String,
+        range: ClosedFloatingPointRange<Double>,
+        step: Double,
+        default: Int,
+        material: String,
+    ) = Stepper(label, range, step, default.toDouble(), 0, material, bigMultiplier = 5, valueLine = ::ticksLine)
 
     class Port(
         val player: NpcPlayer,
@@ -69,18 +74,21 @@ object TitlePane {
             }
         }
 
-        pane.left(TITLE_SLOT, textField("Title Text", title.title)) {
+        pane.left(TITLE_SLOT, textField("OAK_HANGING_SIGN", "Title Text", title.title)) {
             ask("Title Text", title.title) { current, text -> current.copy(title = text) }
         }
-        pane.left(SUBTITLE_SLOT, textField("Subtitle Text", title.subtitle)) {
+        pane.left(SUBTITLE_SLOT, textField("PAPER", "Subtitle Text", title.subtitle)) {
             ask("Subtitle Text", title.subtitle) { current, text -> current.copy(subtitle = text) }
         }
 
         val total = title.fadeIn + title.stay + title.fadeOut
         pane[PACING_SLOT] = Ui.item(
-            "CLOCK",
-            "<ttl>Pacing",
+            "FILLED_MAP",
+            "<ttl>Title On Screen",
             listOf(
+                "<bd>Title: " + if (title.title.isBlank()) "<off>Not set" else "<val>${Ui.quote(title.title)}",
+                "<bd>Subtitle: " + if (title.subtitle.isBlank()) "<off>Not set" else "<val>${Ui.quote(title.subtitle)}",
+                "",
                 NpcFormat.pacing(title),
                 "<bd>On screen for <val>${NpcFormat.seconds(total)}",
             ),
@@ -106,19 +114,20 @@ object TitlePane {
         pane.left(
             REMOVE_SLOT,
             Ui.item(
-                "RED_CONCRETE",
+                "TNT",
                 "<err>Remove Title",
                 listOf("<hnt>Other parts of the action stay.", "<key>Left-click to remove it"),
             ),
         ) { port.removeAndBack() }
     }
 
-    private fun textField(label: String, value: String): NpcItem = Ui.item(
-        "ANVIL",
+    private fun textField(material: String, label: String, value: String): NpcItem = Ui.item(
+        material,
         "<ttl>$label",
         listOf(
             if (value.isBlank()) "<off>Not set" else "<val>${Ui.quote(value)}",
-            "<key>Left-click to edit it in chat",
+            "",
+            "<key>Left-click to type it in chat",
         ),
     )
 }

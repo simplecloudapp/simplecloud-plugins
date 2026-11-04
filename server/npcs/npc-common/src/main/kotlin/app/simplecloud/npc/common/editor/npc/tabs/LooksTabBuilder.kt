@@ -31,7 +31,7 @@ object LooksTabBuilder {
         step = 0.05,
         default = 1.0,
         decimals = 2,
-        unit = "x",
+        unit = "×",
     )
 
     fun build(context: NpcEditorContext, player: NpcPlayer, config: NpcConfig): EditorMenu {

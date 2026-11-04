@@ -27,6 +27,7 @@ object BehaviorTabBuilder {
 
     private val LOOK_AT_RANGE = Stepper(
         label = "Look Range",
+        material = "SCULK_SENSOR",
         range = NpcConfig.NpcEntityConfiguration.LOOK_AT_PLAYER_DISTANCE_RANGE,
         step = 0.5,
         default = ENTITY_DEFAULTS.lookAtPlayerDistance,
@@ -44,6 +45,7 @@ object BehaviorTabBuilder {
     )
     private val PUSH_STRENGTH = Stepper(
         label = "Strength",
+        material = "SLIME_BLOCK",
         range = NpcConfig.PushbackConfiguration.STRENGTH_RANGE,
         step = 0.05,
         default = PUSH_DEFAULTS.strength,
@@ -51,6 +53,7 @@ object BehaviorTabBuilder {
     )
     private val PUSH_RADIUS = Stepper(
         label = "Radius",
+        material = "TARGET",
         range = NpcConfig.PushbackConfiguration.RADIUS_RANGE,
         step = 0.5,
         default = PUSH_DEFAULTS.radius,
@@ -59,6 +62,7 @@ object BehaviorTabBuilder {
     )
     private val UPWARD_BOOST = Stepper(
         label = "Upward Boost",
+        material = "FEATHER",
         range = NpcConfig.PushbackConfiguration.VERTICAL_RANGE,
         step = 0.05,
         default = PUSH_DEFAULTS.vertical,
@@ -96,8 +100,8 @@ object BehaviorTabBuilder {
             Ui.toggle(
                 "Push",
                 pushback.enabled,
-                listOf("<key>Right-click to try it on me").takeIf { pushback.enabled }.orEmpty(),
                 material = "PISTON",
+                actions = tryActions(pushback.enabled),
             ),
         ) { click ->
             when (click) {
@@ -157,4 +161,7 @@ object BehaviorTabBuilder {
 
         return TabFrame.menu(pane, config, NpcTab.BEHAVIOR)
     }
+
+    private fun tryActions(enabled: Boolean): List<String> =
+        if (enabled) listOf("<key>Right-click to try it on me") else emptyList()
 }

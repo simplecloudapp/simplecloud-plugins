@@ -28,21 +28,23 @@ object HologramFramesMenuBuilder {
 
     private val INTERVAL = Stepper(
         label = "Interval",
+        material = "CLOCK",
         range = HologramLine.FRAME_INTERVAL_RANGE,
         step = 0.5,
         default = HologramLine.DEFAULT_FRAME_INTERVAL,
         decimals = 1,
-        unit = "seconds",
+        unit = "s",
         hints = listOf("<hnt>How long each text stays."),
     )
 
     private val REFRESH = Stepper(
         label = "Placeholder Refresh",
+        material = "REPEATER",
         range = HologramLine.REFRESH_RANGE,
         step = 0.25,
         default = HologramLine.DEFAULT_REFRESH,
         decimals = 2,
-        unit = "seconds",
+        unit = "s",
         hints = listOf("<hnt>How often PlaceholderAPI values update."),
     )
 

@@ -16,6 +16,7 @@ object SoundTuning {
 
     private val VOLUME = Stepper(
         label = "Volume",
+        material = "BELL",
         range = SoundOptions.VOLUME_RANGE,
         step = 0.1,
         default = DEFAULTS.volume,
@@ -24,6 +25,7 @@ object SoundTuning {
     )
     private val PITCH = Stepper(
         label = "Pitch",
+        material = "AMETHYST_SHARD",
         range = SoundOptions.PITCH_RANGE,
         step = 0.05,
         default = DEFAULTS.pitch,
