@@ -172,7 +172,7 @@ notifications:
   server:
     starting: '<prefix> <info>Server <hover:show_text:''<notifications.hover.server>''><server></hover> is starting.'
     available: '<prefix> <success>Server <hover:show_text:''<notifications.hover.server>''><server></hover> is now available.'
-    stopping: '<prefix> <info>Server <hover:show_text:''<notifications.hover.server>''><server></hover> is stopping.'
+    stopping: '<prefix> <warning>Server <hover:show_text:''<notifications.hover.server>''><server></hover> is stopping.'
     stopped: '<prefix> <muted>Server <hover:show_text:''<notifications.hover.server>''><server></hover> has stopped.'
 
   # Sent when a server group is created or deleted.

@@ -56,11 +56,11 @@ command:
       title: '<prefix> <info>Group <group>'
       entry: '<separator>•</separator> <info><key><separator>:</separator> <value>'
     start:
-      success: '<prefix> <info>Starting <count> servers for group <group>.'
+      success: '<prefix> <info>Sent the start request for <count> servers of group <group>.'
       partial: '<prefix> <warning>Started only <count>/<total> servers for group <group> because <reason>.'
     stop:
-      success: '<prefix> <info>Stopping the servers of group <group>.'
-      success-with-ids: '<prefix> <info>Stopping servers <ids> of group <group>.'
+      success: '<prefix> <info>Sent the stop request for the servers of group <group>.'
+      success-with-ids: '<prefix> <info>Sent the stop request for servers <ids> of group <group>.'
       partial: '<prefix> <warning>Stopped only <count>/<total> servers of group <group> because <reason>.'
     error:
       not-found: '<prefix> <error>Group <group> was not found.'
@@ -78,9 +78,9 @@ command:
       title: '<prefix> <info>Server <server>'
       entry: '<separator>•</separator> <info><key><separator>:</separator> <value>'
     start:
-      requested: '<prefix> <info>Starting a new server for group <group>.'
+      requested: '<prefix> <info>Sent the start request for a new server of group <group>.'
     stop:
-      success: '<prefix> <info>Stopping server <group>-<id>.'
+      success: '<prefix> <info>Sent the stop request for server <group>-<id>.'
     error:
       not-found: '<prefix> <error>Server <group>-<id> was not found.'
       already-stopping: '<prefix> <warning>Server <group>-<id> is already stopping.'

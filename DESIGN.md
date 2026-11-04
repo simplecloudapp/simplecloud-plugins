@@ -71,7 +71,7 @@ follow it yet and will be changed to match this file.
 | separator | `#5F5F63` | `( )`, `:`, `/`, `•` |
 | info | `#4FA3FF` | the line color of every normal message, actions in progress |
 | success | `#6AD13C` | completed actions, online servers |
-| warning | `#FF9029` | no-ops, empty results, maintenance, temporary refusals |
+| warning | `#FF9029` | no-ops, empty results, maintenance, temporary refusals, servers that are stopping |
 | error | `#FF3B30` | failures, missing permission, invalid input, full servers |
 
 Rules:
@@ -155,7 +155,7 @@ No other decorative symbols: no `»`, `«`, `┃`, `|`, `-`, `├─`, `└─` 
 ### Messages
 
 ```
-<prefix> <info>Starting 2 servers for group lobby.
+<prefix> <info>Sent the start request for 2 servers of group lobby.
 <prefix> <success>Reloaded the prefixes!
 <prefix> <warning>Group lobby has no running servers.
 <prefix> <error>You don't have permission to use this command.
@@ -195,19 +195,19 @@ types the command into the chat. Notes after the list are `muted`, without a bul
 
 ### Notifications
 
-The line color follows the event. Something in progress (starting, stopping, created) is `info`, available is
-`success`, and gone (stopped, deleted) is `muted`, like offline everywhere else. A server that stops is not an error;
-`error` is only for failures. The name of the thing carries the hover.
+The line color follows the event: starting and created are `info`, available is `success`, stopping is `warning`
+(a heads-up that the server goes away), and gone (stopped, deleted) is `muted`, like offline everywhere else. A server
+that stops is not an error; `error` is only for failures. The name of the thing carries the hover.
 
 ```
 <prefix> <info>Server lobby-1 is starting.
 <prefix> <success>Server lobby-1 is now available.
-<prefix> <info>Server lobby-1 is stopping.
+<prefix> <warning>Server lobby-1 is stopping.
 <prefix> <muted>Server lobby-1 has stopped.
 ```
 
-Command feedback follows the same rule: an action that was only started is `info` (`Stopping server lobby-1.`), one
-that is done is `success` (`Reloaded the prefixes!`).
+Command feedback confirms the request, not the event, so it never repeats a notification: a request that was sent
+is `info` (`Sent the stop request for server lobby-1.`), an action that is done is `success` (`Reloaded the prefixes!`).
 
 ### Hovers
 
