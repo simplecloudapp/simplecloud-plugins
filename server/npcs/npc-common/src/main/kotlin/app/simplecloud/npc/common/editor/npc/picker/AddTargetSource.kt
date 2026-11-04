@@ -45,13 +45,13 @@ object AddTargetSource : PickerSource {
             when {
                 used -> PickerOption(
                     target.name,
-                    Ui.unavailable(target.name, listOf(typeLine), "Already targeted."),
+                    Ui.unavailable(target.name, listOf(typeLine), "Already a target.", if (target.group) "BOOKSHELF" else "MAP"),
                     available = false,
                 )
 
                 atCap -> PickerOption(
                     target.name,
-                    Ui.unavailable(target.name, listOf(typeLine), "Target cap of ${NpcConfig.MAX_TARGETS} reached."),
+                    Ui.unavailable(target.name, listOf(typeLine), "All ${NpcConfig.MAX_TARGETS} target slots are used.", if (target.group) "BOOKSHELF" else "MAP"),
                     available = false,
                 )
 

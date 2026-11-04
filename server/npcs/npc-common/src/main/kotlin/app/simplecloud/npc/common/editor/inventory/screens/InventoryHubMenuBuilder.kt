@@ -61,7 +61,7 @@ object InventoryHubMenuBuilder {
             listOf(
                 "<bd>Title: <val>" + config.title,
                 "<bd>Rows: <val>${config.rows}",
-                "<bd>Items: <val>${config.items.count { it.liveGroup == null }}",
+                "<bd>Fixed items: <val>${config.items.count { it.liveGroup == null }}",
                 "<bd>Live groups: <val>${config.liveGroups().size}",
                 "<bd>Opened by: <val>${users.size} <bd>NPC${if (users.size == 1) "" else "s"}, " +
                     "<val>${menus.size} <bd>menu${if (menus.size == 1) "" else "s"}",
@@ -112,10 +112,11 @@ object InventoryHubMenuBuilder {
             RENAME_SLOT,
             Ui.item(
                 "ANVIL",
-                "<ttl>Rename Menu",
+                "<ttl>Menu Id",
                 listOf(
                     "<bd>Id: <val>${config.id}",
                     "<bd>The name commands and NPCs use.",
+                    "<hnt>The title above stays the same.",
                     "",
                     "<key>Left-click to type a new id in chat",
                 ),
@@ -146,7 +147,7 @@ object InventoryHubMenuBuilder {
             Ui.item(
                 "MAP",
                 "<ttl>Duplicate",
-                listOf("<bd>A copy with a new id, opened here.", "", "<key>Left-click to name the copy"),
+                listOf("<bd>Saves a copy as <val>${config.id}-copy", "<bd>and opens it here.", "", "<key>Left-click to copy it"),
             ),
         ) { duplicate(context, player, config) }
 
@@ -156,10 +157,10 @@ object InventoryHubMenuBuilder {
                 "TNT",
                 "<err>Delete This Menu",
                 listOf(
-                    if (users.isEmpty()) {
-                        "<hnt>No NPC opens it."
+                    if (users.isEmpty() && menus.isEmpty()) {
+                        "<hnt>No NPC or menu opens it."
                     } else {
-                        "<warn>${users.size} NPC${if (users.size == 1) "" else "s"} still open it."
+                        "<warn>${users.size + menus.size} NPCs or menus still open it."
                     },
                     "",
                     "<key>Left-click to delete it",
@@ -171,7 +172,7 @@ object InventoryHubMenuBuilder {
         }
 
         if (!history.canUndo && !history.canRedo) {
-            pane[UNDO_SLOT] = Ui.disabled("Undo", listOf("<hnt>Nothing to undo yet."))
+            pane[UNDO_SLOT] = Ui.disabled("Undo", listOf("<hnt>Nothing to undo yet."), "RECOVERY_COMPASS")
         } else {
             pane.on(UNDO_SLOT, undoItem(history.undoCount, history.redoCount)) { click ->
                 val moved = when (click) {

@@ -121,7 +121,7 @@ object BehaviorTabBuilder {
             pane[PUSH_STRENGTH_SLOT] = PUSH_STRENGTH.disabled(hint)
             pane[PUSH_RADIUS_SLOT] = PUSH_RADIUS.disabled(hint)
             pane[UPWARD_BOOST_SLOT] = UPWARD_BOOST.disabled(hint)
-            pane[PUSH_SOUND_SLOT] = Ui.disabled("Push Sound", hint)
+            pane[PUSH_SOUND_SLOT] = Ui.disabled("Push Sound", hint, "NOTE_BLOCK")
         } else {
             pane[PUSH_STRENGTH_SLOT] = PUSH_STRENGTH.element(pushback.strength) { value ->
                 editPushback { it.strength = value }

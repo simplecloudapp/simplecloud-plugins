@@ -107,7 +107,7 @@ object PickerOptions {
         when {
             server.status == ServerStatus.OFFLINE -> PickerOption(
                 server.name,
-                Ui.unavailable(server.name, emptyList(), "Offline, so nobody can join it."),
+                Ui.unavailable(server.name, emptyList(), "Offline, so nobody can join it.", "MAP"),
                 available = false,
             )
 

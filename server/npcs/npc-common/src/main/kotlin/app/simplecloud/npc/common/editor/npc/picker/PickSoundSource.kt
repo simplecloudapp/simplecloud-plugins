@@ -34,7 +34,7 @@ class PickSoundSource(override val purpose: PickerPurpose.PickSound) : PickerSou
             is SoundField.Action -> listOf("<bd>Plays when a player", "<bd>${Clicks.verb(field.interaction)} <val>$name<bd>.")
         }
         return PickerHeader(
-            "JUKEBOX",
+            "NOTE_BLOCK",
             "Which Sound?",
             plays + listOf("", PickerHeader.now(currentSound(config)), "<hnt>Right-click a sound to hear it."),
         )

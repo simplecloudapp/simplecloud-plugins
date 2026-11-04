@@ -36,14 +36,14 @@ object StateLooksMenuBuilder {
     fun preview(template: InventoryItemConfiguration, state: String, look: StateLook?): NpcItem {
         val styled = ItemIconResolver.icon(if (look == null) template else ItemIconResolver.styled(template, look))
         val summary = if (look == null) {
-            listOf("<off>Uses the slot's own look")
+            listOf("<off>Same as the slot")
         } else {
             val material = look.material
             val name = look.name
             val lore = look.lore
             val glint = look.glowing
             listOfNotNull(
-                "<on>Own look set",
+                "<on>Custom look",
                 if (material == null) null else "<bd>Material: <val>${Ui.pretty(material)}",
                 if (name == null) null else "<bd>Name: <val>${Ui.quote(name)}",
                 if (lore == null) null else "<bd>Lore: <val>${lore.size} lines",
@@ -76,7 +76,7 @@ object StateLooksMenuBuilder {
                 "<bd>How an entry looks while its server is",
                 "<bd>" + states.joinToString(", ") { label(it).lowercase() } + ".",
                 "",
-                "<hnt>Anything not set keeps the slot's own look.",
+                "<hnt>Anything not set stays the same as the slot.",
             ),
         )
 
@@ -88,12 +88,12 @@ object StateLooksMenuBuilder {
         }
 
         if (states.isEmpty()) {
-            pane[NO_STATES_SLOT] = Ui.disabled("No States", listOf("<hnt>Hand-written entries have no server state."))
+            pane[NO_STATES_SLOT] = Ui.empty("No States", listOf("<hnt>Hand-written entries have no server state."))
         }
 
         pane.back(context, player)
 
-        return pane.menu(Ui.title("Looks of $group", config.id))
+        return pane.menu(Ui.title("State Looks", config.id))
     }
 
     private fun stateColor(state: String): String = when (state) {

@@ -187,7 +187,7 @@ class EquipmentCanvas(
             listOf("<bd>Dresses the NPC in the armor", "<bd>you are wearing right now.", "", "<key>Left-click to copy it"),
         )
         items[CLEAR_SLOT] = if (equipment.filled().isEmpty()) {
-            Ui.disabled("Take Everything Off", listOf("<hnt>The NPC wears nothing."))
+            Ui.disabled("Take Everything Off", listOf("<hnt>The NPC wears nothing."), "BUCKET")
         } else {
             Ui.item("BUCKET", "<err>Take Everything Off", listOf("", "<key>Left-click to clear all slots"))
         }

@@ -16,7 +16,7 @@ class PickServerSource(override val purpose: PickerPurpose.PickServer) : PickerS
     override val title = "Pick a Server"
 
     override fun header(context: NpcEditorContext, config: NpcConfig) = PickerHeader(
-        "MAP",
+        "COMPASS",
         "Which Server?",
         listOf(
             "<bd>Players go there when they",

@@ -16,7 +16,7 @@ object SoundTuning {
 
     private val VOLUME = Stepper(
         label = "Volume",
-        material = "BELL",
+        material = "GOAT_HORN",
         range = SoundOptions.VOLUME_RANGE,
         step = 0.1,
         default = DEFAULTS.volume,
@@ -54,7 +54,7 @@ object SoundTuning {
             }
         }
         if (sound == null) {
-            pane[PREVIEW_SLOT] = Ui.disabled("Preview", listOf("<hnt>Pick a sound first."))
+            pane[PREVIEW_SLOT] = Ui.disabled("Preview", listOf("<hnt>Pick a sound first."), "BELL")
             return
         }
         pane.left(

@@ -39,20 +39,20 @@ class AddJoinStateSource(override val purpose: PickerPurpose.AddJoinState) : Pic
 
         return JoinStates.offered(config, liveTargets.keys).map { state ->
             val label = NpcFormat.joinState(state)
-            val usedLine = "<bd>Set up for: " + listOfNotNull(
-                "<val>Hologram".takeIf { config.hologram.findLayout(state) != null },
-                "<val>Actions".takeIf { state in NpcFormat.actionJoinStates(config) },
-            ).ifEmpty { listOf("<off>Nothing yet") }.joinToString("<bd>, ")
+            val hasLines = config.hologram.findLayout(state) != null
+            val hasClicks = config.actions.any { it.joinState.equals(state, true) }
+            val usedLine = "<bd>Hologram lines: " + (if (hasLines) "<val>Yes" else "<off>No") +
+                " <bd>· Click actions: " + if (hasClicks) "<val>Yes" else "<off>No"
             val liveLine = liveTargets[state]?.let { "<on>Live now <hnt>on ${it.joinToString(", ")}" }
             val lore = listOfNotNull(usedLine, liveLine)
             when {
                 state in present -> PickerOption(
                     label,
-                    Ui.unavailable(label, lore, "It is already set up here."),
+                    Ui.unavailable(label, lore, if (forHologram) "It already has hologram lines." else "It already has click actions.", "PAPER"),
                     available = false,
                 )
 
-                atCap -> PickerOption(label, Ui.unavailable(label, lore, "No free slot left here."), available = false)
+                atCap -> PickerOption(label, Ui.unavailable(label, lore, "All join state slots are used.", "PAPER"), available = false)
 
                 else -> PickerOption(state, Ui.item("PAPER", "<ttl>$label", lore + listOf("", "<key>Left-click to add it")))
             }

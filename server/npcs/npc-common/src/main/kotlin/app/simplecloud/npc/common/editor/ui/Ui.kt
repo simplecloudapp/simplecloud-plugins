@@ -10,7 +10,7 @@ object Ui {
     private const val TITLE_NAME_LENGTH = 18
     private const val MAX_TITLE_LENGTH = 32
     private const val MIN_NAME_LENGTH = 8
-    private const val DISABLED_MATERIAL = "LIGHT_GRAY_DYE"
+    private const val EMPTY_MATERIAL = "LIGHT_GRAY_DYE"
     private const val BACK_MATERIAL = "RED_STAINED_GLASS_PANE"
     private const val PAGE_MATERIAL = "BLUE_STAINED_GLASS_PANE"
     private const val ACTION = "<key>"
@@ -76,11 +76,12 @@ object Ui {
         glowing = current,
     )
 
-    fun disabled(name: String, lore: List<String>, material: String = DISABLED_MATERIAL): NpcItem =
-        item(material, "<off>$name", lore)
+    fun disabled(name: String, lore: List<String>, material: String): NpcItem = item(material, "<off>$name", lore)
 
-    fun unavailable(name: String, lore: List<String>, reason: String): NpcItem =
-        disabled(name, lore + listOf("", "<hnt>$reason"))
+    fun empty(name: String, lore: List<String>): NpcItem = item(EMPTY_MATERIAL, "<off>$name", lore)
+
+    fun unavailable(name: String, lore: List<String>, reason: String, material: String): NpcItem =
+        disabled(name, lore + listOf("", "<hnt>$reason"), material)
 
     fun field(material: String, label: String, valueLine: String?, setVerb: String): NpcItem = item(
         material,

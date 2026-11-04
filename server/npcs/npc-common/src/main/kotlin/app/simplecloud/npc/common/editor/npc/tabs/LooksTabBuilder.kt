@@ -54,7 +54,7 @@ object LooksTabBuilder {
                 ),
             ) { context.navigate(player, NpcEditorScreen.SkinPicker(config.id)) }
         } else {
-            pane[SKIN_SLOT] = Ui.disabled("Skin", listOf("<hnt>${entity.provider} shows each viewer their own skin."))
+            pane[SKIN_SLOT] = Ui.disabled("Skin", listOf("<hnt>${entity.provider} shows each viewer their own skin."), "PLAYER_HEAD")
         }
 
         pane.left(NAME_SLOT, Ui.item("NAME_TAG", "<ttl>Name", listOf("<val>$name", "<key>Left-click to change it"))) {
@@ -133,9 +133,9 @@ object LooksTabBuilder {
             }
         } else {
             val reason = listOf("<hnt>Only NPCs this plugin draws itself.")
-            pane[EQUIPMENT_SLOT] = Ui.disabled("Equipment", reason)
-            pane[POSE_SLOT] = Ui.disabled("Pose", reason)
-            pane[SCALE_SLOT] = Ui.disabled("Size", reason)
+            pane[EQUIPMENT_SLOT] = Ui.disabled("Equipment", reason, "IRON_CHESTPLATE")
+            pane[POSE_SLOT] = Ui.disabled("Pose", reason, "LEATHER_BOOTS")
+            pane[SCALE_SLOT] = SCALE.disabled(reason)
         }
 
         return TabFrame.menu(pane, config, NpcTab.LOOKS)

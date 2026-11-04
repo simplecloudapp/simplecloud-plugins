@@ -69,6 +69,7 @@ object StateChipRow {
             chips.detail(state),
             "<on>Live now".takeIf { state == chips.live },
             "<hnt>Shown below".takeIf { selected },
+            if (NpcFormat.isDefaultJoinState(state)) "<bd>Used when no other join state fits." else null,
             if (chips.states.size == 1) "<hnt>A join state is what the target is doing." else null,
             "",
             "<key>Left-click to show it".takeIf { !selected },
