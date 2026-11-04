@@ -109,14 +109,14 @@ enum class MenuTemplate(val label: String, val icon: String, val description: Li
             val controls = listOf(
                 InventoryItemConfiguration(
                     slot = 36,
-                    material = "LIGHT_BLUE_STAINED_GLASS_PANE",
+                    material = "BLUE_STAINED_GLASS_PANE",
                     name = "<interactive>Previous Page",
                     liveGroup = "servers",
                     pageControl = PageControl.PREVIOUS,
                 ),
                 InventoryItemConfiguration(
                     slot = 44,
-                    material = "LIGHT_BLUE_STAINED_GLASS_PANE",
+                    material = "BLUE_STAINED_GLASS_PANE",
                     name = "<interactive>Next Page",
                     liveGroup = "servers",
                     pageControl = PageControl.NEXT,

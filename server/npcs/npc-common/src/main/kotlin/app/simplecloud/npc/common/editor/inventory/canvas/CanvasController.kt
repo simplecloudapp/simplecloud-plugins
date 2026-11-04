@@ -339,7 +339,7 @@ class CanvasController(
                     val previous = index == Toolbox.PREVIOUS_ARROW
                     session.carried = Carried(
                         InventoryItemConfiguration(
-                            material = "LIGHT_BLUE_STAINED_GLASS_PANE",
+                            material = "BLUE_STAINED_GLASS_PANE",
                             name = if (previous) "<interactive>Previous Page" else "<interactive>Next Page",
                             liveGroup = group,
                             pageControl = if (previous) PageControl.PREVIOUS else PageControl.NEXT,

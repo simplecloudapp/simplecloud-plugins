@@ -339,7 +339,7 @@ Clicking a target that cannot be joined sends one chat message with the prefix:
 - Content stays in the inner seven columns. A menu does one job: the server menu only lists servers, no quick-join
   item. Server entries are concrete in their state color: lime to join, orange while a round runs, red when full.
 - The bottom row is the control row: Previous Page in the first slot (Back on the first page of a submenu), Next Page
-  in the last, a page count in the middle. Previous and Next are light blue glass panes and only show when that page
+  in the last, a page count in the middle. Previous and Next are blue glass panes and only show when that page
   exists; Back is a red glass pane. No close button: Escape closes every menu.
 - Tabs sit in the top row, centered; the active tab has the glint and its name in `highlight`. Below them, single
   settings sit in columns 3, 5 and 7, and a group of related settings is one centered run.
@@ -379,8 +379,9 @@ B . T . P . T . N     B: Back (or Previous Page), T: tools, P: page count, N: Ne
 ```
 
 - Six rows on every screen except the small confirm dialog.
-- Tools that change how the content is shown or used (sort, strategy, search, preview, delete) go in the tool slots
-  of the bottom row, never between the content.
+- Tools that change how the content is shown or used (sort, strategy, search, preview, delete) go in the bottom row,
+  never between the content: one tool in the middle, two at columns 3 and 7 (around the page count when there is
+  one). Back and the page panes keep the corners.
 - A setting that does not apply right now stays in its slot, grayed out with the reason (`Turn on Push first.`), so
   the shape never jumps. A row of chips and its add button is one centered run.
 - Back always sits in the bottom-left corner, names the screen it returns to, and Esc does the same. The first

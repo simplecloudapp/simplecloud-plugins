@@ -10,7 +10,7 @@ object Ui {
     private const val TITLE_NAME_LENGTH = 18
     private const val DISABLED_MATERIAL = "LIGHT_GRAY_DYE"
     private const val BACK_MATERIAL = "RED_STAINED_GLASS_PANE"
-    private const val PAGE_MATERIAL = "LIGHT_BLUE_STAINED_GLASS_PANE"
+    private const val PAGE_MATERIAL = "BLUE_STAINED_GLASS_PANE"
 
     fun item(
         material: String,

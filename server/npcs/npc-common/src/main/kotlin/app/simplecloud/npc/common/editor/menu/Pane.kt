@@ -1,5 +1,6 @@
 package app.simplecloud.npc.common.editor.menu
 
+import app.simplecloud.npc.common.editor.ui.Layout
 import app.simplecloud.npc.common.item.NpcItem
 
 class Pane(val size: Int) {
@@ -31,9 +32,20 @@ class Pane(val size: Int) {
         fallback = handler
     }
 
-    fun menu(title: String): EditorMenu = EditorMenu(title, size, elements.toMap(), fallback)
+    fun menu(title: String): EditorMenu = EditorMenu(title, size, placeTools(), fallback)
+
+    private fun placeTools(): Map<Int, Element> {
+        val tools = elements.filterKeys { it < 0 }.toSortedMap(compareByDescending { it }).values.toList()
+        val placed = elements.filterKeys { it >= 0 }.toMutableMap()
+        if (tools.isEmpty() || size != Layout.SIZE) return placed
+
+        val middleTaken = (navRow.first + MIDDLE_COLUMN) in placed
+        Layout.toolSlots(tools.size, middleTaken).zip(tools).forEach { (slot, tool) -> placed[slot] = tool }
+        return placed
+    }
 
     companion object {
         const val GRAY_PANE = "GRAY_STAINED_GLASS_PANE"
+        private const val MIDDLE_COLUMN = 4
     }
 }

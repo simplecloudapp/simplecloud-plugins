@@ -99,12 +99,12 @@ items:
   - slot: 36
     live-group: servers
     page-control: previous
-    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    material: BLUE_STAINED_GLASS_PANE
     name: "<interactive>Previous Page"
   - slot: 44
     live-group: servers
     page-control: next
-    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    material: BLUE_STAINED_GLASS_PANE
     name: "<interactive>Next Page"
 
   # More examples (commented out):

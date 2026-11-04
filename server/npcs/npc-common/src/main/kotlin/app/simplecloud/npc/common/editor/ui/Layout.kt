@@ -15,10 +15,30 @@ object Layout {
 
     const val ROW_SLOTS = 7
 
-    const val TOOL_LEFT = 47
-    const val TOOL_RIGHT = 51
+    /**
+     * Tools are not placed in a fixed slot: [TOOL_LEFT] and [TOOL_RIGHT] mark them, and the pane spreads the marked
+     * items over the bottom row when the menu is built (see [toolSlots]).
+     */
+    const val TOOL_LEFT = -1
+    const val TOOL_RIGHT = -2
+
+    private const val CONTROL_ROW = 45
 
     private const val COLUMNS = 9
+
+    /** Slots for [count] tools in the bottom row: one in the middle, pairs at columns 3 and 7, around the page count. */
+    fun toolSlots(count: Int, middleTaken: Boolean): List<Int> {
+        val columns = when {
+            count <= 0 -> emptyList()
+            middleTaken -> listOf(2, 6, 1, 7)
+            count == 1 -> listOf(4)
+            count == 2 -> listOf(2, 6)
+            count == 3 -> listOf(2, 4, 6)
+            else -> listOf(1, 3, 5, 7)
+        }
+
+        return columns.take(count).map { CONTROL_ROW + it }
+    }
 
     /**
      * [count] slots of content row [row] (1 to 3), centered: up to four items with a gap between them, five to seven
