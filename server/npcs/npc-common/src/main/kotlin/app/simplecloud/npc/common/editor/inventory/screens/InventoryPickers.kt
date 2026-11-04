@@ -31,7 +31,7 @@ import app.simplecloud.npc.core.platform.NpcPlayer
 
 object InventoryPickers {
 
-    private val CATEGORY_SLOTS = (1..7).toList()
+    private val CATEGORY_SLOTS = listOf(1, 2, 3, 5, 6, 7)
     private val CATEGORY_ICONS = mapOf(
         "Blocks" to "GRASS_BLOCK",
         "Tools" to "IRON_PICKAXE",
@@ -39,7 +39,6 @@ object InventoryPickers {
         "Dyes" to "RED_DYE",
         "Heads" to "PLAYER_HEAD",
         InventoryEditorSession.RECENT_CATEGORY to "CLOCK",
-        InventoryEditorSession.ALL_CATEGORY to "CHEST",
     )
 
     fun build(
@@ -85,9 +84,8 @@ object InventoryPickers {
         val known = catalog.toSet()
         val filter = (session.pickerResult as? PickerResult.Filtered)?.typed
         val current = when (purpose) {
-            is InventoryPickerPurpose.Material -> purpose.slots.firstOrNull()?.let { slot ->
-                config.items.firstOrNull { it.slot == slot }?.material
-            }
+            is InventoryPickerPurpose.Material ->
+                config.items.filter { it.slot in purpose.slots }.map { it.material }.distinct().singleOrNull()
 
             is InventoryPickerPurpose.LookMaterial ->
                 LiveGroups.source(config, purpose.group)?.lookFor(purpose.state)?.material
@@ -100,8 +98,6 @@ object InventoryPickers {
 
             session.materialCategory == InventoryEditorSession.RECENT_CATEGORY ->
                 session.recentMaterials.ifEmpty { CommonMaterials.COMMON.take(RECENT_FALLBACK) }
-
-            session.materialCategory == InventoryEditorSession.ALL_CATEGORY -> catalog.sorted()
 
             else -> CommonMaterials.CATEGORIES.firstOrNull { it.first == session.materialCategory }?.second.orEmpty()
         }.filter { it in known }
@@ -128,7 +124,11 @@ object InventoryPickers {
         return PickerSpec(
             title = Ui.title(section, config.id),
             screen = screen,
-            header = null,
+            header = PickerHeader(
+                current ?: "ITEM_FRAME",
+                "Which Material?",
+                materialLines(purpose, current),
+            ),
             options = listed.map { material ->
                 val selected = material == current
                 PickerOption(
@@ -159,7 +159,7 @@ object InventoryPickers {
         val session = context.session(player)
         val filtered = session.pickerResult is PickerResult.Filtered
         val tabs = CommonMaterials.CATEGORIES.map { it.first }
-        val filters = listOf(InventoryEditorSession.RECENT_CATEGORY, InventoryEditorSession.ALL_CATEGORY)
+        val filters = listOf(InventoryEditorSession.RECENT_CATEGORY)
         val slots = (filters + tabs).zip(CATEGORY_SLOTS)
 
         slots.forEach { (name, slot) ->
@@ -439,6 +439,26 @@ object InventoryPickers {
             },
             filteredNoun = "sounds",
         )
+    }
+
+    private fun materialLines(purpose: InventoryPickerPurpose, current: String?): List<String> = when (purpose) {
+        InventoryPickerPurpose.NewItem -> listOf("<bd>The new item sticks to your", "<bd>cursor; click a slot to place it.")
+
+        is InventoryPickerPurpose.LookMaterial -> listOf(
+            "<bd>What entries of <val>${purpose.group} <bd>show while",
+            "<bd>they are ${StateLooksMenuBuilder.label(purpose.state).lowercase()}.",
+            "",
+            PickerHeader.now(if (current == null) null else Ui.pretty(current)),
+        )
+
+        is InventoryPickerPurpose.Material -> listOf(
+            "<bd>What the item looks like in the menu.",
+            "",
+            "<bd>Editing: <val>" + if (purpose.slots.size == 1) "This item" else "${purpose.slots.size} items",
+            if (current == null) "<bd>Now: <warn>Mixed" else PickerHeader.now(Ui.pretty(current)),
+        )
+
+        else -> emptyList()
     }
 
     private fun clickedLines(slots: List<Int>, interaction: PlayerInteraction, lead: String): List<String> {
