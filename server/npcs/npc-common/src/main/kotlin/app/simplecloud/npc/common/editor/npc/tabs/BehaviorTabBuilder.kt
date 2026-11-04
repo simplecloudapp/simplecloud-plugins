@@ -27,7 +27,7 @@ object BehaviorTabBuilder {
 
     private val LOOK_AT_RANGE = Stepper(
         label = "Look Range",
-        hints = listOf("<bd>How close a player must be."),
+        hints = listOf("<bd>Players closer than this are looked at."),
         material = "SCULK_SENSOR",
         range = NpcConfig.NpcEntityConfiguration.LOOK_AT_PLAYER_DISTANCE_RANGE,
         step = 0.5,
@@ -56,7 +56,7 @@ object BehaviorTabBuilder {
     )
     private val PUSH_RADIUS = Stepper(
         label = "Radius",
-        hints = listOf("<bd>How close a player must be."),
+        hints = listOf("<bd>Players closer than this are pushed."),
         material = "TARGET",
         range = NpcConfig.PushbackConfiguration.RADIUS_RANGE,
         step = 0.5,

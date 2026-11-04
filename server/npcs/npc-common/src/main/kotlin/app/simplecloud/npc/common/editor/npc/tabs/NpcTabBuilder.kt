@@ -72,6 +72,8 @@ object NpcTabBuilder {
                 "<bd>Targets: " + if (targets.isEmpty()) "<off>None" else "<val>" + targets.joinToString("<bd>, <val>"),
                 "<bd>Join state: " + if (joinState == null) "<off>Unknown" else "<val>${NpcFormat.joinState(joinState)}",
                 "<bd>Players nearby: <val>$nearby",
+                "",
+                "<hnt>Changes save right away.",
             ),
         )
 

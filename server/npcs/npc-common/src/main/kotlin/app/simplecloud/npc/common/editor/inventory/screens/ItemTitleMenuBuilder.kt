@@ -62,7 +62,7 @@ object ItemTitleMenuBuilder {
         val items = config.items.filter { it.slot in screen.slots }
         val titles = items.map { ItemClickActions.of(it, screen.interaction)?.sendTitle }.distinct()
         return listOfNotNull(
-            "<bd>Editing: <val>" + if (items.size == 1) "This item" else "${items.size} items",
+            "<bd>Editing: <val>" + if (items.size == 1) "This slot" else "${items.size} slots",
             if (titles.size > 1) "<warn>The items differ: what you see is" else null,
             if (titles.size > 1) "<warn>the first one, edits apply to all." else null,
         )

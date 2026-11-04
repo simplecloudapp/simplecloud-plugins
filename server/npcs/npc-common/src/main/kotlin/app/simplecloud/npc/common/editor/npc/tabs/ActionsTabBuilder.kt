@@ -67,7 +67,7 @@ object ActionsTabBuilder {
                 Ui.item(
                     Clicks.material(interaction),
                     "<ttl>${Clicks.label(interaction)}",
-                    listOf("<off>Nothing happens", "", "<key>Left-click to set it up"),
+                    listOf("<off>Nothing happens", "", "<key>Click to set it up"),
                 )
             } else {
                 val summary =
@@ -75,13 +75,11 @@ object ActionsTabBuilder {
                 Ui.item(
                     Clicks.material(interaction),
                     "<ttl>${Clicks.label(interaction)}",
-                    summary.take(SUMMARY_LINES) + listOf("", "<key>Left-click to edit it"),
+                    summary.take(SUMMARY_LINES) + listOf("", "<key>Click to edit it"),
                     glowing = true,
                 )
             }
-            pane.left(slot, item) {
-                context.navigate(player, NpcEditorScreen.ActionEditor(config.id, interaction, selected))
-            }
+            pane.on(slot, item) { context.navigate(player, NpcEditorScreen.ActionEditor(config.id, interaction, selected)) }
         }
 
         return TabFrame.menu(pane, config, NpcTab.ACTIONS)

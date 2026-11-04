@@ -38,7 +38,7 @@ object InventoryPickers {
         "Food" to "APPLE",
         "Dyes" to "RED_DYE",
         "Heads" to "PLAYER_HEAD",
-        InventoryEditorSession.RECENT_CATEGORY to "CLOCK",
+        InventoryEditorSession.RECENT_CATEGORY to "KNOWLEDGE_BOOK",
     )
 
     fun build(
@@ -191,7 +191,7 @@ object InventoryPickers {
             title = Ui.title(if (group == null) "New Live Group" else "Source", config.id),
             screen = screen,
             header = PickerHeader(
-                "HOPPER",
+                "OBSERVER",
                 "Where Do Entries Come From?",
                 listOf(
                     "<bd>A live group fills its slots",
@@ -454,7 +454,7 @@ object InventoryPickers {
         is InventoryPickerPurpose.Material -> listOf(
             "<bd>What the item looks like in the menu.",
             "",
-            "<bd>Editing: <val>" + if (purpose.slots.size == 1) "This item" else "${purpose.slots.size} items",
+            "<bd>Editing: <val>" + if (purpose.slots.size == 1) "This slot" else "${purpose.slots.size} slots",
             if (current == null) "<bd>Now: <warn>Mixed" else PickerHeader.now(Ui.pretty(current)),
         )
 

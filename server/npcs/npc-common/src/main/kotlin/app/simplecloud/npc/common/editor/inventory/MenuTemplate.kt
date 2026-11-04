@@ -18,7 +18,7 @@ enum class MenuTemplate(val label: String, val icon: String, val description: Li
     ),
     GROUP_OVERVIEW("Group Overview", "CHEST", listOf("One slot per group,", "with its player count.")),
     PERSISTENT_SERVERS("Persistent Servers", "ENDER_CHEST", listOf("One slot per persistent server.")),
-    NAVIGATION("Navigation", "OAK_SIGN", listOf("Three fixed buttons that send", "players to a server each.")),
+    NAVIGATION("Navigation", "ARROW", listOf("Three fixed buttons that send", "players to a server each.")),
     ;
 
     fun build(id: String): InventoryConfiguration = when (this) {

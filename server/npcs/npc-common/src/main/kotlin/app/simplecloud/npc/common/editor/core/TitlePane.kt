@@ -32,7 +32,7 @@ object TitlePane {
     private fun ticksLine(ticks: Double) =
         "<val>${NpcFormat.seconds(ticks.toInt(), 2)} <hnt>· ${ticks.toInt()} ticks"
 
-    private val FADE_IN = ticksStepper("Fade In", fadeRange, 1.0, DEFAULTS.fadeIn, "GLOWSTONE_DUST")
+    private val FADE_IN = ticksStepper("Fade In", fadeRange, 1.0, DEFAULTS.fadeIn, "SUGAR")
     private val STAY = ticksStepper("Stay", stayRange, 5.0, DEFAULTS.stay, "CLOCK")
     private val FADE_OUT = ticksStepper("Fade Out", fadeRange, 1.0, DEFAULTS.fadeOut, "GUNPOWDER")
 

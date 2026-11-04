@@ -65,6 +65,8 @@ object InventoryHubMenuBuilder {
                 "<bd>Live groups: <val>${config.liveGroups().size}",
                 "<bd>Opened by: <val>${users.size} <bd>NPC${if (users.size == 1) "" else "s"}, " +
                     "<val>${menus.size} <bd>menu${if (menus.size == 1) "" else "s"}",
+                "",
+                "<hnt>Changes save right away.",
             ),
         )
 

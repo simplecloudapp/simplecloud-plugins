@@ -59,7 +59,7 @@ object LoreMenuBuilder {
             listOfNotNull(
                 "<bd>The lines under the item name.",
                 "",
-                "<bd>Editing: <val>" + if (targets.size == 1) "This item" else "${targets.size} items",
+                "<bd>Editing: <val>" + if (targets.size == 1) "This slot" else "${targets.size} slots",
                 if (differ) "<warn>Their lore differs: the first item's" else null,
                 if (differ) "<warn>lines replace it on all of them." else null,
             ),

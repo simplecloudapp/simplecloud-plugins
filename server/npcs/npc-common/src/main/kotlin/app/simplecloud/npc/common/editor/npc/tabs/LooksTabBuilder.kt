@@ -86,7 +86,7 @@ object LooksTabBuilder {
             )
         } else {
             Ui.item(
-                NpcFormat.glowIcon(color),
+                "GLOWSTONE_DUST",
                 "<ttl>Glow",
                 listOf("<off>Off", "", "<key>Left-click to turn it on", "<key>Right-click to pick the color"),
             )

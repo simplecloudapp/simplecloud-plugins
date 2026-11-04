@@ -31,7 +31,7 @@ object ItemActionMenuBuilder {
         pane[ActionFieldsPane.HEADER_SLOT] = Ui.item(
             Clicks.material(screen.interaction),
             "<ttl>${Clicks.label(screen.interaction)}",
-            listOf("<bd>Editing: <val>" + if (slots.size == 1) "This item" else "${slots.size} items") +
+            listOf("<bd>Editing: <val>" + if (slots.size == 1) "This slot" else "${slots.size} slots") +
                 when {
                     ClickSummary.differs(items, screen.interaction) ->
                         listOf("<warn>The items differ: what you see is", "<warn>the first one, edits apply to all.")
@@ -79,7 +79,7 @@ object ItemActionMenuBuilder {
     ): EditorMenu {
         val pane = Pane(ActionFieldsPane.ADD_SIZE)
 
-        val editing = "<bd>Editing: <val>" + if (screen.slots.size == 1) "This item" else "${screen.slots.size} items"
+        val editing = "<bd>Editing: <val>" + if (screen.slots.size == 1) "This slot" else "${screen.slots.size} slots"
         ActionFieldsPane.fillAdd(pane, port(context, player, config, screen.slots, screen.interaction), screen.interaction, listOf(editing))
         pane.back(context, player)
 

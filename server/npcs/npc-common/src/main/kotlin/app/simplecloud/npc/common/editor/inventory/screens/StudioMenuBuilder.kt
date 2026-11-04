@@ -84,7 +84,7 @@ object StudioMenuBuilder {
         step = 1.0,
         default = 1.0,
         decimals = 0,
-        material = "SLIME_BALL",
+        material = "BRICK",
         bigMultiplier = 8,
     )
 
@@ -119,24 +119,23 @@ object StudioMenuBuilder {
             }
         }
 
-        tabItem(LOOK_TAB, StudioTab.LOOK, "PAINTING", "Item Look", "How the item looks")
+        tabItem(LOOK_TAB, StudioTab.LOOK, "ARMOR_STAND", "Item Look", "How the item looks")
         tabItem(CLICK_TAB, StudioTab.CLICK, "LEVER", "Item Clicks", "What a click does")
         val livePreview = if (session.mode == CanvasMode.LIVE) session.live?.slots?.get(first.slot) else null
         val shown = livePreview ?: preview(first)
         val group = items.firstNotNullOfOrNull { it.liveGroup }
         val editing = when {
-            targets.size == 1 -> "<bd>Editing: <val>This item"
-            group == null -> "<bd>Editing: <val>${targets.size} items"
+            targets.size == 1 -> "<bd>Editing: <val>This slot"
+            group == null -> "<bd>Editing: <val>${targets.size} slots"
             else -> "<bd>Editing: <val>${targets.size} slots <bd>of <val>$group"
         }
-        val intro = listOf("<hnt>Player tooltip, with sample values:").map(Palette::expand)
-        val quiet = shown.lore.map { Palette.expand("<bd>" + Msg.miniMessage.stripTags(it)) }
+        val intro = listOf(Palette.expand("<hnt>Preview with sample values:"))
         val previewLore = listOfNotNull(
             "",
             editing,
             if (targets.size > 1) "<hnt>Fields that differ show as Mixed." else null,
         )
-        pane[PREVIEW_SLOT] = shown.copy(lore = intro + quiet + previewLore.map(Palette::expand))
+        pane[PREVIEW_SLOT] = shown.copy(lore = intro + shown.lore + previewLore.map(Palette::expand), hideTooltip = false)
 
         if (group != null) {
             val only = session.thisSlotOnly
@@ -414,15 +413,15 @@ object StudioMenuBuilder {
     ) {
         val slots = targets.sorted()
         CLICK_SLOTS.forEach { (interaction, slot) ->
-            pane.left(
+            pane.on(
                 slot,
                 Ui.item(
                     Clicks.material(interaction),
                     "<ttl>${Clicks.label(interaction)}",
-                    ClickSummary.lines(config, items, interaction) + listOf("", "<key>Left-click to edit it"),
+                    ClickSummary.lines(config, items, interaction) + listOf("", "<key>Click to edit it"),
                     glowing = ClickSummary.hasOwn(items, interaction),
                 ),
-            ) { context.navigate(player, InventoryEditorScreen.ItemAction(config.id, slots, interaction)) }
+            ) { _ -> context.navigate(player, InventoryEditorScreen.ItemAction(config.id, slots, interaction)) }
         }
 
         pane[CLICK_INFO_SLOT] = Ui.item(

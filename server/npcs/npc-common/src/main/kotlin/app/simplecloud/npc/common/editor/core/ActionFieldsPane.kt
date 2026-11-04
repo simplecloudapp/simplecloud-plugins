@@ -113,7 +113,7 @@ object ActionFieldsPane {
         ),
         Block(
             Group.GO_TO,
-            "RECOVERY_COMPASS",
+            "ENDER_PEARL",
             "Teleport",
             "Teleports the player to where you stand.",
             summary = { a -> a.teleport?.let { "<val>${NpcFormat.position(it)}" } },
@@ -389,7 +389,8 @@ object ActionFieldsPane {
 
         val effects = all.filter { it.group == Group.EFFECT }
         val advanced = all.filter { it.group == Group.ADVANCED }
-        val bottom = (effects + listOf(null) + advanced).take(Layout.ROW_SLOTS)
+        val gap = if ((effects.size + advanced.size) % 2 == 0) listOf(null) else emptyList()
+        val bottom = (effects + gap + advanced).take(Layout.ROW_SLOTS)
         val start = LAST_ROW_START + (Layout.ROW_SLOTS - bottom.size) / 2
         bottom.forEachIndexed { index, block ->
             if (block != null) addOption(pane, port, start + index, block)
@@ -401,7 +402,7 @@ object ActionFieldsPane {
         when {
             isSet(block, action) -> pane[slot] = Ui.disabled(block.label, listOf("<hnt>Already added"), block.material)
 
-            !block.available(action) -> pane[slot] = Ui.disabled(block.label, listOf("<hnt>Set a permission first"), block.material)
+            !block.available(action) -> pane[slot] = Ui.disabled(block.label, listOf("<hnt>Set a permission first."), block.material)
 
             else -> pane.left(
                 slot,
