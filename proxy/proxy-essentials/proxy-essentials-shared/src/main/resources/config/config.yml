@@ -78,6 +78,12 @@ player-count:
 # ───────────────────────────────────────────────────────────────────────────────
 tablist:
   - name: global
+    # Optional: match servers explicitly instead of by name. If set, the name is only used as an identifier.
+    # Available: STARTS_WITH, ENDS_WITH, CONTAINS, EQUALS, REGEX, PATTERN
+    # server-name-matcher:
+    #   operation: STARTS_WITH
+    #   value: lobby
+    #   negate: false
     layout:
       - header: '<br><brand>ꜱɪᴍᴘʟᴇᴄʟᴏᴜᴅ<br>'
         footer: '<br>  <brand>⚡</brand> <highlight>simplecloud.app                <success>●</success> <highlight><online_players> <muted>Online  <br>'

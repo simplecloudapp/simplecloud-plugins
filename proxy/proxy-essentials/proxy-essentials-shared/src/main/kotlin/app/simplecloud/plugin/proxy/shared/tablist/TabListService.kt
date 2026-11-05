@@ -46,12 +46,7 @@ class TabListService(
     }
 
     private fun getTabList(serverName: String): TabListEntry? {
-        val groups = config.get().tablist
-        val group = groups.find { it.name.equals(serverName, ignoreCase = true) }
-            ?: groups.find { serverName.startsWith(it.name, ignoreCase = true) }
-            ?: groups.find { it.name == "*" }
-            ?: groups.find { it.name.equals("global", ignoreCase = true) }
-            ?: return null
+        val group = TabListGroupResolver.resolve(config.get().tablist, serverName) ?: return null
         if (group.layout.isEmpty()) return null
         if (group.updateTime <= 0) return group.layout.first()
 
