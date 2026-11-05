@@ -15,11 +15,8 @@ import kotlin.time.Duration.Companion.seconds
 
 private typealias FileStates = Map<Path, Pair<FileTime, Long>>
 
-/**
- * Calls [onChange] when a `.yml` or `.yaml` file in [directory] or one of its subdirectories is created, changed or
- * deleted. The files are checked every [interval] instead of using a WatchService, because every WatchService uses
- * up one of the few inotify instances a Linux user has, and many servers on one host would run out of them.
- */
+// polls instead of using a WatchService, because each WatchService uses up an inotify instance
+// and many servers on one host would run out of them
 class ConfigWatcher(
     private val directory: Path,
     private val interval: Duration = DEFAULT_INTERVAL,
@@ -31,7 +28,6 @@ class ConfigWatcher(
     fun start(scope: CoroutineScope): Job {
         val initial = snapshot().orEmpty()
         return scope.launch(Dispatchers.IO) {
-            // the files as they were at the last reload, and at the previous check
             var loaded = initial
             var lastCheck = initial
 
@@ -39,7 +35,6 @@ class ConfigWatcher(
                 delay(interval)
                 val current = snapshot() ?: continue
 
-                // wait until a file stopped changing, so a file that is still being written is not loaded
                 val stillChanging = current != lastCheck
                 lastCheck = current
                 if (stillChanging || current == loaded) continue
@@ -72,7 +67,6 @@ class ConfigWatcher(
                     .associateWith { Files.getLastModifiedTime(it) to Files.size(it) }
             }
         } catch (_: Exception) {
-            // a file was changed or deleted while walking the directory, so the next check will see it
             null
         }
     }
