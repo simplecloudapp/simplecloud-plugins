@@ -1,6 +1,5 @@
 package app.simplecloud.plugin.signs.shared.repository
 
-import kotlinx.coroutines.*
 import org.slf4j.LoggerFactory
 import org.spongepowered.configurate.ConfigurateException
 import org.spongepowered.configurate.kotlin.objectMapperFactory
@@ -8,7 +7,6 @@ import org.spongepowered.configurate.yaml.NodeStyle
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader
 import java.nio.file.Files
 import java.nio.file.Path
-import java.nio.file.StandardWatchEventKinds
 import java.util.concurrent.ConcurrentHashMap
 
 open class YamlDirectory<E : Any>(
@@ -23,35 +21,9 @@ open class YamlDirectory<E : Any>(
 
     fun load() {
         Files.createDirectories(directory)
-        entities.clear()
-        Files.walk(directory).use { paths ->
-            paths.filter { Files.isRegularFile(it) && isYaml(it) }.forEach { load(it) }
-        }
-    }
-
-    fun watch(scope: CoroutineScope): Job {
-        val watchService = directory.fileSystem.newWatchService()
-        directory.register(
-            watchService,
-            StandardWatchEventKinds.ENTRY_CREATE,
-            StandardWatchEventKinds.ENTRY_DELETE,
-            StandardWatchEventKinds.ENTRY_MODIFY,
-        )
-        return scope.launch(Dispatchers.IO) {
-            watchService.use { service ->
-                while (isActive) {
-                    val key = runInterruptible { service.take() }
-                    val changed = key.pollEvents()
-                        .mapNotNull { event -> event.context() as? Path }
-                        .map { path -> directory.resolve(path) }
-                        .filter { path -> isYaml(path) }
-                        .distinct()
-                    key.reset()
-                    delay(RELOAD_DELAY)
-                    changed.forEach { path -> if (Files.isRegularFile(path)) load(path) else entities.remove(path) }
-                }
-            }
-        }
+        val paths = Files.walk(directory).use { walk -> walk.filter { Files.isRegularFile(it) && isYaml(it) }.toList() }
+        entities.keys.retainAll(paths.toSet())
+        paths.forEach { load(it) }
     }
 
     protected fun save(fileName: String, entity: E, previous: E?) {
@@ -80,8 +52,4 @@ open class YamlDirectory<E : Any>(
             options.serializers { it.registerAnnotatedObjects(objectMapperFactory()) }
         }
         .build()
-
-    companion object {
-        private const val RELOAD_DELAY = 100L
-    }
 }

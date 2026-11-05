@@ -11,7 +11,6 @@ Compared to 0.0.14, the last version on Modrinth.
 - The data folder moved to `plugins/simplecloud-proxy-essentials`. On the first start, the old `proxy-essentials-velocity` or `proxy-essentials-bungeecord` folder is copied over if the new folder is empty. Rename the folder in your templates so your edits land in the folder that is used.
 - Join state commands now take a target type (`group` or `ps`): `/scproxy joinstate info <group|ps> <target> [id]` and `/scproxy joinstate set <group|ps> <target> <joinstate> [id]`. The old forms `joinstate set <group> [id] <joinstate>` and `joinstate info <group> [id]` no longer work.
 - `/scproxy reload` now needs `simplecloud.proxy-essentials.command.reload` instead of `simplecloud.proxy-essentials.command.help`.
-- Config files are no longer reloaded automatically when you save them. Run `/scproxy reload` after editing.
 - `placeholder.yml` is no longer read. Move your ping colors to `format.ping-colors` in `messages.yml`. The date and time formats are now `format.date` and `format.time`.
 - The `whitelist` in `config.yml` is now enforced. Listed players skip the join state permission and full network checks. Older default configs had it enabled with `Notch` on the list, so review or disable it.
 - In an existing `messages.yml`, `<error>` in `command.reload.failure` is now a color tag. Use `<reason>` for the error text. In `command.join-state.list.states.entry`, rename `<joinPermission>` to `<join_permission>`.
@@ -30,6 +29,7 @@ Compared to 0.0.14, the last version on Modrinth.
 - MiniMessage now works in the server list hover lines (`player-list`) and in `version.name.text`.
 
 ### Changed
+- Config files are still reloaded automatically when you save them, now within a few seconds. A file with YAML errors is reported in the console and the previous version stays active.
 - New default look for messages, kick messages, MOTD layouts and the tab list. Your existing files are kept. To get the new defaults, delete `messages.yml` or the layout files, or copy the parts you want from a fresh install.
 - On new installs, the whitelist is disabled and empty by default.
 - When `version.name.enabled` is on, the version text is now always shown in the server list. Before, only players on a different Minecraft version saw it.

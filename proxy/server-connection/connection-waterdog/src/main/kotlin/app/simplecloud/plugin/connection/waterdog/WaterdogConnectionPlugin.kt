@@ -23,7 +23,7 @@ class WaterdogConnectionPlugin : Plugin() {
         cleanupServers(connectionPlugin)
         registerHandlers()
         registerCommands()
-        connectionPlugin.start()
+        connectionPlugin.start(::reload)
     }
 
     override fun onDisable() {

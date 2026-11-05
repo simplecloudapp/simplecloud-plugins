@@ -10,4 +10,5 @@ dependencies {
     compileOnly(libs.slf4j.api)
 
     testImplementation(libs.bundles.configurate)
+    testImplementation(libs.slf4j.api)
 }

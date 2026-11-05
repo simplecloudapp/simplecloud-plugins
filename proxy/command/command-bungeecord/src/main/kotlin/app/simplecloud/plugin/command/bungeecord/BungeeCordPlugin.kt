@@ -11,6 +11,7 @@ class BungeeCordPlugin : Plugin() {
 
     override fun onEnable() {
         CloudCommandHandler(BungeeCloudCommandManager.create(this), plugin).register()
+        plugin.start()
     }
 
     override fun onDisable() {

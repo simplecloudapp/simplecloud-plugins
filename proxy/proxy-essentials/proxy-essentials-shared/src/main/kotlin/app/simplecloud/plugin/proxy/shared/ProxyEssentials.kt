@@ -3,6 +3,7 @@ package app.simplecloud.plugin.proxy.shared
 import app.simplecloud.api.CloudApi
 import app.simplecloud.api.CloudApiOptions
 import app.simplecloud.api.runtime.SimpleCloudRuntime
+import app.simplecloud.plugin.core.shared.config.ConfigWatcher
 import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
 import app.simplecloud.plugin.core.shared.config.DefaultConfigInstaller
 import app.simplecloud.plugin.proxy.shared.config.MessageConfig
@@ -48,6 +49,7 @@ class ProxyEssentials(
         LegacyDirectoryMigrator.migrate(dir)
         DefaultConfigInstaller.installAll(dir, DEFAULT_RESOURCES, javaClass.classLoader, "config")
         loadConfigs()
+        ConfigWatcher(dir) { reload() }.start(scope)
         tabListService.start()
 
         if (SimpleCloudRuntime.serverId().isBlank()) return

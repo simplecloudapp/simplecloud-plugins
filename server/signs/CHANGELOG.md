@@ -10,6 +10,7 @@ Compared to 0.0.5, the last version on Modrinth.
 - Removed the `<player-name>`, `<player_name>`, `<player-sender>` and `<player_sender>` placeholders from sign layouts. Remove them from your layout files, otherwise they show up as plain text.
 
 ### Added
+- `messages.yml` is reloaded automatically within a few seconds after you save it, like layouts and locations.
 - New `messages.yml` to customize every command message, including a `palette` section with named colors (`<brand>`, `<info>`, `<success>`, `<warning>`, `<error>`, `<muted>` and more) and a `variables` section (for example `<prefix>`). Before, all messages were fixed.
 - Layouts can use the palette colors and variables from `messages.yml`, for example `<highlight><server-name>`.
 - New layout option `glowing-text: true` to make the sign text glow.

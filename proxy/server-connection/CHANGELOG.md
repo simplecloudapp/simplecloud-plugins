@@ -9,6 +9,7 @@ Compared to 1.0.10, the last version on Modrinth.
 - Automatic migration of the old single-file config from 1.0.0 was removed. If you are still on 1.0.0, update to 1.0.10 first, or delete `config.yml` and set it up again. Configs from 1.0.1 to 1.0.10 work as they are.
 
 ### Added
+- Config files are reloaded automatically within a few seconds after you save them. A file with YAML errors is reported in the console and the previous version stays active.
 - Servers that are stopping are no longer picked as join, fallback or command targets. They stay registered, so players already on them are not affected.
 - Messages can use color tags such as `<brand>`, `<info>`, `<success>`, `<warning>`, `<error>` and `<muted>`. New installs get a `palette` section in `messages.yml` to change these colors.
 - When the connection to SimpleCloud drops, the plugin loads the server list again once SimpleCloud is back and removes servers that stopped in the meantime.

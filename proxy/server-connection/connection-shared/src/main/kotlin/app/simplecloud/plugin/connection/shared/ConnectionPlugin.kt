@@ -13,6 +13,7 @@ import app.simplecloud.plugin.connection.shared.platform.ConnectionPlayer
 import app.simplecloud.plugin.connection.shared.platform.ConnectionServer
 import app.simplecloud.plugin.connection.shared.registration.RegisteredServer
 import app.simplecloud.plugin.connection.shared.registration.ServerRegisterer
+import app.simplecloud.plugin.core.shared.config.ConfigWatcher
 import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
 import kotlinx.coroutines.*
 import org.slf4j.LoggerFactory
@@ -36,9 +37,10 @@ class ConnectionPlugin<S : ConnectionServer>(
     private val registrationEnabled = connectionConfig.get().registration.enabled
     private val registerer = ServerRegisterer(api, registry, connectionConfig)
 
-    fun start() {
+    fun start(reload: () -> Unit) {
         logger.info("SimpleCloud v3 connection plugin initialized!")
         validateConnections()
+        ConfigWatcher(dir.toPath()) { reload() }.start(scope)
         if (!registrationEnabled) return
 
         registerAdditionalServers()

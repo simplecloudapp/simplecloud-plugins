@@ -15,6 +15,7 @@ Compared to 0.0.7, the last version on Modrinth.
   - Servers are now shown as `<group>-<id>` (for example `lobby-1`) instead of `<group> <id>`.
 
 ### Added
+- Config files are reloaded automatically within a few seconds after you save them. A file with YAML errors is reported in the console and the previous version stays active.
 - `/cloud player list` without arguments lists all online players. The `<group|ps> <target>` arguments are now optional.
 - `/cloud player info` shows online time, first seen and last seen.
 - `/cloud player sendfrom` accepts a group name as source and moves the players from all servers of that group. Persistent servers can be used as source by name.

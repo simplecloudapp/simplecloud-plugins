@@ -12,6 +12,7 @@ Compared to 1.1.1, the last version on Modrinth.
 - The `command.permission.denied` message in `messages.yml` is no longer used. If you changed it, move your text to `command.exception.permission`.
 
 ### Added
+- Config files are reloaded automatically within a few seconds after you save them. A file with YAML errors is reported in the console and the previous version stays active.
 - Vanished players are no longer published to the synced tab list on other servers. On Paper, players marked with the `vanished` metadata (set by common vanish plugins) are detected automatically.
 - On Paper, vanished players no longer show up in name tag teams for players who can't see them.
 - API: `PrefixesApi.setVanished(player, vanished)` and `PrefixesApi.isVanished(player)` to mark a player as vanished from your own plugin (also works on Minestom).
