@@ -3,5 +3,5 @@ version: ${version}
 author: rlqu
 main: app.simplecloud.plugin.notify.bungeecord.BungeeCordNotifyPlugin
 description: An ingame plugin that notifies about v3 server changes
-website: 'https://github.com/simplecloudapp/notify-plugin'
+website: 'https://github.com/simplecloudapp/simplecloud-plugins'
 depends: [simplecloud-api]

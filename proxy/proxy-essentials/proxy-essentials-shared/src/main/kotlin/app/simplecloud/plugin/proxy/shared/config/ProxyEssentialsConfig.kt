@@ -1,6 +1,7 @@
 package app.simplecloud.plugin.proxy.shared.config
 
 import app.simplecloud.plugin.core.shared.config.VersionedConfig
+import app.simplecloud.plugin.core.shared.matcher.ServerMatcherConfiguration
 import app.simplecloud.plugin.proxy.shared.utilities.ConfigVersion
 import org.spongepowered.configurate.objectmapping.ConfigSerializable
 import java.util.UUID
@@ -84,6 +85,7 @@ data class PlayerCountConfig(
 @ConfigSerializable
 data class TabListGroup(
     val name: String = "global",
+    val serverNameMatcher: ServerMatcherConfiguration? = null,
     val layout: List<TabListEntry> = listOf(TabListEntry()),
     val updateTime: Long = 20L,
 )

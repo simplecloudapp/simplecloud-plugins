@@ -18,7 +18,7 @@ class BungeeCordConnectionPlugin : Plugin() {
         cleanupServers()
         registerListeners()
         registerCommands()
-        connectionPlugin.start()
+        connectionPlugin.start(::reload)
     }
 
     override fun onDisable() {

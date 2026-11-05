@@ -42,7 +42,7 @@ class VelocityConnectionPlugin @Inject constructor(
         cleanupServers()
         registerListeners()
         registerCommands()
-        connectionPlugin.start()
+        connectionPlugin.start(::reload)
     }
 
     @Subscribe

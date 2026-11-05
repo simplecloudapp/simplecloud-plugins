@@ -1,5 +1,5 @@
 plugins {
-    id("simplecloud.base-conventions")
+    id("simplecloud.publishing-conventions")
 }
 
 dependencies {
@@ -10,4 +10,5 @@ dependencies {
     compileOnly(libs.slf4j.api)
 
     testImplementation(libs.bundles.configurate)
+    testImplementation(libs.slf4j.api)
 }

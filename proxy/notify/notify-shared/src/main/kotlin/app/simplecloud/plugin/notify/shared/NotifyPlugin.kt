@@ -1,6 +1,7 @@
 package app.simplecloud.plugin.notify.shared
 
 import app.simplecloud.api.CloudApi
+import app.simplecloud.plugin.core.shared.config.ConfigWatcher
 import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
 import app.simplecloud.plugin.notify.shared.config.MessageConfig
 import app.simplecloud.plugin.notify.shared.listener.NotificationListener
@@ -11,7 +12,7 @@ import kotlinx.coroutines.*
 import org.slf4j.LoggerFactory
 import java.util.UUID
 
-class NotifyPlugin(platform: NotifyPlatform) {
+class NotifyPlugin(private val platform: NotifyPlatform) {
 
     private val logger = LoggerFactory.getLogger(NotifyPlugin::class.java)
 
@@ -25,6 +26,7 @@ class NotifyPlugin(platform: NotifyPlatform) {
 
     fun startup() {
         listener.start()
+        ConfigWatcher(platform.getDataDirectory().toPath()) { reload() }.start(scope)
     }
 
     fun shutdown() {

@@ -6,6 +6,7 @@ import app.simplecloud.api.server.Server
 import app.simplecloud.api.server.ServerQuery
 import app.simplecloud.api.server.ServerState
 import app.simplecloud.plugin.core.shared.adventure.miniMessage
+import app.simplecloud.plugin.core.shared.config.ConfigWatcher
 import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
 import app.simplecloud.plugin.core.shared.config.DefaultConfigInstaller
 import app.simplecloud.plugin.signs.shared.config.MessageConfig
@@ -26,7 +27,7 @@ import java.util.concurrent.atomic.AtomicLong
 
 class SignManager(
     val api: CloudApi,
-    dataDirectory: Path,
+    private val dataDirectory: Path,
     private val renderer: SignRenderer,
     private val messages: ConfigurationFactory<MessageConfig>,
 ) {
@@ -56,8 +57,7 @@ class SignManager(
         layouts.load()
         logger.info("Loaded {} sign layouts", layouts.findAll().size)
 
-        locations.watch(scope)
-        layouts.watch(scope)
+        ConfigWatcher(dataDirectory) { reload() }.start(scope)
         subscribeToServerEvents()
         scope.launch {
             while (isActive) {
@@ -72,6 +72,12 @@ class SignManager(
                 withTimeoutOrNull(SERVER_REFRESH_INTERVAL) { refreshRequests.receive() }
             }
         }
+    }
+
+    fun reload() {
+        messages.reload()
+        locations.load()
+        layouts.load()
     }
 
     fun tick() {

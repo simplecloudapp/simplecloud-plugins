@@ -1,5 +1,6 @@
 package app.simplecloud.plugin.prefixes.shared
 
+import app.simplecloud.plugin.core.shared.config.ConfigWatcher
 import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
 import app.simplecloud.plugin.prefixes.api.PrefixesApiProvider
 import app.simplecloud.plugin.prefixes.shared.api.PrefixesApiImpl
@@ -37,6 +38,7 @@ class Prefixes(private val platform: PrefixesPlatform) {
     fun startup() {
         PrefixesApiProvider.register(api)
         validateConfig()
+        ConfigWatcher(platform.getDataDirectory().toPath()) { reload() }.start(PrefixesConstants.SCOPE)
 
         if (luckPerms != null) {
             subscriptions.addAll(LuckPermsListener(luckPerms, api).register())
