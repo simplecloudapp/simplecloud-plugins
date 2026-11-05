@@ -67,8 +67,8 @@ Contributions to SimpleCloud are welcome and highly appreciated. However, before
 Clone the repository with its pinned Custom Names source before building:
 
 ```shell
-git clone --recurse-submodules https://github.com/simplecloudapp/plugins.git
-cd plugins
+git clone --recurse-submodules https://github.com/simplecloudapp/simplecloud-plugins.git
+cd simplecloud-plugins
 ./gradlew :server:prefixes:prefixes-paper:build
 ```
 
@@ -94,7 +94,7 @@ This repository is licensed under [Apache 2.0][license].
 [badge-dev]: https://repo.simplecloud.app/api/badge/latest/snapshots/app/simplecloud/plugin/prefixes-api?name=Dev&style=flat-square&color=0ea5e9
 
 <!-- ⛔ DON'T TOUCH -->
-[license]: ./LICENSE
+[license]: https://opensource.org/licenses/Apache-2.0
 [snapshots]: https://repo.simplecloud.app/#/snapshots
 
 [social-x]: https://x.com/simplecloudapp

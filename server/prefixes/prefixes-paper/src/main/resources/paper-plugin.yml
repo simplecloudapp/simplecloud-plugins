@@ -4,7 +4,7 @@ main: app.simplecloud.plugin.prefixes.paper.PrefixesPaper
 api-version: "26.3"
 author: SimpleCloud Maintainers
 description: Prefixes, suffixes and name colors for chat, tab list and name tags. Works with LuckPerms and syncs across your SimpleCloud network
-website: https://github.com/simplecloudapp/plugins
+website: https://github.com/simplecloudapp/simplecloud-plugins
 folia-supported: true
 
 dependencies:
