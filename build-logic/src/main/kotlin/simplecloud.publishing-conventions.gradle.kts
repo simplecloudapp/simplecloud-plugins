@@ -15,11 +15,21 @@ val isSelectedPlugin = providers.gradleProperty("plugin")
     .map { it == path.substringBeforeLast(':').substringAfterLast(':') }
     .getOrElse(false)
 
+// core has no release of its own, so it is published with the plugins that depend on it
+val coreDependencies = provider {
+    listOf("api", "implementation")
+        .flatMap { configurations[it].dependencies.withType<ProjectDependency>() }
+        .map { it.path }
+        .filter { it.startsWith(":core:") }
+        .map { "$it:publish" }
+}
+
 tasks.register("publishPlugin") {
     group = "publishing"
     description = "Publishes this module if it belongs to the plugin given by -Pplugin."
     if (isSelectedPlugin) {
         dependsOn(tasks.named("publish"))
+        dependsOn(coreDependencies)
     }
 }
 
