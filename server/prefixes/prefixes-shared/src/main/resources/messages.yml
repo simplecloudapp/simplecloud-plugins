@@ -2,35 +2,61 @@
 version: 1
 
 # ───────────────────────────────────────────────────────────────────────────────
+# Palette
+# Colors used throughout the messages. Every entry is a tag, e.g. <brand>text or <error>text.
+# ───────────────────────────────────────────────────────────────────────────────
+palette:
+  brand: '#3B95FF'
+  interactive: '#62ADFF'
+  highlight: '#CFE4FF'
+  muted: '#A1A7B5'
+  separator: '#5F5F63'
+  info: '#4FA3FF'
+  success: '#6AD13C'
+  warning: '#FF9029'
+  error: '#FF3B30'
+  mint: '#1FD98E'
+  violet: '#9566FF'
+  pink: '#E94BA6'
+  gold: '#F2C230'
+  cyan: '#22C3DB'
+  amber: '#FFA329'
+
+# ───────────────────────────────────────────────────────────────────────────────
 # Variables
 # Reusable variables that can be used throughout the messages.
 # Usage: <variable_name> will be replaced with the defined value.
 # ───────────────────────────────────────────────────────────────────────────────
 variables:
-  prefix: '<color:#38bdf8><bold>⚡</bold></color>'
+  prefix: '<brand><b>⚡</b></brand>'
 
 # ───────────────────────────────────────────────────────────────────────────────
 # Command Messages
 # ───────────────────────────────────────────────────────────────────────────────
 command:
   help:
-    title: '<prefix> <#0EA5E9>SimpleCloud Prefixes commands'
-    entry: '<#E2E8F0><command>'
+    title: '<prefix> <info>Prefixes commands  <separator>/scprefix'
+    entry: '   <interactive><subcommand></interactive> <muted><arguments>'
+    hover: '<highlight><description><br><muted>Usage: <highlight><usage><br><br><interactive>Click to type this command'
+    # Shown next to each command and in its hover, keyed by the usage without /scprefix.
+    descriptions:
+      'help': 'Show this list'
+      'reload': 'Reload the configuration'
 
   reload:
-    success: '<prefix> <#A3E635>SimpleCloud Prefixes was successfully reloaded.'
-    failed: '<prefix> <#DC2626>SimpleCloud Prefixes could not be reloaded.'
+    success: '<prefix> <success>Reloaded the prefixes!'
+    failed: '<prefix> <error>Couldn''t reload the prefixes. Check the console.'
 
   exception:
-    syntax: '<prefix> <#DC2626>Use <#F8FAFC><command> <#DC2626>instead.'
-    permission: '<prefix> <#DC2626>You do not have permission to use this command.'
-    invalid-sender: '<prefix> <#DC2626>You cannot use this command.'
-    failed: '<prefix> <#DC2626>The command failed because <#F8FAFC><reason><#DC2626>.'
+    syntax: '<prefix> <error>Use <command> instead.'
+    permission: '<prefix> <error>You don''t have permission to use this command.'
+    invalid-sender: '<prefix> <error>You can''t use this command here.'
+    failed: '<prefix> <error>The command failed because <reason>.'
     argument:
-      invalid: '<prefix> <#DC2626>Invalid argument: <#F8FAFC><reason><#DC2626>.'
-      invalid-number: '<prefix> <#DC2626><#F8FAFC><value> <#DC2626>is not a valid number.'
-      number-too-small: '<prefix> <#DC2626>The number must be at least <#F8FAFC><min><#DC2626>.'
-      number-too-large: '<prefix> <#DC2626>The number must be at most <#F8FAFC><max><#DC2626>.'
-      invalid-boolean: '<prefix> <#DC2626>Use <#F8FAFC>true <#DC2626>or <#F8FAFC>false<#DC2626>.'
-      invalid-enum: '<prefix> <#DC2626><#F8FAFC><value> <#DC2626>is invalid. Use one of <#F8FAFC><options><#DC2626>.'
-      invalid-uuid: '<prefix> <#DC2626><#F8FAFC><value> <#DC2626>is not a valid UUID.'
+      invalid: '<prefix> <error>That argument is invalid: <reason>.'
+      invalid-number: '<prefix> <error><value> is not a number.'
+      number-too-small: '<prefix> <error>The number must be at least <min>.'
+      number-too-large: '<prefix> <error>The number must be at most <max>.'
+      invalid-boolean: '<prefix> <error>Use true or false.'
+      invalid-enum: '<prefix> <error><value> is not an option. Use one of <options>.'
+      invalid-uuid: '<prefix> <error><value> is not a valid UUID.'

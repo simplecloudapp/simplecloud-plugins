@@ -2,6 +2,7 @@ package app.simplecloud.npc.common.editor.inventory.screens
 
 import app.simplecloud.npc.common.editor.core.ActionFieldsPane
 import app.simplecloud.npc.common.editor.core.back
+import app.simplecloud.npc.common.editor.inventory.ClickSummary
 import app.simplecloud.npc.common.editor.inventory.InventoryEditorContext
 import app.simplecloud.npc.common.editor.inventory.InventoryEditorScreen
 import app.simplecloud.npc.common.editor.inventory.InventoryPickerPurpose
@@ -25,22 +26,35 @@ object ItemActionMenuBuilder {
     ): EditorMenu {
         val slots = screen.slots
         val pane = Pane(ActionFieldsPane.SIZE)
+        val items = config.items.filter { it.slot in slots }
 
         pane[ActionFieldsPane.HEADER_SLOT] = Ui.item(
             Clicks.material(screen.interaction),
             "<ttl>${Clicks.label(screen.interaction)}",
-            listOfNotNull("<warn>Applies to ${slots.size} items".takeIf { slots.size > 1 }),
-            glowing = true,
+            listOf("<bd>Editing: <val>" + if (slots.size == 1) "This slot" else "${slots.size} slots") +
+                when {
+                    ClickSummary.differs(items, screen.interaction) ->
+                        listOf("<warn>The items differ: what you see is", "<warn>the first one, edits apply to all.")
+
+                    ClickSummary.hasOwn(items, screen.interaction) -> emptyList()
+
+                    else -> listOf("") + ClickSummary.lines(config, items, screen.interaction)
+                },
         )
 
         ActionFieldsPane.fill(pane, port(context, player, config, slots, screen.interaction))
+
+        if (!ClickSummary.hasOwn(items, screen.interaction)) {
+            pane.back(context, player)
+            return pane.menu(Ui.title(Clicks.label(screen.interaction), config.id))
+        }
 
         pane.left(
             ActionFieldsPane.DELETE_SLOT,
             Ui.item(
                 "RED_CONCRETE",
                 "<err>Clear This Click",
-                listOf("<hnt>Undo on the canvas brings it back.", "<key>Left <hnt>Clear"),
+                listOf("<bd>Removes everything it does.", "<hnt>Undo it on the menu screen.", "", "<key>Left-click to clear it"),
             ),
         ) {
             context.change(player, config.id) { fresh ->
@@ -53,9 +67,8 @@ object ItemActionMenuBuilder {
         }
 
         pane.back(context, player)
-        pane.fillNavRow()
 
-        return pane.menu(Ui.title(Clicks.label(screen.interaction), "item"))
+        return pane.menu(Ui.title(Clicks.label(screen.interaction), config.id))
     }
 
     fun buildBlocks(
@@ -66,11 +79,11 @@ object ItemActionMenuBuilder {
     ): EditorMenu {
         val pane = Pane(ActionFieldsPane.ADD_SIZE)
 
-        ActionFieldsPane.fillAdd(pane, port(context, player, config, screen.slots, screen.interaction))
+        val editing = "<bd>Editing: <val>" + if (screen.slots.size == 1) "This slot" else "${screen.slots.size} slots"
+        ActionFieldsPane.fillAdd(pane, port(context, player, config, screen.slots, screen.interaction), screen.interaction, listOf(editing))
         pane.back(context, player)
-        pane.fillNavRow()
 
-        return pane.menu(Ui.title("Add to ${Clicks.short(screen.interaction)}", "item"))
+        return pane.menu(Ui.title("Add to ${Clicks.short(screen.interaction)}", config.id))
     }
 
     private fun port(

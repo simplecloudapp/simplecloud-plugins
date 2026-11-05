@@ -13,14 +13,14 @@ import app.simplecloud.npc.common.editor.inventory.InventoryEditorScreen
 import app.simplecloud.npc.common.editor.inventory.StudioTargets
 import app.simplecloud.npc.common.editor.menu.EditorMenu
 import app.simplecloud.npc.common.editor.menu.Pane
+import app.simplecloud.npc.common.editor.ui.Layout
 import app.simplecloud.npc.common.editor.ui.Ui
 import app.simplecloud.npc.common.text.Msg
 import app.simplecloud.npc.core.inventory.InventoryConfiguration
 import app.simplecloud.npc.core.platform.NpcPlayer
 
 object LoreMenuBuilder {
-    private const val NOTE_SLOT = 31
-    private val LINE_SLOTS = (0..26).toList()
+    private const val NOTE_SLOT = Layout.HEADER
 
     fun build(
         context: InventoryEditorContext,
@@ -51,14 +51,22 @@ object LoreMenuBuilder {
                 promptLine(context, player, screen, current, tokens, onText, onDelete)
             },
         )
-        LinesPane.place(pane, lines, LINE_SLOTS)
-        if (targets.size > 1) pane[NOTE_SLOT] = Ui.item("PAPER", "<warn>Applies to ${targets.size} items")
+        LinesPane.place(pane, lines)
+        val differ = StudioTargets.shared(StudioTargets.items(config, targets)) { it.lore } is StudioTargets.Shared.Mixed
+        pane[NOTE_SLOT] = Ui.item(
+            "WRITABLE_BOOK",
+            "<ttl>Lore",
+            listOfNotNull(
+                "<bd>The lines under the item name.",
+                "",
+                "<bd>Editing: <val>" + if (targets.size == 1) "This slot" else "${targets.size} slots",
+                if (differ) "<warn>Their lore differs: the first item's" else null,
+                if (differ) "<warn>lines replace it on all of them." else null,
+            ),
+        )
         pane.back(context, player)
-        pane.fillNavRow()
 
-        val itemName = first?.name?.let(Msg.miniMessage::stripTags)?.ifBlank { null } ?: "item"
-
-        return pane.menu(Ui.title("Lore", itemName))
+        return pane.menu(Ui.title("Lore", config.id))
     }
 
     private fun promptLine(

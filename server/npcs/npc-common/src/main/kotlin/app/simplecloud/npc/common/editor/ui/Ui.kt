@@ -6,15 +6,15 @@ import java.util.UUID
 object Ui {
     private const val ADD_HEAD_TEXTURE =
         "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjBiNTVmNzQ2ODFjNjgyODNhMWMxY2U1MWYxYzgzYjUyZTI5NzFjOTFlZTM0ZWZjYjU5OGRmMzk5MGE3ZTcifX19"
-    private const val BACK_HEAD_TEXTURE =
-        "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWQ3M2NmNjZkMzFiODNjZDhiODY0NGMxNTk1OGMxYjczYzhkOTczMjNiODAxMTcwYzFkODg2NGJiNmE4NDZkIn19fQ=="
-    private const val PREVIOUS_HEAD_TEXTURE =
-        "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2RjOWU0ZGNmYTQyMjFhMWZhZGMxYjViMmIxMWQ4YmVlYjU3ODc5YWYxYzQyMzYyMTQyYmFlMWVkZDUifX19"
-    private const val NEXT_HEAD_TEXTURE =
-        "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTU2YTM2MTg0NTllNDNiMjg3YjIyYjdlMjM1ZWM2OTk1OTQ1NDZjNmZjZDZkYzg0YmZjYTRjZjMwYWI5MzExIn19fQ=="
 
     private const val TITLE_NAME_LENGTH = 18
-    private const val DISABLED_MATERIAL = "LIGHT_GRAY_DYE"
+    private const val MAX_TITLE_LENGTH = 32
+    private const val MIN_NAME_LENGTH = 8
+    private const val EMPTY_MATERIAL = "LIGHT_GRAY_DYE"
+    private const val BACK_MATERIAL = "RED_STAINED_GLASS_PANE"
+    private const val PAGE_MATERIAL = "BLUE_STAINED_GLASS_PANE"
+    private const val ACTION = "<key>"
+    private const val HINT = "<hnt>"
 
     fun item(
         material: String,
@@ -25,7 +25,7 @@ object Ui {
     ): NpcItem = NpcItem(
         material,
         Palette.expand(name),
-        lore.map(Palette::expand),
+        tidy(lore).map(Palette::expand),
         amount = amount,
         glowing = glowing,
     )
@@ -39,24 +39,51 @@ object Ui {
         glowing: Boolean = false,
     ): NpcItem = NpcItem.playerHead(
         name = Palette.expand(name),
-        lore = lore.map(Palette::expand),
+        lore = tidy(lore).map(Palette::expand),
         owner = owner,
         texture = texture,
         signature = signature,
         glowing = glowing,
     )
 
-    fun option(material: String, name: String, lore: List<String>, selected: Boolean): NpcItem = item(
+    fun option(
+        material: String,
+        name: String,
+        lore: List<String>,
+        selected: Boolean,
+        nameColor: String? = null,
+    ): NpcItem = item(
         material,
-        if (selected) "<on>$name" else "<ttl>$name",
-        lore + if (selected) listOf("<on>Currently selected") else listOf("<key>Left <hnt>Select"),
+        when {
+            nameColor != null -> "$nameColor$name"
+            selected -> "<val>$name"
+            else -> "<ttl>$name"
+        },
+        lore + "" + if (selected) "<on>Picked now" else "<key>Left-click to pick it",
         glowing = selected,
     )
 
-    fun disabled(name: String, lore: List<String>): NpcItem = item(DISABLED_MATERIAL, "<off>$name", lore)
+    fun choice(
+        material: String,
+        name: String,
+        lore: List<String>,
+        current: Boolean,
+        verb: String,
+        actions: List<String> = emptyList(),
+    ): NpcItem = item(
+        material,
+        if (current) "<val>$name" else "<ttl>$name",
+        lore + "" + (if (current) "<on>Picked now" else "<key>Left-click to $verb") + actions,
+        glowing = current,
+    )
 
-    fun unavailable(name: String, lore: List<String>, reason: String): NpcItem =
-        disabled(name, lore + listOf("<err>$reason"))
+    fun disabled(name: String, lore: List<String>, material: String): NpcItem =
+        item(material, "<off>$name", lore.map { if (it.startsWith(HINT)) "<warn>" + it.removePrefix(HINT) else it })
+
+    fun empty(name: String, lore: List<String>): NpcItem = item(EMPTY_MATERIAL, "<off>$name", lore)
+
+    fun unavailable(name: String, lore: List<String>, reason: String, material: String): NpcItem =
+        disabled(name, lore + listOf("", "<hnt>$reason"), material)
 
     fun field(material: String, label: String, valueLine: String?, setVerb: String): NpcItem = item(
         material,
@@ -65,9 +92,8 @@ object Ui {
             valueLine ?: "<off>Not set",
             "",
             setVerb,
-            "<key>Q <hnt>Clear".takeIf { valueLine != null },
+            if (valueLine == null) null else "<key>Press Q to clear it",
         ),
-        glowing = valueLine != null,
     )
 
     fun toggle(
@@ -75,47 +101,63 @@ object Ui {
         enabled: Boolean,
         extraLore: List<String> = emptyList(),
         material: String? = null,
+        actions: List<String> = emptyList(),
     ): NpcItem = item(
         material ?: if (enabled) "LIME_DYE" else "GRAY_DYE",
         "<ttl>$label",
         listOf(if (enabled) "<on>On" else "<off>Off") + extraLore +
-            listOf(if (enabled) "<key>Left <hnt>Turn off" else "<key>Left <hnt>Turn on"),
+            listOf("", if (enabled) "<key>Left-click to turn it off" else "<key>Left-click to turn it on") + actions,
         glowing = enabled,
     )
 
     fun addHead(label: String, lore: List<String> = emptyList()): NpcItem =
         head("<ttl>$label", lore, texture = ADD_HEAD_TEXTURE)
 
-    fun back(): NpcItem = head("<ttl>Back", texture = BACK_HEAD_TEXTURE)
+    fun back(to: String? = null): NpcItem = item(
+        BACK_MATERIAL,
+        "<key>Back",
+        listOfNotNull(if (to == null) null else "<bd>To <val>${to.substringAfter(" · ", to)}", "<hnt>Esc does the same."),
+    )
 
-    fun close(): NpcItem = item("OAK_DOOR", "<ttl>Exit")
+    fun previousPage(page: Int): NpcItem? =
+        if (page <= 0) null else item(PAGE_MATERIAL, "<key>Previous Page", listOf("<bd>Page <val>$page"))
 
-    fun previousPage(page: Int): NpcItem =
-        if (page <= 0) {
-            head("<off>Previous Page", listOf("<hnt>You are on the first page."), texture = PREVIOUS_HEAD_TEXTURE)
-        } else {
-            head("<ttl>Previous Page", listOf("<key>Left <hnt>Page $page"), texture = PREVIOUS_HEAD_TEXTURE)
-        }
-
-    fun nextPage(page: Int, pageCount: Int): NpcItem =
-        if (page >= pageCount - 1) {
-            head("<off>Next Page", listOf("<hnt>No further pages."), texture = NEXT_HEAD_TEXTURE)
-        } else {
-            head("<ttl>Next Page", listOf("<key>Left <hnt>Page ${page + 2}"), texture = NEXT_HEAD_TEXTURE)
-        }
+    fun nextPage(page: Int, pageCount: Int): NpcItem? =
+        if (page >= pageCount - 1) null else item(PAGE_MATERIAL, "<key>Next Page", listOf("<bd>Page <val>${page + 2}"))
 
     fun pageIndicator(page: Int, pageCount: Int, lore: List<String>): NpcItem =
-        item("PAPER", "<ttl>Page ${page + 1} <hnt>of <ttl>$pageCount", lore)
+        item("PAPER", "<ttl>Page ${page + 1}/$pageCount", lore)
 
-    fun title(section: String, npcName: String): String = "$section · ${clipName(npcName)}"
+    /** The title of an editor's first screen, e.g. `Edit limbo`. */
+    fun root(name: String): String = "Edit ${clipName(name)}"
+
+    /** The title of a screen below the first one, e.g. `Edit limbo · Skin`. */
+    fun title(section: String, npcName: String): String {
+        val room = MAX_TITLE_LENGTH - "Edit  · ".length - section.length
+        if (room >= MIN_NAME_LENGTH || npcName.length <= room) return "Edit ${clip(npcName, minOf(room, TITLE_NAME_LENGTH))} · $section"
+        return "Edit ${clip(npcName, MIN_NAME_LENGTH)} · ${clip(section, MAX_TITLE_LENGTH - MIN_NAME_LENGTH - 9)}"
+    }
+
+    private fun clip(text: String, length: Int): String = if (text.length <= length) text else text.take(length - 1) + "…"
 
     private fun clipName(name: String): String =
-        if (name.length <= TITLE_NAME_LENGTH) name else name.take(TITLE_NAME_LENGTH) + "..."
+        if (name.length <= TITLE_NAME_LENGTH) name else name.take(TITLE_NAME_LENGTH) + "…"
 
-    fun pretty(material: String): String =
-        material.lowercase().split('_').joinToString(" ") { it.replaceFirstChar(Char::uppercase) }
+    private val SMALL_WORDS = setOf("a", "an", "and", "the", "of", "on", "to", "for", "in", "or", "with")
+
+    fun pretty(material: String): String = material.lowercase().split('_').mapIndexed { index, word ->
+        if (index > 0 && word in SMALL_WORDS) word else word.replaceFirstChar(Char::uppercase)
+    }.joinToString(" ")
 
     fun quote(text: String): String = "\"$text\""
+
+    /** Drops empty lines at the start and the end and collapses repeated ones, so tooltips never carry padding. */
+    private fun tidy(lore: List<String>): List<String> {
+        val (actions, facts) = lore.partition { it.startsWith(ACTION) }
+        val text = facts.dropWhile { it.isBlank() }.dropLastWhile { it.isBlank() }
+        val lines = if (actions.isEmpty() || text.isEmpty()) text + actions else text + "" + actions
+        return lines.filterIndexed { index, line -> line.isNotBlank() || lines[index - 1].isNotBlank() }
+    }
 }
 
 internal fun <T> List<T>.after(current: T): T = this[(indexOf(current) + 1) % size]

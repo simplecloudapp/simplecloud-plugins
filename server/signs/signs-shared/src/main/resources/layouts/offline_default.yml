@@ -7,6 +7,6 @@ frame-update-interval: 1000
 frames:
   - lines:
       - ''
-      - '<#F8FAFC><target>'
-      - '<#94A3B8>ᴏꜰꜰʟɪɴᴇ'
+      - '<highlight><target>'
+      - '<muted>ᴏꜰꜰʟɪɴᴇ'
       - ''

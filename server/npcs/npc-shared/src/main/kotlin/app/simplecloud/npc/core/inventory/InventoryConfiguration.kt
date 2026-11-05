@@ -12,7 +12,7 @@ import org.spongepowered.configurate.objectmapping.meta.Setting
 data class InventoryConfiguration(
     override val version: Int = CURRENT_VERSION,
     val id: String = "",
-    val title: String = "<#0ea5e9>Menu",
+    val title: String = "Menu",
     val rows: Int = 3,
     val items: MutableList<InventoryItemConfiguration> = mutableListOf(),
     @Setting("open-permission")

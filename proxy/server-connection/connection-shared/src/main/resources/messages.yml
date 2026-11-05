@@ -2,25 +2,46 @@
 version: 2
 
 # ───────────────────────────────────────────────────────────────────────────────
+# Palette
+# Colors used throughout the messages. Every entry is a tag, e.g. <brand>text or <error>text.
+# ───────────────────────────────────────────────────────────────────────────────
+palette:
+  brand: '#3B95FF'
+  interactive: '#62ADFF'
+  highlight: '#CFE4FF'
+  muted: '#A1A7B5'
+  separator: '#5F5F63'
+  info: '#4FA3FF'
+  success: '#6AD13C'
+  warning: '#FF9029'
+  error: '#FF3B30'
+  mint: '#1FD98E'
+  violet: '#9566FF'
+  pink: '#E94BA6'
+  gold: '#F2C230'
+  cyan: '#22C3DB'
+  amber: '#FFA329'
+
+# ───────────────────────────────────────────────────────────────────────────────
 # Variables
 # Reusable variables that can be used throughout the messages.
 # Usage: <variable_name> will be replaced with the defined value.
 # ───────────────────────────────────────────────────────────────────────────────
 variables:
-  prefix: '<color:#38bdf8><bold>⚡</bold></color>'
+  prefix: '<brand><b>⚡</b></brand>'
 
 # ───────────────────────────────────────────────────────────────────────────────
 # Kick Messages
 # ───────────────────────────────────────────────────────────────────────────────
 kick:
-  no-fallback-servers: '<color:#dc2626>There is no fallback server available.'
-  no-target-connection: '<color:#dc2626>You have been disconnected from the network<br>because there are no fallback servers available.'
+  no-fallback-servers: '<error>There is no server to send you to.<br><br><muted>Try again in a few seconds.'
+  no-target-connection: '<error>There is no server to join right now.<br><br><muted>Try again in a few seconds.'
 
 # ───────────────────────────────────────────────────────────────────────────────
 # Command Messages
 # ───────────────────────────────────────────────────────────────────────────────
 command:
-  command-usage: '<prefix> <color:#ffffff>Usage: /connection reload'
-  config-reloading: '<prefix> <color:#ffffff>Reloading Connection configurations...'
-  config-reloaded-success: '<prefix> <color:#22c55e>Successfully reloaded all Connection configurations.'
-  config-reloaded-failed: '<prefix> <color:#dc2626>Failed to reload Connection configurations.'
+  command-usage: '<prefix> <info>Use /connection reload to reload the configuration.'
+  config-reloading: '<prefix> <info>Reloading the connection configuration.'
+  config-reloaded-success: '<prefix> <success>Reloaded the connection configuration!'
+  config-reloaded-failed: '<prefix> <error>Couldn''t reload the connection configuration. Check the console.'

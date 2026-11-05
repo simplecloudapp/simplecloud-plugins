@@ -1,26 +1,26 @@
 package app.simplecloud.npc.common.text
 
 import app.simplecloud.npc.core.platform.NpcCommandSender
+import app.simplecloud.npc.core.text.NpcPalette
 import net.kyori.adventure.text.minimessage.MiniMessage
 
 object Msg {
-    const val PREFIX = "<#38bdf8><b>⚡</b>"
+    const val PREFIX = "<brand><b>⚡</b></brand>"
 
-    const val ERROR = "<#dc2626>"
-    const val WARNING = "<#f59e0b>"
-    const val SUCCESS = "<#a3e635>"
-    const val INFO = "<#ffffff>"
-    const val KEY = "<#38bdf8>"
+    const val ERROR = "<error>"
+    const val WARNING = "<warning>"
+    const val SUCCESS = "<success>"
+    const val INFO = "<info>"
+    const val KEY = "<muted>"
+    const val INTERACTIVE = "<interactive>"
+    const val HIGHLIGHT = "<highlight>"
 
-    const val ACCENT = "<#fbbf24>"
-    const val MUTED = "<#a3a3a3>"
-    const val SUBTLE = "<#a8a8a8>"
-
-    const val SEPARATOR = "<#a8a8a8>════════════════════════"
+    const val MUTED = "<muted>"
+    const val SUBTLE = "<separator>"
 
     private val PLACEHOLDER = Regex.fromLiteral("{}")
 
-    val miniMessage: MiniMessage = MiniMessage.miniMessage()
+    val miniMessage: MiniMessage = NpcPalette.miniMessage
 
     fun error(template: String, vararg args: Any?) = compose(ERROR, template, args)
     fun warning(template: String, vararg args: Any?) = compose(WARNING, template, args)
@@ -34,21 +34,18 @@ object Msg {
     private fun prefix(color: String) = "$PREFIX $color"
 
     private fun compose(color: String, template: String, args: Array<out Any?>): String =
-        prefix(color) + highlight(template, args, color)
+        prefix(color) + highlight(template, args)
 
-    /** Sign-style tree: `├─` for every line but the last, which gets `└─`. */
-    fun tree(lines: List<String>, indent: String = ""): List<String> = lines.mapIndexed { index, line ->
-        val branch = if (index == lines.lastIndex) "└─" else "├─"
-        "$indent$SUBTLE$branch $line"
-    }
+    /** A bulleted list. */
+    fun tree(lines: List<String>, indent: String = ""): List<String> = lines.map { line -> "$indent$SUBTLE• $line" }
 
-    fun highlight(template: String, args: Array<out Any?>, baseColor: String): String {
+    fun highlight(template: String, args: Array<out Any?>): String {
         if (args.isEmpty()) return template
         var argIndex = 0
 
         return PLACEHOLDER.replace(template) { match ->
             if (argIndex < args.size) {
-                "$ACCENT${miniMessage.escapeTags(args[argIndex++].toString())}$baseColor"
+                miniMessage.escapeTags(args[argIndex++].toString())
             } else {
                 match.value
             }

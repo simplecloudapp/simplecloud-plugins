@@ -241,17 +241,14 @@ class JoinStateCommand<C : CloudSender>(
         val sender = context.sender()
         val help = plugin.messages.get().command.joinState.help
         val commands = listOf(
-            "/scproxy joinstate help",
-            "/scproxy joinstate list",
-            "/scproxy joinstate info",
-            "/scproxy joinstate info <group|ps> <target> [id]",
-            "/scproxy joinstate set <group|ps> <target> <joinstate> [id]",
+            "joinstate list",
+            "joinstate info",
+            "joinstate info <group|ps> <target> [id]",
+            "joinstate set <group|ps> <target> <joinstate> [id]",
         )
 
         sender.sendMessage(plugin.messageFormatter.format(help.header))
-        commands.forEach {
-            sender.sendMessage(plugin.messageFormatter.format(help.entry, Placeholder.unparsed("command", it)))
-        }
+        plugin.messageFormatter.formatHelp(help, commands).forEach(sender::sendMessage)
     }
 
     private fun sendState(sender: C, target: String, state: String) {

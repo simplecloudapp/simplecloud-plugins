@@ -7,6 +7,6 @@ frame-update-interval: 1000
 frames:
   - lines:
       - ''
-      - '<#F8FAFC><server-name>'
-      - '<#F59E0B>ᴍᴀɪɴᴛᴇɴᴀɴᴄᴇ'
+      - '<highlight><server-name>'
+      - '<warning>ᴍᴀɪɴᴛᴇɴᴀɴᴄᴇ'
       - ''

@@ -18,12 +18,12 @@ import app.simplecloud.npc.core.NpcLog
 import app.simplecloud.npc.core.config.NpcConfig
 import app.simplecloud.npc.core.config.NpcPose
 import app.simplecloud.npc.core.location.NpcLocation
+import app.simplecloud.npc.core.text.NpcPalette
 import com.destroystokyo.paper.SkinParts
 import com.destroystokyo.paper.profile.PlayerProfile
 import com.destroystokyo.paper.profile.ProfileProperty
 import io.papermc.paper.datacomponent.item.ResolvableProfile
 import io.papermc.paper.event.player.PlayerTrackEntityEvent
-import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Bukkit
 import org.bukkit.World
 import org.bukkit.attribute.Attribute
@@ -190,7 +190,7 @@ class MannequinRenderer(
         hideDescription(mannequin)
 
         val customName = config.entity.customName
-        mannequin.customName(customName?.let(MiniMessage.miniMessage()::deserialize))
+        mannequin.customName(if (customName == null) null else NpcPalette.miniMessage.deserialize(customName))
         mannequin.isCustomNameVisible = customName != null
 
         mannequin.persistentDataContainer.set(NpcKeys.MANNEQUIN, PersistentDataType.STRING, config.id)

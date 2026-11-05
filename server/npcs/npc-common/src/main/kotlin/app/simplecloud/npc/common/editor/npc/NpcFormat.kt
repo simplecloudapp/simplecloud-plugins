@@ -22,7 +22,7 @@ object NpcFormat {
 
     fun plain(text: String): String = Msg.miniMessage.escapeTags(text)
 
-    fun joinState(joinState: String): String = joinState.lowercase()
+    fun joinState(joinState: String): String = joinState.lowercase().replaceFirstChar(Char::uppercase)
 
     fun isDefaultJoinState(joinState: String): Boolean = joinState.equals(NpcConfig.DEFAULT_JOIN_STATE, true)
 
@@ -36,14 +36,11 @@ object NpcFormat {
             .map { it.lowercase() }
             .distinct()
 
-    fun cellName(interaction: PlayerInteraction, joinState: String): String =
-        "${Clicks.short(interaction)} · ${joinState(joinState)}"
-
     fun seconds(ticks: Int, decimals: Int = 1): String = String.format(Locale.ROOT, "%.${decimals}fs", ticks / 20.0)
 
     fun pacing(title: NpcConfig.TitleConfiguration): String =
         "<bd><val>${seconds(title.fadeIn)} <bd>in · " +
-            "<val>${seconds(title.stay)} <bd>hold · " +
+            "<val>${seconds(title.stay)} <bd>stay · " +
             "<val>${seconds(title.fadeOut)} <bd>out"
 
     fun messageLines(message: String?): List<String> = message?.split('\n')?.filter { it.isNotBlank() }.orEmpty()

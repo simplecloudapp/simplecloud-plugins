@@ -19,6 +19,9 @@ open class EditorSession<S : Any> {
 
     val pages = mutableMapOf<String, Int>()
 
+    /** The last title of every screen on the stack, so Back can name where it leads. */
+    val titles = mutableMapOf<S, String>()
+
     @Volatile
     private var promptOpenedAt = 0L
 

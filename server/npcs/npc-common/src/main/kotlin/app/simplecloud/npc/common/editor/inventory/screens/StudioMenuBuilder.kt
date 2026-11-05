@@ -8,6 +8,7 @@ import app.simplecloud.npc.common.editor.PromptTokens
 import app.simplecloud.npc.common.editor.core.back
 import app.simplecloud.npc.common.editor.core.toggle
 import app.simplecloud.npc.common.editor.inventory.CanvasMode
+import app.simplecloud.npc.common.editor.inventory.ClickSummary
 import app.simplecloud.npc.common.editor.inventory.InventoryEditorContext
 import app.simplecloud.npc.common.editor.inventory.InventoryEditorScreen
 import app.simplecloud.npc.common.editor.inventory.InventoryPickerPurpose
@@ -19,6 +20,7 @@ import app.simplecloud.npc.common.editor.menu.EditorMenu
 import app.simplecloud.npc.common.editor.menu.MenuClick
 import app.simplecloud.npc.common.editor.menu.Pane
 import app.simplecloud.npc.common.editor.ui.Clicks
+import app.simplecloud.npc.common.editor.ui.Layout
 import app.simplecloud.npc.common.editor.ui.Palette
 import app.simplecloud.npc.common.editor.ui.Stepper
 import app.simplecloud.npc.common.editor.ui.Ui
@@ -36,37 +38,45 @@ import app.simplecloud.npc.core.platform.NpcPlayer
 import net.kyori.adventure.text.Component
 
 object StudioMenuBuilder {
-    private const val SIZE = 45
+    private const val SIZE = Layout.SIZE
 
-    private const val LOOK_TAB = 1
-    private const val CLICK_TAB = 2
-    private const val LIVE_TAB = 3
-    private const val PREVIEW_SLOT = 6
-    private val HEADER_FILLER = listOf(0, 4, 5, 7, 8)
+    private const val LOOK_TAB = 2
+    private const val CLICK_TAB = 6
+    private const val PREVIEW_SLOT = Layout.HEADER
 
     private const val MATERIAL_SLOT = 19
-    private const val NAME_SLOT = 20
-    private const val LORE_SLOT = 21
-    private const val AMOUNT_SLOT = 22
-    private const val GLINT_SLOT = 23
-    private const val TOOLTIP_SLOT = 24
-    private const val MODEL_SLOT = 25
-    private const val HEAD_SLOT = 31
+    private const val NAME_SLOT = 21
+    private const val LORE_SLOT = 23
+    private const val AMOUNT_SLOT = 25
+    private const val GLINT_SLOT = 28
+    private const val TOOLTIP_SLOT = 30
+    private const val MODEL_SLOT = 32
+    private const val HEAD_SLOT = 34
 
     private val CLICK_SLOTS = mapOf(
-        PlayerInteraction.LEFT_CLICK to 20,
+        PlayerInteraction.LEFT_CLICK to 19,
         PlayerInteraction.RIGHT_CLICK to 21,
         PlayerInteraction.SHIFT_LEFT_CLICK to 23,
-        PlayerInteraction.SHIFT_RIGHT_CLICK to 24,
+        PlayerInteraction.SHIFT_RIGHT_CLICK to 25,
     )
     private const val CLICK_INFO_SLOT = 31
 
-    private const val GROUP_SLOT = 20
-    private const val SCOPE_SLOT = 22
-    private const val PLACEHOLDERS_SLOT = 24
+    private const val GROUP_SLOT = 39
+    private const val PLACEHOLDERS_SLOT = 41
 
-    private const val COUNT_SLOT = 40
-    private const val DELETE_SLOT = 44
+    private const val SCOPE_SLOT = Layout.TOOL_LEFT
+    private const val DELETE_SLOT = Layout.TOOL_RIGHT
+    private const val MAX_MODEL_DATA = 9_999_999
+    private val SAMPLE = mapOf(
+        "<entry_name>" to "Lobby-1",
+        "<entry_group_name>" to "Lobby",
+        "<entry_numerical_id>" to "1",
+        "<entry_online_players>" to "12",
+        "<entry_max_players>" to "20",
+        "<entry_state>" to "Available",
+        "<entry_motd>" to "A SimpleCloud server",
+        "<entry_server>" to "Lobby-1",
+    )
 
     private val AMOUNT = Stepper(
         label = "Amount",
@@ -74,18 +84,8 @@ object StudioMenuBuilder {
         step = 1.0,
         default = 1.0,
         decimals = 0,
-        material = "SLIME_BALL",
+        material = "BRICK",
         bigMultiplier = 8,
-    )
-    private val MODEL_DATA = Stepper(
-        label = "Custom Model Data",
-        range = 0.0..9_999_999.0,
-        step = 1.0,
-        default = 0.0,
-        decimals = 0,
-        material = "ITEM_FRAME",
-        hints = listOf("<hnt>0 means none; for resource packs."),
-        bigMultiplier = 100,
     )
 
     fun build(
@@ -101,57 +101,84 @@ object StudioMenuBuilder {
         val pane = Pane(SIZE)
         if (first == null) {
             pane.back(context, player)
-            pane.fillNavRow()
-            return pane.menu("Item Studio · nothing here")
+            return pane.menu("Item Studio")
         }
-        val isLive = items.any { it.liveGroup != null && it.pageControl == null }
-        val tab = if (screen.tab == StudioTab.LIVE && !isLive) StudioTab.LOOK else screen.tab
+        val tab = screen.tab
 
         fun edit(transform: (InventoryItemConfiguration) -> InventoryItemConfiguration) {
             context.change(player, config.id) { StudioTargets.edit(it, targets, transform) }
             context.render(player, screen)
         }
 
-        fun tabItem(slot: Int, which: StudioTab, material: String, label: String, enabled: Boolean = true) {
-            if (!enabled) {
-                pane[slot] = Ui.disabled(label, listOf("<hnt>Only for live slots."))
-                return
-            }
-            pane.left(slot, Ui.option(material, label, emptyList(), selected = tab == which)) {
-                if (tab != which) context.replace(player, screen.copy(tab = which))
+        fun tabItem(slot: Int, which: StudioTab, material: String, label: String, description: String) {
+            val selected = tab == which
+            val name = if (selected) "<val>$label" else "<ttl>$label"
+            val lore = listOf("<bd>$description") + if (selected) emptyList() else listOf("<key>Left-click to open")
+            pane.left(slot, Ui.item(material, name, lore, glowing = selected)) {
+                if (!selected) context.replace(player, screen.copy(tab = which))
             }
         }
 
-        tabItem(LOOK_TAB, StudioTab.LOOK, "PAINTING", "Look")
-        tabItem(CLICK_TAB, StudioTab.CLICK, "LEVER", "Click")
-        tabItem(LIVE_TAB, StudioTab.LIVE, "LIME_STAINED_GLASS_PANE", "Live", enabled = isLive)
-        val livePreview = session.live?.slots?.get(first.slot)?.takeIf { session.mode == CanvasMode.LIVE }
-        pane[PREVIEW_SLOT] = livePreview
-            ?.let { it.copy(lore = it.lore + Palette.expand("<hnt>Live preview from the canvas")) }
-            ?: preview(first)
-        pane.fill(HEADER_FILLER)
+        tabItem(LOOK_TAB, StudioTab.LOOK, "ARMOR_STAND", "Item Look", "How the item looks")
+        tabItem(CLICK_TAB, StudioTab.CLICK, "LEVER", "Item Clicks", "What a click does")
+        val livePreview = if (session.mode == CanvasMode.LIVE) session.live?.slots?.get(first.slot) else null
+        val shown = livePreview ?: preview(first)
+        val group = items.firstNotNullOfOrNull { it.liveGroup }
+        val editing = when {
+            targets.size == 1 -> "<bd>Editing: <val>This slot"
+            group == null -> "<bd>Editing: <val>${targets.size} slots"
+            else -> "<bd>Editing: <val>${targets.size} slots <bd>of <val>$group"
+        }
+        val intro = listOf(Palette.expand(if (livePreview == null) "<hnt>Preview only, with sample values:" else "<hnt>Preview only, live:"))
+        val previewLore = listOfNotNull(
+            "",
+            editing,
+            if (targets.size > 1) "<hnt>Fields that differ show as Mixed." else null,
+        )
+        val scopeLore = previewLore.drop(1).map(Palette::expand) + Palette.expand("")
+        pane[PREVIEW_SLOT] = shown.copy(lore = scopeLore + intro + shown.lore, hideTooltip = false)
+
+        if (group != null) {
+            val only = session.thisSlotOnly
+            pane.left(
+                SCOPE_SLOT,
+                Ui.item(
+                    "CHEST_MINECART",
+                    if (only) "<ttl>Editing This Slot" else "<ttl>Editing the Whole Group",
+                    listOf(
+                        if (only) "<bd>Changes only touch this slot." else "<bd>Changes touch every slot of <val>$group<bd>.",
+                        "",
+                        if (only) "<key>Left-click to edit the whole group" else "<key>Left-click to edit only this slot",
+                    ),
+                ),
+            ) {
+                session.thisSlotOnly = !only
+                context.render(player, screen)
+            }
+        }
 
         when (tab) {
-            StudioTab.LOOK -> look(context, player, config, screen, items, pane, ::edit)
+            StudioTab.LOOK -> {
+                look(context, player, config, screen, items, pane, ::edit)
+                live(context, player, config, items, pane)
+            }
+
             StudioTab.CLICK -> click(context, player, config, items, targets, pane)
-            StudioTab.LIVE -> live(context, player, config, screen, items, pane)
         }
 
-        if (targets.size > 1) {
-            pane[COUNT_SLOT] = Ui.item(
-                "CHEST_MINECART",
-                "<ttl>Editing <val>${targets.size} <ttl>items",
-                listOf("<bd>Changes here apply to all of them.", "<hnt>Fields that differ show as mixed."),
-                amount = targets.size.coerceIn(1, 64),
-            )
-        }
-        val deleted = if (targets.size > 1) "these ${targets.size} items" else "this item"
+        val many = targets.size > 1
+        val deleted = if (many) "these ${targets.size} items" else "this item"
         pane.left(
             DELETE_SLOT,
             Ui.item(
-                "TNT",
+                "RED_CONCRETE",
                 "<err>Delete",
-                listOf("<bd>Removes $deleted.", "<hnt>Undo on the canvas brings it back.", "", "<key>Left <hnt>Delete"),
+                listOf(
+                    "<bd>Removes $deleted.",
+                    "<hnt>Undo it on the menu screen.",
+                    "",
+                    if (many) "<key>Left-click to delete them" else "<key>Left-click to delete it",
+                ),
             ),
         ) {
             context.change(player, config.id) { cfg ->
@@ -161,16 +188,14 @@ object StudioMenuBuilder {
             context.back(player)
         }
         pane.back(context, player)
-        pane.fillNavRow()
 
-        val title = first.name?.let(Msg.miniMessage::stripTags)?.takeIf { it.isNotBlank() }
-            ?: Ui.pretty(first.material)
-
-        return pane.menu(Ui.title("Item Studio", title))
+        return pane.menu(Ui.title(if (tab == StudioTab.LOOK) "Item Look" else "Item Clicks", config.id))
     }
 
     private fun preview(item: InventoryItemConfiguration): NpcItem {
-        val icon = ItemIconResolver.icon(item)
+        val name = item.name
+        val sampled = item.copy(name = if (name == null) null else sample(name), lore = item.lore.map(::sample).toMutableList())
+        val icon = ItemIconResolver.icon(sampled)
         return icon.copy(name = icon.name.ifBlank { Ui.pretty(item.material) }, hideTooltip = false)
     }
 
@@ -190,7 +215,7 @@ object StudioMenuBuilder {
             Ui.item(
                 (material as? Shared.Same)?.value ?: "BUNDLE",
                 "<ttl>Material",
-                listOf(valueLine(material) { Ui.pretty(it) }, "", "<key>Left <hnt>Pick another"),
+                listOf(valueLine(material) { Ui.pretty(it) }, "", "<key>Left-click to pick another"),
             ),
         ) { context.navigate(player, InventoryEditorScreen.Picker(config.id, InventoryPickerPurpose.Material(slots))) }
 
@@ -202,12 +227,13 @@ object StudioMenuBuilder {
                 "<ttl>Name",
                 listOf(
                     when (name) {
-                        Shared.Mixed -> "<warn>mixed"
+                        Shared.Mixed -> "<warn>Mixed"
                         is Shared.Same -> name.value?.let { "<bd>Now: $it" } ?: "<off>Default item name"
                     },
                     "<hnt>MiniMessage and <entry_*> placeholders work.",
                     "",
-                    "<key>Left <hnt>Type it in chat  <key>Q <hnt>Clear",
+                    "<key>Left-click to type it in chat",
+                    "<key>Press Q to clear it",
                 ),
             ),
         ) { click ->
@@ -247,32 +273,56 @@ object StudioMenuBuilder {
                             .ifEmpty { listOf("<off>No lore") }
                             .take(6)
                             .map { "<bd>" + it.ifBlank { " " } }
-                } + listOf("", "<key>Left <hnt>Edit the lines"),
+                } + listOf("", "<key>Left-click to edit the lines"),
             ),
         ) { context.navigate(player, InventoryEditorScreen.Lore(config.id, slots)) }
 
-        val amount = (StudioTargets.shared(items) { it.amount } as? Shared.Same)?.value ?: 1
-        pane[AMOUNT_SLOT] = AMOUNT.element(amount.toDouble()) { value ->
+        val sharedAmount = StudioTargets.shared(items) { it.amount }
+        val amount = (sharedAmount as? Shared.Same)?.value ?: 1
+        pane[AMOUNT_SLOT] = AMOUNT.element(amount.toDouble(), mixed = sharedAmount is Shared.Mixed) { value ->
             edit { it.copy(amount = value.toInt()) }
         }
 
         val glint = (StudioTargets.shared(items) { it.glowing } as? Shared.Same)?.value
-        pane.toggle(GLINT_SLOT, "Enchant Glint", glint == true, material = "EXPERIENCE_BOTTLE") {
+        pane.left(GLINT_SLOT, mixedToggle("Enchant Glint", glint, "EXPERIENCE_BOTTLE", emptyList())) {
             edit { it.copy(glowing = glint != true) }
         }
 
         val hidden = (StudioTargets.shared(items) { it.hideTooltip } as? Shared.Same)?.value
-        pane.toggle(
-            TOOLTIP_SLOT,
-            "Hide Tooltip",
-            hidden == true,
-            extraLore = listOf("<hnt>For decoration; hovering shows nothing."),
-            material = "GLASS_PANE",
-        ) { edit { it.copy(hideTooltip = hidden != true) } }
+        val hideHint = listOf("<hnt>For decoration; hovering shows nothing.")
+        pane.left(TOOLTIP_SLOT, mixedToggle("Hide Tooltip", hidden, "GLASS", hideHint)) {
+            edit { it.copy(hideTooltip = hidden != true) }
+        }
 
-        val model = (StudioTargets.shared(items) { it.customModelData } as? Shared.Same)?.value ?: 0
-        pane[MODEL_SLOT] = MODEL_DATA.element(model.toDouble()) { value ->
-            edit { it.copy(customModelData = value.toInt().takeIf { data -> data > 0 }) }
+        val model = StudioTargets.shared(items) { it.customModelData }
+        val modelLine = when (model) {
+            Shared.Mixed -> "<warn>Mixed"
+            is Shared.Same -> if (model.value == null) null else "<val>${model.value}"
+        }
+        pane.on(MODEL_SLOT, modelItem(modelLine)) { click ->
+            when (click) {
+                MenuClick.LEFT -> prompt(
+                    context,
+                    player,
+                    screen,
+                    "Custom Model Data",
+                    "Type a number from 1 to $MAX_MODEL_DATA.",
+                    (model as? Shared.Same)?.value?.toString(),
+                    format = PromptFormat.PLAIN,
+                    validate = { text ->
+                        val number = text.toIntOrNull()
+                        if (number == null || number !in 1..MAX_MODEL_DATA) {
+                            PromptResult.Rejected(Component.text("Type a whole number from 1 to $MAX_MODEL_DATA."))
+                        } else {
+                            null
+                        }
+                    },
+                ) { text -> edit { it.copy(customModelData = text.toInt()) } }
+
+                MenuClick.DROP -> if (modelLine != null) edit { it.copy(customModelData = null) }
+
+                else -> Unit
+            }
         }
 
         val head = StudioTargets.shared(items) { it.head }
@@ -280,7 +330,8 @@ object StudioMenuBuilder {
         if (!isHead) {
             pane[HEAD_SLOT] = Ui.disabled(
                 "Head Texture",
-                listOf("<hnt>For player heads; set the material to Player Head."),
+                listOf("<hnt>Set the material to Player Head first."),
+                "PLAYER_HEAD",
             )
         } else {
             pane.on(
@@ -296,8 +347,9 @@ object StudioMenuBuilder {
                         "<hnt>A texture value (e.g. from minecraft-heads.com),",
                         "<hnt>a username or UUID, or whoever opens the menu.",
                         "",
-                        "<key>Left <hnt>Type it in chat  <key>Right <hnt>Viewer's head",
-                        "<key>Q <hnt>Clear",
+                        "<key>Left-click to type it in chat",
+                        "<key>Right-click to use the viewer's head",
+                        "<key>Press Q to clear it",
                     ),
                 ),
             ) { click ->
@@ -361,33 +413,24 @@ object StudioMenuBuilder {
         pane: Pane,
     ) {
         val slots = targets.sorted()
-        val first = items.first()
         CLICK_SLOTS.forEach { (interaction, slot) ->
-            val action = ItemClickActions.of(first, interaction)
-            val configured = action?.configuredTypes().orEmpty()
-            pane.left(
+            pane.on(
                 slot,
                 Ui.item(
                     Clicks.material(interaction),
                     "<ttl>${Clicks.label(interaction)}",
-                    configured.map { "<bd>· <val>$it" }.ifEmpty { listOf("<off>Nothing") } +
-                        listOf("", "<key>Left <hnt>Edit"),
-                    glowing = configured.isNotEmpty(),
+                    ClickSummary.lines(config, items, interaction) + listOf("", "<key>Click to edit it"),
+                    glowing = ClickSummary.hasOwn(items, interaction),
                 ),
-            ) { context.navigate(player, InventoryEditorScreen.ItemAction(config.id, slots, interaction)) }
+            ) { _ -> context.navigate(player, InventoryEditorScreen.ItemAction(config.id, slots, interaction)) }
         }
 
-        val legacy = first.actions.isNotEmpty() &&
-            first.actions.all { it.interactionType == PlayerInteraction.RIGHT_CLICK }
-        val liveSource = first.liveGroup?.let { LiveGroups.source(config, it) }
         pane[CLICK_INFO_SLOT] = Ui.item(
             "BOOK",
             "<ttl>How Clicks Work",
-            listOfNotNull(
-                "<bd>Each click type runs its own actions;",
-                "<bd>shift clicks fall back to the plain one.",
-                "<warn>Only right click is set, so it runs on any click.".takeIf { legacy },
-                "<hnt>Live slot with no actions: the source's default runs.".takeIf { liveSource != null },
+            listOf(
+                "<bd>A click with nothing of its own",
+                "<bd>does what the plain click does.",
             ),
         )
     }
@@ -396,48 +439,49 @@ object StudioMenuBuilder {
         context: InventoryEditorContext,
         player: NpcPlayer,
         config: InventoryConfiguration,
-        screen: InventoryEditorScreen.Studio,
         items: List<InventoryItemConfiguration>,
         pane: Pane,
     ) {
-        val session = context.session(player)
         val group = items.firstNotNullOfOrNull { it.liveGroup } ?: return
-        val (color, _) = LiveGroups.colorOf(config, group)
         val sourceLabel = LiveGroups.source(config, group)?.let { LiveGroups.describe(it.type).label } ?: "none"
         pane.left(
             GROUP_SLOT,
             Ui.item(
-                "${color}_STAINED_GLASS_PANE",
-                "<ttl>Group <val>$group",
+                "OBSERVER",
+                "<ttl>Live Group",
                 listOf(
-                    "<bd>Source <val>$sourceLabel",
-                    "<bd><val>${LiveGroups.contentSlots(config, group).size} <bd>slots",
+                    "<bd>Name: <val>$group",
+                    "<bd>Source: <val>$sourceLabel",
+                    "<bd>Slots: <val>${LiveGroups.contentSlots(config, group).size}",
                     "",
-                    "<key>Left <hnt>Group settings",
+                    "<key>Left-click to open the group settings",
                 ),
             ),
         ) { context.navigate(player, InventoryEditorScreen.LiveGroup(config.id, group)) }
 
-        pane.toggle(
-            SCOPE_SLOT,
-            "This Slot Only",
-            session.thisSlotOnly,
-            extraLore = listOf("<hnt>Off: Look edits restyle every slot", "<hnt>of the group at once."),
-            material = "TARGET",
-        ) {
-            session.thisSlotOnly = !session.thisSlotOnly
-            context.render(player, screen)
-        }
-
         pane[PLACEHOLDERS_SLOT] = Ui.item(
-            "OAK_SIGN",
+            "BOOK",
             "<ttl>Placeholders",
             PromptTokens.ENTRY.map { "<val>${it.token} <hnt>${it.description}" },
         )
     }
 
+    private fun sample(text: String): String = SAMPLE.entries.fold(text) { acc, (token, value) -> acc.replace(token, value) }
+
+    private fun modelItem(valueLine: String?): NpcItem = Ui.item(
+        "ITEM_FRAME",
+        "<ttl>Custom Model Data",
+        listOfNotNull(
+            valueLine ?: "<off>Not set",
+            "<hnt>For resource packs.",
+            "",
+            "<key>Left-click to type a number",
+            if (valueLine == null) null else "<key>Press Q to clear it",
+        ),
+    )
+
     private fun valueLine(shared: Shared<String>, format: (String) -> String): String = when (shared) {
-        Shared.Mixed -> "<warn>mixed"
+        Shared.Mixed -> "<warn>Mixed"
         is Shared.Same -> "<bd>Now: <val>${format(shared.value)}"
     }
 
@@ -471,5 +515,15 @@ object StudioMenuBuilder {
                 },
             ),
         )
+    }
+
+    private fun mixedToggle(label: String, value: Boolean?, material: String, hints: List<String>) = when (value) {
+        null -> Ui.item(
+            material,
+            "<ttl>$label",
+            listOf("<warn>Mixed") + hints + listOf("", "<key>Left-click to turn it on for all"),
+        )
+
+        else -> Ui.toggle(label, value, hints, material)
     }
 }

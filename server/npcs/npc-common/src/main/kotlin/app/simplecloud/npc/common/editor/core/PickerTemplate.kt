@@ -4,15 +4,25 @@ import app.simplecloud.npc.common.editor.menu.EditorMenu
 import app.simplecloud.npc.common.editor.menu.MenuClick
 import app.simplecloud.npc.common.editor.menu.Paginator
 import app.simplecloud.npc.common.editor.menu.Pane
+import app.simplecloud.npc.common.editor.ui.Layout
+import app.simplecloud.npc.common.editor.ui.Palette
 import app.simplecloud.npc.common.editor.ui.Ui
 import app.simplecloud.npc.common.item.NpcItem
 import app.simplecloud.npc.core.platform.NpcPlayer
 
 class PickerOption(val value: String, val item: NpcItem, val available: Boolean = true)
 
+/** What a picker shows in the middle when there is nothing to pick: what is missing and what to do. */
+class EmptyState(val title: String, val hint: List<String>) {
+    companion object {
+        val DEFAULT = EmptyState("Nothing to Pick", listOf("<bd>There is nothing to choose from yet."))
+    }
+}
+
 class PickerSpec<S : Any>(
     val title: String,
     val screen: S,
+    val header: PickerHeader?,
     val options: List<PickerOption>,
     val onPick: (String) -> Unit,
     val typeHint: List<String>? = DEFAULT_TYPE_HINT,
@@ -24,34 +34,36 @@ class PickerSpec<S : Any>(
     val onRightClick: (PickerOption) -> Unit = {},
     val extras: (Pane) -> Unit = {},
     val filteredNoun: String = "options",
+    val gridRows: Int = 3,
+    val empty: EmptyState = EmptyState.DEFAULT,
 ) {
     companion object {
         val DEFAULT_TYPE_HINT = listOf(
             "<bd>Not in the list above?",
             "",
-            "<key>Left <hnt>Type it in chat",
+            "<key>Left-click to type it in chat",
         )
     }
 }
 
 object PickerTemplate {
-    const val SIZE = 54
+    const val SIZE = Layout.SIZE
 
-    val GRID_SLOTS = 0..26
-    const val TYPE_SLOT = 31
-    const val RESULT_SLOT = 40
-
-    private const val RESULT_TTL_TICKS = 60L
+    private const val EMPTY_SLOT = 31
+    private const val TYPE_SLOT = Layout.TOOL_LEFT
 
     fun <S : Any> build(host: EditorHost<S>, player: NpcPlayer, spec: PickerSpec<S>): EditorMenu {
         val session = host.session(player)
-        val pages = Paginator(session.pages, pageKey(spec.screen), spec.options, GRID_SLOTS.count())
+        val pages = Paginator(session.pages, pageKey(spec.screen), spec.options, Layout.ROW_SLOTS * spec.gridRows)
+        val grid = Layout.list(pages.visible.size, rows = spec.gridRows)
         val pane = Pane(SIZE)
+        val header = spec.header
+        if (header != null) pane[Layout.HEADER] = header.item()
 
         fun rerender() = host.render(player, spec.screen)
 
         pages.visible.forEachIndexed { index, option ->
-            pane.on(GRID_SLOTS.first + index, option.item) { click ->
+            pane.on(grid[index], option.item) { click ->
                 when (click) {
                     MenuClick.RIGHT -> spec.onRightClick(option)
                     MenuClick.LEFT -> if (option.available) spec.onPick(option.value)
@@ -60,25 +72,36 @@ object PickerTemplate {
             }
         }
 
+        if (spec.options.isEmpty()) {
+            pane[EMPTY_SLOT] = Ui.item("LIGHT_GRAY_DYE", "<off>${spec.empty.title}", spec.empty.hint)
+        }
+
         val typeHint = spec.typeHint
-        if (typeHint == null) {
-            pane[TYPE_SLOT] = Ui.disabled("Type A Name", listOf("<hnt>${spec.typingUnavailable}"))
-        } else {
-            pane.left(TYPE_SLOT, Ui.item("ANVIL", "<ttl>Type A Name", typeHint)) { promptTyped(host, player, spec) }
+        val result = session.pickerResult
+        val typeItem = when {
+            result != null -> resultItem(result, spec.filteredNoun, typeHint != null)
+            typeHint != null -> Ui.item("OAK_SIGN", "<ttl>Type a Name", typeHint)
+            else -> null
+        }
+        if (typeItem != null) {
+            pane.on(TYPE_SLOT, typeItem) { click ->
+                when {
+                    click == MenuClick.DROP && result != null -> {
+                        session.pickerResult = null
+                        rerender()
+                    }
+
+                    click == MenuClick.LEFT && typeHint != null -> promptTyped(host, player, spec)
+
+                    else -> Unit
+                }
+            }
         }
 
         spec.extras(pane)
 
-        session.pickerResult?.let { result ->
-            pane.on(RESULT_SLOT, resultItem(result, spec.filteredNoun), MenuClick.DROP) {
-                session.pickerResult = null
-                rerender()
-            }
-        }
-
         pane.back(host, player)
-        pane.pager(pages, listOf("<bd>${spec.options.size} options", "<hnt>${pages.perPage} fit per page."), ::rerender)
-        pane.fillNavRow()
+        pane.pager(pages, listOf("<bd>${spec.options.size} ${spec.filteredNoun}"), ::rerender)
 
         return pane.menu(spec.title)
     }
@@ -87,19 +110,12 @@ object PickerTemplate {
         val session = host.sessions.peek(player.uniqueId) ?: return
         session.pickerResult = result
         host.render(player, screen)
-
-        host.runLater(RESULT_TTL_TICKS) {
-            val current = host.sessions.peek(player.uniqueId) ?: return@runLater
-            if (current.pickerResult !== result) return@runLater
-            current.pickerResult = null
-            if (host.isShowing(player) { it == screen }) host.render(player, screen)
-        }
     }
 
     private fun <S : Any> promptTyped(host: EditorHost<S>, player: NpcPlayer, spec: PickerSpec<S>) {
         host.textPrompts.open(
             player,
-            title = "Search",
+            title = "Type a Name",
             instruction = "Type a name in chat; part of one filters the list.",
             current = null,
             validate = { text -> "Type a name.".takeIf { text.isBlank() } },
@@ -112,13 +128,23 @@ object PickerTemplate {
         }
     }
 
-    private fun resultItem(result: PickerResult, filteredNoun: String): NpcItem = when (result) {
-        is PickerResult.Added -> Ui.item("LIME_DYE", "<on>Added: <val>${result.label}", listOf("<hnt>${result.detail}"))
+    private fun resultItem(result: PickerResult, filteredNoun: String, canType: Boolean): NpcItem {
+        val item = resultOnly(result, filteredNoun)
+        if (!canType) return item
+        return item.copy(lore = item.lore + Palette.expand("<key>Left-click to type again"))
+    }
+
+    private fun resultOnly(result: PickerResult, filteredNoun: String): NpcItem = when (result) {
+        is PickerResult.Added -> Ui.item(
+            "LIME_DYE",
+            "<on>Added: <val>${result.label}",
+            listOf("<hnt>${result.detail}", "<key>Press Q to dismiss it"),
+        )
 
         is PickerResult.Rejected -> Ui.item(
             "RED_DYE",
             "<err>${result.headline}: <val>${Ui.quote(result.typed)}",
-            listOf("<hnt>${result.reason}", "<key>Q <hnt>Dismiss"),
+            listOf("<hnt>${result.reason}", "<key>Press Q to dismiss it"),
         )
 
         is PickerResult.Filtered -> Ui.item(
@@ -129,7 +155,7 @@ object PickerTemplate {
                 "",
                 "<hnt>Pick one above, or type more.",
                 "",
-                "<key>Q <hnt>Clear filter",
+                "<key>Press Q to clear the filter",
             ),
         )
 
@@ -141,7 +167,7 @@ object PickerTemplate {
                 "",
                 "<hnt>Pick one above, or type the full name.",
                 "",
-                "<key>Q <hnt>Dismiss",
+                "<key>Press Q to dismiss it",
             ),
         )
     }

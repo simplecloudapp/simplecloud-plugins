@@ -5,6 +5,7 @@ import app.simplecloud.npc.common.item.NpcItem
 import app.simplecloud.npc.common.text.Msg
 import app.simplecloud.npc.common.text.substitute
 import app.simplecloud.npc.core.cloud.BridgePlaceholders
+import app.simplecloud.npc.core.cloud.ServerBridge
 import app.simplecloud.npc.core.inventory.InventoryConfiguration
 import java.util.UUID
 
@@ -58,10 +59,14 @@ object ItemIconResolver {
 
     private suspend fun resolveText(text: String, entry: InventoryEntry): String {
         if (text.isEmpty()) return text
-        val resolved = entry.placeholders
-            ?.let { Msg.miniMessage.serialize(BridgePlaceholders.append(it, text, "entry")) }
-            ?: text
+        val bridge = entry.placeholders ?: return text.substitute(entry.substitutions)
+        val withState = if (bridge is ServerBridge.OfServer) text.replace(STATE_TAG, readableState(bridge)) else text
 
-        return resolved.substitute(entry.substitutions)
+        return Msg.miniMessage.serialize(BridgePlaceholders.append(bridge, withState, "entry")).substitute(entry.substitutions)
     }
+
+    private fun readableState(bridge: ServerBridge.OfServer): String =
+        bridge.server.state.name.lowercase().replace('_', ' ').replaceFirstChar(Char::uppercase)
+
+    private const val STATE_TAG = "<entry_state>"
 }

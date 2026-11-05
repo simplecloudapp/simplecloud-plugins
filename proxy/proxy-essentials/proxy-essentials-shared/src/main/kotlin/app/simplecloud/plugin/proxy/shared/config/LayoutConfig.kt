@@ -22,8 +22,8 @@ data class MotdConfig(
 @ConfigSerializable
 data class MotdEntry(
     val name: String = "default",
-    val line1: String = "<color:#0ea5e9>A simplecloud.app network",
-    val line2: String = " ",
+    val line1: String = "<center><brand>ꜱɪᴍᴘʟᴇᴄʟᴏᴜᴅ</center>",
+    val line2: String = "<center><muted>A network powered by simplecloud.app</center>",
 )
 
 enum class MotdUpdateType {
@@ -40,7 +40,7 @@ data class ServerIconConfig(
 @ConfigSerializable
 data class PlayerListConfig(
     val enabled: Boolean = true,
-    val playerList: List<String> = listOf("", "simplecloud.app", ""),
+    val playerList: List<String> = listOf("", "<muted>simplecloud.app", ""),
 )
 
 @ConfigSerializable

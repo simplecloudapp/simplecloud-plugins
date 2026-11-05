@@ -25,5 +25,5 @@ commands:
         from: []
     # Command-specific feedback messages.
     messages:
-      already-connected: '<color:#dc2626>You are already connected to this lobby!'
-      no-target-connection-found: "<color:#dc2626>Couldn't find a target server!"
+      already-connected: '<prefix> <warning>You are already in the lobby.'
+      no-target-connection-found: '<prefix> <error>There is no lobby available right now.'

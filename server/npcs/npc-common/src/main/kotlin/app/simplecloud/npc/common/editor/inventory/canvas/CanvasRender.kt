@@ -105,12 +105,12 @@ object CanvasRender {
         tools[Toolbox.UNDO] = Ui.item(
             if (history.canUndo) "CLOCK" else "GRAY_DYE",
             "<ttl>Undo",
-            listOf("<bd><val>${history.undoCount} <bd>steps", "", "<key>Left <hnt>Undo the last change"),
+            listOf("<bd><val>${history.undoCount} <bd>steps", "", "<key>Left-click to undo the last change"),
         )
         tools[Toolbox.REDO] = Ui.item(
             if (history.canRedo) "CLOCK" else "GRAY_DYE",
             "<ttl>Redo",
-            listOf("<bd><val>${history.redoCount} <bd>steps", "", "<key>Left <hnt>Redo"),
+            listOf("<bd><val>${history.redoCount} <bd>steps", "", "<key>Left-click to redo"),
         )
         tools[Toolbox.MODE] = if (session.mode == CanvasMode.LIVE) {
             Ui.item(
@@ -119,13 +119,13 @@ object CanvasRender {
                 listOfNotNull(
                     "<bd>What players see right now.",
                     when {
-                        live == null || live.loading -> "<hnt>Loading the cloud data..."
+                        live == null || live.loading -> "<hnt>Loading the cloud data."
                         live.cloudDown -> "<warn>The cloud is unreachable; live slots stay empty."
                         else -> null
                     },
                     "<hnt>Page arrows turn pages here.",
                     "",
-                    "<key>Left <hnt>Back to Design",
+                    "<key>Left-click to go back to Design",
                 ),
                 glowing = true,
             )
@@ -133,13 +133,13 @@ object CanvasRender {
             Ui.item(
                 "ENDER_EYE",
                 "<ttl>Design",
-                listOf("<bd>Templates as you edit them.", "", "<key>Left <hnt>Show the live preview"),
+                listOf("<bd>Templates as you edit them.", "", "<key>Left-click to show the live preview"),
             )
         }
         tools[Toolbox.TITLE] = Ui.item(
             "NAME_TAG",
             "<ttl>Title",
-            listOf("<bd>Now: " + config.title, "", "<key>Left <hnt>Type a new one in chat"),
+            listOf("<bd>Now: " + config.title, "", "<key>Left-click to type a new one in chat"),
         )
         tools[Toolbox.ROWS] = Ui.item(
             "LADDER",
@@ -147,13 +147,13 @@ object CanvasRender {
             listOf(
                 "<key>Left <hnt>Add a row  <key>Right <hnt>Remove the bottom row",
                 "<key>Shift+Left <hnt>Move ${if (selection.isEmpty()) "everything" else "the selection"} down",
-                "<key>Shift+Right <hnt>Move it up",
+                "<key>Shift-right-click to move it up",
             ),
         )
         tools[Toolbox.FILL] = Ui.item(
             Toolbox.DECOR_MATERIAL,
             "<ttl>Fill Empty Slots",
-            listOf("<bd>With what you carry, or a gray pane.", "", "<key>Left <hnt>Fill"),
+            listOf("<bd>With what you carry, or a gray pane.", "", "<key>Left-click to fill it"),
         )
         tools[Toolbox.BORDER] = Ui.item(
             "BLACK_STAINED_GLASS_PANE",
@@ -162,7 +162,7 @@ object CanvasRender {
                 "<bd>Frames the empty edge slots with what",
                 "<bd>you carry, or a gray pane.",
                 "",
-                "<key>Left <hnt>Draw",
+                "<key>Left-click to draw",
             ),
         )
         tools[Toolbox.HELP] = Ui.item("BOOK", "<ttl>Controls", HELP)
@@ -171,11 +171,11 @@ object CanvasRender {
             tools[index] = Ui.item(
                 material,
                 "<ttl>${Ui.pretty(material)}",
-                listOf("<hnt>Recently used", "", "<key>Left <hnt>Pick up a new one"),
+                listOf("<hnt>Recently used", "", "<key>Left-click to pick up a new one"),
             )
         }
         tools[Toolbox.PICK] =
-            Ui.item("CHEST", "<ttl>Pick A Material...", listOf("<bd>Search every material.", "", "<key>Left <hnt>Open"))
+            Ui.item("CHEST", "<ttl>Pick a Material", listOf("<bd>Search every material.", "", "<key>Left-click to open it"))
         tools[Toolbox.HAND] = Ui.item(
             "LEATHER",
             "<ttl>From Your Inventory",
@@ -184,7 +184,7 @@ object CanvasRender {
                 "<bd>to copy its look onto the cursor.",
                 "<hnt>Styled with an anvil or another plugin? Works.",
                 "",
-                "<key>Left <hnt>Show my items",
+                "<key>Left-click to show my items",
             ),
         )
 
@@ -193,7 +193,7 @@ object CanvasRender {
         }
         tools[Toolbox.NEW_GROUP] = Ui.addHead(
             "New Live Group",
-            listOf("<bd>Servers, groups, ... that fill", "<bd>slots on their own.", "", "<key>Left <hnt>Pick a source"),
+            listOf("<bd>Servers, groups, ... that fill", "<bd>slots on their own.", "", "<key>Left-click to pick a source"),
         )
         val active = session.activeGroup?.takeIf { it in LiveGroups.names(config) }
         tools[Toolbox.PREVIOUS_ARROW] = arrow("Previous Page", active)
@@ -207,7 +207,7 @@ object CanvasRender {
                 ?: "<hnt>Places the last item you dropped.",
         )
         tools[Toolbox.HOTBAR + Toolbox.KEY_ERASE] =
-            key(2, "BARRIER", "Erase", "<bd>Deletes the item (or the selection).")
+            key(2, "RED_CONCRETE", "Erase", "<bd>Deletes the item (or the selection).")
         tools[Toolbox.HOTBAR + Toolbox.KEY_COPY] = key(3, "SHEARS", "Copy", "<bd>Puts a copy on your cursor.")
         tools[Toolbox.HOTBAR + Toolbox.KEY_LIVE] = key(
             4,
@@ -256,13 +256,13 @@ object CanvasRender {
             "${color}_STAINED_GLASS_PANE",
             "<ttl>$group",
             listOfNotNull(
-                "<bd>Source <val>$sourceLabel",
+                "<bd>Source: <val>$sourceLabel",
                 "<bd><val>$slots <bd>slots",
                 "<warn>No page arrows: extra entries are hidden.".takeIf { arrowsMissing },
                 "<on>Active: arrows and key 4 use it".takeIf { active },
                 "",
-                "<key>Left <hnt>Pick up a slot to paint",
-                "<key>Right <hnt>Group settings",
+                "<key>Left-click to pick up a slot to paint",
+                "<key>Right-click to open the group settings",
             ),
             glowing = active,
             amount = slots.coerceIn(1, 64),
@@ -278,7 +278,7 @@ object CanvasRender {
             listOf(
                 "<bd>Turns the pages of <val>$group",
                 "",
-                "<key>Left <hnt>Pick up",
+                "<key>Left-click to pick it up",
             )
         },
     )

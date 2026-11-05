@@ -1,8 +1,10 @@
 package app.simplecloud.plugin.prefixes.shared.config
 
+import app.simplecloud.plugin.core.shared.command.HelpMessages
 import app.simplecloud.plugin.core.shared.config.AbstractCommandMessageConfig
 import app.simplecloud.plugin.core.shared.config.AbstractCommandMessages
 import app.simplecloud.plugin.core.shared.config.CommandExceptionMessages
+import app.simplecloud.plugin.core.shared.config.MessagePalette
 import app.simplecloud.plugin.core.shared.config.VersionedConfig
 import app.simplecloud.plugin.prefixes.shared.utilities.config.ConfigVersion
 import org.spongepowered.configurate.objectmapping.ConfigSerializable
@@ -10,7 +12,8 @@ import org.spongepowered.configurate.objectmapping.ConfigSerializable
 @ConfigSerializable
 data class MessageConfig(
     override val version: Int = ConfigVersion.VERSION,
-    override val variables: Map<String, String> = mapOf("prefix" to "<color:#38bdf8><bold>⚡</bold></color>"),
+    override val palette: Map<String, String> = MessagePalette.defaults,
+    override val variables: Map<String, String> = mapOf("prefix" to MessagePalette.PREFIX),
     override val command: CommandMessages = CommandMessages(),
 ) : VersionedConfig, AbstractCommandMessageConfig()
 
@@ -23,12 +26,17 @@ data class CommandMessages(
 
 @ConfigSerializable
 data class CommandHelpMessages(
-    val title: String = "<prefix> <#0EA5E9>SimpleCloud Prefixes commands",
-    val entry: String = "<#E2E8F0><command>",
-)
+    val title: String = "<prefix> <info>Prefixes commands  <separator>/scprefix",
+    override val entry: String = HelpMessages.ENTRY,
+    override val hover: String = HelpMessages.HOVER,
+    override val descriptions: Map<String, String> = mapOf(
+        "help" to "Show this list",
+        "reload" to "Reload the configuration",
+    ),
+) : HelpMessages
 
 @ConfigSerializable
 data class CommandReloadMessages(
-    val success: String = "<prefix> <#A3E635>SimpleCloud Prefixes was successfully reloaded.",
-    val failed: String = "<prefix> <#DC2626>SimpleCloud Prefixes could not be reloaded.",
+    val success: String = "<prefix> <success>Reloaded the prefixes!",
+    val failed: String = "<prefix> <error>Couldn't reload the prefixes. Check the console.",
 )

@@ -14,19 +14,17 @@ import app.simplecloud.npc.core.config.NpcConfig
 import app.simplecloud.npc.core.platform.NpcPlayer
 
 object ConfirmGateMenuBuilder {
-    private class Wording(val title: String, val verb: String, val noun: String)
+    private class Wording(val title: String, val verb: String)
 
     private fun wording(purpose: ConfirmPurpose): Wording = when (purpose) {
         is ConfirmPurpose.RemoveJoinState -> Wording(
             "Remove ${NpcFormat.joinState(purpose.joinState)}?",
             "Remove",
-            "removal",
         )
 
         is ConfirmPurpose.RemoveLayout -> Wording(
             "Remove ${NpcFormat.joinState(purpose.joinState)} layout?",
             "Remove",
-            "removal",
         )
     }
 
@@ -39,7 +37,6 @@ object ConfirmGateMenuBuilder {
                 title = Ui.title(words.title, NpcFormat.displayName(config)),
                 screen = NpcEditorScreen.Confirm(config.id, purpose),
                 verb = words.verb,
-                noun = words.noun,
                 head = head(config, purpose),
                 fire = { fire(context, player, config, purpose) },
             ),
@@ -55,15 +52,17 @@ object ConfirmGateMenuBuilder {
 
             Ui.item(
                 "PAPER",
-                "<err><b>Remove ${NpcFormat.joinState(purpose.joinState)}?",
+                "<err>Remove ${NpcFormat.joinState(purpose.joinState)}?",
                 listOf(
-                    layout?.let { "<bd>Hologram layout <val>yes <bd>· <val>${it.lines.size} <bd>lines" }
-                        ?: "<bd>Hologram layout <off>none",
-                    "<bd><val>$actionCount <bd>configured actions",
+                    "<bd>Hologram: " + if (layout == null) "<off>none" else "<val>${layout.lines.size} lines",
+                    "<bd>Actions: <val>$actionCount",
                     "",
-                    "<err>Both go. There is no undo.",
+                    if (layout == null && actionCount == 0) {
+                        "<hnt>Nothing is set up for it yet."
+                    } else {
+                        "<err>Both are removed. There is no undo."
+                    },
                 ),
-                glowing = true,
             )
         }
 
@@ -71,14 +70,13 @@ object ConfirmGateMenuBuilder {
             val lines = config.hologram.findLayout(purpose.joinState)?.lines?.size ?: 0
             Ui.item(
                 "PAPER",
-                "<err><b>Remove ${NpcFormat.joinState(purpose.joinState)} layout?",
+                "<err>Remove ${NpcFormat.joinState(purpose.joinState)} layout?",
                 listOf(
                     "<bd><val>$lines <bd>hologram lines",
                     "<hnt>Actions for ${NpcFormat.joinState(purpose.joinState)} are kept.",
                     "",
-                    "<err>The lines go. There is no undo.",
+                    "<err>The lines are removed. There is no undo.",
                 ),
-                glowing = true,
             )
         }
     }

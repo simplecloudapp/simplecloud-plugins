@@ -9,6 +9,7 @@ import app.simplecloud.npc.common.editor.menu.Pane
 import app.simplecloud.npc.common.editor.npc.NpcEditorContext
 import app.simplecloud.npc.common.editor.npc.NpcEditorScreen
 import app.simplecloud.npc.common.editor.npc.NpcFormat
+import app.simplecloud.npc.common.editor.ui.Layout
 import app.simplecloud.npc.common.editor.ui.Ui
 import app.simplecloud.npc.common.manager.NpcOperationResult
 import app.simplecloud.npc.common.text.sendError
@@ -19,12 +20,11 @@ import app.simplecloud.npc.core.config.NpcConfig
 import app.simplecloud.npc.core.platform.NpcPlayer
 
 object SkinMenuBuilder {
-    private const val SIZE = 54
+    private const val SIZE = Layout.SIZE
 
-    private val GRID_SLOTS = 0..35
-    private val SEPARATOR_ROW = 36..44
-    private const val RESET_SLOT = 51
-    private const val INPUT_SLOT = 53
+    private const val RESET_SLOT = Layout.TOOL_RIGHT
+    private const val INPUT_SLOT = Layout.TOOL_LEFT
+    private const val EMPTY_SLOT = 31
 
     fun build(context: NpcEditorContext, player: NpcPlayer, config: NpcConfig): EditorMenu {
         val session = context.session(player)
@@ -32,41 +32,50 @@ object SkinMenuBuilder {
             context.playerDirectory.onlinePlayers().sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.name })
         val current = config.entity.skin.sourcePlayer
         val screen = NpcEditorScreen.SkinPicker(config.id)
-        val pages = Paginator(session.pages, pageKey(screen), online, GRID_SLOTS.count())
+        val pages = Paginator(session.pages, pageKey(screen), online, Layout.CONTENT.size)
+        val grid = Layout.list(pages.visible.size)
         val pane = Pane(SIZE)
 
         pages.visible.forEachIndexed { index, onlinePlayer ->
             val selected = onlinePlayer.name.equals(current, true)
             pane.left(
-                GRID_SLOTS.first + index,
+                grid[index],
                 Ui.head(
-                    if (selected) "<on>${onlinePlayer.name}" else "<ttl>${onlinePlayer.name}",
-                    listOf(if (selected) "<on>In use" else "<key>Left <hnt>Use this skin"),
+                    if (selected) "<val>${onlinePlayer.name}" else "<ttl>${onlinePlayer.name}",
+                    listOf(if (selected) "<on>In use" else "<key>Left-click to use this skin"),
                     owner = onlinePlayer.uniqueId,
                     glowing = selected,
                 ),
             ) { applySkin(context, player, config, context.renderer.captureSkin(onlinePlayer)) }
         }
-        pane.fill(SEPARATOR_ROW)
+
+        pane[Layout.HEADER] = Ui.head(
+            "<ttl>Current Skin",
+            listOf("<bd>Now: <val>${NpcFormat.skinLabel(config.entity.skin)}"),
+            texture = config.entity.skin.texture,
+            signature = config.entity.skin.signature,
+        )
+        if (online.isEmpty()) {
+            pane[EMPTY_SLOT] = Ui.item(
+                "LIGHT_GRAY_DYE",
+                "<off>No Other Players Online",
+                listOf("<bd>Type a username or UUID below", "<bd>to use that player's skin."),
+            )
+        }
 
         pane.back(context, player)
-        pane.pager(pages, listOf("<bd>${online.size} players online", "<hnt>${pages.perPage} skins fit per page.")) {
+        pane.pager(pages, listOf("<bd>Players online: <val>${online.size}")) {
             context.render(player, screen)
         }
 
         pane.left(
             RESET_SLOT,
-            Ui.item(
-                "BARRIER",
-                "<err>Reset Skin",
-                listOf("<bd>Now <val>${NpcFormat.skinLabel(config.entity.skin)}", "<key>Left <hnt>Back to default"),
-            ),
+            Ui.item("ARMOR_STAND", "<ttl>Default Skin", listOf("<key>Left-click to use the default skin")),
         ) { applySkin(context, player, config, NpcConfig.SkinConfiguration()) }
         pane.left(
             INPUT_SLOT,
-            Ui.item("WRITABLE_BOOK", "<ttl>Username Or UUID", listOf("<key>Left <hnt>Type it in chat")),
+            Ui.item("OAK_SIGN", "<ttl>Type a Name", listOf("<bd>Any username or UUID.", "", "<key>Left-click to type it in chat")),
         ) { promptSkin(context, player, config) }
-        pane.fillNavRow()
 
         return pane.menu(Ui.title("Skin", NpcFormat.displayName(config)))
     }
@@ -106,7 +115,7 @@ object SkinMenuBuilder {
         label: String,
         fetch: suspend () -> NpcConfig.SkinConfiguration?,
     ) {
-        player.sendInfo("Looking up the skin for {}...", label)
+        player.sendInfo("Looking up the skin of {}.", label)
 
         BackgroundTasks.launch {
             val skin = fetch()

@@ -85,7 +85,6 @@ class InventoryEditorSession : EditorSession<InventoryEditorScreen>() {
     companion object {
         const val RECENT_MATERIALS = 7
         const val RECENT_CATEGORY = "Recent"
-        const val ALL_CATEGORY = "All"
     }
 }
 

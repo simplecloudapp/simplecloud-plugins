@@ -7,6 +7,7 @@ import app.simplecloud.npc.common.editor.npc.NpcEditorScreen
 import app.simplecloud.npc.common.editor.npc.NpcTab
 import app.simplecloud.npc.common.editor.npc.PickerPurpose
 import app.simplecloud.npc.common.editor.npc.Refresh
+import app.simplecloud.npc.common.editor.ui.Layout
 import app.simplecloud.npc.common.editor.ui.Ui
 import app.simplecloud.npc.common.editor.ui.after
 import app.simplecloud.npc.core.config.JoinStrategy
@@ -14,8 +15,7 @@ import app.simplecloud.npc.core.config.NpcConfig
 import app.simplecloud.npc.core.platform.NpcPlayer
 
 object TargetsTabBuilder {
-    private val TARGET_SLOTS = (19..25) + (28..34)
-    private const val STRATEGY_SLOT = 40
+    private const val STRATEGY_SLOT = Layout.TOOL_LEFT
 
     fun build(context: NpcEditorContext, player: NpcPlayer, config: NpcConfig): EditorMenu {
         val live = context.liveData
@@ -24,19 +24,23 @@ object TargetsTabBuilder {
         val targets = config.targetServers
         val removable = targets.size > 1
 
-        targets.zip(TARGET_SLOTS).forEach { (target, slot) ->
+        val canAdd = targets.size < NpcConfig.MAX_TARGETS
+        val slots = Layout.list(targets.size + if (canAdd) 1 else 0, rows = 2)
+
+        targets.zip(slots).forEach { (target, slot) ->
             val summary = live.summaryOf(target)
             val state = when {
-                !summary.known -> "<hnt>Waiting for the cloud…"
+                !summary.known -> "<hnt>Waiting for the cloud."
                 summary.liveServers == 0 -> "<warn>Offline"
-                else -> "<val>${summary.liveServers} <hnt>servers · <val>${summary.players} <hnt>players"
+                else -> "<bd>Servers: <val>${summary.liveServers} <hnt>· <bd>Players: <val>${summary.players}"
             }
             val lore = listOf(
-                "<hnt>${if (summary.isGroup) "Group" else "Server"}",
+                "<bd>Type: <val>${if (summary.isGroup) "Group" else "Server"}",
                 state,
-                if (removable) "<key>Right <err>Remove" else "<hnt>The last target stays.",
+                "",
+                if (removable) "<key>Right-click to remove it" else "<hnt>An NPC needs at least one target.",
             )
-            pane.on(slot, Ui.item(if (summary.isGroup) "BOOKSHELF" else "BOOK", "<ttl>$target", lore)) { click ->
+            pane.on(slot, Ui.item(if (summary.isGroup) "BOOKSHELF" else "MAP", "<ttl>$target", lore)) { click ->
                 if (click != MenuClick.RIGHT || !removable) return@on
                 context.commit(player, config.id, screen, Refresh.HOLOGRAM) { fresh ->
                     if (fresh.targetServers.size <= 1) return@commit null
@@ -46,9 +50,9 @@ object TargetsTabBuilder {
             }
         }
 
-        if (targets.size < NpcConfig.MAX_TARGETS) {
-            val add = Ui.addHead("Add Target", listOf("<key>Left <hnt>Pick a group or server"))
-            pane.left(TARGET_SLOTS[targets.size], add) {
+        if (canAdd) {
+            val add = Ui.addHead("Add Target", listOf("<key>Left-click to pick a group or server"))
+            pane.left(slots[targets.size], add) {
                 context.navigate(player, NpcEditorScreen.Picker(config.id, PickerPurpose.AddTarget))
             }
         }
@@ -58,7 +62,7 @@ object TargetsTabBuilder {
             Ui.item(
                 "HOPPER",
                 "<ttl>Join Strategy",
-                listOf("<val>${strategyLabel(config.joinStrategy)}", "<key>Left <hnt>Next"),
+                listOf("<bd>Now: <val>${strategyLabel(config.joinStrategy)}", "", "<key>Left-click to switch"),
             ),
         ) {
             context.commit(player, config.id, screen) { fresh ->
@@ -66,7 +70,7 @@ object TargetsTabBuilder {
             }
         }
 
-        return TabFrame.menu(pane, config)
+        return TabFrame.menu(pane, config, NpcTab.TARGETS)
     }
 
     private fun strategyLabel(strategy: JoinStrategy): String = when (strategy) {

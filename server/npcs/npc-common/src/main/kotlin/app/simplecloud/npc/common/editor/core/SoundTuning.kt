@@ -8,14 +8,15 @@ import app.simplecloud.npc.core.config.NpcConfig.SoundOptions
 import app.simplecloud.npc.core.platform.NpcPlayer
 
 object SoundTuning {
-    private const val VOLUME_SLOT = 29
-    private const val PITCH_SLOT = 33
-    private const val PREVIEW_SLOT = 42
+    private const val VOLUME_SLOT = 38
+    private const val PREVIEW_SLOT = 40
+    private const val PITCH_SLOT = 42
 
     val DEFAULTS = SoundOptions()
 
     private val VOLUME = Stepper(
         label = "Volume",
+        material = "GOAT_HORN",
         range = SoundOptions.VOLUME_RANGE,
         step = 0.1,
         default = DEFAULTS.volume,
@@ -24,6 +25,7 @@ object SoundTuning {
     )
     private val PITCH = Stepper(
         label = "Pitch",
+        material = "AMETHYST_SHARD",
         range = SoundOptions.PITCH_RANGE,
         step = 0.05,
         default = DEFAULTS.pitch,
@@ -41,8 +43,8 @@ object SoundTuning {
     ) {
         if (requireSound && sound == null) {
             val hint = listOf("<hnt>Pick a sound first.")
-            pane[VOLUME_SLOT] = Ui.disabled(VOLUME.label, hint)
-            pane[PITCH_SLOT] = Ui.disabled(PITCH.label, hint)
+            pane[VOLUME_SLOT] = VOLUME.disabled(hint)
+            pane[PITCH_SLOT] = PITCH.disabled(hint)
         } else {
             pane[VOLUME_SLOT] = VOLUME.element(options.volume) { value ->
                 tune { it.copy(volume = value) }
@@ -51,17 +53,17 @@ object SoundTuning {
                 tune { it.copy(pitch = value) }
             }
         }
+        if (sound == null) {
+            pane[PREVIEW_SLOT] = Ui.disabled("Preview", listOf("<hnt>Pick a sound first."), "BELL")
+            return
+        }
         pane.left(
             PREVIEW_SLOT,
             Ui.item(
                 "BELL",
                 "<ttl>Preview",
-                listOf(
-                    sound?.let { "<bd>Sound <val>$it" } ?: "<bd>Sound <off>none picked yet",
-                    NpcFormat.soundSettings(options),
-                    "<key>Left <hnt>Play it to me",
-                ),
+                listOf("<bd>Sound: <val>$sound", NpcFormat.soundSettings(options), "", "<key>Left-click to play it to me"),
             ),
-        ) { sound?.let { player.playSound(it, options) } }
+        ) { player.playSound(sound, options) }
     }
 }

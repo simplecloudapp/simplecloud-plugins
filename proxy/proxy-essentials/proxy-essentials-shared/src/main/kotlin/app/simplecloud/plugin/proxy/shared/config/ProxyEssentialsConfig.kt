@@ -90,6 +90,6 @@ data class TabListGroup(
 
 @ConfigSerializable
 data class TabListEntry(
-    val header: String = "<br><color:#0ea5e9>SimpleCloud v3<br>",
-    val footer: String = "<br> <color:#ffffff><online_players> players <color:#cbd5e1>are playing on your network <br> <color:#64748b>  sɪᴍᴘʟᴇᴄʟᴏᴜᴅ.ᴀᴘᴘ<br>",
+    val header: String = "<br><brand>ꜱɪᴍᴘʟᴇᴄʟᴏᴜᴅ<br>",
+    val footer: String = "<br>  <brand>⚡</brand> <highlight>simplecloud.app                <success>●</success> <highlight><online_players> <muted>Online  <br>",
 )

@@ -4,6 +4,7 @@ import app.simplecloud.plugin.core.shared.adventure.tags
 import app.simplecloud.plugin.core.shared.command.CloudSender
 import app.simplecloud.plugin.core.shared.command.CloudSuggestions
 import app.simplecloud.plugin.core.shared.command.CommandExceptionHandler
+import app.simplecloud.plugin.core.shared.command.HelpPage
 import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
 import app.simplecloud.plugin.core.shared.controller.ApiUtils
 import app.simplecloud.plugin.signs.shared.SignManager
@@ -172,7 +173,7 @@ class SignCommand<C : CloudSender>(
 
     private fun sendHelp(sender: C) {
         send(sender, config.command.help.title)
-        HELP_ENTRIES.forEach { send(sender, config.command.help.entry, tags("command" to "/$NAME $it")) }
+        HelpPage.entries(config, config.command.help, "/scsigns", HELP_ENTRIES).forEach(sender::sendMessage)
     }
 
     private fun registeredTargets(): SuggestionProvider<C> = SuggestionProvider.blocking { _, _ ->
@@ -180,7 +181,7 @@ class SignCommand<C : CloudSender>(
     }
 
     private fun displayName(config: LocationsConfig): String =
-        if (config.isPersistentServer()) "[PS] ${config.persistentServer}" else config.identifier()
+        if (config.isPersistentServer()) "persistent server ${config.persistentServer}" else config.identifier()
 
     private fun send(sender: C, message: String, vararg resolvers: TagResolver) {
         sender.sendMessage(config.msg(message, *resolvers))

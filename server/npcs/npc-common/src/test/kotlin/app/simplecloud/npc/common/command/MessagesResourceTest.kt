@@ -33,7 +33,7 @@ class MessagesResourceTest {
     fun `code paths and resource leaves match`() {
         val root = load()
         val fileLeaves = leaves(root)
-            .filterNot { it.startsWith("variables.") || it.startsWith("command.help.pages.") }
+            .filterNot { it.startsWith("palette.") || it.startsWith("variables.") || it.startsWith("command.help.pages.") }
             .toSet()
         assertEquals(CommandMessages.resourcePaths(), fileLeaves)
     }
@@ -49,7 +49,7 @@ class MessagesResourceTest {
         CommandMessages.updateDefaultPrefix(old)
         CommandMessages.updateDefaultPrefix(custom)
 
-        assertEquals("variables:\n  prefix: '<#38bdf8><b>⚡</b>'\n", old.readText())
+        assertEquals("variables:\n  prefix: '<brand><b>⚡</b></brand>'\n", old.readText())
         assertEquals("variables:\n  prefix: '<red>Mine |'\n", custom.readText())
     }
 }

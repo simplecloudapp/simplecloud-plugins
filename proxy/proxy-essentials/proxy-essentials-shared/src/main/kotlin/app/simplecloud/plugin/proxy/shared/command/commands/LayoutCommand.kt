@@ -138,15 +138,12 @@ class LayoutCommand<C : CloudSender>(
         val sender = context.sender()
         val help = plugin.messages.get().command.layout.help
         val commands = listOf(
-            "/scproxy layout help",
-            "/scproxy layout info [group]",
-            "/scproxy layout set <group> <layout>",
+            "layout info [group]",
+            "layout set <group> <layout>",
         )
 
         sender.sendMessage(plugin.messageFormatter.format(help.header))
-        commands.forEach {
-            sender.sendMessage(plugin.messageFormatter.format(help.entry, Placeholder.unparsed("command", it)))
-        }
+        plugin.messageFormatter.formatHelp(help, commands).forEach(sender::sendMessage)
     }
 
     private suspend fun groupExists(groupName: String): Boolean = api.group().findGroupByName(groupName).await().isPresent

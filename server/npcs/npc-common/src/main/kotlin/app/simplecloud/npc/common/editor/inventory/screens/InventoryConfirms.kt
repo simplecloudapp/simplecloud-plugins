@@ -34,10 +34,9 @@ object InventoryConfirms {
                     title = Ui.title("Delete Menu?", config.id),
                     screen = screen,
                     verb = "Delete",
-                    noun = "deletion",
                     head = Ui.item(
                         "CHEST",
-                        "<err><b>Delete ${config.id}?",
+                        "<err>Delete ${config.id}?",
                         listOf(
                             "<bd><val>${config.items.size} <bd>items · " +
                                 "<val>${config.liveGroups().size} <bd>live groups",
@@ -45,7 +44,6 @@ object InventoryConfirms {
                             "",
                             "<err>The file goes. There is no undo.",
                         ),
-                        glowing = true,
                     ),
                     fire = {
                         context.inventoryManager.delete(config.id)
@@ -58,19 +56,17 @@ object InventoryConfirms {
             is InventoryConfirmPurpose.DeleteLiveGroup -> {
                 val slots = LiveGroups.members(config, purpose.group).size
                 ConfirmSpec<InventoryEditorScreen>(
-                    title = Ui.title("Delete Live Group?", purpose.group),
+                    title = Ui.title("Delete ${purpose.group}?", config.id),
                     screen = screen,
                     verb = "Delete",
-                    noun = "deletion",
                     head = Ui.item(
                         "PAPER",
-                        "<err><b>Delete live group ${purpose.group}?",
+                        "<err>Delete live group ${purpose.group}?",
                         listOf(
                             "<bd><val>$slots <bd>slots, page arrows included.",
                             "",
-                            "<hnt>Undo on the canvas brings it back.",
+                            "<hnt>Undo it on the menu screen.",
                         ),
-                        glowing = true,
                     ),
                     fire = {
                         context.change(player, config.id) { LiveGroups.delete(it, purpose.group) }

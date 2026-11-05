@@ -17,19 +17,18 @@ object LiveGroups {
     )
 
     val COLORS = listOf(
-        "LIME" to "#a3e635",
-        "LIGHT_BLUE" to "#38bdf8",
-        "ORANGE" to "#fb923c",
-        "MAGENTA" to "#e879f9",
-        "YELLOW" to "#facc15",
-        "RED" to "#f87171",
-        "CYAN" to "#22d3ee",
+        "LIME" to "#1FD98E",
+        "PURPLE" to "#9566FF",
+        "MAGENTA" to "#E94BA6",
+        "YELLOW" to "#F2C230",
+        "CYAN" to "#22C3DB",
+        "ORANGE" to "#FFA329",
     )
 
     private val JOIN_LORE = listOf(
-        "<#94a3b8>Players: <#f8fafc><entry_online_players>/<entry_max_players>",
+        "<muted>Players: <highlight><entry_online_players>/<entry_max_players>",
         "",
-        "<#475569>Click to join",
+        "<interactive>Click to join",
     )
 
     fun names(config: InventoryConfiguration): List<String> =
@@ -121,10 +120,10 @@ object LiveGroups {
     fun describe(type: String): SourceInfo = when (type) {
         GroupServersSource.TYPE -> SourceInfo(
             "GRASS_BLOCK",
-            "Servers Of A Group",
-            listOf("Every running server of one group,", "e.g. Lobby-1, Lobby-2, ..."),
-            "GRASS_BLOCK",
-            "<#a3e635><entry_group_name>-<entry_numerical_id>",
+            "Servers of a Group",
+            listOf("Every running server of one group,", "e.g. Lobby-1 and Lobby-2."),
+            "LIME_CONCRETE",
+            "<brand><entry_group_name>-<entry_numerical_id>",
             JOIN_LORE,
         )
 
@@ -133,7 +132,7 @@ object LiveGroups {
             "Persistent Servers",
             listOf("Every persistent server."),
             "ENDER_CHEST",
-            "<#a3e635><entry_name>",
+            "<brand><entry_name>",
             JOIN_LORE,
         )
 
@@ -142,20 +141,20 @@ object LiveGroups {
             "Groups",
             listOf("One entry per server group."),
             "CHEST",
-            "<#a3e635><entry_name>",
+            "<brand><entry_name>",
             JOIN_LORE,
         )
 
         "static" -> SourceInfo(
             "PAPER",
             "Fixed List",
-            listOf("Entries written by hand in the YAML."),
+            listOf("You write the entries in the", "config file of the menu."),
             "PAPER",
-            "<#e2e8f0>Entry",
+            "<brand>Entry",
             emptyList(),
         )
 
-        else -> SourceInfo("COMPARATOR", type, listOf("Provided by an addon."), "PAPER", "<#e2e8f0>Entry", emptyList())
+        else -> SourceInfo("COMPARATOR", type, listOf("Provided by an addon."), "PAPER", "<brand>Entry", emptyList())
     }
 
     private fun withShared(

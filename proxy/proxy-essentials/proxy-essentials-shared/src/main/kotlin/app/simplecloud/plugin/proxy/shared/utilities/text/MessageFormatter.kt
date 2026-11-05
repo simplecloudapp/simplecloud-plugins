@@ -1,6 +1,8 @@
 package app.simplecloud.plugin.proxy.shared.utilities.text
 
+import app.simplecloud.plugin.core.shared.command.HelpPage
 import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
+import app.simplecloud.plugin.proxy.shared.config.HelpListMessages
 import app.simplecloud.plugin.proxy.shared.config.MessageConfig
 import app.simplecloud.plugin.proxy.shared.layout.LayoutService
 import app.simplecloud.plugin.proxy.shared.player.PlayerCountService
@@ -32,7 +34,10 @@ class MessageFormatter(
         legacySerializer.serialize(format(text))
 
     fun formatMotd(line1: String, line2: String): Component =
-        MotdFormatter.deserialize(miniMessage, line1, line2, listOf(getPlaceholders("unknown", -1)))
+        MotdFormatter.deserialize(miniMessage, line1, line2, listOf(getPlaceholders("unknown", -1), messages.get().tags))
+
+    fun formatHelp(help: HelpListMessages, usages: List<String>): List<Component> =
+        HelpPage.entries(messages.get(), help, "/scproxy", usages)
 
     private fun getPlaceholders(serverName: String, ping: Long): TagResolver {
         val format = messages.get().format

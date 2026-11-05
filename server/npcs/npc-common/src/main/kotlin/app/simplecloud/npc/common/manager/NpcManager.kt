@@ -474,22 +474,22 @@ class NpcManager(
                     NpcConfig.HologramLayout(
                         joinState = NpcConfig.DEFAULT_JOIN_STATE,
                         lines = mutableListOf(
-                            HologramLine("<#0ea5e9><bold><target_name>"),
-                            HologramLine("<#94a3b8><target_online_players>/<target_max_players> online"),
+                            HologramLine("<brand><target_name>"),
+                            HologramLine("<muted><target_online_players>/<target_max_players> online"),
                         ),
                     ),
                     NpcConfig.HologramLayout(
                         joinState = "maintenance",
                         lines = mutableListOf(
-                            HologramLine("<#dc2626><bold><target_name>"),
-                            HologramLine("<#94a3b8>Currently under maintenance"),
+                            HologramLine("<brand><target_name>"),
+                            HologramLine("<warning>Maintenance"),
                         ),
                     ),
                     NpcConfig.HologramLayout(
                         joinState = JoinStateResolver.OFFLINE,
                         lines = mutableListOf(
-                            HologramLine("<#64748b><bold><target_name>"),
-                            HologramLine("${Msg.ERROR}<bold>Offline"),
+                            HologramLine("<muted><target_name>"),
+                            HologramLine("<muted>Offline"),
                         ),
                     ),
                 ),
@@ -503,12 +503,12 @@ class NpcManager(
                 NpcConfig.ActionConfiguration(
                     interactionType = PlayerInteraction.RIGHT_CLICK,
                     joinState = "maintenance",
-                    sendMessage = "<#dc2626>This server is currently under maintenance.",
+                    sendMessage = "${Msg.PREFIX} <warning>This server is in maintenance.",
                 ),
                 NpcConfig.ActionConfiguration(
                     interactionType = PlayerInteraction.RIGHT_CLICK,
                     joinState = JoinStateResolver.OFFLINE,
-                    sendMessage = "<#dc2626>This server is currently offline.",
+                    sendMessage = "${Msg.PREFIX} <error>This server is offline.",
                 ),
             ),
         )

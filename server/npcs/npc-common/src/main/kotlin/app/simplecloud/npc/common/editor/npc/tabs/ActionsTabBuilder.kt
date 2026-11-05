@@ -14,7 +14,6 @@ import app.simplecloud.npc.core.interaction.PlayerInteraction
 import app.simplecloud.npc.core.platform.NpcPlayer
 
 object ActionsTabBuilder {
-    private const val ADD_STATE_SLOT = 26
     private const val SUMMARY_LINES = 3
     private val CARDS = listOf(
         PlayerInteraction.LEFT_CLICK to 28,
@@ -51,6 +50,14 @@ object ActionsTabBuilder {
                 remove = { state ->
                     context.navigate(player, NpcEditorScreen.Confirm(config.id, ConfirmPurpose.RemoveJoinState(state)))
                 },
+                add = if (states.size < NpcConfig.MAX_JOIN_STATES) {
+                    StateChipRow.Add(Ui.addHead("Add Join State", listOf("<bd>Let clicks do other things while", "<bd>the target is in another state.", "", "<key>Left-click to pick a join state"))) {
+                        val purpose = PickerPurpose.AddJoinState(forHologram = false)
+                        context.navigate(player, NpcEditorScreen.Picker(config.id, purpose))
+                    }
+                } else {
+                    null
+                },
             ),
         )
 
@@ -58,33 +65,24 @@ object ActionsTabBuilder {
             val action = config.findAction(interaction, selected)?.takeIf { it.configuredTypes().isNotEmpty() }
             val item = if (action == null) {
                 Ui.item(
-                    "LIGHT_GRAY_CONCRETE",
+                    Clicks.material(interaction),
                     "<ttl>${Clicks.label(interaction)}",
-                    listOf("<off>Nothing happens", "<key>Left <hnt>Set up"),
+                    listOf("<off>Nothing happens", "", "<key>Click to set it up"),
                 )
             } else {
                 val summary =
                     listOfNotNull("<on>Join target".takeIf { action.joinTarget }) + NpcFormat.fieldLines(action)
                 Ui.item(
-                    "LIME_CONCRETE",
-                    "<on>${Clicks.label(interaction)}",
-                    summary.take(SUMMARY_LINES) + listOf("<key>Left <hnt>Edit"),
+                    Clicks.material(interaction),
+                    "<ttl>${Clicks.label(interaction)}",
+                    summary.take(SUMMARY_LINES) + listOf("", "<key>Click to edit it"),
+                    glowing = true,
                 )
             }
-            pane.left(slot, item) {
-                context.navigate(player, NpcEditorScreen.ActionEditor(config.id, interaction, selected))
-            }
+            pane.on(slot, item) { context.navigate(player, NpcEditorScreen.ActionEditor(config.id, interaction, selected)) }
         }
 
-        if (states.size < NpcConfig.MAX_JOIN_STATES) {
-            val add = Ui.addHead("Add Join State", listOf("<hnt>Other clicks for another join state"))
-            pane.left(ADD_STATE_SLOT, add) {
-                val purpose = PickerPurpose.AddJoinState(forHologram = false)
-                context.navigate(player, NpcEditorScreen.Picker(config.id, purpose))
-            }
-        }
-
-        return TabFrame.menu(pane, config)
+        return TabFrame.menu(pane, config, NpcTab.ACTIONS)
     }
 
     private fun configured(config: NpcConfig, state: String): Int =

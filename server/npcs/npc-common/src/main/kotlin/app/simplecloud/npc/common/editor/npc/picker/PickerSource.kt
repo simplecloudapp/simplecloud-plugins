@@ -1,5 +1,7 @@
 package app.simplecloud.npc.common.editor.npc.picker
 
+import app.simplecloud.npc.common.editor.core.EmptyState
+import app.simplecloud.npc.common.editor.core.PickerHeader
 import app.simplecloud.npc.common.editor.core.PickerOption
 import app.simplecloud.npc.common.editor.core.PickerResult
 import app.simplecloud.npc.common.editor.core.PickerSpec
@@ -19,6 +21,8 @@ interface PickerSource {
 
     val typingUnavailable: String get() = "Pick one from the list above."
 
+    fun header(context: NpcEditorContext, config: NpcConfig): PickerHeader
+
     fun options(context: NpcEditorContext, player: NpcPlayer, config: NpcConfig): List<PickerOption>
 
     fun resolveTyped(context: NpcEditorContext, config: NpcConfig, typed: String): PickerResult? = null
@@ -28,6 +32,11 @@ interface PickerSource {
     fun onRightClick(context: NpcEditorContext, player: NpcPlayer, config: NpcConfig, option: PickerOption) = Unit
 
     fun extras(context: NpcEditorContext, player: NpcPlayer, config: NpcConfig, pane: Pane) = Unit
+
+    /** Rows of the option grid; pickers with settings below the grid use fewer. */
+    val gridRows: Int get() = 3
+
+    val empty: EmptyState get() = EmptyState.DEFAULT
 
     companion object {
         fun of(purpose: PickerPurpose): PickerSource = when (purpose) {

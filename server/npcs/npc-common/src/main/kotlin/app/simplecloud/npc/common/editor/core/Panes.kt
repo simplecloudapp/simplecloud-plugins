@@ -5,8 +5,12 @@ import app.simplecloud.npc.common.editor.menu.Pane
 import app.simplecloud.npc.common.editor.ui.Ui
 import app.simplecloud.npc.core.platform.NpcPlayer
 
-fun Pane.back(host: EditorHost<*>, player: NpcPlayer) =
-    left(navRow.first, Ui.back()) { host.back(player) }
+fun <S : Any> Pane.back(host: EditorHost<S>, player: NpcPlayer) {
+    val stack = host.session(player).stack
+    val parent = stack.getOrNull(stack.size - 2)
+    val title = if (parent == null) null else host.session(player).titles[parent]
+    left(navRow.first, Ui.back(title)) { host.back(player) }
+}
 
 fun Pane.toggle(
     slot: Int,
@@ -19,15 +23,22 @@ fun Pane.toggle(
 
 fun pageKey(screen: Any): String = screen.toString()
 
+/** Previous in the first and Next in the last slot of the bottom row, only when that page exists. */
 fun Pane.pager(pages: Paginator<*>, lore: List<String>, rerender: () -> Unit) {
-    val center = navRow.first + 4
-    left(center - 1, Ui.previousPage(pages.page)) {
-        pages.turn(-1)
-        rerender()
+    if (pages.pageCount <= 1) return
+    val previous = Ui.previousPage(pages.page)
+    if (previous != null) {
+        left(navRow.first, previous) {
+            pages.turn(-1)
+            rerender()
+        }
     }
-    this[center] = Ui.pageIndicator(pages.page, pages.pageCount, lore)
-    left(center + 1, Ui.nextPage(pages.page, pages.pageCount)) {
-        pages.turn(1)
-        rerender()
+    this[navRow.first + 4] = Ui.pageIndicator(pages.page, pages.pageCount, lore)
+    val next = Ui.nextPage(pages.page, pages.pageCount)
+    if (next != null) {
+        left(navRow.last, next) {
+            pages.turn(1)
+            rerender()
+        }
     }
 }

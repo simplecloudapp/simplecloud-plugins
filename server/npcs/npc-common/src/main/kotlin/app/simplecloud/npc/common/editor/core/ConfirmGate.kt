@@ -11,7 +11,6 @@ class ConfirmSpec<S : Any>(
     val title: String,
     val screen: S,
     val verb: String,
-    val noun: String,
     val head: NpcItem,
     val fire: () -> Unit,
 )
@@ -23,49 +22,19 @@ object ConfirmGate {
     private const val KEEP_SLOT = 11
     private const val FIRE_SLOT = 15
 
-    private val RED_SLOTS = (0..8) + (18..26)
-    private val GRAY_SLOTS = listOf(9, 10, 12, 13, 14, 16, 17)
-
     fun <S : Any> build(host: EditorHost<S>, player: NpcPlayer, spec: ConfirmSpec<S>): EditorMenu {
-        val key = spec.screen.toString()
         val pane = Pane(SIZE)
 
-        pane.on(HEAD_SLOT, spec.head) { disarm(host, player, spec) }
-
-        pane.on(
-            KEEP_SLOT,
-            Ui.item("GREEN_CONCRETE", "<on><b>Keep It", listOf("<key>Left <hnt>Go back")),
-        ) { click ->
-            if (click == MenuClick.LEFT) host.back(player) else disarm(host, player, spec)
+        pane[HEAD_SLOT] = spec.head
+        pane.left(KEEP_SLOT, Ui.item("LIME_CONCRETE", "<on>Keep It", listOf("<key>Left-click to go back"))) {
+            host.back(player)
         }
-
-        pane.armed(
+        pane.left(
             FIRE_SLOT,
-            host,
-            player,
-            spec.screen,
-            key,
-            idle = Ui.item(
-                "RED_CONCRETE",
-                "<err><b>${spec.verb}",
-                listOf("<key>Left <hnt>Arm the ${spec.noun}, then click again"),
-            ),
-            verb = spec.verb,
+            Ui.item("RED_CONCRETE", "<err>${spec.verb}", listOf("<key>Left-click to ${spec.verb.lowercase()} it")),
         ) { spec.fire() }
 
-        val cancel: (MenuClick) -> Unit = { disarm(host, player, spec) }
-        pane.fill(RED_SLOTS, Pane.RED_PANE, cancel)
-        pane.fill(GRAY_SLOTS, onClick = cancel)
-        pane.otherwise { _, _ -> disarm(host, player, spec) }
-
         return pane.menu(spec.title)
-    }
-
-    private fun <S : Any> disarm(host: EditorHost<S>, player: NpcPlayer, spec: ConfirmSpec<S>) {
-        val session = host.session(player)
-        if (session.armedKey == null) return
-        session.disarm()
-        host.render(player, spec.screen)
     }
 }
 
@@ -109,9 +78,9 @@ fun <S : Any> Pane.armed(
     val session = host.session(player)
     val item = if (session.isArmed(key)) {
         Ui.item(
-            "TNT",
-            "<err><b>Click again",
-            listOf("<warn>${Arming.remainingSeconds(session)}s left", "<key>Left <err>$verb"),
+            "RED_CONCRETE",
+            "<err>Click Again",
+            listOf("<warn>${Arming.remainingSeconds(session)}s left", "", "<key>Left-click to ${verb.lowercase()}"),
             glowing = true,
         )
     } else {

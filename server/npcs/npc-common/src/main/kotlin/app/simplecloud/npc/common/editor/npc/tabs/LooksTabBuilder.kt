@@ -17,12 +17,12 @@ import app.simplecloud.npc.core.platform.NpcPlayer
 import app.simplecloud.npc.core.render.Providers
 
 object LooksTabBuilder {
-    private const val SKIN_SLOT = 19
-    private const val NAME_SLOT = 21
-    private const val GLOW_SLOT = 23
-    private const val EQUIPMENT_SLOT = 25
-    private const val POSE_SLOT = 28
-    private const val SCALE_SLOT = 30
+    private const val SKIN_SLOT = 20
+    private const val NAME_SLOT = 22
+    private const val GLOW_SLOT = 24
+    private const val EQUIPMENT_SLOT = 29
+    private const val POSE_SLOT = 31
+    private const val SCALE_SLOT = 33
 
     private val SCALE = Stepper(
         label = "Size",
@@ -31,7 +31,8 @@ object LooksTabBuilder {
         step = 0.05,
         default = 1.0,
         decimals = 2,
-        unit = "x",
+        unit = "×",
+        hints = listOf("<bd>1.00× is the normal size."),
     )
 
     fun build(context: NpcEditorContext, player: NpcPlayer, config: NpcConfig): EditorMenu {
@@ -48,16 +49,16 @@ object LooksTabBuilder {
                 SKIN_SLOT,
                 Ui.head(
                     "<ttl>Skin",
-                    listOf("<val>${NpcFormat.skinLabel(entity.skin)}", "<key>Left <hnt>Choose"),
+                    listOf("<val>${NpcFormat.skinLabel(entity.skin)}", "<key>Left-click to choose one"),
                     texture = entity.skin.texture,
                     signature = entity.skin.signature,
                 ),
             ) { context.navigate(player, NpcEditorScreen.SkinPicker(config.id)) }
         } else {
-            pane[SKIN_SLOT] = Ui.disabled("Skin", listOf("<hnt>${entity.provider} shows each viewer their own skin."))
+            pane[SKIN_SLOT] = Ui.disabled("Skin", listOf("<hnt>${entity.provider} shows each viewer their own skin."), "PLAYER_HEAD")
         }
 
-        pane.left(NAME_SLOT, Ui.item("NAME_TAG", "<ttl>Name", listOf("<val>$name", "<key>Left <hnt>Change"))) {
+        pane.left(NAME_SLOT, Ui.item("NAME_TAG", "<ttl>Name", listOf("<val>$name", "<key>Left-click to change it"))) {
             context.textPrompts.open(
                 player,
                 title = "Display Name",
@@ -77,12 +78,18 @@ object LooksTabBuilder {
                 "<ttl>Glow",
                 listOf(
                     "<on>On <hnt>· <val>${NpcFormat.glowLabel(color)}",
-                    "<key>Left <hnt>Turn off · <key>Right <hnt>Color",
+                    "",
+                    "<key>Left-click to turn it off",
+                    "<key>Right-click to pick the color",
                 ),
                 glowing = true,
             )
         } else {
-            Ui.item("GRAY_DYE", "<ttl>Glow", listOf("<off>Off", "<key>Left <hnt>Turn on · <key>Right <hnt>Color"))
+            Ui.item(
+                "GLOWSTONE_DUST",
+                "<ttl>Glow",
+                listOf("<off>Off", "", "<key>Left-click to turn it on", "<key>Right-click to pick the color"),
+            )
         }
         pane.on(GLOW_SLOT, glowItem) { click ->
             when (click) {
@@ -97,11 +104,11 @@ object LooksTabBuilder {
             pane.left(
                 EQUIPMENT_SLOT,
                 Ui.item(
-                    "ARMOR_STAND",
+                    "IRON_CHESTPLATE",
                     "<ttl>Equipment",
                     listOf(
                         if (worn == 0) "<off>Nothing worn" else "<val>$worn <hnt>items worn",
-                        "<key>Left <hnt>Dress it",
+                        "<key>Left-click to dress it",
                     ),
                     glowing = worn > 0,
                 ),
@@ -112,7 +119,7 @@ object LooksTabBuilder {
                 Ui.item(
                     "LEATHER_BOOTS",
                     "<ttl>Pose",
-                    listOf("<val>${poseLabel(entity.pose)}", "<key>Left <hnt>Next pose"),
+                    listOf("<val>${poseLabel(entity.pose)}", "<key>Left-click to show the next pose"),
                 ),
             ) {
                 context.commit(player, config.id, screen, Refresh.ALL) { fresh ->
@@ -127,12 +134,12 @@ object LooksTabBuilder {
             }
         } else {
             val reason = listOf("<hnt>Only NPCs this plugin draws itself.")
-            pane[EQUIPMENT_SLOT] = Ui.disabled("Equipment", reason)
-            pane[POSE_SLOT] = Ui.disabled("Pose", reason)
-            pane[SCALE_SLOT] = Ui.disabled("Size", reason)
+            pane[EQUIPMENT_SLOT] = Ui.disabled("Equipment", reason, "IRON_CHESTPLATE")
+            pane[POSE_SLOT] = Ui.disabled("Pose", reason, "LEATHER_BOOTS")
+            pane[SCALE_SLOT] = SCALE.disabled(reason)
         }
 
-        return TabFrame.menu(pane, config)
+        return TabFrame.menu(pane, config, NpcTab.LOOKS)
     }
 
     private fun poseLabel(pose: NpcPose): String = when (pose) {

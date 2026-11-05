@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "skills": {
+    "create-design-md": {
+      "source": "simplecloudapp/skills",
+      "sourceType": "github",
+      "skillPath": "skills/create-design-md/SKILL.md",
+      "computedHash": "33e8166daa150316197ddf22714ac14f7212184221d5cb6f371300428db69302"
+    },
+    "minecraft-design": {
+      "source": "simplecloudapp/skills",
+      "sourceType": "github",
+      "skillPath": "skills/minecraft-design/SKILL.md",
+      "computedHash": "bb9953573d3b639e563e5221cf649a008dbfe8a48ad56de347b84ffd20639943"
+    }
+  }
+}

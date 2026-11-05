@@ -13,10 +13,10 @@ import org.bukkit.plugin.java.JavaPlugin
 class PaperSignsPlugin : JavaPlugin() {
 
     private val api = CloudApi.create(CloudApiOptions.builder().disableCache().build())
-    private val signs = SignManager(api, dataPath, PaperSignRenderer(this))
+    private val messages = ConfigurationFactory.create(dataPath, "messages.yml", MessageConfig())
+    private val signs = SignManager(api, dataPath, PaperSignRenderer(this), messages)
 
     override fun onEnable() {
-        val messages = ConfigurationFactory.create(dataPath, "messages.yml", MessageConfig())
         signs.start()
         server.scheduler.runTaskTimer(this, Runnable { signs.tick() }, 1L, 1L)
 

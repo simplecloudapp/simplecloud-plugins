@@ -15,6 +15,7 @@ import app.simplecloud.npc.common.editor.inventory.LiveGroups
 import app.simplecloud.npc.common.editor.menu.EditorMenu
 import app.simplecloud.npc.common.editor.menu.MenuClick
 import app.simplecloud.npc.common.editor.menu.Pane
+import app.simplecloud.npc.common.editor.ui.Layout
 import app.simplecloud.npc.common.editor.ui.Ui
 import app.simplecloud.npc.common.editor.ui.after
 import app.simplecloud.npc.common.inventory.source.GroupServersSource
@@ -24,22 +25,21 @@ import app.simplecloud.npc.core.platform.NpcPlayer
 import net.kyori.adventure.text.Component
 
 object LiveGroupMenuBuilder {
-    private const val SIZE = 45
+    private const val SIZE = Layout.SIZE
 
-    private const val HEADER_SLOT = 4
-    private const val SOURCE_SLOT = 10
-    private const val GROUP_SLOT = 12
-    private const val SORT_SLOT = 14
-    private const val EMPTY_SLOT = 16
-    private val STATE_SLOTS = 19..25
-    private const val RENAME_SLOT = 30
-    private const val DELETE_SLOT = 32
-    private const val LOOKS_SLOT = 34
+    private const val HEADER_SLOT = Layout.HEADER
+    private const val SOURCE_SLOT = 20
+    private const val GROUP_SLOT = 22
+    private const val EMPTY_SLOT = 24
+    private const val SORT_SLOT = Layout.TOOL_LEFT
+    private const val RENAME_SLOT = 39
+    private const val DELETE_SLOT = Layout.TOOL_RIGHT
+    private const val LOOKS_SLOT = 41
 
     private val SORTS = listOf("NUMERICAL_ID", "PLAYER_COUNT")
     private val EMPTY_LOOK = InventoryItemConfiguration(
-        material = "GRAY_STAINED_GLASS_PANE",
-        name = "<#475569>Spinning up...",
+        material = "GRAY_DYE",
+        name = "<muted>No Servers Online",
     )
 
     fun build(
@@ -51,7 +51,6 @@ object LiveGroupMenuBuilder {
         val screen = InventoryEditorScreen.LiveGroup(config.id, group)
         val source = LiveGroups.source(config, group)
         val type = source?.type
-        val (color, _) = LiveGroups.colorOf(config, group)
         val pane = Pane(SIZE)
 
         fun change(mutate: (InventoryConfiguration) -> InventoryConfiguration?) {
@@ -64,19 +63,21 @@ object LiveGroupMenuBuilder {
 
         if (LiveGroups.members(config, group).isEmpty()) {
             pane.back(context, player)
-            pane.fillNavRow()
-            return pane.menu(Ui.title("Live Group", group))
+            return pane.menu(Ui.title("Live Group", config.id))
         }
 
         pane[HEADER_SLOT] = Ui.item(
-            "${color}_STAINED_GLASS_PANE",
-            "<ttl>Live Group <val>$group",
-            listOfNotNull(
-                "<bd><val>${LiveGroups.contentSlots(config, group).size} <bd>slots",
+            "OBSERVER",
+            "<ttl>$group",
+            listOf(
+                "<bd>A live group: its slots fill",
+                "<bd>with one entry each, kept up to date.",
+                "",
+                "<bd>Slots: <val>${LiveGroups.contentSlots(config, group).size}",
                 if (LiveGroups.lacksPageControls(config, group)) {
-                    "<warn>No page arrows: extra entries are hidden."
+                    "<warn>No page buttons: extra entries are hidden."
                 } else {
-                    "<bd>Has page arrows"
+                    "<bd>Page buttons: <val>Yes"
                 },
             ),
         )
@@ -87,7 +88,7 @@ object LiveGroupMenuBuilder {
             Ui.item(
                 info?.icon ?: "BARRIER",
                 "<ttl>Source",
-                listOf("<bd>Now: <val>${info?.label ?: "none"}", "", "<key>Left <hnt>Change"),
+                listOf("<bd>Now: <val>${info?.label ?: "none"}", "", "<key>Left-click to change it"),
             ),
         ) { pick(InventoryPickerPurpose.LiveSourceType(group)) }
 
@@ -96,30 +97,32 @@ object LiveGroupMenuBuilder {
             val targetLabel = if (target == GroupServersSource.TARGET_GROUP) "the opening NPC's target" else target
             pane.left(
                 GROUP_SLOT,
-                Ui.item("PAPER", "<ttl>Which Group", listOf("<bd>Now: <val>$targetLabel", "", "<key>Left <hnt>Change")),
+                Ui.item("PAPER", "<ttl>Group", listOf("<bd>Now: <val>$targetLabel", "", "<key>Left-click to change it")),
             ) { pick(InventoryPickerPurpose.LiveSourceGroup(group)) }
 
             val sort = source.sort?.uppercase() ?: SORTS.first()
             val sortLabel = if (sort == "PLAYER_COUNT") "most players first" else "by number"
             pane.left(
                 SORT_SLOT,
-                Ui.item("HOPPER", "<ttl>Order", listOf("<bd>Now: <val>$sortLabel", "", "<key>Left <hnt>Switch")),
+                Ui.item("HOPPER", "<ttl>Order", listOf("<bd>Now: <val>$sortLabel", "", "<key>Left-click to switch")),
             ) {
                 val next = SORTS.after(sort)
                 change { LiveGroups.setSource(it, group) { s -> s.copy(sort = next) } }
             }
 
             val chosen = source.states.map { it.uppercase() }.toSet()
-            val noneHint = listOfNotNull("<hnt>None picked: everything but stopping.".takeIf { chosen.isEmpty() })
             val states = ServerState.entries.filterNot { it.name.startsWith("UNKNOWN") }
-            states.zip(STATE_SLOTS.toList()).forEach { (state, slot) ->
+            states.zip(Layout.list(states.size, firstRow = 2, rows = 1)).forEach { (state, slot) ->
                 val on = state.name in chosen
-                pane.toggle(
-                    slot,
-                    state.name.lowercase().replace('_', ' ').replaceFirstChar(Char::uppercase),
-                    on,
-                    extraLore = noneHint,
-                ) {
+                val label = state.name.lowercase().replace('_', ' ').replaceFirstChar(Char::uppercase)
+                val listed = on || (chosen.isEmpty() && state != ServerState.STOPPING)
+                val lore = listOfNotNull(
+                    if (listed) "<on>Listed" else "<off>Not listed",
+                    if (chosen.isEmpty()) "<hnt>Nothing picked, so all but stopping." else null,
+                    "",
+                    if (on) "<key>Left-click to stop listing them" else "<key>Left-click to list them",
+                )
+                pane.left(slot, Ui.item(stateIcon(state), "<ttl>$label Servers", lore, glowing = listed)) {
                     change {
                         LiveGroups.setSource(it, group) { s ->
                             val states = s.states.map(String::uppercase).toMutableSet()
@@ -135,13 +138,13 @@ object LiveGroupMenuBuilder {
         pane.on(
             EMPTY_SLOT,
             Ui.item(
-                emptyLook?.material ?: "LIGHT_GRAY_STAINED_GLASS_PANE",
-                "<ttl>When A Slot Is Empty",
+                emptyLook?.material ?: "STRUCTURE_VOID",
+                "<ttl>Empty Slots",
                 listOf(
                     emptyLook?.let { "<bd>Shows " + (it.name ?: it.material) } ?: "<off>Stays empty",
                     "",
-                    "<key>Left <hnt>${if (emptyLook == null) "Show a placeholder" else "Leave empty slots empty"}",
-                    "<key>Right <hnt>Type the placeholder's name",
+                    "<key>Left-click to ${if (emptyLook == null) "show a placeholder" else "leave empty slots empty"}",
+                    "<key>Right-click to type the placeholder's name",
                 ),
             ),
         ) { click ->
@@ -177,7 +180,7 @@ object LiveGroupMenuBuilder {
             Ui.item(
                 "ANVIL",
                 "<ttl>Rename",
-                listOf("<bd>Now: <val>$group", "", "<key>Left <hnt>Type a new name in chat"),
+                listOf("<bd>Now: <val>$group", "", "<key>Left-click to type a new name in chat"),
             ),
         ) {
             context.chatPrompt(
@@ -212,12 +215,11 @@ object LiveGroupMenuBuilder {
                     "PAINTING",
                     "<ttl>State Looks",
                     listOf(
-                        if (looks == 0) "<off>None set" else "<bd><val>$looks <bd>states styled",
-                        "<hnt>Full, starting, offline… each its own look.",
+                        if (looks == 0) "<off>None set" else "<bd>States with their own look: <val>$looks",
+                        "<hnt>Entries can look different per server state.",
                         "",
-                        "<key>Left <hnt>Open",
+                        "<key>Left-click to open it",
                     ),
-                    glowing = looks > 0,
                 ),
             ) { context.navigate(player, InventoryEditorScreen.StateLooks(config.id, group)) }
         }
@@ -225,9 +227,9 @@ object LiveGroupMenuBuilder {
         pane.left(
             DELETE_SLOT,
             Ui.item(
-                "TNT",
+                "RED_CONCRETE",
                 "<err>Delete Group",
-                listOf("<bd>Removes all its slots and arrows.", "", "<key>Left <hnt>Asks first"),
+                listOf("<bd>Removes all its slots and arrows.", "", "<key>Left-click to delete it"),
             ),
         ) {
             val purpose = InventoryConfirmPurpose.DeleteLiveGroup(group)
@@ -235,8 +237,16 @@ object LiveGroupMenuBuilder {
         }
 
         pane.back(context, player)
-        pane.fillNavRow()
 
-        return pane.menu(Ui.title("Live Group", group))
+        return pane.menu(Ui.title("Live Group", config.id))
+    }
+
+    private fun stateIcon(state: ServerState): String = when (state) {
+        ServerState.STARTING -> "LIGHT_BLUE_CONCRETE"
+        ServerState.AVAILABLE -> "LIME_CONCRETE"
+        ServerState.INGAME -> "ORANGE_CONCRETE"
+        ServerState.STOPPING -> "YELLOW_CONCRETE"
+        ServerState.PREPARING -> "WHITE_CONCRETE"
+        else -> "GRAY_CONCRETE"
     }
 }

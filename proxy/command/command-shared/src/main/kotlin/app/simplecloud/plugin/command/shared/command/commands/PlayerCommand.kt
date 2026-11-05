@@ -46,46 +46,53 @@ class PlayerCommand<C : CloudSender>(
             manager.commandBuilder("cloud", "sc", "simplecloud")
                 .literal("player")
                 .literal("list")
-                .required("targetType", stringParser(), CloudSuggestions.targetTypes())
-                .required("target", stringParser(), CloudSuggestions.targets(api))
+                .optional("targetType", stringParser(), CloudSuggestions.targetTypes())
+                .optional("target", stringParser(), CloudSuggestions.targets(api))
                 .suspendingHandler(plugin.scope) { context ->
-                    val sender = context.sender()
-                    val targetType = context.get<String>("targetType")
-                    val target = context.get<String>("target")
-                    val messages = plugin.messageConfiguration
-                    if (!isTargetTypeValid(targetType)) {
-                        sender.sendMessage(messages.msg(messages.command.usage.invalidTargetType))
-                        return@suspendingHandler
-                    }
-                    val resolvedTarget = resolveTarget(targetType, target)
-                    if (resolvedTarget == null) {
-                        sender.sendMessage(
-                            messages.msg(messages.command.player.error.targetNotFound, tags("target" to target)),
-                        )
-                        return@suspendingHandler
-                    }
-                    val players = playersForTarget(resolvedTarget)
-                    if (players.isEmpty()) {
-                        sender.sendMessage(messages.msg(messages.command.player.list.empty))
-                        return@suspendingHandler
-                    }
-                    sender.sendMessage(messages.msg(messages.command.player.list.title, tags("count" to players.size)))
-                    players.forEach { player ->
-                        sender.sendMessage(
-                            messages.msg(
-                                messages.command.player.list.entry,
-                                tags(
-                                    "playername" to player.name,
-                                    "displayname" to player.displayName,
-                                    "value" to player.connectedServerName,
-                                ),
-                            ),
-                        )
-                    }
+                    val targetType = context.optional<String>("targetType").orElse(null)
+                    val target = context.optional<String>("target").orElse(null)
+                    listPlayers(context.sender(), targetType, target)
                 }
                 .permission(Permission.permission(CommandPermissions.PLAYER_LIST))
                 .build(),
         )
+    }
+
+    private suspend fun listPlayers(sender: C, targetType: String?, target: String?) {
+        val messages = plugin.messageConfiguration
+        if (targetType != null && !isTargetTypeValid(targetType)) {
+            sender.sendMessage(messages.msg(messages.command.usage.invalidTargetType))
+            return
+        }
+        if (targetType != null && target == null) {
+            sender.sendMessage(
+                messages.msg(messages.command.exception.syntax, tags("command" to "/cloud player list [<group|ps> <target>]")),
+            )
+            return
+        }
+        val resolvedTarget = if (targetType == null || target == null) null else resolveTarget(targetType, target)
+        if (target != null && resolvedTarget == null) {
+            sender.sendMessage(messages.msg(messages.command.player.error.targetNotFound, tags("target" to target)))
+            return
+        }
+        val players = if (resolvedTarget == null) api.player().onlinePlayers.await() else playersForTarget(resolvedTarget)
+        if (players.isEmpty()) {
+            sender.sendMessage(messages.msg(messages.command.player.list.empty))
+            return
+        }
+        sender.sendMessage(messages.msg(messages.command.player.list.title, tags("count" to players.size)))
+        players.sortedBy { it.name.lowercase() }.forEach { player ->
+            sender.sendMessage(
+                messages.msg(
+                    messages.command.player.list.entry,
+                    tags(
+                        "playername" to player.name,
+                        "displayname" to player.displayName,
+                        "value" to player.connectedServerName,
+                    ),
+                ),
+            )
+        }
     }
 
     private fun registerInfo() {
@@ -116,13 +123,13 @@ class PlayerCommand<C : CloudSender>(
                     )
                     listOf<Pair<String, Any?>>(
                         "Name" to player.name,
-                        "Display Name" to player.displayName,
-                        "Online" to player.isOnline,
+                        "Display name" to player.displayName,
+                        "Online" to if (player.isOnline) "Yes" else "No",
                         "Server" to player.connectedServerName,
                         "Proxy" to player.connectedProxyName,
-                        "Online Time" to player.onlineTimeSeconds.seconds,
-                        "First Seen" to player.firstSeen,
-                        "Last Seen" to player.lastSeen,
+                        "Online time" to player.onlineTimeSeconds.seconds,
+                        "First seen" to player.firstSeen,
+                        "Last seen" to player.lastSeen,
                     ).forEach { (key, value) ->
                         sender.sendMessage(
                             messages.msg(messages.command.player.info.entry, tags("key" to key, "value" to value)),
@@ -401,7 +408,9 @@ class PlayerCommand<C : CloudSender>(
     }.await()
 
     private suspend fun playersOn(identifiers: Set<String>): List<CloudPlayer> =
-        api.player().onlinePlayers.await().filter { it.connectedServerName?.lowercase() in identifiers }
+        api.player().onlinePlayers.await().filter { player ->
+            player.connectedServerName?.lowercase() in identifiers || player.connectedProxyName?.lowercase() in identifiers
+        }
 
     private suspend fun connectAll(players: List<CloudPlayer>, target: ServerBase): List<ConnectResult?> = coroutineScope {
         players.map { player -> async { runCatching { connect(player, target) }.getOrNull() } }.awaitAll()

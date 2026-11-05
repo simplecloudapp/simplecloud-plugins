@@ -19,6 +19,7 @@ import app.simplecloud.npc.core.config.EquipmentSlot
 import app.simplecloud.npc.core.config.GlowColors
 import app.simplecloud.npc.core.config.NpcConfig
 import app.simplecloud.npc.core.location.NpcLocation
+import app.simplecloud.npc.core.text.NpcPalette
 import app.simplecloud.npc.provider.standalone.interact.InteractionHitboxes
 import com.github.retrooper.packetevents.protocol.attribute.Attributes
 import com.github.retrooper.packetevents.protocol.player.TextureProperty
@@ -27,7 +28,6 @@ import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerPl
 import io.github.retrooper.packetevents.util.SpigotConversionUtil
 import me.tofaa.entitylib.meta.types.PlayerMeta
 import me.tofaa.entitylib.wrapper.WrapperPlayer
-import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.plugin.Plugin
@@ -152,15 +152,15 @@ class StandaloneNpcRenderer(
         val entity = WrapperPlayer(profile, EntityIds.next(Bukkit.getWorld(config.entity.location.world)))
 
         entity.isInTablist = false
-        entity.getEntityMeta(PlayerMeta::class.java).apply {
-            isGlowing = config.entity.glowing
-            config.entity.customName?.let {
-                customName = PacketComponents.of(MiniMessage.miniMessage().deserialize(it))
-                isCustomNameVisible = true
-            }
-            SkinLayers.showAll(this, ServerCompat.version)
-            pose = PacketPoses.of(config.entity.pose)
+        val meta = entity.getEntityMeta(PlayerMeta::class.java)
+        meta.isGlowing = config.entity.glowing
+        val customName = config.entity.customName
+        if (customName != null) {
+            meta.customName = PacketComponents.of(NpcPalette.miniMessage.deserialize(customName))
+            meta.isCustomNameVisible = true
         }
+        SkinLayers.showAll(meta, ServerCompat.version)
+        meta.pose = PacketPoses.of(config.entity.pose)
         applyEquipment(entity, config)
         val scale = config.entity.effectiveScale()
         if (scale != 1.0) entity.attributes.setAttribute(Attributes.SCALE, scale)

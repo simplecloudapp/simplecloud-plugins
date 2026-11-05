@@ -5,6 +5,8 @@ import app.simplecloud.api.event.Subscription
 import app.simplecloud.api.server.ServerState
 import app.simplecloud.plugin.core.shared.command.CloudSender
 import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
+import app.simplecloud.plugin.core.shared.pretty.PrettifyCase
+import app.simplecloud.plugin.core.shared.pretty.StringPrettifier
 import app.simplecloud.plugin.notify.shared.config.MessageConfig
 import app.simplecloud.plugin.notify.shared.notification.Notification
 import app.simplecloud.plugin.notify.shared.notification.NotificationCache
@@ -57,7 +59,7 @@ class NotificationListener(
 
                     broadcast(
                         Notification(
-                            formatter.server(server, message, Placeholder.unparsed("state", state.name)),
+                            formatter.server(server, message, Placeholder.unparsed("state", StringPrettifier.prettify(state.name, PrettifyCase.SENTENCE))),
                             type,
                         ),
                     )
@@ -74,7 +76,7 @@ class NotificationListener(
                     val message = messages.get().notifications.server?.stopped ?: return@launch
                     broadcast(
                         Notification(
-                            formatter.server(server, message, Placeholder.unparsed("state", "STOPPED")),
+                            formatter.server(server, message, Placeholder.unparsed("state", "Stopped")),
                             NotificationType.SERVER_STOPPED,
                         ),
                     )

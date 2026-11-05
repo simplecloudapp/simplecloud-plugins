@@ -13,6 +13,7 @@ import app.simplecloud.npc.common.editor.npc.NpcEditorContext
 import app.simplecloud.npc.common.editor.npc.NpcEditorScreen
 import app.simplecloud.npc.common.editor.npc.NpcFormat
 import app.simplecloud.npc.common.editor.npc.Refresh
+import app.simplecloud.npc.common.editor.ui.Layout
 import app.simplecloud.npc.common.editor.ui.Stepper
 import app.simplecloud.npc.common.editor.ui.Ui
 import app.simplecloud.npc.core.config.NpcConfig
@@ -21,28 +22,29 @@ import app.simplecloud.npc.core.platform.NpcPlayer
 import app.simplecloud.npc.core.text.PlayerPlaceholders
 
 object HologramFramesMenuBuilder {
-    private const val SIZE = 27
-    private const val INTERVAL_SLOT = 22
-    private const val REFRESH_SLOT = 24
-    private val FRAME_SLOTS = (0..17).toList()
+    private const val SIZE = Layout.SIZE
+    private const val INTERVAL_SLOT = Layout.TOOL_MIDDLE
+    private const val REFRESH_SLOT = Layout.TOOL_LEFT
 
     private val INTERVAL = Stepper(
         label = "Interval",
+        material = "CLOCK",
         range = HologramLine.FRAME_INTERVAL_RANGE,
         step = 0.5,
         default = HologramLine.DEFAULT_FRAME_INTERVAL,
         decimals = 1,
-        unit = "seconds",
+        unit = "s",
         hints = listOf("<hnt>How long each text stays."),
     )
 
     private val REFRESH = Stepper(
         label = "Placeholder Refresh",
+        material = "REPEATER",
         range = HologramLine.REFRESH_RANGE,
         step = 0.25,
         default = HologramLine.DEFAULT_REFRESH,
         decimals = 2,
-        unit = "seconds",
+        unit = "s",
         hints = listOf("<hnt>How often PlaceholderAPI values update."),
     )
 
@@ -78,7 +80,7 @@ object HologramFramesMenuBuilder {
                 promptFrame(context, player, screen, current, onText, onDelete)
             },
         )
-        LinesPane.place(pane, frames, FRAME_SLOTS, "Add Text")
+        LinesPane.place(pane, frames, addLabel = "Add Text")
 
         val interval = line?.interval ?: HologramLine.DEFAULT_FRAME_INTERVAL
         pane[INTERVAL_SLOT] = INTERVAL.element(interval) { value ->
@@ -90,9 +92,18 @@ object HologramFramesMenuBuilder {
             }
         }
         pane.back(context, player)
-        pane.fillNavRow()
 
-        val title = "Rotating · ${NpcFormat.joinState(screen.joinState)} #${screen.line + 1}"
+        pane[Layout.HEADER] = Ui.item(
+            "PAPER",
+            "<ttl>Rotating Line ${screen.line + 1}",
+            listOf(
+                "<bd>Shows its texts one after another.",
+                "",
+                "<bd>Join state: <val>${NpcFormat.joinState(screen.joinState)}",
+                "<bd>Texts: <val>${line?.texts?.size ?: 0}",
+            ),
+        )
+        val title = "Rotating Line ${screen.line + 1}"
 
         return pane.menu(Ui.title(title, NpcFormat.displayName(config)))
     }

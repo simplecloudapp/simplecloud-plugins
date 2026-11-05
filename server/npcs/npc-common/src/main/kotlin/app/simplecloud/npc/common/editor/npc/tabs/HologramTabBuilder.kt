@@ -10,6 +10,7 @@ import app.simplecloud.npc.common.editor.npc.NpcTab
 import app.simplecloud.npc.common.editor.npc.PickerPurpose
 import app.simplecloud.npc.common.editor.npc.Refresh
 import app.simplecloud.npc.common.editor.npc.hologram.HologramLineEditor
+import app.simplecloud.npc.common.editor.ui.Layout
 import app.simplecloud.npc.common.editor.ui.Stepper
 import app.simplecloud.npc.common.editor.ui.Ui
 import app.simplecloud.npc.core.config.NpcConfig
@@ -18,13 +19,12 @@ import app.simplecloud.npc.core.render.Providers
 import java.util.Locale
 
 object HologramTabBuilder {
-    private const val TOGGLE_SLOT = 18
-    private const val HEIGHT_SLOT = 19
-    private const val ADD_LAYOUT_SLOT = 26
-    private val LINE_SLOTS = (27..44).toList()
+    private const val TOGGLE_SLOT = Layout.TOOL_LEFT
+    private const val HEIGHT_SLOT = Layout.TOOL_MIDDLE
 
     private val START_HEIGHT = Stepper(
         label = "Height",
+        material = "LADDER",
         range = NpcConfig.HologramConfigurationRoot.START_HEIGHT_RANGE,
         step = 0.05,
         default = NpcConfig.HologramConfigurationRoot().startHeight,
@@ -46,7 +46,7 @@ object HologramTabBuilder {
         fun edit(mutate: (NpcConfig.HologramConfigurationRoot) -> Unit) =
             context.commit(player, config.id, screen, Refresh.HOLOGRAM) { fresh -> fresh.also { mutate(it.hologram) } }
 
-        pane.left(TOGGLE_SLOT, Ui.toggle("Hologram", hologram.enabled, linkedHint(config), "GLOW_ITEM_FRAME")) {
+        pane.left(TOGGLE_SLOT, Ui.toggle("Show Hologram", hologram.enabled, linkedHint(config))) {
             edit { it.enabled = !it.enabled }
         }
         pane[HEIGHT_SLOT] = START_HEIGHT.element(hologram.startHeight) { value -> edit { it.startHeight = value } }
@@ -73,16 +73,15 @@ object HologramTabBuilder {
                         context.navigate(player, NpcEditorScreen.Confirm(config.id, ConfirmPurpose.RemoveLayout(state)))
                     }
                 },
+                add = StateChipRow.Add(Ui.addHead("Add Join State", listOf("<bd>Show other lines while the", "<bd>target is in another state.", "", "<key>Left-click to pick a join state"))) {
+                    context.navigate(player, NpcEditorScreen.Picker(config.id, PickerPurpose.AddJoinState(forHologram = true)))
+                },
             ),
         )
 
-        LinesPane.place(pane, HologramLineEditor.lines(context, player, config, selected, screen), LINE_SLOTS)
+        LinesPane.place(pane, HologramLineEditor.lines(context, player, config, selected, screen), firstRow = 2, rows = 2)
 
-        pane.left(ADD_LAYOUT_SLOT, Ui.addHead("Add Layout", listOf("<hnt>Other lines for another join state"))) {
-            context.navigate(player, NpcEditorScreen.Picker(config.id, PickerPurpose.AddJoinState(forHologram = true)))
-        }
-
-        return TabFrame.menu(pane, config)
+        return TabFrame.menu(pane, config, NpcTab.HOLOGRAM)
     }
 
     private fun linkedHint(config: NpcConfig): List<String> {

@@ -1,8 +1,8 @@
 package app.simplecloud.npc.core.hologram
 
+import app.simplecloud.npc.core.text.NpcPalette
 import app.simplecloud.npc.core.text.PlayerPlaceholders
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 import java.security.SecureRandom
@@ -29,7 +29,7 @@ class PersonalText private constructor(
     override fun hashCode(): Int = 31 * template.hashCode() + values.hashCode()
 
     companion object {
-        private val MINI_MESSAGE = MiniMessage.miniMessage()
+        private val MINI_MESSAGE = NpcPalette.miniMessage
         private val TARGET_TAG = Regex("(?i)<target_[a-z0-9_-]+(?::[^<>]*)?>")
         private val SALT = SecureRandom().let { random ->
             (1..8).map { 'a' + random.nextInt(26) }.joinToString("")

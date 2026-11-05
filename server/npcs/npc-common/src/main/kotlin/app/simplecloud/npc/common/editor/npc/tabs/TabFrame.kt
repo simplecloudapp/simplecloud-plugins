@@ -13,18 +13,16 @@ import app.simplecloud.npc.core.platform.NpcPlayer
 object TabFrame {
     const val SIZE = 54
 
-    private const val UNDERLINE_FIRST = 9
-    private val UNDERLINE = 9..17
-
-    private const val ACTIVE_LINE = "LIGHT_BLUE_STAINED_GLASS_PANE"
+    private val TAB_SLOTS = listOf(1, 2, 3, 5, 6, 7)
 
     fun pane(context: NpcEditorContext, player: NpcPlayer, config: NpcConfig, active: NpcTab): Pane {
         val pane = Pane(SIZE)
 
-        NpcTab.entries.forEachIndexed { slot, tab ->
+        NpcTab.entries.forEachIndexed { index, tab ->
+            val slot = TAB_SLOTS[index]
             val selected = tab == active
-            val name = if (selected) "<on><b>${tab.label}" else "<ttl>${tab.label}"
-            val lore = listOf("<hnt>${tab.description}") + if (selected) emptyList() else listOf("<key>Left <hnt>Open")
+            val name = if (selected) "<val>${tab.label}" else "<ttl>${tab.label}"
+            val lore = listOf("<bd>${tab.description}") + if (selected) emptyList() else listOf("", "<key>Left-click to open")
             val item = if (tab == NpcTab.NPC) {
                 Ui.head(name, lore, config.entity.skin.texture, config.entity.skin.signature, glowing = selected)
             } else {
@@ -38,14 +36,8 @@ object TabFrame {
             }
         }
 
-        pane.fill(listOf(UNDERLINE_FIRST + active.ordinal), ACTIVE_LINE)
-
         return pane
     }
 
-    fun menu(pane: Pane, config: NpcConfig): EditorMenu {
-        pane.fill(UNDERLINE)
-
-        return pane.menu(Ui.title("⚡ NPC Editor", NpcFormat.displayName(config)))
-    }
+    fun menu(pane: Pane, config: NpcConfig, tab: NpcTab): EditorMenu = pane.menu(Ui.title(tab.label, NpcFormat.displayName(config)))
 }

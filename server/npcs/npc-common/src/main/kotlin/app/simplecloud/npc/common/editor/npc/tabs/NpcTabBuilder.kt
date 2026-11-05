@@ -8,6 +8,7 @@ import app.simplecloud.npc.common.editor.npc.NpcEditorContext
 import app.simplecloud.npc.common.editor.npc.NpcEditorScreen
 import app.simplecloud.npc.common.editor.npc.NpcFormat
 import app.simplecloud.npc.common.editor.npc.NpcTab
+import app.simplecloud.npc.common.editor.ui.Layout
 import app.simplecloud.npc.common.editor.ui.Ui
 import app.simplecloud.npc.common.manager.NpcFailure
 import app.simplecloud.npc.common.manager.NpcOperationResult
@@ -17,12 +18,10 @@ import app.simplecloud.npc.core.platform.NpcPlayer
 import net.kyori.adventure.text.Component
 
 object NpcTabBuilder {
-    private const val SUMMON_SLOT = 20
-    private const val DUPLICATE_SLOT = 22
-    private const val DELETE_SLOT = 24
-    private const val TARGETS_SLOT = 29
-    private const val LIVE_SLOT = 31
-    private const val NEARBY_SLOT = 33
+    private const val SUMMON_SLOT = 21
+    private const val DUPLICATE_SLOT = 23
+    private const val STATUS_SLOT = 31
+    private const val DELETE_SLOT = Layout.TOOL_RIGHT
 
     fun build(context: NpcEditorContext, player: NpcPlayer, config: NpcConfig): EditorMenu {
         val screen = NpcEditorScreen.Tab(config.id, NpcTab.NPC)
@@ -33,8 +32,8 @@ object NpcTabBuilder {
             SUMMON_SLOT,
             Ui.item(
                 "ENDER_PEARL",
-                "<ttl>Summon To Me",
-                listOf("<bd>Now at <val>${NpcFormat.position(config.entity.location)}", "<key>Left <hnt>Move it here"),
+                "<ttl>Summon to Me",
+                listOf("<bd>Now at <val>${NpcFormat.position(config.entity.location)}", "<key>Left-click to move it here"),
             ),
         ) {
             context.npcManager.teleport(config.id, player.location())
@@ -46,7 +45,7 @@ object NpcTabBuilder {
             Ui.item(
                 "SPAWNER",
                 "<ttl>Duplicate",
-                listOf("<bd>A copy appears where you stand.", "<key>Left <hnt>Name the copy"),
+                listOf("<bd>A copy appears where you stand.", "<key>Left-click to name the copy"),
             ),
         ) { promptDuplicate(context, player, config, screen) }
 
@@ -56,7 +55,7 @@ object NpcTabBuilder {
             player,
             screen,
             "delete-npc",
-            idle = Ui.item("BARRIER", "<err>Delete NPC", listOf("<err>There is no undo.", "<key>Left <hnt>Delete")),
+            idle = Ui.item("RED_CONCRETE", "<err>Delete NPC", listOf("<err>There is no undo.", "", "<key>Left-click twice to delete it")),
             verb = "Delete ${NpcFormat.displayName(config)}",
         ) {
             context.npcManager.delete(config.id)
@@ -64,29 +63,21 @@ object NpcTabBuilder {
         }
 
         val targets = config.targetServers
-        pane[TARGETS_SLOT] = Ui.item(
-            "COMPASS",
-            "<ttl>Targets",
-            listOfNotNull(
-                targets.firstOrNull()?.let { "<val>$it" } ?: "<off>None",
-                (targets.size - 1).takeIf { it > 0 }?.let { "<hnt>+$it more" },
+        val joinState = live.hologramState(config).joinState
+        val nearby = live.playersInRange(config)
+        pane[STATUS_SLOT] = Ui.item(
+            "BOOK",
+            "<ttl>Status",
+            listOf(
+                "<bd>Targets: " + if (targets.isEmpty()) "<off>None" else "<val>" + targets.joinToString("<bd>, <val>"),
+                "<bd>Join state: " + if (joinState == null) "<off>Unknown" else "<val>${NpcFormat.joinState(joinState)}",
+                "<bd>Players nearby: <val>$nearby",
+                "",
+                "<hnt>Changes save right away.",
             ),
         )
 
-        val joinState = live.hologramState(config).joinState
-        pane[LIVE_SLOT] = Ui.item(
-            "REDSTONE_TORCH",
-            "<ttl>Join State",
-            listOf(joinState?.let { "<val>${NpcFormat.joinState(it)}" } ?: "<off>unknown", "<hnt>of the first target"),
-        )
-
-        pane[NEARBY_SLOT] = Ui.item(
-            "PLAYER_HEAD",
-            "<ttl>Nearby",
-            listOf("<val>${live.playersInRange(config)} <hnt>players in range"),
-        )
-
-        return TabFrame.menu(pane, config)
+        return TabFrame.menu(pane, config, NpcTab.NPC)
     }
 
     private fun promptDuplicate(

@@ -5,6 +5,7 @@ import app.simplecloud.npc.common.editor.inventory.InventoryEditorScreen
 import app.simplecloud.npc.common.editor.inventory.MenuTemplate
 import app.simplecloud.npc.common.editor.menu.EditorMenu
 import app.simplecloud.npc.common.editor.menu.Pane
+import app.simplecloud.npc.common.editor.ui.Layout
 import app.simplecloud.npc.common.editor.ui.Ui
 import app.simplecloud.npc.common.text.sendError
 import app.simplecloud.npc.common.text.sendSuccess
@@ -12,11 +13,16 @@ import app.simplecloud.npc.core.config.ConfigIds
 import app.simplecloud.npc.core.platform.NpcPlayer
 
 object TemplatesMenuBuilder {
-    private const val SIZE = 27
-    private val TEMPLATE_SLOTS = 11..15
+    private const val SIZE = Layout.SIZE
+    private val TEMPLATE_SLOTS = Layout.row(1, 5)
 
     fun build(context: InventoryEditorContext, player: NpcPlayer): EditorMenu {
         val pane = Pane(SIZE)
+        pane[Layout.HEADER] = Ui.item(
+            "CHEST",
+            "<ttl>Which Kind of Menu?",
+            listOf("<bd>Pick a starting point.", "<bd>Everything can be changed later."),
+        )
 
         MenuTemplate.entries.zip(TEMPLATE_SLOTS).forEach { (template, slot) ->
             pane.left(
@@ -24,16 +30,12 @@ object TemplatesMenuBuilder {
                 Ui.item(
                     template.icon,
                     "<ttl>${template.label}",
-                    template.description.map { "<bd>$it" } + listOf("", "<key>Left <hnt>Create and open the canvas"),
+                    template.description.map { "<bd>$it" } + listOf("", "<key>Left-click to create it"),
                 ),
             ) { create(context, player, template) }
         }
 
-        pane.left(pane.navRow.first + 4, Ui.close()) { context.close(player) }
-        pane.fill(0..8)
-        pane.fillNavRow()
-
-        return pane.menu("New Menu · pick a start")
+        return pane.menu("New Menu")
     }
 
     private fun create(context: InventoryEditorContext, player: NpcPlayer, template: MenuTemplate) {

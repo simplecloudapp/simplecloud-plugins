@@ -8,6 +8,8 @@ import app.simplecloud.npc.common.editor.PromptTokens
 import app.simplecloud.npc.common.editor.menu.MenuClick
 import app.simplecloud.npc.common.editor.menu.Pane
 import app.simplecloud.npc.common.editor.npc.NpcFormat
+import app.simplecloud.npc.common.editor.ui.Clicks
+import app.simplecloud.npc.common.editor.ui.Layout
 import app.simplecloud.npc.common.editor.ui.Stepper
 import app.simplecloud.npc.common.editor.ui.Ui
 import app.simplecloud.npc.common.editor.ui.after
@@ -15,19 +17,19 @@ import app.simplecloud.npc.common.utils.InputChecks
 import app.simplecloud.npc.core.config.NpcAnimation
 import app.simplecloud.npc.core.config.NpcConfig
 import app.simplecloud.npc.core.config.NpcConfig.ActionConfiguration
+import app.simplecloud.npc.core.interaction.PlayerInteraction
 import app.simplecloud.npc.core.platform.NpcPlayer
 import net.kyori.adventure.text.Component
 
 object ActionFieldsPane {
-    const val SIZE = 45
-    const val HEADER_SLOT = 4
-    const val DELETE_SLOT = 44
+    const val SIZE = Layout.SIZE
+    const val HEADER_SLOT = Layout.HEADER
+    private const val LAST_ROW_START = 37
+    const val DELETE_SLOT = Layout.TOOL_RIGHT
 
-    private const val COOLDOWN_SLOT = 40
-    private val BLOCK_SLOTS = (10..16) + (19..25) + (28..34)
+    private const val COOLDOWN_SLOT = Layout.TOOL_MIDDLE
 
-    const val ADD_SIZE = 45
-    private const val ADD_COLUMNS = 8
+    const val ADD_SIZE = Layout.SIZE
 
     private const val SILENT = "silent"
     private val ANIMATIONS = NpcAnimation.entries
@@ -61,11 +63,11 @@ object ActionFieldsPane {
         val closeAdd: () -> Unit,
     )
 
-    private enum class Group(val label: String, val material: String) {
-        GO_TO("Go To", "LIGHT_BLUE_STAINED_GLASS_PANE"),
-        MESSAGE("Message", "YELLOW_STAINED_GLASS_PANE"),
-        EFFECT("Effect", "LIME_STAINED_GLASS_PANE"),
-        ADVANCED("Advanced", "ORANGE_STAINED_GLASS_PANE"),
+    private enum class Group {
+        GO_TO,
+        MESSAGE,
+        EFFECT,
+        ADVANCED,
     }
 
     private class Block(
@@ -103,7 +105,7 @@ object ActionFieldsPane {
         Block(
             Group.GO_TO,
             "COMPASS",
-            "Send To Server",
+            "Send to Server",
             "Sends the player to one server.",
             summary = { a -> a.sendToServer?.let { "<val>${NpcFormat.plain(it)}" } },
             edit = { it.pickServer() },
@@ -111,7 +113,7 @@ object ActionFieldsPane {
         ),
         Block(
             Group.GO_TO,
-            "RECOVERY_COMPASS",
+            "ENDER_PEARL",
             "Teleport",
             "Teleports the player to where you stand.",
             summary = { a -> a.teleport?.let { "<val>${NpcFormat.position(it)}" } },
@@ -131,7 +133,7 @@ object ActionFieldsPane {
             edit = { port ->
                 chat(
                     port,
-                    "Transfer To Host",
+                    "Transfer to Host",
                     "Type the host to transfer to in chat, as host:port.",
                     port.action.transferToServer,
                     format = PromptFormat.PLAIN,
@@ -331,13 +333,15 @@ object ActionFieldsPane {
         val action = port.action
         val set = blocks(port.scope).filter { isSet(it, action) }
 
-        set.zip(BLOCK_SLOTS).forEach { (block, slot) ->
+        val free = blocks(port.scope).count { !isSet(it, action) && it.available(action) }
+        val slots = Layout.list(set.size + if (free > 0) 1 else 0)
+
+        set.zip(slots).forEach { (block, slot) ->
             val lore = listOfNotNull(
                 block.summary(action),
-                listOfNotNull(
-                    block.editHint?.let { "<key>Left <hnt>$it" },
-                    "<key>Right <err>Remove",
-                ).joinToString(" <hnt>· "),
+                "",
+                if (block.editHint == null) null else "<key>Left-click to ${block.editHint.replaceFirstChar(Char::lowercase)}",
+                "<key>Right-click to remove it",
             )
             pane.on(slot, Ui.item(block.material, "<ttl>${block.label}", lore, glowing = true)) { click ->
                 when (click) {
@@ -348,10 +352,10 @@ object ActionFieldsPane {
             }
         }
 
-        val free = blocks(port.scope).count { !isSet(it, action) && it.available(action) }
-        BLOCK_SLOTS.getOrNull(set.size)?.takeIf { free > 0 }?.let { slot ->
-            val hint = if (set.isEmpty()) "<hnt>Nothing happens on this click yet." else null
-            pane.left(slot, Ui.addHead("Add", listOfNotNull(hint, "<key>Left <hnt>Pick what happens"))) {
+        val slot = slots.getOrNull(set.size)
+        if (slot != null && free > 0) {
+            val hint = if (set.isEmpty()) "<hnt>No actions of its own yet." else null
+            pane.left(slot, Ui.addHead("Add Action", listOfNotNull(hint, "<key>Left-click to pick what happens"))) {
                 port.openAdd()
             }
         }
@@ -361,34 +365,55 @@ object ActionFieldsPane {
         }
     }
 
-    fun fillAdd(pane: Pane, port: Port) {
-        val action = port.action
+    fun fillAdd(pane: Pane, port: Port, click: PlayerInteraction, scope: List<String> = emptyList()) {
         val all = blocks(port.scope)
+        pane[HEADER_SLOT] = Ui.item(
+            Clicks.material(click),
+            "<ttl>Add to ${Clicks.label(click)}",
+            listOf(
+                "<bd>Pick what this click does.",
+                "",
+                "<bd>Top row: <val>Where players go",
+                "<bd>Middle row: <val>What they see",
+                "<bd>Bottom row: <val>Effects, then advanced",
+                "",
+            ) + scope,
+        )
 
-        Group.entries.forEachIndexed { row, group ->
-            val first = row * 9
-            pane[first] = Ui.item(group.material, "<ttl><b>${group.label}")
+        listOf(Group.GO_TO, Group.MESSAGE).forEachIndexed { row, group ->
+            val entries = all.filter { it.group == group }.take(Layout.ROW_SLOTS)
+            Layout.list(entries.size, firstRow = row + 1, rows = 1).zip(entries).forEach { (slot, block) ->
+                addOption(pane, port, slot, block)
+            }
+        }
 
-            all.filter { it.group == group }.take(ADD_COLUMNS).forEachIndexed { column, block ->
-                val slot = first + 1 + column
-                when {
-                    isSet(block, action) -> pane[slot] = Ui.disabled(block.label, listOf("<hnt>Already added"))
+        val effects = all.filter { it.group == Group.EFFECT }
+        val advanced = all.filter { it.group == Group.ADVANCED }
+        val gap = if ((effects.size + advanced.size) % 2 == 0) listOf(null) else emptyList()
+        val bottom = (effects + gap + advanced).take(Layout.ROW_SLOTS)
+        val start = LAST_ROW_START + (Layout.ROW_SLOTS - bottom.size) / 2
+        bottom.forEachIndexed { index, block ->
+            if (block != null) addOption(pane, port, start + index, block)
+        }
+    }
 
-                    !block.available(action) ->
-                        pane[slot] = Ui.disabled(block.label, listOf("<hnt>Set a permission first"))
+    private fun addOption(pane: Pane, port: Port, slot: Int, block: Block) {
+        val action = port.action
+        when {
+            isSet(block, action) -> pane[slot] = Ui.disabled(block.label, listOf("<hnt>Already added"), block.material)
 
-                    else -> pane.left(
-                        slot,
-                        Ui.item(
-                            block.material,
-                            "<ttl>${block.label}",
-                            listOf("<bd>${block.describe}", "<key>Left <hnt>Add"),
-                        ),
-                    ) {
-                        port.closeAdd()
-                        block.add(port)
-                    }
-                }
+            !block.available(action) -> pane[slot] = Ui.disabled(block.label, listOf("<hnt>Set a permission first."), block.material)
+
+            else -> pane.left(
+                slot,
+                Ui.item(
+                    block.material,
+                    "<ttl>${block.label}",
+                    listOf("<bd>${block.describe}", "", "<key>Left-click to add it"),
+                ),
+            ) {
+                port.closeAdd()
+                block.add(port)
             }
         }
     }
