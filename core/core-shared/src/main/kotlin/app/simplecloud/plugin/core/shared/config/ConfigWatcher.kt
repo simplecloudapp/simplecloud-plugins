@@ -4,6 +4,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.slf4j.LoggerFactory
 import java.nio.file.Files
@@ -11,6 +12,8 @@ import java.nio.file.Path
 import java.nio.file.attribute.FileTime
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
+
+private typealias FileStates = Map<Path, Pair<FileTime, Long>>
 
 /**
  * Calls [onChange] when a `.yml` or `.yaml` file in [directory] or one of its subdirectories is created, changed or
@@ -27,21 +30,26 @@ class ConfigWatcher(
 
     fun start(scope: CoroutineScope): Job {
         val initial = snapshot().orEmpty()
-        return scope.launch(Dispatchers.IO) { watch(initial, initial) }
-    }
+        return scope.launch(Dispatchers.IO) {
+            // the files as they were at the last reload, and at the previous check
+            var loaded = initial
+            var lastCheck = initial
 
-    private tailrec suspend fun watch(applied: Map<Path, Pair<FileTime, Long>>, previous: Map<Path, Pair<FileTime, Long>>) {
-        delay(interval)
-        val current = snapshot() ?: return watch(applied, previous)
+            while (isActive) {
+                delay(interval)
+                val current = snapshot() ?: continue
 
-        // only reload once the files stopped changing, so a file that is still being written is not loaded
-        if (current == previous && current != applied) {
-            reload()
-            val reloaded = snapshot() ?: current
-            return watch(reloaded, reloaded)
+                // wait until a file stopped changing, so a file that is still being written is not loaded
+                val stillChanging = current != lastCheck
+                lastCheck = current
+                if (stillChanging || current == loaded) continue
+
+                reload()
+                // the reload can write files itself, e.g. a migrated config, which must not trigger another reload
+                loaded = snapshot() ?: current
+                lastCheck = loaded
+            }
         }
-
-        watch(applied, current)
     }
 
     private fun reload() {
@@ -53,7 +61,7 @@ class ConfigWatcher(
         }
     }
 
-    private fun snapshot(): Map<Path, Pair<FileTime, Long>>? {
+    private fun snapshot(): FileStates? {
         if (Files.notExists(directory)) return emptyMap()
 
         return try {
