@@ -9,4 +9,5 @@ dependencies {
     implementation(projects.core.coreShared)
     compileOnly(libs.simplecloud.api)
     compileOnly(libs.slf4j.api)
+    testImplementation(libs.slf4j.api)
 }

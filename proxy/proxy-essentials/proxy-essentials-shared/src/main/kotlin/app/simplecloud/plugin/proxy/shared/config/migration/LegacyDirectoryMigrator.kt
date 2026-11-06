@@ -18,25 +18,40 @@ object LegacyDirectoryMigrator {
 
         if (Files.isDirectory(directory) && Files.list(directory).use { it.findAny().isPresent }) {
             logger.warn(
-                "The directory '${legacyDirectory.fileName}' is not used anymore. " +
-                    "Rename it to '${directory.fileName}' in your template to get rid of this warning.",
+                "The directory '${legacyDirectory.fileName}' is not used anymore, so changes to it are ignored. " +
+                    "Move your configuration to '${directory.fileName}' and remove '${legacyDirectory.fileName}' " +
+                    "from your template.",
             )
             return
         }
 
         try {
-            legacyDirectory.toFile().copyRecursively(directory.toFile(), overwrite = true)
+            moveOrCopy(legacyDirectory, directory)
         } catch (e: Exception) {
             logger.error(
-                "Could not take over the configuration of '${legacyDirectory.fileName}', so the default configuration is used",
+                "Could not take over the configuration of '${legacyDirectory.fileName}', " +
+                    "so the default configuration is used",
                 e,
             )
             return
         }
 
         logger.info(
-            "Took over the configuration of '${legacyDirectory.fileName}' into '${directory.fileName}'. " +
-                "Rename that directory in your template to keep editing your configuration.",
+            "Moved the configuration of '${legacyDirectory.fileName}' to '${directory.fileName}'. " +
+                "Rename that directory in your template as well.",
         )
+    }
+
+    private fun moveOrCopy(source: Path, target: Path) {
+        Files.deleteIfExists(target)
+        try {
+            Files.move(source, target)
+        } catch (e: Exception) {
+            logger.warn("Could not move '${source.fileName}', copying it instead", e)
+            source.toFile().copyRecursively(target.toFile(), overwrite = true)
+            if (!source.toFile().deleteRecursively()) {
+                logger.warn("Could not delete '${source.fileName}', changes to it are ignored")
+            }
+        }
     }
 }
