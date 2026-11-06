@@ -49,7 +49,9 @@ object LegacyDirectoryMigrator {
         } catch (e: Exception) {
             logger.warn("Could not move '${source.fileName}', copying it instead", e)
             source.toFile().copyRecursively(target.toFile(), overwrite = true)
-            source.toFile().deleteRecursively()
+            if (!source.toFile().deleteRecursively()) {
+                logger.warn("Could not delete '${source.fileName}', changes to it are ignored")
+            }
         }
     }
 }
