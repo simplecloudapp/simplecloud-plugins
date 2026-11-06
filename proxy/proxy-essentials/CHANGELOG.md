@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+### Fixed
+- The old `proxy-essentials-velocity` or `proxy-essentials-bungeecord` folder is now moved to `plugins/simplecloud-proxy-essentials` instead of copied. Before, the old folder stayed next to the new one, and edits to it were ignored by the automatic reload and `/scproxy reload`.
+
 ## 1.2.0
 
 Compared to 0.0.14, the last version on Modrinth.
