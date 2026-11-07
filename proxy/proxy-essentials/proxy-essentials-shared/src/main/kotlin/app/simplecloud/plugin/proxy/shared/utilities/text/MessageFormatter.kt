@@ -55,6 +55,7 @@ class MessageFormatter(
             getDateTimeResolver("date", format.date),
             getDateTimeResolver("time", format.time),
             getEnvironmentResolver(),
+            SmallCapsTag.resolver,
         )
     }
 
