@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.3.0
 
 ### Added
 - A `<smallcaps>` tag that writes the text inside it in small capital letters, for example `<smallcaps>My Network</smallcaps>` shows `ᴍʏ ɴᴇᴛᴡᴏʀᴋ`.
