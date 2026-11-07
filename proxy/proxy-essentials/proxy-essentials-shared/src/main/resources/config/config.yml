@@ -85,7 +85,7 @@ tablist:
     #   value: lobby
     #   negate: false
     layout:
-      - header: '<br><brand>ꜱɪᴍᴘʟᴇᴄʟᴏᴜᴅ<br>'
+      - header: '<br><brand><smallcaps><env:SIMPLECLOUD_NETWORK_DISPLAY_NAME:SimpleCloud></smallcaps><br>'
         footer: '<br>  <brand>⚡</brand> <highlight>simplecloud.app                <success>●</success> <highlight><online_players> <muted>Online  <br>'
     # Interval in ticks after which the next layout entry is shown. Set to 0 to always show the first entry.
     update-time: 20

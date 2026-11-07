@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+### Added
+- A `<smallcaps>` tag that writes the text inside it in small capital letters, for example `<smallcaps>My Network</smallcaps>` shows `ᴍʏ ɴᴇᴛᴡᴏʀᴋ`.
+
+### Changed
+- The default tab list header shows the network's display name from `SIMPLECLOUD_NETWORK_DISPLAY_NAME`, and `SimpleCloud` when the variable isn't set. Existing `config.yml` files keep their header.
+
 ## 1.2.1
 
 ### Fixed
