@@ -1,6 +1,7 @@
 package app.simplecloud.plugin.connection.shared
 
 import app.simplecloud.api.CloudApi
+import app.simplecloud.api.CloudApiOptions
 import app.simplecloud.plugin.connection.shared.config.CommandConfig
 import app.simplecloud.plugin.connection.shared.config.ConnectionConfig
 import app.simplecloud.plugin.connection.shared.config.FallbackTargetConnection
@@ -23,7 +24,7 @@ class ConnectionPlugin<S : ConnectionServer>(
     private val platform: ConnectionPlatform<S>,
 ) {
 
-    private val api = CloudApi.create()
+    private val api = CloudApi.create(CloudApiOptions.builder().component("server-connection").build())
     private val logger = LoggerFactory.getLogger(ConnectionPlugin::class.java)
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private val additionalServers = CopyOnWriteArrayList<RegisteredServer>()
