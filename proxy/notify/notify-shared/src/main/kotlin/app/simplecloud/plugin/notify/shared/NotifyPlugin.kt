@@ -1,6 +1,7 @@
 package app.simplecloud.plugin.notify.shared
 
 import app.simplecloud.api.CloudApi
+import app.simplecloud.api.CloudApiOptions
 import app.simplecloud.plugin.core.shared.config.ConfigWatcher
 import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
 import app.simplecloud.plugin.notify.shared.config.MessageConfig
@@ -17,7 +18,7 @@ class NotifyPlugin(private val platform: NotifyPlatform) {
     private val logger = LoggerFactory.getLogger(NotifyPlugin::class.java)
 
     val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
-    val api: CloudApi = CloudApi.create()
+    val api: CloudApi = CloudApi.create(CloudApiOptions.builder().component("notify").build())
     val messages = ConfigurationFactory.create(platform.getDataDirectory(), "messages.yml", MessageConfig())
 
     val formatter = MessageFormatter(messages)
