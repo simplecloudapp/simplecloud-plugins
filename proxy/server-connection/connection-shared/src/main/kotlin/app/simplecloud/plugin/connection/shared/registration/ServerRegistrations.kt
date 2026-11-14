@@ -5,11 +5,11 @@ import org.slf4j.LoggerFactory
 import java.util.Optional
 import java.util.concurrent.ConcurrentHashMap
 
-class ProxyServerRegistrations(
+class ServerRegistrations(
     private val registry: ServerRegistry,
 ) : ProxyServerNames.Lookup {
 
-    private val logger = LoggerFactory.getLogger(ProxyServerRegistrations::class.java)
+    private val logger = LoggerFactory.getLogger(ServerRegistrations::class.java)
 
     private val lock = Any()
     private val servers = ConcurrentHashMap<String, RegisteredServer>()

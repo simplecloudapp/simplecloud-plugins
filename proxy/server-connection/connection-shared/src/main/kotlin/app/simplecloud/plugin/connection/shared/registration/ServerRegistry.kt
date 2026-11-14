@@ -5,4 +5,6 @@ interface ServerRegistry {
     fun register(proxyName: String, server: RegisteredServer)
 
     fun unregister(proxyName: String, server: RegisteredServer)
+
+    fun clear()
 }

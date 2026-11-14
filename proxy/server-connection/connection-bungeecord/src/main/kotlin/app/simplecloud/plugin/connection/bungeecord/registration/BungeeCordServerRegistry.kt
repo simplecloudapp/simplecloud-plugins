@@ -12,6 +12,10 @@ class BungeeCordServerRegistry(
 
     private val lock = Any()
 
+    fun findServers(): List<ServerInfo> = synchronized(lock) {
+        proxy.servers.values.toList()
+    }
+
     override fun register(proxyName: String, server: RegisteredServer) {
         val address = InetSocketAddress.createUnresolved(server.ip, server.port)
         val info: ServerInfo = proxy.constructServerInfo(
@@ -22,24 +26,34 @@ class BungeeCordServerRegistry(
         )
 
         synchronized(lock) {
+            if (isUnchanged(proxy.servers[proxyName], info)) return
             proxy.servers[proxyName] = info
             refreshServerPriorities()
         }
     }
 
     override fun unregister(proxyName: String, server: RegisteredServer) {
+        val address = InetSocketAddress.createUnresolved(server.ip, server.port)
         synchronized(lock) {
+            if (proxy.servers[proxyName]?.socketAddress != address) return
             proxy.servers.remove(proxyName)
             refreshServerPriorities()
         }
     }
 
-    fun clear() {
+    override fun clear() {
         synchronized(lock) {
             proxy.servers.clear()
-            proxy.configurationAdapter.servers.clear()
             proxy.config.listeners.forEach { listener -> listener.serverPriority.clear() }
         }
+    }
+
+    private fun isUnchanged(existing: ServerInfo?, info: ServerInfo): Boolean {
+        if (existing == null) return false
+        return existing.name == info.name &&
+            existing.socketAddress == info.socketAddress &&
+            existing.isRestricted == info.isRestricted &&
+            existing.motd == info.motd
     }
 
     private fun refreshServerPriorities() {
