@@ -26,6 +26,9 @@ registration:
   #     port: 25565
   additional-servers: []
 
+  # Interval in seconds in which the player counts of all servers are loaded from SimpleCloud.
+  player-count-update-interval: 5
+
 # ───────────────────────────────────────────────────────────────────────────────
 # Subdomain Routing
 # Routes players to a connection based on the hostname they connected with.

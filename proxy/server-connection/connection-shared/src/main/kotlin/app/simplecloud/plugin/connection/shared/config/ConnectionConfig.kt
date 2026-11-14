@@ -23,6 +23,7 @@ data class RegistrationConfig(
     val persistentServerNamePattern: String = "<name>",
     val ignoreServerGroupsAndPersistentServers: List<String> = listOf(),
     val additionalServers: List<RegistrationServer> = listOf(),
+    val playerCountUpdateInterval: Int = 5,
 )
 
 @ConfigSerializable
