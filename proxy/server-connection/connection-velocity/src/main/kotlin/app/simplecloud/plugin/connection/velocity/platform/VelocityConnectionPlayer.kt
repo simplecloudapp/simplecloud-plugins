@@ -30,15 +30,14 @@ class VelocityConnectionPlayer(
             logger.warn("Could not send player ${player.username} to $serverName because it is not registered")
             return
         }
-        player.createConnectionRequest(server).connect().whenComplete { result, error ->
+        player.createConnectionRequest(server).connectWithIndication().whenComplete { success, error ->
             if (error != null) {
                 logger.warn("Failed to send player ${player.username} to $serverName", error)
                 return@whenComplete
             }
-            if (result == null || result.isSuccessful) return@whenComplete
+            if (success != false) return@whenComplete
 
-            val reason = result.reasonComponent.getOrNull()?.toString() ?: "not provided"
-            logger.warn("Could not send player ${player.username} to $serverName (${result.status}). Reason: $reason")
+            logger.warn("Could not send player ${player.username} to $serverName")
         }
     }
 }

@@ -10,9 +10,11 @@ import app.simplecloud.plugin.connection.shared.platform.ConnectionPlatform
 import app.simplecloud.plugin.connection.shared.registration.RegisteredServer
 import app.simplecloud.plugin.connection.shared.registration.ServerRegisterer
 import app.simplecloud.plugin.core.shared.config.ConfigWatcher
+import app.simplecloud.plugin.core.shared.config.DefaultConfigInstaller
 import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
 import kotlinx.coroutines.*
 import org.slf4j.LoggerFactory
+import java.io.File
 import java.util.concurrent.CopyOnWriteArrayList
 
 class ConnectionPlugin(
@@ -26,6 +28,7 @@ class ConnectionPlugin(
     private val dir = platform.getDataDirectory()
     private val registry = platform.getRegistry()
     private val commandManager = platform.getCommandManager()
+    private val configFiles = listOf("config.yml", "messages.yml", "commands.yml").map { name -> File(dir, name) }
 
     val connectionConfig = ConfigurationFactory.create(dir, "config.yml", ConnectionConfig())
     val messageConfig = ConfigurationFactory.create(dir, "messages.yml", MessageConfig())
@@ -61,6 +64,13 @@ class ConnectionPlugin(
     }
 
     private fun reload() {
+        configFiles.forEach { file -> DefaultConfigInstaller.install(file.toPath(), javaClass.classLoader) }
+        val emptyFile = configFiles.firstOrNull { file -> file.length() == 0L }
+        if (emptyFile != null) {
+            logger.warn("Skipping the reload because ${emptyFile.name} is empty")
+            return
+        }
+
         connectionConfig.loadOrCreate(ConnectionConfig())
         messageConfig.loadOrCreate(MessageConfig())
         commandConfig.loadOrCreate(CommandConfig())
@@ -102,10 +112,10 @@ class ConnectionPlugin(
             .filter { server -> server !in servers }
             .forEach { server -> registry.unregister(server.proxyName, server) }
 
-        servers.forEach { server ->
-            registry.register(server.proxyName, server)
-            logger.info("Additional server ${server.proxyName} has been registered!")
-        }
+        servers
+            .filter { server -> server !in additionalServers }
+            .forEach { server -> logger.info("Additional server ${server.proxyName} has been registered!") }
+        servers.forEach { server -> registry.register(server.proxyName, server) }
         additionalServers.clear()
         additionalServers.addAll(servers)
     }

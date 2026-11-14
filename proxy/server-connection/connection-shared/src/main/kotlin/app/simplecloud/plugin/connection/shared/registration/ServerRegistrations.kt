@@ -25,7 +25,7 @@ class ServerRegistrations(
             when {
                 previousServer == null -> registerNewServer(server)
                 changesProxyName(previousServer, server) -> moveToNewProxyName(previousServer, server)
-                else -> refreshServer(server)
+                else -> refreshServer(previousServer, server)
             }
         }
     }
@@ -61,16 +61,20 @@ class ServerRegistrations(
         registerNewServer(server)
     }
 
-    private fun refreshServer(server: RegisteredServer) {
+    private fun refreshServer(previousServer: RegisteredServer, server: RegisteredServer) {
         val holderId = holderIds[nameKeyOf(server.proxyName)]
         val nameHeldByOther = holderId != null && holderId != server.serverId
         if (nameHeldByOther) {
-            logger.info("Refreshing server ${server.serverId} (${server.proxyName}), server $holderId keeps the name...")
+            if (previousServer != server) {
+                logger.info("Refreshing server ${server.serverId} (${server.proxyName}), server $holderId keeps the name...")
+            }
             servers[server.serverId] = server
             return
         }
 
-        logger.info("Refreshing server ${server.serverId} (${server.proxyName})...")
+        if (previousServer != server) {
+            logger.info("Refreshing server ${server.serverId} (${server.proxyName})...")
+        }
         registerAsHolder(server)
         servers[server.serverId] = server
     }

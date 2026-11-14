@@ -13,6 +13,7 @@ import app.simplecloud.plugin.connection.shared.platform.ConnectionServer
 import app.simplecloud.plugin.connection.shared.registration.ServerRegisterer
 import app.simplecloud.plugin.connection.shared.registration.ServerStatus
 import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 
 class ConnectionResolver(
     private val platform: ConnectionPlatform,
@@ -57,7 +58,11 @@ class ConnectionResolver(
         val messages = messageConfig.get()
         when (val target = findCommandTarget(player, command.targetConnections)) {
             is ConnectionTarget.Connect -> player.connect(target.serverName)
-            ConnectionTarget.AlreadyConnected -> player.sendMessage(messages.msg(command.messages.alreadyConnected))
+            ConnectionTarget.AlreadyConnected -> {
+                val server = Placeholder.unparsed("server", player.getServerName().orEmpty())
+                player.sendMessage(messages.msg(command.messages.alreadyConnected, server))
+            }
+
             ConnectionTarget.NotFound -> player.sendMessage(messages.msg(command.messages.noTargetConnectionFound))
         }
     }

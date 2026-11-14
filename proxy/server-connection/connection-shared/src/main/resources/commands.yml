@@ -24,6 +24,7 @@ commands:
         # Optional source filters. Leave empty to allow this target from anywhere.
         from: []
     # Command-specific feedback messages.
+    # Placeholders in already-connected: <server> (the server the player is on)
     messages:
       already-connected: '<prefix> <warning>You are already in the lobby.'
       no-target-connection-found: '<prefix> <error>There is no lobby available right now.'

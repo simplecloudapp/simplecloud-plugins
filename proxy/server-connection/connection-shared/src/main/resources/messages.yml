@@ -34,5 +34,7 @@ variables:
 # Kick Messages
 # ───────────────────────────────────────────────────────────────────────────────
 kick:
+  # Shown when a player is kicked from a server and there is no fallback server.
+  # Placeholders: <reason> (the kick reason of the server, empty if there is none), <server> (the server the player was kicked from)
   no-fallback-servers: '<error>There is no server to send you to.<br><br><muted>Try again in a few seconds.'
   no-target-connection: '<error>There is no server to join right now.<br><br><muted>Try again in a few seconds.'

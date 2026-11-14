@@ -38,7 +38,7 @@ class ServerRegisterer(
     private val statuses = ConcurrentHashMap<String, ServerStatus>()
     private val mutex = Mutex()
     private val syncRequired = AtomicBoolean(true)
-    private val playerCountsFailing = AtomicBoolean(false)
+    private val syncFailing = AtomicBoolean(false)
 
     fun start() {
         lookupRegistration.set(ProxyServerNames.register(registrations))
@@ -80,11 +80,7 @@ class ServerRegisterer(
         )
 
         scope.launch {
-            watchConnection()
-        }
-
-        scope.launch {
-            watchPlayerCounts()
+            watchServers()
         }
     }
 
@@ -117,74 +113,57 @@ class ServerRegisterer(
 
         val server = event.server ?: return
         scope.launch {
-            mutex.withLock { register(server, false) }
+            mutex.withLock { register(server) }
         }
     }
 
-    private suspend fun watchConnection() {
+    private suspend fun watchServers() {
         while (currentCoroutineContext().isActive) {
-            if (!isConnected()) {
+            if (isConnected()) {
+                sync()
+                delay(config.get().registration.syncInterval.coerceAtLeast(1).seconds)
+            } else {
                 if (!syncRequired.getAndSet(true)) {
                     logger.warn("Lost connection to SimpleCloud, the servers will be loaded again once it is back")
                 }
-            } else if (syncRequired.get() && !sync()) {
-                delay(10.seconds)
-            }
-            delay(1.seconds)
-        }
-    }
-
-    private suspend fun watchPlayerCounts() {
-        while (currentCoroutineContext().isActive) {
-            delay(config.get().registration.playerCountUpdateInterval.coerceAtLeast(1).seconds)
-            if (isConnected()) {
-                updatePlayerCounts()
+                delay(1.seconds)
             }
         }
     }
 
     private fun isConnected(): Boolean = (api as CloudApiImpl).natsConnection.status == Connection.Status.CONNECTED
 
-    private suspend fun sync(): Boolean = mutex.withLock {
-        syncRequired.set(!isConnected())
-        try {
-            api.cache().invalidateAll(QueryKey.of("servers"))
-            val servers = fetchServers()
-            logger.info("Found ${servers.size} servers")
+    private suspend fun sync() {
+        mutex.withLock {
+            try {
+                api.cache().invalidateAll(QueryKey.of("servers"))
+                val servers = fetchServers()
+                reconcile(servers)
 
-            val serverIds = servers.map { server -> server.serverId }.toSet()
-            registrations.findAll()
-                .filter { server -> server.serverId !in serverIds }
-                .forEach { server -> unregister(server.serverId) }
-            servers.forEach { server -> register(server, isStopping(server)) }
-            true
-        } catch (e: Exception) {
-            currentCoroutineContext().ensureActive()
-            syncRequired.set(true)
-            logger.warn("Could not load the servers from SimpleCloud, retrying: ${e.message}")
-            false
+                val recovered = syncFailing.getAndSet(false)
+                if (syncRequired.getAndSet(false) || recovered) {
+                    logger.info("Found ${servers.size} servers")
+                }
+            } catch (e: Exception) {
+                currentCoroutineContext().ensureActive()
+                if (!syncFailing.getAndSet(true)) {
+                    logger.warn("Could not load the servers from SimpleCloud, retrying: ${e.message}")
+                }
+            }
         }
     }
 
-    private suspend fun updatePlayerCounts() {
-        try {
-            api.cache().invalidateAll(QueryKey.of("servers"))
-            fetchServers().forEach { server ->
-                statuses.computeIfPresent(server.serverId) { _, status ->
-                    status.copy(
-                        stopping = status.stopping || isStopping(server),
-                        playerCount = server.playerCount ?: 0,
-                        maxPlayers = maxPlayersOf(server),
-                    )
-                }
-            }
-            if (playerCountsFailing.getAndSet(false)) {
-                logger.info("Loading the player counts from SimpleCloud works again")
-            }
-        } catch (e: Exception) {
-            currentCoroutineContext().ensureActive()
-            if (!playerCountsFailing.getAndSet(true)) {
-                logger.warn("Could not load the player counts from SimpleCloud, retrying: ${e.message}")
+    private fun reconcile(servers: List<Server>) {
+        val serverIds = servers.map { server -> server.serverId }.toSet()
+        registrations.findAll()
+            .filter { server -> server.serverId !in serverIds }
+            .forEach { server -> unregister(server.serverId) }
+
+        servers.forEach { server ->
+            if (isStopping(server)) {
+                markStopping(server.serverId)
+            } else {
+                register(server)
             }
         }
     }
@@ -195,9 +174,9 @@ class ServerRegisterer(
             .filterByServerGroupType(GroupServerType.SERVER),
     ).await()
 
-    private fun register(server: Server, stopping: Boolean) {
+    private fun register(server: Server) {
         val registeredServer = convertToRegisteredServer(server) ?: return
-        statuses[server.serverId] = ServerStatus(stopping, server.playerCount ?: 0, maxPlayersOf(server))
+        statuses[server.serverId] = ServerStatus(false, server.playerCount ?: 0, maxPlayersOf(server))
         register(registeredServer)
     }
 

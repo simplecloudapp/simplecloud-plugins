@@ -3,6 +3,8 @@ package app.simplecloud.plugin.connection.bungeecord.listener
 import app.simplecloud.plugin.connection.bungeecord.platform.BungeeCordConnectionPlayer
 import app.simplecloud.plugin.connection.shared.ConnectionPlugin
 import app.simplecloud.plugin.core.bungeecord.text.BungeeComponentConverter
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import net.md_5.bungee.api.ProxyServer
 import net.md_5.bungee.api.config.ServerInfo
 import net.md_5.bungee.api.event.ServerConnectEvent
@@ -45,7 +47,14 @@ class ConnectionListener(
             return
         }
 
-        event.reason = BungeeComponentConverter.toBungee(messages.msg(messages.kick.noFallbackServers))
+        val kickReason = event.reason
+        val reason = if (kickReason == null) Component.empty() else BungeeComponentConverter.fromBungee(kickReason)
+        val message = messages.msg(
+            messages.kick.noFallbackServers,
+            Placeholder.component("reason", reason),
+            Placeholder.unparsed("server", event.kickedFrom.name),
+        )
+        event.reason = BungeeComponentConverter.toBungee(message)
     }
 
     private fun handleJoin(event: ServerConnectEvent) {
@@ -93,7 +102,12 @@ class ConnectionListener(
         }
 
         event.isCancelled = true
-        event.player.disconnect(BungeeComponentConverter.toBungee(messages.msg(messages.kick.noFallbackServers)))
+        val message = messages.msg(
+            messages.kick.noFallbackServers,
+            Placeholder.component("reason", Component.empty()),
+            Placeholder.unparsed("server", downServerName),
+        )
+        event.player.disconnect(BungeeComponentConverter.toBungee(message))
     }
 
     private fun findServer(serverName: String?): ServerInfo? {

@@ -7,6 +7,8 @@ import com.velocitypowered.api.event.player.KickedFromServerEvent
 import com.velocitypowered.api.event.player.PlayerChooseInitialServerEvent
 import com.velocitypowered.api.proxy.ProxyServer
 import com.velocitypowered.api.proxy.server.RegisteredServer
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import kotlin.jvm.optionals.getOrNull
 
 class ConnectionListener(
@@ -49,7 +51,9 @@ class ConnectionListener(
         event.result = if (targetServer != null) {
             KickedFromServerEvent.RedirectPlayer.create(targetServer)
         } else {
-            KickedFromServerEvent.DisconnectPlayer.create(messages.msg(messages.kick.noFallbackServers))
+            val reason = Placeholder.component("reason", event.serverKickReason.orElse(Component.empty()))
+            val server = Placeholder.unparsed("server", event.server.serverInfo.name)
+            KickedFromServerEvent.DisconnectPlayer.create(messages.msg(messages.kick.noFallbackServers, reason, server))
         }
     }
 
