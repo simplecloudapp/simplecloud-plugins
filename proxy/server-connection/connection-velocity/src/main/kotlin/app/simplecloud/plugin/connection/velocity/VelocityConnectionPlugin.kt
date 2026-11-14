@@ -2,8 +2,6 @@ package app.simplecloud.plugin.connection.velocity
 
 import app.simplecloud.plugin.connection.shared.BuildConstants
 import app.simplecloud.plugin.connection.shared.ConnectionPlugin
-import app.simplecloud.plugin.connection.velocity.command.ConnectionCommand
-import app.simplecloud.plugin.connection.velocity.command.VelocityCommandManager
 import app.simplecloud.plugin.connection.velocity.listener.ConnectionListener
 import app.simplecloud.plugin.connection.velocity.platform.VelocityPlatformImpl
 import com.google.inject.Inject
@@ -22,59 +20,26 @@ import java.nio.file.Path
     version = BuildConstants.VERSION,
     authors = ["Fllip", "hmtill"],
     description = "Central proxy plugin for SimpleCloud v3 that registers servers and manages player routing.",
-    url = "https://github.com/simplecloudapp/server-connection-plugin",
+    url = "https://github.com/simplecloudapp/simplecloud-plugins",
     dependencies = [
         Dependency("simplecloud-api"),
     ],
 )
 class VelocityConnectionPlugin @Inject constructor(
-    @DataDirectory val dataDirectory: Path,
+    @DataDirectory dataDirectory: Path,
     private val server: ProxyServer,
 ) {
 
-    private val commandManager = VelocityCommandManager(this, server)
-    private val platform = VelocityPlatformImpl(server, dataDirectory)
-
-    val connectionPlugin = ConnectionPlugin(platform)
+    val plugin = ConnectionPlugin(VelocityPlatformImpl(this, server, dataDirectory))
 
     @Subscribe
     fun onProxyInitialize(event: ProxyInitializeEvent) {
-        cleanupServers()
-        registerListeners()
-        registerCommands()
-        connectionPlugin.start(::reload)
+        server.eventManager.register(this, ConnectionListener(plugin, server))
+        plugin.start()
     }
 
     @Subscribe
     fun onProxyShutdown(event: ProxyShutdownEvent) {
-        commandManager.unregisterCommands()
-        connectionPlugin.shutdown()
-    }
-
-    fun reload() {
-        connectionPlugin.reload()
-        commandManager.unregisterCommands()
-        commandManager.registerCommands()
-    }
-
-    private fun cleanupServers() {
-        if (connectionPlugin.connectionConfig.get().registration.enabled) {
-            server.allServers.forEach { registeredServer ->
-                server.unregisterServer(registeredServer.serverInfo)
-            }
-        }
-    }
-
-    private fun registerListeners() {
-        server.eventManager.register(this, ConnectionListener(this))
-    }
-
-    private fun registerCommands() {
-        commandManager.registerCommands()
-
-        val meta = server.commandManager.metaBuilder("connection")
-            .plugin(this)
-            .build()
-        server.commandManager.register(meta, ConnectionCommand(this))
+        plugin.shutdown()
     }
 }

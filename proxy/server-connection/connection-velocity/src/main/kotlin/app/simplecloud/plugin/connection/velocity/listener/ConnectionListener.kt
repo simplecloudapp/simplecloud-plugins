@@ -1,24 +1,28 @@
 package app.simplecloud.plugin.connection.velocity.listener
 
-import app.simplecloud.plugin.connection.velocity.VelocityConnectionPlugin
+import app.simplecloud.plugin.connection.shared.ConnectionPlugin
 import app.simplecloud.plugin.connection.velocity.platform.VelocityConnectionPlayer
 import com.velocitypowered.api.event.Subscribe
 import com.velocitypowered.api.event.player.KickedFromServerEvent
 import com.velocitypowered.api.event.player.PlayerChooseInitialServerEvent
+import com.velocitypowered.api.proxy.ProxyServer
+import com.velocitypowered.api.proxy.server.RegisteredServer
 import kotlin.jvm.optionals.getOrNull
 
 class ConnectionListener(
-    private val plugin: VelocityConnectionPlugin,
+    private val connectionPlugin: ConnectionPlugin,
+    private val proxy: ProxyServer,
 ) {
 
     @Subscribe
     fun onPlayerChooseInitialServer(event: PlayerChooseInitialServerEvent) {
-        val config = plugin.connectionPlugin.connectionConfig.get()
-        val messages = plugin.connectionPlugin.messageConfig.get()
+        val config = connectionPlugin.connectionConfig.get()
+        val messages = connectionPlugin.messageConfig.get()
 
-        val targetServer = plugin.connectionPlugin.findJoinTarget(VelocityConnectionPlayer(event.player))
+        val targetServerName = connectionPlugin.resolver.findJoinTarget(VelocityConnectionPlayer(event.player, proxy))
+        val targetServer = findServer(targetServerName)
         if (targetServer != null) {
-            event.setInitialServer(targetServer.server)
+            event.setInitialServer(targetServer)
             return
         }
 
@@ -30,21 +34,27 @@ class ConnectionListener(
 
     @Subscribe(priority = 1000)
     fun onKickedFromServer(event: KickedFromServerEvent) {
-        val config = plugin.connectionPlugin.connectionConfig.get()
-        val messages = plugin.connectionPlugin.messageConfig.get()
+        val config = connectionPlugin.connectionConfig.get()
+        val messages = connectionPlugin.messageConfig.get()
 
         if (!config.fallback.enabled) return
         if (event.kickedDuringServerConnect() && event.player.currentServer.getOrNull() != null) return
 
-        val targetServer = plugin.connectionPlugin.findFallbackTarget(
-            VelocityConnectionPlayer(event.player),
+        val targetServerName = connectionPlugin.resolver.findFallbackTarget(
+            VelocityConnectionPlayer(event.player, proxy),
             event.server.serverInfo.name,
         )
+        val targetServer = findServer(targetServerName)
 
         event.result = if (targetServer != null) {
-            KickedFromServerEvent.RedirectPlayer.create(targetServer.server)
+            KickedFromServerEvent.RedirectPlayer.create(targetServer)
         } else {
             KickedFromServerEvent.DisconnectPlayer.create(messages.msg(messages.kick.noFallbackServers))
         }
+    }
+
+    private fun findServer(serverName: String?): RegisteredServer? {
+        if (serverName == null) return null
+        return proxy.getServer(serverName).getOrNull()
     }
 }

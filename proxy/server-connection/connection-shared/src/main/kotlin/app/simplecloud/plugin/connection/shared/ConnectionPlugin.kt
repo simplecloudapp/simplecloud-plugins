@@ -3,14 +3,10 @@ package app.simplecloud.plugin.connection.shared
 import app.simplecloud.api.CloudApi
 import app.simplecloud.plugin.connection.shared.config.CommandConfig
 import app.simplecloud.plugin.connection.shared.config.ConnectionConfig
-import app.simplecloud.plugin.connection.shared.config.FallbackTargetConnection
 import app.simplecloud.plugin.connection.shared.config.MessageConfig
 import app.simplecloud.plugin.connection.shared.config.RegistrationServer
-import app.simplecloud.plugin.connection.shared.connection.CommandTarget
 import app.simplecloud.plugin.connection.shared.connection.ConnectionResolver
 import app.simplecloud.plugin.connection.shared.platform.ConnectionPlatform
-import app.simplecloud.plugin.connection.shared.platform.ConnectionPlayer
-import app.simplecloud.plugin.connection.shared.platform.ConnectionServer
 import app.simplecloud.plugin.connection.shared.registration.RegisteredServer
 import app.simplecloud.plugin.connection.shared.registration.ServerRegisterer
 import app.simplecloud.plugin.core.shared.config.ConfigWatcher
@@ -19,8 +15,8 @@ import kotlinx.coroutines.*
 import org.slf4j.LoggerFactory
 import java.util.concurrent.CopyOnWriteArrayList
 
-class ConnectionPlugin<S : ConnectionServer>(
-    private val platform: ConnectionPlatform<S>,
+class ConnectionPlugin(
+    platform: ConnectionPlatform,
 ) {
 
     private val api = CloudApi.create()
@@ -29,6 +25,7 @@ class ConnectionPlugin<S : ConnectionServer>(
     private val additionalServers = CopyOnWriteArrayList<RegisteredServer>()
     private val dir = platform.getDataDirectory()
     private val registry = platform.getRegistry()
+    private val commandManager = platform.getCommandManager()
 
     val connectionConfig = ConfigurationFactory.create(dir, "config.yml", ConnectionConfig())
     val messageConfig = ConfigurationFactory.create(dir, "messages.yml", MessageConfig())
@@ -37,12 +34,16 @@ class ConnectionPlugin<S : ConnectionServer>(
     private val registrationEnabled = connectionConfig.get().registration.enabled
     private val registerer = ServerRegisterer(api, registry, connectionConfig)
 
-    fun start(reload: () -> Unit) {
+    val resolver = ConnectionResolver(platform, connectionConfig, messageConfig, registerer)
+
+    fun start() {
         logger.info("SimpleCloud v3 connection plugin initialized!")
         validateConnections()
+        commandManager.register(commandConfig.get().commands)
         ConfigWatcher(dir.toPath()) { reload() }.start(scope)
         if (!registrationEnabled) return
 
+        registry.clear()
         registerAdditionalServers()
         logger.info("Starting server registration...")
         registerer.start()
@@ -50,6 +51,7 @@ class ConnectionPlugin<S : ConnectionServer>(
 
     fun shutdown() {
         logger.info("SimpleCloud v3 connection plugin uninitialized!")
+        commandManager.unregister()
         if (registrationEnabled) {
             logger.info("Stopping server registration...")
             registerer.stop()
@@ -58,42 +60,20 @@ class ConnectionPlugin<S : ConnectionServer>(
         api.close()
     }
 
-    fun findJoinTarget(player: ConnectionPlayer): S? = ConnectionResolver.findJoinTarget(
-        platform,
-        player,
-        connectionConfig.get(),
-        registerer.getStoppingServerNames(),
-    )
-
-    fun findFallbackTarget(player: ConnectionPlayer, kickedServerName: String?): S? = ConnectionResolver.findFallbackTarget(
-        platform,
-        player,
-        kickedServerName,
-        connectionConfig.get(),
-        registerer.getStoppingServerNames(),
-    )
-
-    fun findCommandTarget(player: ConnectionPlayer, targets: List<FallbackTargetConnection>): CommandTarget<S> =
-        ConnectionResolver.findCommandTarget(
-            platform,
-            player,
-            targets,
-            connectionConfig.get(),
-            registerer.getStoppingServerNames(),
-        )
-
-    fun reload() {
+    private fun reload() {
         connectionConfig.loadOrCreate(ConnectionConfig())
         messageConfig.loadOrCreate(MessageConfig())
         commandConfig.loadOrCreate(CommandConfig())
         validateConnections()
+
+        commandManager.unregister()
+        commandManager.register(commandConfig.get().commands)
 
         if (connectionConfig.get().registration.enabled != registrationEnabled) {
             logger.warn("Changing registration.enabled only takes effect after a restart")
         }
 
         if (registrationEnabled) {
-            unregisterAdditionalServers()
             registerAdditionalServers()
             scope.launch {
                 registerer.refresh()
@@ -112,22 +92,22 @@ class ConnectionPlugin<S : ConnectionServer>(
 
         referencedNames
             .distinctBy { name -> name.lowercase() }
-            .filter { name -> ConnectionResolver.findConnection(name, config.connections) == null }
+            .filter { name -> resolver.findConnection(name, config.connections) == null }
             .forEach { name -> logger.warn("The connection '$name' is referenced but not defined in config.yml") }
     }
 
     private fun registerAdditionalServers() {
-        connectionConfig.get().registration.additionalServers.forEach { additionalServer ->
-            val server = toRegisteredServer(additionalServer)
+        val servers = connectionConfig.get().registration.additionalServers.map { server -> toRegisteredServer(server) }
+        additionalServers
+            .filter { server -> server !in servers }
+            .forEach { server -> registry.unregister(server.proxyName, server) }
+
+        servers.forEach { server ->
             registry.register(server.proxyName, server)
-            additionalServers.add(server)
             logger.info("Additional server ${server.proxyName} has been registered!")
         }
-    }
-
-    private fun unregisterAdditionalServers() {
-        additionalServers.forEach { server -> registry.unregister(server.proxyName, server) }
         additionalServers.clear()
+        additionalServers.addAll(servers)
     }
 
     private fun toRegisteredServer(server: RegistrationServer): RegisteredServer = RegisteredServer(
@@ -138,7 +118,6 @@ class ConnectionPlugin<S : ConnectionServer>(
         serverBaseName = server.name,
         proxyName = server.name,
         properties = emptyMap(),
-        blueprintConfigurator = null,
         persistent = true,
     )
 }

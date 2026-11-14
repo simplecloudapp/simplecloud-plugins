@@ -1,37 +1,23 @@
 package app.simplecloud.plugin.connection.velocity.command
 
+import app.simplecloud.plugin.connection.shared.config.CommandEntry
 import app.simplecloud.plugin.connection.velocity.VelocityConnectionPlugin
+import app.simplecloud.plugin.connection.velocity.platform.VelocityConnectionPlayer
 import com.velocitypowered.api.command.SimpleCommand
-import org.slf4j.LoggerFactory
+import com.velocitypowered.api.proxy.Player
+import com.velocitypowered.api.proxy.ProxyServer
 
 class ConnectionCommand(
     private val plugin: VelocityConnectionPlugin,
+    private val proxy: ProxyServer,
+    private val command: CommandEntry,
 ) : SimpleCommand {
 
-    private val logger = LoggerFactory.getLogger(ConnectionCommand::class.java)
-
     override fun execute(invocation: SimpleCommand.Invocation) {
-        val args = invocation.arguments()
-        val source = invocation.source()
-
-        val messages = plugin.connectionPlugin.messageConfig.get()
-
-        if (args.isEmpty() || !args[0].equals("reload", ignoreCase = true)) {
-            source.sendMessage(messages.msg(messages.command.commandUsage))
-            return
-        }
-
-        source.sendMessage(messages.msg(messages.command.configReloading))
-        try {
-            plugin.reload()
-            source.sendMessage(messages.msg(messages.command.configReloadedSuccess))
-        } catch (exception: Exception) {
-            source.sendMessage(messages.msg(messages.command.configReloadedFailed))
-            logger.error("Failed to reload config", exception)
-        }
+        val player = invocation.source() as? Player ?: return
+        plugin.plugin.resolver.executeCommand(VelocityConnectionPlayer(player, proxy), command)
     }
 
-    override fun hasPermission(invocation: SimpleCommand.Invocation): Boolean = invocation.source().hasPermission(
-        "simplecloud.connection.reload",
-    )
+    override fun hasPermission(invocation: SimpleCommand.Invocation): Boolean =
+        command.permission.isEmpty() || invocation.source().hasPermission(command.permission)
 }
