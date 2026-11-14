@@ -7,10 +7,10 @@ kotlinx-coroutines = "1.11.0"
 shadow = "9.6.1"
 minotaur = "2.10.0"
 blossom = "2.2.0"
-spotless = "8.10.4"
+spotless = "8.11.0"
 detekt = "2.0.0-alpha.6"
 paperweight = "2.0.0-beta.24"
-protobuf = "0.10.0"
+protobuf = "0.10.1"
 
 # SimpleCloud
 simplecloud-api = "0.1.0-platform.61-dev.8.1-9a2bef3"
@@ -18,7 +18,6 @@ simplecloud-api = "0.1.0-platform.61-dev.8.1-9a2bef3"
 # Platforms
 velocity = "4.1.0-SNAPSHOT"
 bungeecord = "1.21-R0.4"
-waterdog = "2.0.4-SNAPSHOT"
 paper = "26.3.build.+"
 minestom = "26_3-SNAPSHOT"
 
@@ -33,7 +32,7 @@ adventure = "5.2.0"
 configurate = "4.2.0"
 caffeine = "3.3.1"
 slf4j = "2.0.20"
-jnats = "2.26.3"
+jnats = "2.26.4"
 
 # Protobuf
 protoc = "4.36.2"
@@ -79,7 +78,6 @@ simplecloud-api = { module = "app.simplecloud.api:api", version.ref = "simpleclo
 # Platforms
 velocity-api = { module = "com.velocitypowered:velocity-api", version.ref = "velocity" }
 bungeecord-api = { module = "net.md-5:bungeecord-api", version.ref = "bungeecord" }
-waterdog-api = { module = "dev.waterdog.waterdogpe:waterdog", version.ref = "waterdog" }
 paper-api = { module = "io.papermc.paper:paper-api", version.ref = "paper" }
 minestom = { module = "net.minestom:minestom", version.ref = "minestom" }
 
