@@ -106,7 +106,9 @@ class ServerRegisterer(
 
     private fun onStateChanged(event: ServerStateChangedEvent) {
         if (event.newState == ServerState.STOPPING || event.newState == ServerState.CLEANUP) {
-            markStopping(event.serverId)
+            scope.launch {
+                mutex.withLock { markStopping(event.serverId) }
+            }
         }
         val becameAvailable = event.newState == ServerState.AVAILABLE && event.oldState != ServerState.AVAILABLE
         if (!becameAvailable) return

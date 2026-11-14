@@ -52,12 +52,15 @@ class ConnectionListener(
         if (!config.fallback.enabled) return
         if (event.state == ServerKickEvent.State.CONNECTING && event.player.server != null) return
 
+        val excludedServerNames = attemptedServers[event.player.uniqueId].orEmpty() + event.kickedFrom.name
         val targetServerName = connectionPlugin.resolver.findFallbackTarget(
             BungeeCordConnectionPlayer(event.player, proxy),
             event.kickedFrom.name,
+            excludedServerNames,
         )
         val targetServer = findServer(targetServerName)
         if (targetServer != null) {
+            attemptedServers[event.player.uniqueId] = excludedServerNames + targetServer.name
             event.cancelServer = targetServer
             event.isCancelled = true
             return
@@ -97,14 +100,24 @@ class ConnectionListener(
             return
         }
 
+        val config = connectionPlugin.connectionConfig.get()
+        val messages = connectionPlugin.messageConfig.get()
         val excludedServerNames = attemptedServers[event.player.uniqueId].orEmpty()
         val targetServerName = connectionPlugin.resolver.findJoinTarget(
             BungeeCordConnectionPlayer(event.player, proxy),
             excludedServerNames,
         )
-        val targetServer = findServer(targetServerName) ?: return
-        attemptedServers[event.player.uniqueId] = excludedServerNames + targetServer.name
-        event.target = targetServer
+        val targetServer = findServer(targetServerName)
+        if (targetServer != null) {
+            attemptedServers[event.player.uniqueId] = excludedServerNames + targetServer.name
+            event.target = targetServer
+            return
+        }
+
+        if (!config.networkJoinTargets.enabled) return
+
+        event.isCancelled = true
+        event.player.disconnect(BungeeComponentConverter.toBungee(messages.msg(messages.kick.noTargetConnection)))
     }
 
     private fun handleServerDown(event: ServerConnectEvent) {
@@ -120,6 +133,7 @@ class ConnectionListener(
         )
         val targetServer = findServer(targetServerName)
         if (targetServer != null) {
+            attemptedServers[event.player.uniqueId] = setOf(downServerName, targetServer.name)
             event.target = targetServer
             return
         }

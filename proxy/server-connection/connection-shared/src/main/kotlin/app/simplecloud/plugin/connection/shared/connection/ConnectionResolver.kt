@@ -27,9 +27,7 @@ class ConnectionResolver(
 
     fun findJoinTarget(player: ConnectionPlayer, excludedServerNames: Set<String> = emptySet()): String? {
         val config = connectionConfig.get()
-        val servers = findAvailableServers().filter { server ->
-            excludedServerNames.none { name -> name.equals(server.name, ignoreCase = true) }
-        }
+        val servers = findAvailableServers(excludedServerNames)
         val routeServerName = findRouteTarget(player, config, servers)
         if (routeServerName != null || !config.networkJoinTargets.enabled) return routeServerName
 
@@ -41,9 +39,13 @@ class ConnectionResolver(
             .firstNotNullOfOrNull { connection -> findLeastPopulated(connection, servers, null) }
     }
 
-    fun findFallbackTarget(player: ConnectionPlayer, kickedServerName: String?): String? {
+    fun findFallbackTarget(
+        player: ConnectionPlayer,
+        kickedServerName: String?,
+        excludedServerNames: Set<String> = emptySet(),
+    ): String? {
         val config = connectionConfig.get()
-        val servers = findAvailableServers()
+        val servers = findAvailableServers(excludedServerNames)
 
         return config.fallback.targetConnections
             .sortedByDescending { target -> target.priority }
@@ -73,7 +75,7 @@ class ConnectionResolver(
         val config = connectionConfig.get()
         val currentServerName = player.getServerName()
         val currentServerStopping = registerer.getServerStatuses()[currentServerName]?.stopping == true
-        val servers = findAvailableServers()
+        val servers = findAvailableServers(emptySet())
 
         for (target in targets.sortedByDescending { target -> target.priority }) {
             if (!isFromAllowed(target, currentServerName, config.connections)) continue
@@ -114,10 +116,11 @@ class ConnectionResolver(
         .firstOrNull { server -> !server.name.equals(excludedServerName, ignoreCase = true) }
         ?.name
 
-    private fun findAvailableServers(): List<ConnectionServer> {
+    private fun findAvailableServers(excludedServerNames: Set<String>): List<ConnectionServer> {
         val statuses = registerer.getServerStatuses()
 
         return platform.getServers()
+            .filter { server -> excludedServerNames.none { name -> name.equals(server.name, ignoreCase = true) } }
             .filter { server -> statuses[server.name]?.stopping != true }
             .map { server ->
                 val cloudPlayerCount = statuses[server.name]?.playerCount ?: 0
