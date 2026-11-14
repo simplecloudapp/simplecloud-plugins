@@ -36,12 +36,3 @@ variables:
 kick:
   no-fallback-servers: '<error>There is no server to send you to.<br><br><muted>Try again in a few seconds.'
   no-target-connection: '<error>There is no server to join right now.<br><br><muted>Try again in a few seconds.'
-
-# ───────────────────────────────────────────────────────────────────────────────
-# Command Messages
-# ───────────────────────────────────────────────────────────────────────────────
-command:
-  command-usage: '<prefix> <info>Use /connection reload to reload the configuration.'
-  config-reloading: '<prefix> <info>Reloading the connection configuration.'
-  config-reloaded-success: '<prefix> <success>Reloaded the connection configuration!'
-  config-reloaded-failed: '<prefix> <error>Couldn''t reload the connection configuration. Check the console.'
