@@ -7,16 +7,22 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import net.md_5.bungee.api.ProxyServer
 import net.md_5.bungee.api.config.ServerInfo
+import net.md_5.bungee.api.event.PlayerDisconnectEvent
 import net.md_5.bungee.api.event.ServerConnectEvent
+import net.md_5.bungee.api.event.ServerConnectedEvent
 import net.md_5.bungee.api.event.ServerKickEvent
 import net.md_5.bungee.api.plugin.Listener
 import net.md_5.bungee.event.EventHandler
 import net.md_5.bungee.event.EventPriority
+import java.util.UUID
+import java.util.concurrent.ConcurrentHashMap
 
 class ConnectionListener(
     private val connectionPlugin: ConnectionPlugin,
     private val proxy: ProxyServer,
 ) : Listener {
+
+    private val attemptedServers = ConcurrentHashMap<UUID, Set<String>>()
 
     @EventHandler
     fun onServerConnect(event: ServerConnectEvent) {
@@ -26,6 +32,16 @@ class ConnectionListener(
             ServerConnectEvent.Reason.SERVER_DOWN_REDIRECT -> handleServerDown(event)
             else -> return
         }
+    }
+
+    @EventHandler
+    fun onServerConnected(event: ServerConnectedEvent) {
+        attemptedServers.remove(event.player.uniqueId)
+    }
+
+    @EventHandler
+    fun onPlayerDisconnect(event: PlayerDisconnectEvent) {
+        attemptedServers.remove(event.player.uniqueId)
     }
 
     @EventHandler(priority = EventPriority.HIGH)
@@ -64,6 +80,7 @@ class ConnectionListener(
         val targetServerName = connectionPlugin.resolver.findJoinTarget(BungeeCordConnectionPlayer(event.player, proxy))
         val targetServer = findServer(targetServerName)
         if (targetServer != null) {
+            attemptedServers[event.player.uniqueId] = setOf(targetServer.name)
             event.target = targetServer
             return
         }
@@ -80,8 +97,14 @@ class ConnectionListener(
             return
         }
 
-        val targetServerName = connectionPlugin.resolver.findJoinTarget(BungeeCordConnectionPlayer(event.player, proxy))
-        event.target = findServer(targetServerName) ?: return
+        val excludedServerNames = attemptedServers[event.player.uniqueId].orEmpty()
+        val targetServerName = connectionPlugin.resolver.findJoinTarget(
+            BungeeCordConnectionPlayer(event.player, proxy),
+            excludedServerNames,
+        )
+        val targetServer = findServer(targetServerName) ?: return
+        attemptedServers[event.player.uniqueId] = excludedServerNames + targetServer.name
+        event.target = targetServer
     }
 
     private fun handleServerDown(event: ServerConnectEvent) {

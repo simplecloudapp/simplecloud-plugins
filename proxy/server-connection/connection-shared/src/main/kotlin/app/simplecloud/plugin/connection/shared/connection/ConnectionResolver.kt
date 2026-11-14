@@ -25,9 +25,11 @@ class ConnectionResolver(
     fun findConnection(name: String, connections: List<ConnectionEntry>): ConnectionEntry? =
         connections.find { connection -> connection.name.equals(name, ignoreCase = true) }
 
-    fun findJoinTarget(player: ConnectionPlayer): String? {
+    fun findJoinTarget(player: ConnectionPlayer, excludedServerNames: Set<String> = emptySet()): String? {
         val config = connectionConfig.get()
-        val servers = findAvailableServers()
+        val servers = findAvailableServers().filter { server ->
+            excludedServerNames.none { name -> name.equals(server.name, ignoreCase = true) }
+        }
         val routeServerName = findRouteTarget(player, config, servers)
         if (routeServerName != null || !config.networkJoinTargets.enabled) return routeServerName
 
