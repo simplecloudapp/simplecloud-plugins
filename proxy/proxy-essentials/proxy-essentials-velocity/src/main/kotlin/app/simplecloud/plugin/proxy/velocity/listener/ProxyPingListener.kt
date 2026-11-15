@@ -39,13 +39,11 @@ class ProxyPingListener(
 
         if (!LocalPingSourceMatcher.isLocal(event.connection.remoteAddress.address)) {
             val onlinePlayers = essentials.playerCountService.getOnlinePlayers()
+            val countedMaxPlayers = essentials.playerCountService.getMaxPlayers()
+            val maxPlayersOverride = layout.version.slots.resolveMaxPlayersOverride(onlinePlayers, countedMaxPlayers)
             builder.onlinePlayers(onlinePlayers)
-
-            val slots = layout.version.slots
-            if (slots.enabled) {
-                builder.maximumPlayers(
-                    slots.resolveMaxPlayers(onlinePlayers, essentials.playerCountService.getMaxPlayers()),
-                )
+            if (maxPlayersOverride != null) {
+                builder.maximumPlayers(maxPlayersOverride)
             }
 
             if (layout.playerList.enabled && layout.playerList.playerList.isNotEmpty()) {

@@ -39,7 +39,7 @@ version:
     enabled: true
     text: '<warning>Maintenance'
   slots:
-    # Set to false to keep the max players of the proxy.
+    # Set to false to leave the max players in the server list unchanged.
     enabled: true
     # REAL - Displays the actual number of online players
     # FAKE - Displays a fixed custom number of online players
