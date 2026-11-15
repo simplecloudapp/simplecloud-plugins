@@ -9,9 +9,11 @@ import app.simplecloud.plugin.connection.shared.connection.ConnectionResolver
 import app.simplecloud.plugin.connection.shared.platform.ConnectionPlatform
 import app.simplecloud.plugin.connection.shared.registration.RegisteredServer
 import app.simplecloud.plugin.connection.shared.registration.ServerRegisterer
+import app.simplecloud.plugin.connection.shared.registration.ServerRegistrations
+import app.simplecloud.plugin.connection.shared.registration.ServerStatusCache
 import app.simplecloud.plugin.core.shared.config.ConfigWatcher
-import app.simplecloud.plugin.core.shared.config.DefaultConfigInstaller
 import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
+import app.simplecloud.plugin.core.shared.config.DefaultConfigInstaller
 import kotlinx.coroutines.*
 import org.slf4j.LoggerFactory
 import java.io.File
@@ -35,9 +37,11 @@ class ConnectionPlugin(
     val commandConfig = ConfigurationFactory.create(dir, "commands.yml", CommandConfig())
 
     private val registrationEnabled = connectionConfig.get().registration.enabled
-    private val registerer = ServerRegisterer(api, registry, connectionConfig)
+    private val registrations = ServerRegistrations(registry)
+    private val statusCache = ServerStatusCache(registrations)
+    private val registerer = ServerRegisterer(api, registrations, statusCache, connectionConfig)
 
-    val resolver = ConnectionResolver(platform, connectionConfig, messageConfig, registerer)
+    val resolver = ConnectionResolver(platform, connectionConfig, messageConfig, statusCache)
 
     fun start() {
         logger.info("SimpleCloud v3 connection plugin initialized!")

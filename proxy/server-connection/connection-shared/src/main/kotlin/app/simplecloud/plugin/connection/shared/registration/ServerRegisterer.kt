@@ -19,23 +19,21 @@ import kotlinx.coroutines.future.await
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.slf4j.LoggerFactory
-import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.time.Duration.Companion.seconds
 
 class ServerRegisterer(
     private val api: CloudApi,
-    registry: ServerRegistry,
+    private val registrations: ServerRegistrations,
+    private val statusCache: ServerStatusCache,
     private val config: ConfigurationFactory<ConnectionConfig>,
 ) {
 
     private val logger = LoggerFactory.getLogger(ServerRegisterer::class.java)
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private val subscriptions: MutableList<Subscription> = mutableListOf()
-    private val registrations = ServerRegistrations(registry)
     private val lookupRegistration = AtomicReference<ProxyServerNames.Registration?>()
-    private val statuses = ConcurrentHashMap<String, ServerStatus>()
     private val mutex = Mutex()
     private val syncRequired = AtomicBoolean(true)
     private val syncFailing = AtomicBoolean(false)
@@ -91,10 +89,6 @@ class ServerRegisterer(
         scope.cancel()
     }
 
-    fun getServerStatuses(): Map<String, ServerStatus> = registrations.findAll()
-        .filter { server -> registrations.proxyNameOf(server.serverId).isPresent }
-        .associate { server -> server.proxyName to (statuses[server.serverId] ?: ServerStatus(false, 0, 0)) }
-
     suspend fun refresh() {
         mutex.withLock {
             registrations.findAll().forEach { server ->
@@ -107,7 +101,7 @@ class ServerRegisterer(
     private fun onStateChanged(event: ServerStateChangedEvent) {
         if (event.newState == ServerState.STOPPING || event.newState == ServerState.CLEANUP) {
             scope.launch {
-                mutex.withLock { markStopping(event.serverId) }
+                mutex.withLock { statusCache.markStopping(event.serverId) }
             }
         }
         val becameAvailable = event.newState == ServerState.AVAILABLE && event.oldState != ServerState.AVAILABLE
@@ -140,12 +134,12 @@ class ServerRegisterer(
             try {
                 api.cache().invalidateAll(QueryKey.of("servers"))
                 val servers = fetchServers()
-                reconcile(servers)
-
                 val recovered = syncFailing.getAndSet(false)
                 if (syncRequired.getAndSet(false) || recovered) {
                     logger.info("Found ${servers.size} servers")
                 }
+
+                reconcile(servers)
             } catch (e: Exception) {
                 currentCoroutineContext().ensureActive()
                 if (!syncFailing.getAndSet(true)) {
@@ -163,7 +157,7 @@ class ServerRegisterer(
 
         servers.forEach { server ->
             if (isStopping(server)) {
-                markStopping(server.serverId)
+                statusCache.markStopping(server.serverId)
             } else {
                 register(server)
             }
@@ -178,7 +172,7 @@ class ServerRegisterer(
 
     private fun register(server: Server) {
         val registeredServer = convertToRegisteredServer(server) ?: return
-        statuses[server.serverId] = ServerStatus(false, server.playerCount ?: 0, maxPlayersOf(server))
+        statusCache.update(server.serverId, ServerStatus(false, server.playerCount ?: 0, maxPlayersOf(server)))
         register(registeredServer)
     }
 
@@ -201,12 +195,8 @@ class ServerRegisterer(
     }
 
     private fun unregister(serverId: String) {
-        statuses.remove(serverId)
+        statusCache.remove(serverId)
         registrations.unregister(serverId)
-    }
-
-    private fun markStopping(serverId: String) {
-        statuses.computeIfPresent(serverId) { _, status -> status.copy(stopping = true) }
     }
 
     private fun isStopping(server: Server): Boolean =

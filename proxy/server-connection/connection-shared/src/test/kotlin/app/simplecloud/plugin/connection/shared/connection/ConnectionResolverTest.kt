@@ -1,0 +1,296 @@
+package app.simplecloud.plugin.connection.shared.connection
+
+import app.simplecloud.plugin.connection.shared.config.AddressConfig
+import app.simplecloud.plugin.connection.shared.config.CommandEntry
+import app.simplecloud.plugin.connection.shared.config.CommandMessages
+import app.simplecloud.plugin.connection.shared.config.ConnectionConfig
+import app.simplecloud.plugin.connection.shared.config.ConnectionEntry
+import app.simplecloud.plugin.connection.shared.config.ConnectionRule
+import app.simplecloud.plugin.connection.shared.config.FallbackConfig
+import app.simplecloud.plugin.connection.shared.config.FallbackTargetConnection
+import app.simplecloud.plugin.connection.shared.config.MessageConfig
+import app.simplecloud.plugin.connection.shared.config.NetworkJoinTargetsConfig
+import app.simplecloud.plugin.connection.shared.config.RuleType
+import app.simplecloud.plugin.connection.shared.config.SubdomainRoute
+import app.simplecloud.plugin.connection.shared.config.TargetConnection
+import app.simplecloud.plugin.connection.shared.platform.ConnectionServer
+import app.simplecloud.plugin.connection.shared.registration.RegisteredServer
+import app.simplecloud.plugin.connection.shared.registration.ServerRegistrations
+import app.simplecloud.plugin.connection.shared.registration.ServerStatus
+import app.simplecloud.plugin.connection.shared.registration.ServerStatusCache
+import app.simplecloud.plugin.connection.shared.registration.TestServerRegistry
+import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
+import app.simplecloud.plugin.core.shared.matcher.OperationType
+import app.simplecloud.plugin.core.shared.matcher.ServerMatcherConfiguration
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
+import java.io.File
+import java.nio.file.Files
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
+
+class ConnectionResolverTest {
+
+    private val registrations = ServerRegistrations(TestServerRegistry())
+    private val statusCache = ServerStatusCache(registrations)
+
+    private val lobby = ConnectionEntry(
+        name = "lobby",
+        serverNameMatcher = ServerMatcherConfiguration(OperationType.STARTS_WITH, "lobby"),
+    )
+    private val vipLobby = ConnectionEntry(
+        name = "vip-lobby",
+        serverNameMatcher = ServerMatcherConfiguration(OperationType.STARTS_WITH, "viplobby"),
+        rules = listOf(
+            ConnectionRule(type = RuleType.PERMISSION, name = "lobby.vip", bypassPermission = "lobby.admin"),
+        ),
+    )
+    private val bedwars = ConnectionEntry(
+        name = "bedwars",
+        serverNameMatcher = ServerMatcherConfiguration(OperationType.STARTS_WITH, "bedwars"),
+    )
+
+    private val config = ConnectionConfig(
+        connections = listOf(lobby, vipLobby, bedwars),
+        networkJoinTargets = NetworkJoinTargetsConfig(
+            targetConnections = listOf(TargetConnection("lobby", 0), TargetConnection("vip-lobby", 10)),
+        ),
+        fallback = FallbackConfig(targetConnections = listOf(FallbackTargetConnection("lobby", 0))),
+    )
+
+    private val lobbyCommand = CommandEntry(
+        name = "lobby",
+        messages = CommandMessages(alreadyConnected = "Already on <server>", noTargetConnectionFound = "No lobby"),
+        targetConnections = listOf(FallbackTargetConnection("lobby", 0)),
+    )
+
+    @Test
+    fun `join picks the server with the fewest players`() {
+        val resolver = resolver(listOf(server("lobby-1", 5), server("lobby-2", 2), server("bedwars-1", 0)))
+
+        assertEquals("lobby-2", resolver.findJoinTarget(TestConnectionPlayer()))
+    }
+
+    @Test
+    fun `join prefers the target connection with the highest priority`() {
+        val resolver = resolver(listOf(server("lobby-1", 0), server("viplobby-1", 20)))
+
+        assertEquals("viplobby-1", resolver.findJoinTarget(TestConnectionPlayer(permissions = setOf("lobby.vip"))))
+    }
+
+    @Test
+    fun `join skips connections whose rules do not pass`() {
+        val resolver = resolver(listOf(server("lobby-1", 0), server("viplobby-1", 0)))
+
+        assertEquals("lobby-1", resolver.findJoinTarget(TestConnectionPlayer()))
+    }
+
+    @Test
+    fun `rule bypass permission lets players through`() {
+        val resolver = resolver(listOf(server("lobby-1", 0), server("viplobby-1", 0)))
+
+        assertEquals("viplobby-1", resolver.findJoinTarget(TestConnectionPlayer(permissions = setOf("lobby.admin"))))
+    }
+
+    @Test
+    fun `join ignores stopping servers`() {
+        register("lobby-1", stopping = true)
+        val resolver = resolver(listOf(server("lobby-1", 0), server("lobby-2", 3)))
+
+        assertEquals("lobby-2", resolver.findJoinTarget(TestConnectionPlayer()))
+    }
+
+    @Test
+    fun `join uses the network wide player count when it is higher`() {
+        register("lobby-1", playerCount = 10)
+        val resolver = resolver(listOf(server("lobby-1", 1), server("lobby-2", 5)))
+
+        assertEquals("lobby-2", resolver.findJoinTarget(TestConnectionPlayer()))
+    }
+
+    @Test
+    fun `join prefers servers with free slots over full ones`() {
+        register("lobby-1", playerCount = 2, maxPlayers = 2)
+        register("lobby-2", playerCount = 8, maxPlayers = 10)
+        val resolver = resolver(listOf(server("lobby-1", 2), server("lobby-2", 8)))
+
+        assertEquals("lobby-2", resolver.findJoinTarget(TestConnectionPlayer()))
+    }
+
+    @Test
+    fun `join picks the least populated full server when all servers are full`() {
+        register("lobby-1", playerCount = 10, maxPlayers = 10)
+        register("lobby-2", playerCount = 5, maxPlayers = 5)
+        val resolver = resolver(listOf(server("lobby-1", 10), server("lobby-2", 5)))
+
+        assertEquals("lobby-2", resolver.findJoinTarget(TestConnectionPlayer()))
+    }
+
+    @Test
+    fun `servers without max players count as free`() {
+        register("lobby-1", playerCount = 50, maxPlayers = 0)
+        register("lobby-2", playerCount = 5, maxPlayers = 5)
+        val resolver = resolver(listOf(server("lobby-1", 50), server("lobby-2", 5)))
+
+        assertEquals("lobby-1", resolver.findJoinTarget(TestConnectionPlayer()))
+    }
+
+    @Test
+    fun `join routes by subdomain ignoring case`() {
+        val routedConfig = config.copy(address = AddressConfig(listOf(SubdomainRoute("bw.example.com", "bedwars"))))
+        val resolver = resolver(listOf(server("lobby-1", 0), server("bedwars-1", 10)), routedConfig)
+
+        assertEquals("bedwars-1", resolver.findJoinTarget(TestConnectionPlayer(virtualHost = "BW.Example.com")))
+        assertEquals("lobby-1", resolver.findJoinTarget(TestConnectionPlayer(virtualHost = "play.example.com")))
+    }
+
+    @Test
+    fun `join returns no server when network join targets are disabled`() {
+        val disabledConfig = config.copy(networkJoinTargets = config.networkJoinTargets.copy(enabled = false))
+        val resolver = resolver(listOf(server("lobby-1", 0)), disabledConfig)
+
+        assertNull(resolver.findJoinTarget(TestConnectionPlayer()))
+    }
+
+    @Test
+    fun `join skips excluded servers ignoring case`() {
+        val resolver = resolver(listOf(server("lobby-1", 0), server("lobby-2", 5)))
+
+        assertEquals("lobby-2", resolver.findJoinTarget(TestConnectionPlayer(), setOf("LOBBY-1")))
+        assertNull(resolver.findJoinTarget(TestConnectionPlayer(), setOf("lobby-1", "lobby-2")))
+    }
+
+    @Test
+    fun `fallback never picks the kicked server`() {
+        val resolver = resolver(listOf(server("lobby-1", 0), server("lobby-2", 5)))
+
+        assertEquals("lobby-2", resolver.findFallbackTarget(TestConnectionPlayer(), "lobby-1"))
+    }
+
+    @Test
+    fun `fallback skips servers that were already tried`() {
+        val resolver = resolver(listOf(server("lobby-1", 0), server("lobby-2", 1), server("lobby-3", 2)))
+        val player = TestConnectionPlayer()
+
+        assertEquals("lobby-3", resolver.findFallbackTarget(player, "lobby-1", setOf("lobby-1", "lobby-2")))
+        assertNull(resolver.findFallbackTarget(player, "lobby-3", setOf("lobby-1", "lobby-2", "lobby-3")))
+    }
+
+    @Test
+    fun `fallback from filter matches servers that are no longer registered`() {
+        val fromConfig = config.copy(
+            fallback = FallbackConfig(
+                targetConnections = listOf(FallbackTargetConnection("lobby", 0, listOf("bedwars"))),
+            ),
+        )
+        val resolver = resolver(listOf(server("lobby-1", 0)), fromConfig)
+
+        assertEquals("lobby-1", resolver.findFallbackTarget(TestConnectionPlayer(), "bedwars-1"))
+        assertNull(resolver.findFallbackTarget(TestConnectionPlayer(), "skywars-1"))
+    }
+
+    @Test
+    fun `command connects the player to the least populated target server`() {
+        val player = TestConnectionPlayer(serverName = "bedwars-1")
+        val resolver = resolver(listOf(server("lobby-1", 4), server("lobby-2", 1), server("bedwars-1", 3)))
+
+        resolver.executeCommand(player, lobbyCommand)
+
+        assertEquals(listOf("lobby-2"), player.connectedServers)
+        assertTrue(player.messages.isEmpty())
+    }
+
+    @Test
+    fun `command tells the player when they are already connected`() {
+        val player = TestConnectionPlayer(serverName = "lobby-1")
+        val resolver = resolver(listOf(server("lobby-1", 4), server("lobby-2", 1)))
+
+        resolver.executeCommand(player, lobbyCommand)
+
+        assertTrue(player.connectedServers.isEmpty())
+        assertEquals(listOf("Already on lobby-1"), plainMessages(player))
+    }
+
+    @Test
+    fun `command moves the player off a stopping server`() {
+        register("lobby-1", stopping = true)
+        val player = TestConnectionPlayer(serverName = "lobby-1")
+        val resolver = resolver(listOf(server("lobby-1", 0), server("lobby-2", 5)))
+
+        resolver.executeCommand(player, lobbyCommand)
+
+        assertEquals(listOf("lobby-2"), player.connectedServers)
+    }
+
+    @Test
+    fun `command tells the player when no server is available`() {
+        val player = TestConnectionPlayer(serverName = "bedwars-1")
+        val resolver = resolver(listOf(server("bedwars-1", 3)))
+
+        resolver.executeCommand(player, lobbyCommand)
+
+        assertTrue(player.connectedServers.isEmpty())
+        assertEquals(listOf("No lobby"), plainMessages(player))
+    }
+
+    @Test
+    fun `command does nothing without permission`() {
+        val player = TestConnectionPlayer(serverName = "bedwars-1")
+        val resolver = resolver(listOf(server("lobby-1", 0)))
+
+        resolver.executeCommand(player, lobbyCommand.copy(permission = "lobby.use"))
+
+        assertTrue(player.connectedServers.isEmpty())
+        assertTrue(player.messages.isEmpty())
+    }
+
+    private fun resolver(
+        servers: List<ConnectionServer>,
+        connectionConfig: ConnectionConfig = config,
+    ): ConnectionResolver = ConnectionResolver(
+        TestConnectionPlatform(servers),
+        connectionConfigFactory(connectionConfig),
+        messageConfigFactory(),
+        statusCache,
+    )
+
+    private fun server(name: String, playerCount: Int): ConnectionServer = ConnectionServer(name, playerCount)
+
+    private fun register(name: String, stopping: Boolean = false, playerCount: Int = 0, maxPlayers: Int = 0) {
+        registrations.register(
+            RegisteredServer(
+                serverId = name,
+                numericalId = 1,
+                ip = "127.0.0.1",
+                port = 25565,
+                serverBaseName = name,
+                proxyName = name,
+                properties = emptyMap(),
+                persistent = false,
+            ),
+        )
+        statusCache.update(name, ServerStatus(stopping, playerCount, maxPlayers))
+    }
+
+    private fun plainMessages(player: TestConnectionPlayer): List<String> =
+        player.messages.map { message -> PlainTextComponentSerializer.plainText().serialize(message) }
+
+    private fun connectionConfigFactory(connectionConfig: ConnectionConfig): ConfigurationFactory<ConnectionConfig> {
+        val factory = ConfigurationFactory(tempFile(), ConnectionConfig::class.java)
+        factory.save(connectionConfig)
+        return factory
+    }
+
+    private fun messageConfigFactory(): ConfigurationFactory<MessageConfig> {
+        val factory = ConfigurationFactory(tempFile(), MessageConfig::class.java)
+        factory.save(MessageConfig())
+        return factory
+    }
+
+    private fun tempFile(): File {
+        val file = Files.createTempFile("server-connection", ".yml").toFile()
+        file.deleteOnExit()
+        return file
+    }
+}

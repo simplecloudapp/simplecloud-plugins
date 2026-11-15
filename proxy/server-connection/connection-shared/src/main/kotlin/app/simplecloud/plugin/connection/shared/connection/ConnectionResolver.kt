@@ -10,8 +10,8 @@ import app.simplecloud.plugin.connection.shared.config.RuleType
 import app.simplecloud.plugin.connection.shared.platform.ConnectionPlatform
 import app.simplecloud.plugin.connection.shared.platform.ConnectionPlayer
 import app.simplecloud.plugin.connection.shared.platform.ConnectionServer
-import app.simplecloud.plugin.connection.shared.registration.ServerRegisterer
 import app.simplecloud.plugin.connection.shared.registration.ServerStatus
+import app.simplecloud.plugin.connection.shared.registration.ServerStatusCache
 import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 
@@ -19,7 +19,7 @@ class ConnectionResolver(
     private val platform: ConnectionPlatform,
     private val connectionConfig: ConfigurationFactory<ConnectionConfig>,
     private val messageConfig: ConfigurationFactory<MessageConfig>,
-    private val registerer: ServerRegisterer,
+    private val statusCache: ServerStatusCache,
 ) {
 
     fun findConnection(name: String, connections: List<ConnectionEntry>): ConnectionEntry? =
@@ -62,6 +62,7 @@ class ConnectionResolver(
         val messages = messageConfig.get()
         when (val target = findCommandTarget(player, command.targetConnections)) {
             is ConnectionTarget.Connect -> player.connect(target.serverName)
+
             ConnectionTarget.AlreadyConnected -> {
                 val server = Placeholder.unparsed("server", player.getServerName().orEmpty())
                 player.sendMessage(messages.msg(command.messages.alreadyConnected, server))
@@ -74,7 +75,7 @@ class ConnectionResolver(
     private fun findCommandTarget(player: ConnectionPlayer, targets: List<FallbackTargetConnection>): ConnectionTarget {
         val config = connectionConfig.get()
         val currentServerName = player.getServerName()
-        val currentServerStopping = registerer.getServerStatuses()[currentServerName]?.stopping == true
+        val currentServerStopping = statusCache.findAllByProxyName()[currentServerName]?.stopping == true
         val servers = findAvailableServers(emptySet())
 
         for (target in targets.sortedByDescending { target -> target.priority }) {
@@ -117,7 +118,7 @@ class ConnectionResolver(
         ?.name
 
     private fun findAvailableServers(excludedServerNames: Set<String>): List<ConnectionServer> {
-        val statuses = registerer.getServerStatuses()
+        val statuses = statusCache.findAllByProxyName()
 
         return platform.getServers()
             .filter { server -> excludedServerNames.none { name -> name.equals(server.name, ignoreCase = true) } }
