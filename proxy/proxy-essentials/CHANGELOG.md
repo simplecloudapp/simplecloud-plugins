@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+### Fixed
+- `version.slots.enabled: false` in a layout now leaves the max players in the server list as the proxy sets them. Before, it showed the same counted max players as `type: REAL`, so turning it off changed nothing.
+
 ## 1.3.0
 
 ### Added

@@ -50,10 +50,12 @@ class ProxyPingListener(
         val address = event.connection.socketAddress as? InetSocketAddress
         if (!LocalPingSourceMatcher.isLocal(address?.address)) {
             val onlinePlayers = essentials.playerCountService.getOnlinePlayers()
-            val maxPlayers = layout.version.slots.resolveMaxPlayers(
-                onlinePlayers,
-                essentials.playerCountService.getMaxPlayers(),
-            )
+            val slots = layout.version.slots
+            val maxPlayers = if (slots.enabled) {
+                slots.resolveMaxPlayers(onlinePlayers, essentials.playerCountService.getMaxPlayers())
+            } else {
+                response.players.max
+            }
             val samplePlayers = if (layout.playerList.enabled && layout.playerList.playerList.isNotEmpty()) {
                 layout.playerList.playerList.map { ServerPing.PlayerInfo(essentials.messageFormatter.formatLegacy(it), UUID.randomUUID()) }.toTypedArray()
             } else {
