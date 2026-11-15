@@ -3,7 +3,7 @@
 ## Unreleased
 
 ### Fixed
-- `version.slots.enabled: false` in a layout now leaves the max players in the server list unchanged, so the proxy's own value, or the one another plugin set, is shown. Before, it showed the same counted max players as `type: REAL`, so turning it off changed nothing.
+- `version.slots.enabled: false` in a layout now keeps the max players that the proxy, or another plugin, puts in the server list. Before, it showed the same max players as `type: REAL` and overwrote that value.
 
 ## 1.3.0
 
