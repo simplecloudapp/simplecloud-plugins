@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.2.1
+
+### Added
+- Support for GraalVM native image on Minestom.
+
 ## 1.2.0
 
 Compared to 1.1.1, the last version on Modrinth.

@@ -1,0 +1,168 @@
+{
+  "reflection": [
+    {
+      "type": "kotlin.Metadata",
+      "allDeclaredMethods": true
+    },
+    {
+      "type": "kotlin.reflect.jvm.internal.ReflectionFactoryImpl",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "kotlin.jvm.internal.DefaultConstructorMarker"
+    },
+    {
+      "type": "app.simplecloud.plugin.core.shared.config.VersionedConfig",
+      "allDeclaredMethods": true
+    },
+    {
+      "type": "app.simplecloud.plugin.core.shared.config.AbstractMessageConfig",
+      "allDeclaredFields": true,
+      "allDeclaredMethods": true,
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "app.simplecloud.plugin.core.shared.config.AbstractCommandMessageConfig",
+      "allDeclaredFields": true,
+      "allDeclaredMethods": true,
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "app.simplecloud.plugin.core.shared.config.AbstractCommandMessages",
+      "allDeclaredMethods": true
+    },
+    {
+      "type": "app.simplecloud.plugin.core.shared.command.HelpMessages",
+      "allDeclaredMethods": true
+    },
+    {
+      "type": "app.simplecloud.plugin.core.shared.config.CommandExceptionMessages",
+      "allDeclaredFields": true,
+      "allDeclaredMethods": true,
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "app.simplecloud.plugin.core.shared.config.ArgumentExceptionMessages",
+      "allDeclaredFields": true,
+      "allDeclaredMethods": true,
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "app.simplecloud.plugin.prefixes.shared.config.PrefixesConfig",
+      "allDeclaredFields": true,
+      "allDeclaredMethods": true,
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "app.simplecloud.plugin.prefixes.shared.config.GeneralConfig",
+      "allDeclaredFields": true,
+      "allDeclaredMethods": true,
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "app.simplecloud.plugin.prefixes.shared.config.FeaturesConfig",
+      "allDeclaredFields": true,
+      "allDeclaredMethods": true,
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "app.simplecloud.plugin.prefixes.shared.config.SyncConfig",
+      "allDeclaredFields": true,
+      "allDeclaredMethods": true,
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "app.simplecloud.plugin.prefixes.shared.config.SyncChannels",
+      "allDeclaredFields": true,
+      "allDeclaredMethods": true,
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "app.simplecloud.plugin.prefixes.shared.config.ConfigGroup",
+      "allDeclaredFields": true,
+      "allDeclaredMethods": true,
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "app.simplecloud.plugin.prefixes.shared.config.MessageConfig",
+      "allDeclaredFields": true,
+      "allDeclaredMethods": true,
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "app.simplecloud.plugin.prefixes.shared.config.CommandMessages",
+      "allDeclaredFields": true,
+      "allDeclaredMethods": true,
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "app.simplecloud.plugin.prefixes.shared.config.CommandHelpMessages",
+      "allDeclaredFields": true,
+      "allDeclaredMethods": true,
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "app.simplecloud.plugin.prefixes.shared.config.CommandReloadMessages",
+      "allDeclaredFields": true,
+      "allDeclaredMethods": true,
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "sun.misc.Unsafe",
+      "allDeclaredFields": true,
+      "allDeclaredMethods": true
+    },
+    {
+      "type": "app.simplecloud.plugin.prefixes.v1.ChatMessageEvent",
+      "allDeclaredFields": true,
+      "allDeclaredMethods": true,
+      "allDeclaredConstructors": true,
+      "unsafeAllocated": true
+    },
+    {
+      "type": "app.simplecloud.plugin.prefixes.v1.TablistEntryUpdateEvent",
+      "allDeclaredFields": true,
+      "allDeclaredMethods": true,
+      "allDeclaredConstructors": true,
+      "unsafeAllocated": true
+    },
+    {
+      "type": "app.simplecloud.plugin.prefixes.v1.TablistProfileProperty",
+      "allDeclaredFields": true,
+      "allDeclaredMethods": true,
+      "allDeclaredConstructors": true,
+      "unsafeAllocated": true
+    },
+    {
+      "type": "app.simplecloud.plugin.prefixes.v1.TablistEntryRemoveEvent",
+      "allDeclaredFields": true,
+      "allDeclaredMethods": true,
+      "allDeclaredConstructors": true,
+      "unsafeAllocated": true
+    },
+    {
+      "type": "app.simplecloud.plugin.prefixes.v1.TablistSyncRequest",
+      "allDeclaredFields": true,
+      "allDeclaredMethods": true,
+      "allDeclaredConstructors": true,
+      "unsafeAllocated": true
+    }
+  ],
+  "resources": [
+    {
+      "glob": "config.yml"
+    },
+    {
+      "glob": "messages.yml"
+    },
+    {
+      "glob": "META-INF/*.kotlin_module"
+    },
+    {
+      "glob": "kotlin/*.kotlin_builtins"
+    },
+    {
+      "glob": "kotlin/**/*.kotlin_builtins"
+    }
+  ]
+}
