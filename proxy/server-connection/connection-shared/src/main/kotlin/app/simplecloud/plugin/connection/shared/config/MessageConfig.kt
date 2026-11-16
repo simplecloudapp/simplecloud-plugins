@@ -16,6 +16,8 @@ data class MessageConfig(
 
 @ConfigSerializable
 data class KickMessages(
-    val noFallbackServers: String = "<error>There is no server to send you to.<br><br><muted>Try again in a few seconds.",
-    val noTargetConnection: String = "<error>There is no server to join right now.<br><br><muted>Try again in a few seconds.",
+    val noFallbackServers: String =
+        "<error>There is no server to send you to.<br><br><reason><br><muted>Try again in a few seconds.",
+    val noTargetConnection: String =
+        "<error>There is no server to join right now.<br><br><muted>Try again in a few seconds.",
 )

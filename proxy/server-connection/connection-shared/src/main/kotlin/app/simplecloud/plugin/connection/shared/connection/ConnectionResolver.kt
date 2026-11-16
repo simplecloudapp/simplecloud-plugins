@@ -36,7 +36,7 @@ class ConnectionResolver(
             .asSequence()
             .mapNotNull { target -> findConnection(target.name, config.connections) }
             .filter { connection -> passesRules(connection, player) }
-            .firstNotNullOfOrNull { connection -> findLeastPopulated(connection, servers, null) }
+            .firstNotNullOfOrNull { connection -> findLeastPopulated(connection, servers) }
     }
 
     fun findFallbackTarget(
@@ -45,7 +45,7 @@ class ConnectionResolver(
         excludedServerNames: Set<String> = emptySet(),
     ): String? {
         val config = connectionConfig.get()
-        val servers = findAvailableServers(excludedServerNames)
+        val servers = findAvailableServers(excludedServerNames + listOfNotNull(kickedServerName))
 
         return config.fallback.targetConnections
             .sortedByDescending { target -> target.priority }
@@ -53,12 +53,10 @@ class ConnectionResolver(
             .filter { target -> isFromAllowed(target, kickedServerName, config.connections) }
             .mapNotNull { target -> findConnection(target.name, config.connections) }
             .filter { connection -> passesRules(connection, player) }
-            .firstNotNullOfOrNull { connection -> findLeastPopulated(connection, servers, kickedServerName) }
+            .firstNotNullOfOrNull { connection -> findLeastPopulated(connection, servers) }
     }
 
     fun executeCommand(player: ConnectionPlayer, command: CommandEntry) {
-        if (command.permission.isNotEmpty() && !player.hasPermission(command.permission)) return
-
         val messages = messageConfig.get()
         when (val target = findCommandTarget(player, command.targetConnections)) {
             is ConnectionTarget.Connect -> player.connect(target.serverName)
@@ -88,7 +86,7 @@ class ConnectionResolver(
                 return ConnectionTarget.AlreadyConnected
             }
 
-            val serverName = findLeastPopulated(connection, servers, null)
+            val serverName = findLeastPopulated(connection, servers)
             if (serverName != null) return ConnectionTarget.Connect(serverName)
         }
 
@@ -105,16 +103,11 @@ class ConnectionResolver(
             ?: return null
         val connection = findConnection(route.targetConnection, config.connections) ?: return null
         if (!passesRules(connection, player)) return null
-        return findLeastPopulated(connection, servers, null)
+        return findLeastPopulated(connection, servers)
     }
 
-    private fun findLeastPopulated(
-        connection: ConnectionEntry,
-        servers: List<ConnectionServer>,
-        excludedServerName: String?,
-    ): String? = servers
-        .filter { server -> connection.serverNameMatcher.matches(server.name) }
-        .firstOrNull { server -> !server.name.equals(excludedServerName, ignoreCase = true) }
+    private fun findLeastPopulated(connection: ConnectionEntry, servers: List<ConnectionServer>): String? = servers
+        .firstOrNull { server -> connection.serverNameMatcher.matches(server.name) }
         ?.name
 
     private fun findAvailableServers(excludedServerNames: Set<String>): List<ConnectionServer> {

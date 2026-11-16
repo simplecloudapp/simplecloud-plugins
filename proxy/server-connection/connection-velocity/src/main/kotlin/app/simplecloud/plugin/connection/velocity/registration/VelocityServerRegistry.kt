@@ -16,7 +16,7 @@ class VelocityServerRegistry(
         val existing = proxy.getServer(proxyName).getOrNull()
         if (existing?.serverInfo == serverInfo) return
 
-        unregisterExisting(proxyName)
+        if (existing != null) proxy.unregisterServer(existing.serverInfo)
         proxy.registerServer(serverInfo)
     }
 
@@ -28,10 +28,5 @@ class VelocityServerRegistry(
 
     override fun clear() {
         proxy.allServers.forEach { server -> proxy.unregisterServer(server.serverInfo) }
-    }
-
-    private fun unregisterExisting(proxyName: String) {
-        val existing = proxy.getServer(proxyName).getOrNull() ?: return
-        proxy.unregisterServer(existing.serverInfo)
     }
 }

@@ -7,14 +7,14 @@ import net.md_5.bungee.api.plugin.Plugin
 
 class BungeeCordConnectionPlugin : Plugin() {
 
-    val plugin = ConnectionPlugin(BungeeCordPlatformImpl(this))
+    val connectionPlugin = ConnectionPlugin(BungeeCordPlatformImpl(this))
 
     override fun onEnable() {
-        proxy.pluginManager.registerListener(this, ConnectionListener(plugin, proxy))
-        plugin.start()
+        proxy.pluginManager.registerListener(this, ConnectionListener(connectionPlugin, proxy))
+        connectionPlugin.start()
     }
 
     override fun onDisable() {
-        plugin.shutdown()
+        connectionPlugin.shutdown()
     }
 }

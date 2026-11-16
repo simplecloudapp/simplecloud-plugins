@@ -55,7 +55,7 @@ class ServerRegistrations(
         nameKeyOf(previousServer.proxyName) != nameKeyOf(server.proxyName)
 
     private fun moveToNewProxyName(previousServer: RegisteredServer, server: RegisteredServer) {
-        logger.info("Replacing stale registration ${previousServer.serverId} (${previousServer.proxyName}) with ${server.proxyName}...")
+        logger.info("Moving server ${server.serverId} from ${previousServer.proxyName} to ${server.proxyName}...")
         servers.remove(server.serverId)
         releaseProxyName(previousServer)
         registerNewServer(server)
@@ -65,14 +65,11 @@ class ServerRegistrations(
         val holderId = holderIds[nameKeyOf(server.proxyName)]
         val nameHeldByOther = holderId != null && holderId != server.serverId
         if (nameHeldByOther) {
-            if (previousServer != server) {
-                logger.info("Refreshing server ${server.serverId} (${server.proxyName}), server $holderId keeps the name...")
-            }
             servers[server.serverId] = server
             return
         }
 
-        if (previousServer != server) {
+        if (previousServer.ip != server.ip || previousServer.port != server.port) {
             logger.info("Refreshing server ${server.serverId} (${server.proxyName})...")
         }
         registerAsHolder(server)
@@ -87,7 +84,7 @@ class ServerRegistrations(
             holderIds.remove(nameKey)
         }
         if (holderChanges && previousHolderId != null) {
-            logger.warn("Server ${server.serverId} replaces server $previousHolderId as ${server.proxyName} on the proxy")
+            logger.warn("Server ${server.serverId} replaces server $previousHolderId as ${server.proxyName}")
         }
         registry.register(server.proxyName, server)
         holderIds[nameKey] = server.serverId

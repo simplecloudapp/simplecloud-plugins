@@ -10,7 +10,7 @@ class ServerStatusCache(
 
     fun findAllByProxyName(): Map<String, ServerStatus> = registrations.findAll()
         .filter { server -> registrations.proxyNameOf(server.serverId).isPresent }
-        .associate { server -> server.proxyName to (statuses[server.serverId] ?: ServerStatus(false, 0, 0)) }
+        .associate { server -> server.proxyName to findStatus(server.serverId) }
 
     fun update(serverId: String, status: ServerStatus) {
         statuses[serverId] = status
@@ -23,4 +23,7 @@ class ServerStatusCache(
     fun remove(serverId: String) {
         statuses.remove(serverId)
     }
+
+    private fun findStatus(serverId: String): ServerStatus =
+        statuses[serverId] ?: ServerStatus(stopping = false, playerCount = 0, maxPlayers = 0)
 }

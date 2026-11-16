@@ -1,5 +1,28 @@
 # Changelog
 
+## 1.3.0
+
+### Breaking changes
+- Waterdog PE is no longer supported.
+- The `/connection reload` command was removed. Config files are still reloaded automatically after you save them.
+
+### Added
+- Players are spread by the player counts of the whole network, not only of the own proxy.
+- `registration.sync-interval` in `config.yml` (default `10` seconds)
+- `kick.no-fallback-servers` in `messages.yml` can use `<reason>` (the kick reason of the server) and `<server>` (the server the player was kicked from). The new default shows the kick reason. Existing files are not changed.
+- The `already-connected` message in `commands.yml` can use `<server>` (the server the player is on).
+- On Velocity, players get a message when a command can't send them to the target server.
+
+### Changed
+- A SimpleCloud server whose proxy name is already used by an entry in `additional-servers` is no longer registered. A warning is shown in the console and the additional server keeps the name.
+- A server that is missing data, such as its ip or port, is reported once in the console instead of on every load.
+
+### Fixed
+- Players were sent back and forth between servers that kicked them right after joining. Servers that kicked a player in the last 10 seconds are no longer used as fallback for that player.
+- When the join or fallback server failed, the same server could be tried again, especially on BungeeCord. The next server is tried now.
+- A lobby command answered "already connected" while the player's server was stopping. It now sends the player to another server.
+- The `from` filter of fallback and command targets didn't work for servers that were no longer registered on the proxy.
+
 ## 1.2.0
 
 Compared to 1.0.10, the last version on Modrinth.

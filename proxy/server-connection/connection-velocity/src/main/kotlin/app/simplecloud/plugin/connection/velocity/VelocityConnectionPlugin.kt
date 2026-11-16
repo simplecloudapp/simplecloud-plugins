@@ -30,16 +30,16 @@ class VelocityConnectionPlugin @Inject constructor(
     private val server: ProxyServer,
 ) {
 
-    val plugin = ConnectionPlugin(VelocityPlatformImpl(this, server, dataDirectory))
+    val connectionPlugin = ConnectionPlugin(VelocityPlatformImpl(this, server, dataDirectory))
 
     @Subscribe
     fun onProxyInitialize(event: ProxyInitializeEvent) {
-        server.eventManager.register(this, ConnectionListener(plugin, server))
-        plugin.start()
+        server.eventManager.register(this, ConnectionListener(connectionPlugin, server))
+        connectionPlugin.start()
     }
 
     @Subscribe
     fun onProxyShutdown(event: ProxyShutdownEvent) {
-        plugin.shutdown()
+        connectionPlugin.shutdown()
     }
 }

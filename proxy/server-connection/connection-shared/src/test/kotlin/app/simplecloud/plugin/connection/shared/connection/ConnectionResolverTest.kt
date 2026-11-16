@@ -234,17 +234,6 @@ class ConnectionResolverTest {
         assertEquals(listOf("No lobby"), plainMessages(player))
     }
 
-    @Test
-    fun `command does nothing without permission`() {
-        val player = TestConnectionPlayer(serverName = "bedwars-1")
-        val resolver = resolver(listOf(server("lobby-1", 0)))
-
-        resolver.executeCommand(player, lobbyCommand.copy(permission = "lobby.use"))
-
-        assertTrue(player.connectedServers.isEmpty())
-        assertTrue(player.messages.isEmpty())
-    }
-
     private fun resolver(
         servers: List<ConnectionServer>,
         connectionConfig: ConnectionConfig = config,

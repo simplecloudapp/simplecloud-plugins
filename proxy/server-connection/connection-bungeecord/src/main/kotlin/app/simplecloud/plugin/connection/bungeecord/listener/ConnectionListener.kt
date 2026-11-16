@@ -2,6 +2,7 @@ package app.simplecloud.plugin.connection.bungeecord.listener
 
 import app.simplecloud.plugin.connection.bungeecord.platform.BungeeCordConnectionPlayer
 import app.simplecloud.plugin.connection.shared.ConnectionPlugin
+import app.simplecloud.plugin.connection.shared.connection.KickTracker
 import app.simplecloud.plugin.core.bungeecord.text.BungeeComponentConverter
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
@@ -23,6 +24,7 @@ class ConnectionListener(
 ) : Listener {
 
     private val attemptedServers = ConcurrentHashMap<UUID, Set<String>>()
+    private val kickTracker = KickTracker()
 
     @EventHandler
     fun onServerConnect(event: ServerConnectEvent) {
@@ -42,6 +44,7 @@ class ConnectionListener(
     @EventHandler
     fun onPlayerDisconnect(event: PlayerDisconnectEvent) {
         attemptedServers.remove(event.player.uniqueId)
+        kickTracker.remove(event.player.uniqueId)
     }
 
     @EventHandler(priority = EventPriority.HIGH)
@@ -52,7 +55,8 @@ class ConnectionListener(
         if (!config.fallback.enabled) return
         if (event.state == ServerKickEvent.State.CONNECTING && event.player.server != null) return
 
-        val excludedServerNames = attemptedServers[event.player.uniqueId].orEmpty() + event.kickedFrom.name
+        val kickedServerNames = kickTracker.add(event.player.uniqueId, event.kickedFrom.name)
+        val excludedServerNames = attemptedServers[event.player.uniqueId].orEmpty() + kickedServerNames
         val targetServerName = connectionPlugin.resolver.findFallbackTarget(
             BungeeCordConnectionPlayer(event.player, proxy),
             event.kickedFrom.name,
@@ -127,13 +131,15 @@ class ConnectionListener(
         if (!config.fallback.enabled) return
 
         val downServerName = event.player.server?.info?.name ?: return
+        val kickedServerNames = kickTracker.add(event.player.uniqueId, downServerName)
         val targetServerName = connectionPlugin.resolver.findFallbackTarget(
             BungeeCordConnectionPlayer(event.player, proxy),
             downServerName,
+            kickedServerNames,
         )
         val targetServer = findServer(targetServerName)
         if (targetServer != null) {
-            attemptedServers[event.player.uniqueId] = setOf(downServerName, targetServer.name)
+            attemptedServers[event.player.uniqueId] = kickedServerNames + targetServer.name
             event.target = targetServer
             return
         }

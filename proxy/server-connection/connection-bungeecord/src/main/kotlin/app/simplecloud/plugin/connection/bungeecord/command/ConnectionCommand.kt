@@ -14,6 +14,6 @@ class ConnectionCommand(
 
     override fun execute(sender: CommandSender, args: Array<out String>) {
         val player = sender as? ProxiedPlayer ?: return
-        plugin.plugin.resolver.executeCommand(BungeeCordConnectionPlayer(player, plugin.proxy), command)
+        plugin.connectionPlugin.resolver.executeCommand(BungeeCordConnectionPlayer(player, plugin.proxy), command)
     }
 }

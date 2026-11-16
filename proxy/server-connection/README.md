@@ -30,7 +30,6 @@ The Server Connection Plugin provides comprehensive player connection management
 
 - [x] **Velocity**
 - [x] **BungeeCord**
-- [x] **Waterdog PE**
 - [x] **Gate**
 - [x] **Server registration**: Automatically registers SimpleCloud servers on your proxy
 - [x] **Additional servers**: Add non network servers manually

@@ -34,7 +34,7 @@ class ConnectionPlugin(
 
     val connectionConfig = ConfigurationFactory.create(dir, "config.yml", ConnectionConfig())
     val messageConfig = ConfigurationFactory.create(dir, "messages.yml", MessageConfig())
-    val commandConfig = ConfigurationFactory.create(dir, "commands.yml", CommandConfig())
+    private val commandConfig = ConfigurationFactory.create(dir, "commands.yml", CommandConfig())
 
     private val registrationEnabled = connectionConfig.get().registration.enabled
     private val registrations = ServerRegistrations(registry)
@@ -44,7 +44,6 @@ class ConnectionPlugin(
     val resolver = ConnectionResolver(platform, connectionConfig, messageConfig, statusCache)
 
     fun start() {
-        logger.info("SimpleCloud v3 connection plugin initialized!")
         validateConnections()
         commandManager.register(commandConfig.get().commands)
         ConfigWatcher(dir.toPath()) { reload() }.start(scope)
@@ -57,12 +56,8 @@ class ConnectionPlugin(
     }
 
     fun shutdown() {
-        logger.info("SimpleCloud v3 connection plugin uninitialized!")
         commandManager.unregister()
-        if (registrationEnabled) {
-            logger.info("Stopping server registration...")
-            registerer.stop()
-        }
+        if (registrationEnabled) registerer.stop()
         scope.cancel()
         api.close()
     }
@@ -75,9 +70,9 @@ class ConnectionPlugin(
             return
         }
 
-        connectionConfig.loadOrCreate(ConnectionConfig())
-        messageConfig.loadOrCreate(MessageConfig())
-        commandConfig.loadOrCreate(CommandConfig())
+        loadConfig("config.yml") { connectionConfig.loadOrCreate(ConnectionConfig()) }
+        loadConfig("messages.yml") { messageConfig.loadOrCreate(MessageConfig()) }
+        loadConfig("commands.yml") { commandConfig.loadOrCreate(CommandConfig()) }
         validateConnections()
 
         commandManager.unregister()
@@ -90,8 +85,16 @@ class ConnectionPlugin(
         if (registrationEnabled) {
             registerAdditionalServers()
             scope.launch {
-                registerer.refresh()
+                registerer.sync()
             }
+        }
+    }
+
+    private fun loadConfig(fileName: String, load: () -> Unit) {
+        try {
+            load()
+        } catch (e: Exception) {
+            logger.error("Failed to load $fileName, the previous version stays active", e)
         }
     }
 

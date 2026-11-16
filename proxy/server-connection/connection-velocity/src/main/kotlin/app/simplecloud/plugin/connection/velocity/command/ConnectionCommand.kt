@@ -15,7 +15,7 @@ class ConnectionCommand(
 
     override fun execute(invocation: SimpleCommand.Invocation) {
         val player = invocation.source() as? Player ?: return
-        plugin.plugin.resolver.executeCommand(VelocityConnectionPlayer(player, proxy), command)
+        plugin.connectionPlugin.resolver.executeCommand(VelocityConnectionPlayer(player, proxy), command)
     }
 
     override fun hasPermission(invocation: SimpleCommand.Invocation): Boolean =

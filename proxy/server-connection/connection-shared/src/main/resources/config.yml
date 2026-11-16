@@ -27,7 +27,7 @@ registration:
   additional-servers: []
 
   # Interval in seconds in which the servers and their player counts are loaded from SimpleCloud.
-  sync-interval: 5
+  sync-interval: 10
 
 # ───────────────────────────────────────────────────────────────────────────────
 # Subdomain Routing
