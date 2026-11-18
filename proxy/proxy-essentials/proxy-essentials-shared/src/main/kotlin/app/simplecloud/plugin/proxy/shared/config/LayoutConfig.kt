@@ -62,11 +62,11 @@ data class SlotsConfig(
     val fakeSlots: Int = 100,
     val dynamicPlayerRange: Int = 5,
 ) {
-    fun resolveMaxPlayers(onlinePlayers: Int, realMaxPlayers: Int): Int {
-        if (!enabled) return realMaxPlayers
+    fun resolveMaxPlayersOverride(onlinePlayers: Int, countedMaxPlayers: Int): Int? {
+        if (!enabled) return null
 
         return when (type) {
-            MaxPlayerDisplayType.REAL -> realMaxPlayers
+            MaxPlayerDisplayType.REAL -> countedMaxPlayers
             MaxPlayerDisplayType.FAKE -> fakeSlots
             MaxPlayerDisplayType.DYNAMIC -> onlinePlayers + dynamicPlayerRange
         }

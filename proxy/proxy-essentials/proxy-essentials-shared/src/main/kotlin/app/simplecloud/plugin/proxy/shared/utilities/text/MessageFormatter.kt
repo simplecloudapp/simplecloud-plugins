@@ -42,16 +42,15 @@ class MessageFormatter(
     private fun getPlaceholders(serverName: String, ping: Long): TagResolver {
         val format = messages.get().format
         val onlinePlayers = playerCountService.getOnlinePlayers()
+        val countedMaxPlayers = playerCountService.getMaxPlayers()
         val slots = layoutService.getLayout(layoutService.getLayoutName(null)).version.slots
+        val maxPlayers = slots.resolveMaxPlayersOverride(onlinePlayers, countedMaxPlayers) ?: countedMaxPlayers
 
         return TagResolver.resolver(
             Placeholder.unparsed("server_name", serverName),
             Placeholder.parsed("ping", getPingColor(ping) + ping),
             Placeholder.unparsed("online_players", onlinePlayers.toString()),
-            Placeholder.unparsed(
-                "max_players",
-                slots.resolveMaxPlayers(onlinePlayers, playerCountService.getMaxPlayers()).toString(),
-            ),
+            Placeholder.unparsed("max_players", maxPlayers.toString()),
             getDateTimeResolver("date", format.date),
             getDateTimeResolver("time", format.time),
             getEnvironmentResolver(),
