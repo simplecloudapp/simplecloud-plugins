@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.2.1
+
+### Changed
+- Requests to the SimpleCloud controller now include the plugin name, so the controller logs show which plugin sent them.
+
 ## 1.2.0
 
 Compared to 0.1.6, the last version on Modrinth.

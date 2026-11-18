@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.2.1
+
+### Changed
+- Requests to the SimpleCloud controller now include the plugin name, so the controller logs show which plugin sent them.
+
+### Fixed
+- Creating a group no longer logs an error, and the group created notification is sent again.
+
 ## 1.2.0
 
 Compared to 1.0.0, the last version on Modrinth.
