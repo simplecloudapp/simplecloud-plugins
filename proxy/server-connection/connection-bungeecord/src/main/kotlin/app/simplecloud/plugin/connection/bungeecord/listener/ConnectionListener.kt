@@ -94,7 +94,10 @@ class ConnectionListener(
         if (!config.fallback.enabled) return
 
         val downServerName = event.player.server?.info?.name ?: return
-        val targetServer = plugin.connectionPlugin.findFallbackTarget(BungeeCordConnectionPlayer(event.player), downServerName)
+        val targetServer = plugin.connectionPlugin.recordKickAndFindFallbackTarget(
+            BungeeCordConnectionPlayer(event.player),
+            downServerName,
+        )
         if (targetServer != null) {
             event.target = targetServer.serverInfo
             return
