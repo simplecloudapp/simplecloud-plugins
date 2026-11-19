@@ -39,10 +39,11 @@ version:
     enabled: true
     text: '<warning>Maintenance'
   slots:
+    # Set to false to keep the max players that the proxy, or another plugin, puts in the server list.
     enabled: true
-    # REAL - Displays the actual number of online players
-    # FAKE - Displays a fixed custom number of online players
-    # DYNAMIC - Displays a dynamic number based on actual players plus a range
+    # REAL - Shows the max players counted by player-count in config.yml
+    # FAKE - Shows a fixed number as the max players
+    # DYNAMIC - Shows the online players plus a range as the max players
     type: REAL
     #type: FAKE
     #fake-slots: 100

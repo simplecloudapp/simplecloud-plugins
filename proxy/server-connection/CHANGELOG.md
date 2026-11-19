@@ -23,6 +23,11 @@
 - A lobby command answered "already connected" while the player's server was stopping. It now sends the player to another server.
 - The `from` filter of fallback and command targets didn't work for servers that were no longer registered on the proxy.
 
+## 1.2.1
+
+### Changed
+- Requests to the SimpleCloud controller now include the plugin name, so the controller logs show which plugin sent them.
+
 ## 1.2.0
 
 Compared to 1.0.10, the last version on Modrinth.

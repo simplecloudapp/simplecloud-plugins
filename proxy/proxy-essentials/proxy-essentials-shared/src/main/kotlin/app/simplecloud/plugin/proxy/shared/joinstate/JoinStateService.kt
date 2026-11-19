@@ -1,6 +1,7 @@
 package app.simplecloud.plugin.proxy.shared.joinstate
 
 import app.simplecloud.api.CloudApi
+import app.simplecloud.api.cache.EntityType
 import app.simplecloud.api.event.Subscription
 import app.simplecloud.api.proxy.ProxyServerNames
 import app.simplecloud.api.runtime.SimpleCloudRuntime
@@ -40,13 +41,12 @@ class JoinStateService(
             },
         )
 
-        val groupName = server.group?.name ?: return
-        lastGroupState.set(getGroupState(groupName))
+        val group = server.group ?: return
+        lastGroupState.set(getGroupState(group.name))
         subscriptions.add(
             api.event().group().onUpdated { event ->
-                val group = event.group ?: return@onUpdated
-                if (group.name != groupName) return@onUpdated
-                scope.launch { followGroupState(server.serverId, groupName, getState(group.properties)) }
+                if (event.serverGroupId != group.serverGroupId) return@onUpdated
+                scope.launch { followGroupState(server.serverId, group.serverGroupId, group.name) }
             },
         )
     }
@@ -150,12 +150,14 @@ class JoinStateService(
         return state
     }
 
-    private suspend fun followGroupState(serverId: String, groupName: String, groupState: String) {
-        val previousGroupState = lastGroupState.getAndSet(groupState)
-        if (previousGroupState == null || previousGroupState == groupState) return
-        if (getLocalState() != previousGroupState) return
-
+    private suspend fun followGroupState(serverId: String, groupId: String, groupName: String) {
         try {
+            api.cache().invalidateByType(EntityType.GROUP)
+            val groupState = getState(api.group().getGroupById(groupId).await().properties)
+            val previousGroupState = lastGroupState.getAndSet(groupState)
+            if (previousGroupState == null || previousGroupState == groupState) return
+            if (getLocalState() != previousGroupState) return
+
             setServerState(serverId, groupState)
         } catch (e: Exception) {
             logger.error("Could not synchronize the join state with group '$groupName'", e)

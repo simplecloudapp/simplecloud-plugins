@@ -1,7 +1,14 @@
+import java.net.URI
+import java.net.http.HttpClient
+import java.net.http.HttpRequest
+import java.net.http.HttpResponse
+
 plugins {
     id("simplecloud.base-conventions")
     `maven-publish`
 }
+
+val repositoryUrl = "https://repo.simplecloud.app/snapshots"
 
 java {
     withSourcesJar()
@@ -51,11 +58,24 @@ publishing {
     repositories {
         maven {
             name = "simplecloud"
-            url = uri("https://repo.simplecloud.app/snapshots")
+            url = uri(repositoryUrl)
             credentials {
                 username = providers.environmentVariable("SIMPLECLOUD_USERNAME").orNull
                 password = providers.environmentVariable("SIMPLECLOUD_PASSWORD").orNull
             }
+        }
+    }
+}
+
+if (path.startsWith(":core:")) {
+    val pomUrl = "$repositoryUrl/${group.toString().replace('.', '/')}/$name/$version/$name-$version.pom"
+
+    tasks.withType<PublishToMavenRepository>().configureEach {
+        onlyIf("$pomUrl is not published yet") {
+            val request = HttpRequest.newBuilder(URI(pomUrl))
+                .method("HEAD", HttpRequest.BodyPublishers.noBody())
+                .build()
+            HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.discarding()).statusCode() == 404
         }
     }
 }

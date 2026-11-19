@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.3.1
+
+### Changed
+- Requests to the SimpleCloud controller now include the plugin name, so the controller logs show which plugin sent them.
+
+### Fixed
+- Creating or updating a group no longer logs an error. Changes to a group, such as its join state, are picked up right away again instead of only after the next resync, and running servers follow a changed group join state again.
+- `version.slots.enabled: false` in a layout now keeps the max players that the proxy, or another plugin, puts in the server list. Before, it showed the same max players as `type: REAL` and overwrote that value.
+
 ## 1.3.0
 
 ### Added
