@@ -7,6 +7,9 @@ import app.simplecloud.plugin.connection.waterdog.handler.WaterdogJoinHandler
 import app.simplecloud.plugin.connection.waterdog.handler.WaterdogReconnectHandler
 import app.simplecloud.plugin.connection.waterdog.platform.WaterdogConnectionServer
 import app.simplecloud.plugin.connection.waterdog.platform.WaterdogPlatformImpl
+import dev.waterdog.waterdogpe.event.defaults.InitialServerConnectedEvent
+import dev.waterdog.waterdogpe.event.defaults.PlayerDisconnectedEvent
+import dev.waterdog.waterdogpe.event.defaults.TransferCompleteEvent
 import dev.waterdog.waterdogpe.plugin.Plugin
 
 class WaterdogConnectionPlugin : Plugin() {
@@ -22,6 +25,7 @@ class WaterdogConnectionPlugin : Plugin() {
         this.connectionPlugin = connectionPlugin
         cleanupServers(connectionPlugin)
         registerHandlers()
+        registerListeners(connectionPlugin)
         registerCommands()
         connectionPlugin.start(::reload)
     }
@@ -48,6 +52,19 @@ class WaterdogConnectionPlugin : Plugin() {
     private fun registerHandlers() {
         proxy.joinHandler = WaterdogJoinHandler(this, proxy.joinHandler)
         proxy.reconnectHandler = WaterdogReconnectHandler(this, proxy.reconnectHandler)
+    }
+
+    private fun registerListeners(connectionPlugin: ConnectionPlugin<WaterdogConnectionServer>) {
+        val eventManager = proxy.eventManager
+        eventManager.subscribe(InitialServerConnectedEvent::class.java) { event ->
+            connectionPlugin.clearKicks(event.player.uniqueId)
+        }
+        eventManager.subscribe(TransferCompleteEvent::class.java) { event ->
+            connectionPlugin.clearKicks(event.player.uniqueId)
+        }
+        eventManager.subscribe(PlayerDisconnectedEvent::class.java) { event ->
+            connectionPlugin.clearKicks(event.player.uniqueId)
+        }
     }
 
     private fun registerCommands() {

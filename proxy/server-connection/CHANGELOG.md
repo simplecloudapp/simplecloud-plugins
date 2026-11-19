@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Fixed
+- Players are no longer sent to a fallback server that already kicked or refused them since they were last on a server. Before, a player refused by every lobby, for example because of a ban, could bounce between two lobbies that both refused them.
+- On Velocity and BungeeCord, a joining player who is refused by every fallback server now sees the reason of the last server that refused them, for example the ban message, instead of `kick.no-fallback-servers`. BungeeCord shows it after its own "Kicked whilst connecting to" text. On Velocity, this also applies to a player whose server kicked them and whose fallback servers then refused them.
+
 ## 1.2.0
 
 Compared to 1.0.10, the last version on Modrinth.

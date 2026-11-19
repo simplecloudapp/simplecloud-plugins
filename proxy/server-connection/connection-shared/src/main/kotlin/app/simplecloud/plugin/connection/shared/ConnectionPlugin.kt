@@ -8,6 +8,7 @@ import app.simplecloud.plugin.connection.shared.config.MessageConfig
 import app.simplecloud.plugin.connection.shared.config.RegistrationServer
 import app.simplecloud.plugin.connection.shared.connection.CommandTarget
 import app.simplecloud.plugin.connection.shared.connection.ConnectionResolver
+import app.simplecloud.plugin.connection.shared.connection.KickedServers
 import app.simplecloud.plugin.connection.shared.platform.ConnectionPlatform
 import app.simplecloud.plugin.connection.shared.platform.ConnectionPlayer
 import app.simplecloud.plugin.connection.shared.platform.ConnectionServer
@@ -17,6 +18,7 @@ import app.simplecloud.plugin.core.shared.config.ConfigWatcher
 import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
 import kotlinx.coroutines.*
 import org.slf4j.LoggerFactory
+import java.util.UUID
 import java.util.concurrent.CopyOnWriteArrayList
 
 class ConnectionPlugin<S : ConnectionServer>(
@@ -36,6 +38,7 @@ class ConnectionPlugin<S : ConnectionServer>(
 
     private val registrationEnabled = connectionConfig.get().registration.enabled
     private val registerer = ServerRegisterer(api, registry, connectionConfig)
+    private val kickedServers = KickedServers()
 
     fun start(reload: () -> Unit) {
         logger.info("SimpleCloud v3 connection plugin initialized!")
@@ -69,9 +72,26 @@ class ConnectionPlugin<S : ConnectionServer>(
         platform,
         player,
         kickedServerName,
+        setOfNotNull(kickedServerName),
         connectionConfig.get(),
         registerer.getStoppingServerNames(),
     )
+
+    fun recordKickAndFindFallbackTarget(player: ConnectionPlayer, kickedServerName: String): S? {
+        val kickedServerNames = kickedServers.recordKick(player.getUniqueId(), kickedServerName)
+        return ConnectionResolver.findFallbackTarget(
+            platform,
+            player,
+            kickedServerName,
+            kickedServerNames,
+            connectionConfig.get(),
+            registerer.getStoppingServerNames(),
+        )
+    }
+
+    fun clearKicks(playerId: UUID) {
+        kickedServers.clear(playerId)
+    }
 
     fun findCommandTarget(player: ConnectionPlayer, targets: List<FallbackTargetConnection>): CommandTarget<S> =
         ConnectionResolver.findCommandTarget(
