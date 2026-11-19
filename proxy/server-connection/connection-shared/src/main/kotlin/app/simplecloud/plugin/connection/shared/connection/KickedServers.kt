@@ -13,6 +13,8 @@ class KickedServers {
         return serverNames
     }
 
+    fun hasKicks(playerId: UUID): Boolean = serverNamesByPlayer.containsKey(playerId)
+
     fun clear(playerId: UUID) {
         serverNamesByPlayer.remove(playerId)
     }

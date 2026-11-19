@@ -90,6 +90,8 @@ class ConnectionPlugin<S : ConnectionServer>(
         )
     }
 
+    fun hasKicks(playerId: UUID): Boolean = kickedServers.hasKicks(playerId)
+
     fun clearKicks(playerId: UUID) {
         kickedServers.clear(playerId)
     }

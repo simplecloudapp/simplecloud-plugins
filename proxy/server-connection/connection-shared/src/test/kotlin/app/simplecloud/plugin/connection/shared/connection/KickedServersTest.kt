@@ -3,6 +3,8 @@ package app.simplecloud.plugin.connection.shared.connection
 import java.util.UUID
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class KickedServersTest {
 
@@ -27,6 +29,14 @@ class KickedServersTest {
         val kickedServerNames = kickedServers.recordKick(playerId, "lobby-2")
 
         assertEquals(setOf("lobby-2"), kickedServerNames)
+    }
+
+    @Test
+    fun `knows whether a player has kicks`() {
+        kickedServers.recordKick(playerId, "lobby-1")
+
+        assertTrue(kickedServers.hasKicks(playerId))
+        assertFalse(kickedServers.hasKicks(otherPlayerId))
     }
 
     @Test

@@ -31,9 +31,12 @@ class ConnectionListener(
         val messageConfig = plugin.connectionPlugin.messageConfig.get()
 
         if (!config.fallback.enabled) return
-        if (event.state == ServerKickEvent.State.CONNECTING && event.player.server != null) return
 
         val player = event.player
+        val refusedWhileConnecting = event.state == ServerKickEvent.State.CONNECTING
+        val fallingBack = plugin.connectionPlugin.hasKicks(player.uniqueId)
+        if (refusedWhileConnecting && player.server != null && !fallingBack) return
+
         val targetServer = plugin.connectionPlugin.recordKickAndFindFallbackTarget(
             BungeeCordConnectionPlayer(player),
             event.kickedFrom.name,
@@ -44,7 +47,6 @@ class ConnectionListener(
             return
         }
 
-        val refusedWhileConnecting = player.server == null
         if (refusedWhileConnecting) return
         event.reason = BungeeComponentConverter.toBungee(messageConfig.msg(messageConfig.kick.noFallbackServers))
     }
