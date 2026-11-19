@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.2.2
 
 ### Fixed
 - Players are no longer sent to a fallback server that already kicked or refused them since they were last on a server. Before, a player refused by every lobby, for example because of a ban, could bounce between two lobbies that both refused them.
