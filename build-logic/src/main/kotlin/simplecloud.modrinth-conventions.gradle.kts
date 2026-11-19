@@ -47,7 +47,7 @@ modrinth {
         "26.2",
         "26.3",
     )
-    changelog.set("https://docs.simplecloud.app/changelog")
+    changelog.set(providers.gradleProperty("changelogFile").map { path -> File(path).readText() })
     syncBodyFrom.set(file("../README.md").readText())
 }
 
