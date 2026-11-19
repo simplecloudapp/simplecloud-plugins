@@ -2,10 +2,13 @@ package app.simplecloud.plugin.connection.bungeecord.platform
 
 import app.simplecloud.plugin.connection.shared.platform.ConnectionPlayer
 import net.md_5.bungee.api.connection.ProxiedPlayer
+import java.util.UUID
 
 class BungeeCordConnectionPlayer(
     private val player: ProxiedPlayer,
 ) : ConnectionPlayer {
+
+    override fun getUniqueId(): UUID = player.uniqueId
 
     override fun hasPermission(permission: String): Boolean = player.hasPermission(permission)
 

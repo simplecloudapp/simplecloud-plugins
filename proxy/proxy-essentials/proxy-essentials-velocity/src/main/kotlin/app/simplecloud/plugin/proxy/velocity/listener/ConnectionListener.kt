@@ -7,7 +7,6 @@ import com.velocitypowered.api.event.PostOrder
 import com.velocitypowered.api.event.ResultedEvent
 import com.velocitypowered.api.event.Subscribe
 import com.velocitypowered.api.event.connection.LoginEvent
-import com.velocitypowered.api.event.player.KickedFromServerEvent
 import com.velocitypowered.api.event.player.ServerPostConnectEvent
 import com.velocitypowered.api.event.player.ServerPreConnectEvent
 import kotlin.jvm.optionals.getOrNull
@@ -47,15 +46,5 @@ class ConnectionListener(
     @Subscribe
     fun onServerPostConnect(event: ServerPostConnectEvent) {
         essentials.tabListService.update(VelocityProxyPlayer(event.player))
-    }
-
-    @Subscribe(priority = Short.MIN_VALUE)
-    fun onKickedFromServer(event: KickedFromServerEvent) {
-        if (!essentials.config.get().showKickReason) return
-        if (event.result !is KickedFromServerEvent.DisconnectPlayer) return
-
-        event.serverKickReason.ifPresent { reason ->
-            event.result = KickedFromServerEvent.DisconnectPlayer.create(reason)
-        }
     }
 }

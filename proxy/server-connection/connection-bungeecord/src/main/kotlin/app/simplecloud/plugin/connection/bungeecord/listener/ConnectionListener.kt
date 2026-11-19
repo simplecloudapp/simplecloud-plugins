@@ -3,7 +3,9 @@ package app.simplecloud.plugin.connection.bungeecord.listener
 import app.simplecloud.plugin.connection.bungeecord.BungeeCordConnectionPlugin
 import app.simplecloud.plugin.connection.bungeecord.platform.BungeeCordConnectionPlayer
 import app.simplecloud.plugin.core.bungeecord.text.BungeeComponentConverter
+import net.md_5.bungee.api.event.PlayerDisconnectEvent
 import net.md_5.bungee.api.event.ServerConnectEvent
+import net.md_5.bungee.api.event.ServerConnectedEvent
 import net.md_5.bungee.api.event.ServerKickEvent
 import net.md_5.bungee.api.plugin.Listener
 import net.md_5.bungee.event.EventHandler
@@ -29,16 +31,34 @@ class ConnectionListener(
         val messageConfig = plugin.connectionPlugin.messageConfig.get()
 
         if (!config.fallback.enabled) return
-        if (event.state == ServerKickEvent.State.CONNECTING && event.player.server != null) return
 
-        val targetServer = plugin.connectionPlugin.findFallbackTarget(BungeeCordConnectionPlayer(event.player), event.kickedFrom.name)
+        val player = event.player
+        val refusedWhileConnecting = event.state == ServerKickEvent.State.CONNECTING
+        val fallingBack = plugin.connectionPlugin.hasKicks(player.uniqueId)
+        if (refusedWhileConnecting && player.server != null && !fallingBack) return
+
+        val targetServer = plugin.connectionPlugin.recordKickAndFindFallbackTarget(
+            BungeeCordConnectionPlayer(player),
+            event.kickedFrom.name,
+        )
         if (targetServer != null) {
             event.cancelServer = targetServer.serverInfo
             event.isCancelled = true
             return
         }
 
+        if (refusedWhileConnecting) return
         event.reason = BungeeComponentConverter.toBungee(messageConfig.msg(messageConfig.kick.noFallbackServers))
+    }
+
+    @EventHandler
+    fun onServerConnected(event: ServerConnectedEvent) {
+        plugin.connectionPlugin.clearKicks(event.player.uniqueId)
+    }
+
+    @EventHandler
+    fun onPlayerDisconnect(event: PlayerDisconnectEvent) {
+        plugin.connectionPlugin.clearKicks(event.player.uniqueId)
     }
 
     private fun handleJoin(event: ServerConnectEvent) {
@@ -74,7 +94,10 @@ class ConnectionListener(
         if (!config.fallback.enabled) return
 
         val downServerName = event.player.server?.info?.name ?: return
-        val targetServer = plugin.connectionPlugin.findFallbackTarget(BungeeCordConnectionPlayer(event.player), downServerName)
+        val targetServer = plugin.connectionPlugin.recordKickAndFindFallbackTarget(
+            BungeeCordConnectionPlayer(event.player),
+            downServerName,
+        )
         if (targetServer != null) {
             event.target = targetServer.serverInfo
             return

@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+### Removed
+- The `show-kick-reason` option. It replaced the proxy's message with the server's kick message whenever a kicked player was disconnected, so a player whose server stopped saw `Server closed` when no fallback server was found. Releases of the server-connection plugin after 1.2.1 show the server's reason when every server refuses a joining player, for example a ban message. A player kicked from the server they are on with no fallback server left, for example banned while playing on the only lobby, now sees server-connection's `kick.no-fallback-servers` instead of the kick message. You can delete `show-kick-reason` from `config.yml`.
+
 ## 1.3.1
 
 ### Changed

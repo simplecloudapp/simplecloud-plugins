@@ -62,13 +62,16 @@ object ConnectionResolver {
             .sortedByDescending { it.priority }
             .asSequence()
             .mapNotNull { target -> findConnection(target.name, config.connections) }
-            .firstNotNullOfOrNull { connection -> findLeastPopulated(platform, player, connection, null, stoppingServers) }
+            .firstNotNullOfOrNull { connection ->
+                findLeastPopulated(platform, player, connection, emptySet(), stoppingServers)
+            }
     }
 
     fun <S : ConnectionServer> findFallbackTarget(
         platform: ConnectionPlatform<S>,
         player: ConnectionPlayer,
         kickedServerName: String?,
+        excludedServerNames: Set<String>,
         config: ConnectionConfig,
         stoppingServers: Set<String>,
     ): S? {
@@ -79,7 +82,7 @@ object ConnectionResolver {
             .filter { target -> isFromAllowed(target, kickedServerName, config.connections, serverNames) }
             .mapNotNull { target -> findConnection(target.name, config.connections) }
             .firstNotNullOfOrNull { connection ->
-                findLeastPopulated(platform, player, connection, kickedServerName, stoppingServers)
+                findLeastPopulated(platform, player, connection, excludedServerNames, stoppingServers)
             }
     }
 
@@ -131,21 +134,26 @@ object ConnectionResolver {
         val virtualHost = player.getVirtualHost() ?: return null
         val route = findRoute(virtualHost, config.address.routes) ?: return null
         val connection = findConnection(route.targetConnection, config.connections) ?: return null
-        return findLeastPopulated(platform, player, connection, null, stoppingServers)
+        return findLeastPopulated(platform, player, connection, emptySet(), stoppingServers)
     }
 
     private fun <S : ConnectionServer> findLeastPopulated(
         platform: ConnectionPlatform<S>,
         player: ConnectionPlayer,
         connection: ConnectionEntry,
-        excludedServerName: String?,
+        excludedServerNames: Set<String>,
         stoppingServers: Set<String>,
     ): S? {
         if (checkRules(connection, player) != null) return null
         return platform.getServers()
             .filter { server -> connection.serverNameMatcher.matches(server.getName()) }
             .filter { server -> server.getName() !in stoppingServers }
-            .filter { server -> !server.getName().equals(excludedServerName, ignoreCase = true) }
+            .filterNot { server -> isExcluded(server, excludedServerNames) }
             .minByOrNull { server -> server.getPlayerCount() }
+    }
+
+    private fun isExcluded(server: ConnectionServer, excludedServerNames: Set<String>): Boolean {
+        val serverName = server.getName()
+        return excludedServerNames.any { name -> name.equals(serverName, ignoreCase = true) }
     }
 }
