@@ -51,6 +51,34 @@ jobs:
             exit 1
           fi
 
+      - name: read changelog
+        id: changelog
+        env:
+          PLUGIN: ${{ steps.tag.outputs.plugin }}
+          VERSION: ${{ steps.tag.outputs.version }}
+        run: |
+          changelog=""
+          for candidate in proxy/"$PLUGIN"/CHANGELOG.md server/"$PLUGIN"/CHANGELOG.md; do
+            if [ -f "$candidate" ]; then
+              changelog="$candidate"
+            fi
+          done
+          if [ -z "$changelog" ]; then
+            echo "::error::No CHANGELOG.md found for $PLUGIN"
+            exit 1
+          fi
+          notes="$RUNNER_TEMP/release-notes.md"
+          awk -v heading="## $VERSION" '
+            $0 == heading { found = 1; next }
+            found && /^## / { exit }
+            found { print }
+          ' "$changelog" | sed '/./,$!d' > "$notes"
+          if ! grep -q '[^[:space:]]' "$notes"; then
+            echo "::error::No '## $VERSION' section in $changelog"
+            exit 1
+          fi
+          echo "file=$notes" >> "$GITHUB_OUTPUT"
+
       - name: setup java
         uses: actions/setup-java@v6
         with:
@@ -80,6 +108,7 @@ jobs:
           TAG: ${{ github.ref_name }}
           PLUGIN: ${{ steps.tag.outputs.plugin }}
           VERSION: ${{ steps.tag.outputs.version }}
+          NOTES: ${{ steps.changelog.outputs.file }}
         run: |
           shopt -s nullglob
           jars=(build/plugins/"$PLUGIN"/*.jar)
@@ -89,7 +118,7 @@ jobs:
           fi
           # releases created in the github ui already exist, plain tag pushes need one
           if ! gh release view "$TAG" > /dev/null 2>&1; then
-            gh release create "$TAG" --verify-tag --title "$PLUGIN v$VERSION" --generate-notes
+            gh release create "$TAG" --verify-tag --title "$PLUGIN v$VERSION" --notes-file "$NOTES"
           fi
           gh release upload "$TAG" "${jars[@]}" --clobber
 
@@ -98,4 +127,5 @@ jobs:
           DEPOT_TOKEN: ${{ secrets.DEPOT_TOKEN }}
           MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
           PLUGIN: ${{ steps.tag.outputs.plugin }}
-        run: ./gradlew publishModrinth -Pplugin="$PLUGIN"
+          NOTES: ${{ steps.changelog.outputs.file }}
+        run: ./gradlew publishModrinth -Pplugin="$PLUGIN" -PchangelogFile="$NOTES"
