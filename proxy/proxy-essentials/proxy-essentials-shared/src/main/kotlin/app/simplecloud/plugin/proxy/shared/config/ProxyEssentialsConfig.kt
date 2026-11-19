@@ -11,7 +11,6 @@ data class ProxyEssentialsConfig(
     override val version: Int = ConfigVersion.VERSION,
     val initialState: String = "public",
     val initialLayout: String = "public",
-    val showKickReason: Boolean = false,
     val joinstates: List<JoinStateConfig> = listOf(
         JoinStateConfig(
             name = "public",
