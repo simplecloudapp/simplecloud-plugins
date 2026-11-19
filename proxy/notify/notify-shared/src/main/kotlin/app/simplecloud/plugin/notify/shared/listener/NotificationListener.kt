@@ -14,6 +14,7 @@ import app.simplecloud.plugin.notify.shared.notification.NotificationType
 import app.simplecloud.plugin.notify.shared.platform.NotifyPlatform
 import app.simplecloud.plugin.notify.shared.utilities.MessageFormatter
 import kotlinx.coroutines.*
+import kotlinx.coroutines.future.await
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import java.util.concurrent.ConcurrentHashMap
 
@@ -88,10 +89,15 @@ class NotificationListener(
     private fun subscribeGroupEvents() {
         subscriptions.add(
             api.event().group().onCreated { event ->
-                val name = event.group?.name ?: event.serverGroupId
+                val groupId = event.serverGroupId
 
                 scope.launch {
                     val message = messages.get().notifications.group?.created ?: return@launch
+                    val name = try {
+                        api.group().getGroupById(groupId).await().name
+                    } catch (_: Exception) {
+                        groupId
+                    }
 
                     broadcast(
                         Notification(

@@ -1,6 +1,7 @@
 package app.simplecloud.plugin.command.shared
 
 import app.simplecloud.api.CloudApi
+import app.simplecloud.api.CloudApiOptions
 import app.simplecloud.plugin.command.shared.config.MessageConfig
 import app.simplecloud.plugin.core.shared.config.ConfigWatcher
 import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
@@ -15,7 +16,7 @@ class CommandPlugin(private val dir: File) {
     val config = ConfigurationFactory.create(dir, "messages.yml", MessageConfig())
     val messageConfiguration: MessageConfig get() = config.get()
 
-    val api: CloudApi = CloudApi.create()
+    val api: CloudApi = CloudApi.create(CloudApiOptions.builder().component("cloud-command").build())
 
     // coroutine scope used for commands
     val scope = CoroutineScope(

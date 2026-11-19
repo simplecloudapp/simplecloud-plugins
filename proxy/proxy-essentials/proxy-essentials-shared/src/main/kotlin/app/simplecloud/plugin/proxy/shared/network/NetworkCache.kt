@@ -1,6 +1,7 @@
 package app.simplecloud.plugin.proxy.shared.network
 
 import app.simplecloud.api.CloudApi
+import app.simplecloud.api.cache.EntityType
 import app.simplecloud.api.event.Subscription
 import app.simplecloud.api.group.Group
 import app.simplecloud.api.persistentserver.PersistentServer
@@ -100,18 +101,8 @@ class NetworkCache(
     }
 
     private fun subscribeGroups() {
-        subscriptions.add(
-            api.event().group().onCreated { event ->
-                val group = event.group ?: return@onCreated
-                groups.updateAndGet { current -> current + (group.serverGroupId to group) }
-            },
-        )
-        subscriptions.add(
-            api.event().group().onUpdated { event ->
-                val group = event.group ?: return@onUpdated
-                groups.updateAndGet { current -> current + (group.serverGroupId to group) }
-            },
-        )
+        subscriptions.add(api.event().group().onCreated { event -> refreshGroup(event.serverGroupId) })
+        subscriptions.add(api.event().group().onUpdated { event -> refreshGroup(event.serverGroupId) })
         subscriptions.add(
             api.event().group().onDeleted { event ->
                 groups.updateAndGet { current -> current - event.serverGroupId }
@@ -127,6 +118,18 @@ class NetworkCache(
                 persistentServers.updateAndGet { current -> current - event.persistentServerId }
             },
         )
+    }
+
+    private fun refreshGroup(groupId: String) {
+        scope.launch {
+            try {
+                api.cache().invalidateByType(EntityType.GROUP)
+                val group = api.group().getGroupById(groupId).await()
+                groups.updateAndGet { current -> current + (groupId to group) }
+            } catch (e: Exception) {
+                logger.error("Could not load the group '$groupId'", e)
+            }
+        }
     }
 
     private fun refreshPersistentServer(persistentServerId: String) {

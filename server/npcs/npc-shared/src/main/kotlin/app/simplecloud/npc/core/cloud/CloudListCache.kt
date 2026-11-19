@@ -1,6 +1,7 @@
 package app.simplecloud.npc.core.cloud
 
 import app.simplecloud.api.CloudApi
+import app.simplecloud.api.CloudApiOptions
 import app.simplecloud.api.group.Group
 import app.simplecloud.api.persistentserver.PersistentServer
 import app.simplecloud.api.server.Server
@@ -10,7 +11,7 @@ import kotlinx.coroutines.future.await
 
 object CloudListCache : CloudLists, CloudSnapshots {
 
-    val cloudApi: CloudApi by lazy { CloudApi.create() }
+    val cloudApi: CloudApi by lazy { CloudApi.create(CloudApiOptions.builder().component("npcs").build()) }
 
     private val store: CloudListStore by lazy {
         CloudListStore(
