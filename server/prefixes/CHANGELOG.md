@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.2
+
+No changes for server owners. Same plugin as 1.2.1, rebuilt with a fix to the release build.
+
 ## 1.2.1
 
 ### Added
