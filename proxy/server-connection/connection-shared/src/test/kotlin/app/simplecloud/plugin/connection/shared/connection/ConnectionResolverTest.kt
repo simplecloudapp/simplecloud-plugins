@@ -336,5 +336,4 @@ class ConnectionResolverTest {
 
     private fun plainMessages(player: TestConnectionPlayer): List<String> =
         player.messages.map { message -> PlainTextComponentSerializer.plainText().serialize(message) }
-
 }

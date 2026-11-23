@@ -233,7 +233,7 @@ class ServerRegisterer(
                 return null
             }
 
-            val properties = server.properties ?: emptyMap()
+            val properties = server.properties.orEmpty()
             val proxyName = RegisteredServerResolver.resolve(
                 serverId = server.serverId,
                 numericalId = server.numericalId,
