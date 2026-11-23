@@ -6,6 +6,7 @@ object NotifyPermissions {
     const val SERVER_AVAILABLE = "notify.state.server.available"
     const val SERVER_STOPPING = "notify.state.server.stopping"
     const val SERVER_STOPPED = "notify.state.server.stopped"
+    const val SERVER_CRASHED = "notify.state.server.crashed"
 
     const val GROUP_CREATED = "notify.state.group.created"
     const val GROUP_DELETED = "notify.state.group.deleted"

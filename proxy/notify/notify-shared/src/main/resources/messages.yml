@@ -141,13 +141,19 @@ notifications:
     server.available: 'Server available'
     server.stopping: 'Server stopping'
     server.stopped: 'Server stopped'
+    server.crashed: 'Server crashed'
     group.created: 'Group created'
     group.deleted: 'Group deleted'
     persistent-server.created: 'Persistent server created'
     persistent-server.deleted: 'Persistent server deleted'
 
+  # Names used for the <kind> placeholder in server notifications.
+  kind:
+    server: 'Server'
+    persistent-server: 'Persistent server'
+
   # Hover texts that can be inserted into notifications with
-  # <hover:show_text:'<notifications.hover.server>'>, ...group> or ...persistent-server>.
+  # <hover:show_text:'<notifications.hover.server>'>, ...stopped>, ...group> or ...persistent-server>.
   # Each hover supports the same placeholders as the notification it is used in.
   hover:
     server: |-
@@ -156,6 +162,13 @@ notifications:
       <muted>State: <highlight><state>
       <muted>Address: <highlight><ip>:<port>
       <muted>Players: <highlight><players>/<max>
+      <muted>Time: <highlight><time>
+    stopped: |-
+      <brand><server>
+
+      <muted>State: <highlight><state>
+      <muted>Reason: <highlight><reason>
+      <muted>Exit code: <highlight><exit_code>
       <muted>Time: <highlight><time>
     group: |-
       <brand><group>
@@ -166,9 +179,10 @@ notifications:
 
       <muted>Time: <highlight><time>
 
-  # Sent when a server changes its state.
+  # Sent when a server changes its state, stops or crashes.
   # Placeholders:
-  #   <server>      - Name of the server, e.g. lobby-1.
+  #   <kind>        - "Server" or "Persistent server", see notifications.kind.
+  #   <server>      - Name of the server, e.g. lobby-1 or survival.
   #   <id>          - Numerical id of the server, prefixed with a space.
   #   <group>       - Name of the server's group.
   #   <uuid>        - Unique id of the server.
@@ -179,11 +193,15 @@ notifications:
   #   <time>        - Time of the notification.
   #   <create_date> - Time the server was created.
   #   <updated>     - Time the server was last updated.
+  # Only in stopped and crashed:
+  #   <reason>      - Why the server stopped, N/A if unknown.
+  #   <exit_code>   - Exit code of the server process, N/A if unknown.
   server:
-    starting: '<prefix> <info>Server <hover:show_text:''<notifications.hover.server>''><server></hover> is starting.'
-    available: '<prefix> <success>Server <hover:show_text:''<notifications.hover.server>''><server></hover> is now available.'
-    stopping: '<prefix> <warning>Server <hover:show_text:''<notifications.hover.server>''><server></hover> is stopping.'
-    stopped: '<prefix> <muted>Server <hover:show_text:''<notifications.hover.server>''><server></hover> has stopped.'
+    starting: '<prefix> <info><kind> <hover:show_text:''<notifications.hover.server>''><server></hover> is starting.'
+    available: '<prefix> <success><kind> <hover:show_text:''<notifications.hover.server>''><server></hover> is now available.'
+    stopping: '<prefix> <warning><kind> <hover:show_text:''<notifications.hover.server>''><server></hover> is stopping.'
+    stopped: '<prefix> <muted><kind> <hover:show_text:''<notifications.hover.stopped>''><server></hover> has stopped.'
+    crashed: '<prefix> <error><kind> <hover:show_text:''<notifications.hover.stopped>''><server></hover> has crashed.'
 
   # Sent when a server group is created or deleted.
   # Placeholders: <group>, <time>

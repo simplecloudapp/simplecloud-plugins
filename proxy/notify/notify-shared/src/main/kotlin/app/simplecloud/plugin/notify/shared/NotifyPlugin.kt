@@ -8,7 +8,6 @@ import app.simplecloud.plugin.notify.shared.config.MessageConfig
 import app.simplecloud.plugin.notify.shared.listener.NotificationListener
 import app.simplecloud.plugin.notify.shared.notification.NotificationCache
 import app.simplecloud.plugin.notify.shared.platform.NotifyPlatform
-import app.simplecloud.plugin.notify.shared.utilities.MessageFormatter
 import kotlinx.coroutines.*
 import org.slf4j.LoggerFactory
 import java.util.UUID
@@ -21,9 +20,8 @@ class NotifyPlugin(private val platform: NotifyPlatform) {
     val api: CloudApi = CloudApi.create(CloudApiOptions.builder().component("notify").build())
     val messages = ConfigurationFactory.create(platform.getDataDirectory(), "messages.yml", MessageConfig())
 
-    val formatter = MessageFormatter(messages)
     val cache = NotificationCache(api.player())
-    private val listener = NotificationListener(api, messages, platform, formatter, cache)
+    private val listener = NotificationListener(api, messages, platform, cache)
 
     fun startup() {
         listener.start()

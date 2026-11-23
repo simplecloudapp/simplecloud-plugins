@@ -13,6 +13,7 @@ enum class NotificationType(
     SERVER_AVAILABLE("server.available", NotifyPermissions.SERVER_AVAILABLE),
     SERVER_STOPPING("server.stopping", NotifyPermissions.SERVER_STOPPING),
     SERVER_STOPPED("server.stopped", NotifyPermissions.SERVER_STOPPED),
+    SERVER_CRASHED("server.crashed", NotifyPermissions.SERVER_CRASHED),
     GROUP_CREATED("group.created", NotifyPermissions.GROUP_CREATED),
     GROUP_DELETED("group.deleted", NotifyPermissions.GROUP_DELETED),
     PERSISTENT_SERVER_CREATED("persistent-server.created", NotifyPermissions.PERSISTENT_SERVER_CREATED),

@@ -27,7 +27,6 @@ class NotifyCommand<C : CloudSender>(
 
     private val logger = LoggerFactory.getLogger(NotifyCommand::class.java)
     private val messages get() = notify.messages.get()
-    private val formatter = notify.formatter
     private val cache = notify.cache
 
     private val commands = linkedMapOf(
@@ -62,7 +61,7 @@ class NotifyCommand<C : CloudSender>(
                 .handler { context ->
                     val reload = messages.command.reload.config
                     val message = if (notify.reload()) reload.success else reload.failed
-                    context.sender().sendMessage(formatter.message(message))
+                    context.sender().sendMessage(messages.msg(message))
                 },
         )
     }
@@ -119,11 +118,11 @@ class NotifyCommand<C : CloudSender>(
         val usable = commands.filterValues { permission -> sender.hasPermission(permission) }.keys
 
         if (usable.isEmpty()) {
-            sender.sendMessage(formatter.message(messages.command.help.empty))
+            sender.sendMessage(messages.msg(messages.command.help.empty))
             return
         }
 
-        sender.sendMessage(formatter.message(messages.command.help.title))
+        sender.sendMessage(messages.msg(messages.command.help.title))
         HelpPage.entries(messages, messages.command.help, "/scnotify", usable.toList()).forEach(sender::sendMessage)
     }
 
@@ -131,7 +130,7 @@ class NotifyCommand<C : CloudSender>(
         val id = sender.getUniqueId()
 
         if (id == null) {
-            sender.sendMessage(formatter.message(messages.command.error.onlyPlayers))
+            sender.sendMessage(messages.msg(messages.command.error.onlyPlayers))
             return
         }
 
@@ -140,11 +139,11 @@ class NotifyCommand<C : CloudSender>(
         val listMessages = messages.command.list
 
         if (types.isEmpty()) {
-            sender.sendMessage(formatter.message(listMessages.empty))
+            sender.sendMessage(messages.msg(listMessages.empty))
             return
         }
 
-        sender.sendMessage(formatter.message(listMessages.title))
+        sender.sendMessage(messages.msg(listMessages.title))
         types.forEach { type ->
             sender.sendMessage(listEntry(type, type !in disabled))
         }
@@ -154,7 +153,7 @@ class NotifyCommand<C : CloudSender>(
         val listMessages = messages.command.list
         val command = "/scnotify ${if (enabled) "disable" else "enable"} ${type.key}"
 
-        return formatter.message(
+        return messages.msg(
             listMessages.entry,
             typePlaceholder(type),
             Placeholder.parsed("state", if (enabled) listMessages.enabled else listMessages.disabled),
@@ -166,7 +165,7 @@ class NotifyCommand<C : CloudSender>(
         val id = sender.getUniqueId()
 
         if (id == null) {
-            sender.sendMessage(formatter.message(messages.command.error.onlyPlayers))
+            sender.sendMessage(messages.msg(messages.command.error.onlyPlayers))
             return
         }
 
@@ -201,7 +200,7 @@ class NotifyCommand<C : CloudSender>(
             notify.api.player().find(playerName).await().orElse(null)
         } catch (e: Exception) {
             logger.error("Failed to load player '$playerName'", e)
-            sender.sendMessage(formatter.message(messages.command.error.storageUnavailable))
+            sender.sendMessage(messages.msg(messages.command.error.storageUnavailable))
             return
         }
 
@@ -241,7 +240,7 @@ class NotifyCommand<C : CloudSender>(
             return cache.fetchDisabledTypes(id)
         } catch (e: Exception) {
             logger.error("Failed to load the notify settings of '$id'", e)
-            sender.sendMessage(formatter.message(messages.command.error.storageUnavailable))
+            sender.sendMessage(messages.msg(messages.command.error.storageUnavailable))
             return null
         }
     }
@@ -252,7 +251,7 @@ class NotifyCommand<C : CloudSender>(
             return true
         } catch (e: Exception) {
             logger.error("Failed to update the notify settings of '$id'", e)
-            sender.sendMessage(formatter.message(messages.command.error.storageUnavailable))
+            sender.sendMessage(messages.msg(messages.command.error.storageUnavailable))
             return false
         }
     }
@@ -260,7 +259,7 @@ class NotifyCommand<C : CloudSender>(
     private fun ownMessage(type: NotificationType?, value: Boolean, already: Boolean): Component {
         if (type == null) {
             val notifyMessages = messages.command.notify
-            return formatter.message(
+            return messages.msg(
                 when {
                     already && value -> notifyMessages.alreadyEnabled
                     already -> notifyMessages.alreadyDisabled
@@ -271,7 +270,7 @@ class NotifyCommand<C : CloudSender>(
         }
 
         val typeMessages = messages.command.notify.type
-        return formatter.message(
+        return messages.msg(
             when {
                 already && value -> typeMessages.alreadyEnabled
                 already -> typeMessages.alreadyDisabled
@@ -311,19 +310,19 @@ class NotifyCommand<C : CloudSender>(
 
     private fun typePlaceholder(type: NotificationType): TagResolver = Placeholder.parsed("type", messages.notifications.types[type.key] ?: type.key)
 
-    private fun unknownType(input: String) = formatter.message(
+    private fun unknownType(input: String) = messages.msg(
         messages.command.error.unknownType,
         Placeholder.unparsed("type", input),
     )
 
-    private fun playerMessage(message: String, target: CloudPlayer, vararg tagResolver: TagResolver) = formatter.message(
+    private fun playerMessage(message: String, target: CloudPlayer, vararg tagResolver: TagResolver) = messages.msg(
         message,
         Placeholder.parsed("playername", target.name),
         Placeholder.unparsed("displayname", target.displayName ?: target.name),
         *tagResolver,
     )
 
-    private fun playerError(message: String, playerName: String) = formatter.message(
+    private fun playerError(message: String, playerName: String) = messages.msg(
         message,
         Placeholder.unparsed("playername", playerName),
     )

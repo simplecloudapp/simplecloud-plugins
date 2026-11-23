@@ -2,6 +2,7 @@ package app.simplecloud.plugin.notify.shared.listener
 
 import app.simplecloud.api.CloudApi
 import app.simplecloud.api.event.Subscription
+import app.simplecloud.api.event.server.ServerStoppedEvent
 import app.simplecloud.api.server.ServerState
 import app.simplecloud.plugin.core.shared.command.CloudSender
 import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
@@ -22,7 +23,6 @@ class NotificationListener(
     private val api: CloudApi,
     private val messages: ConfigurationFactory<MessageConfig>,
     private val platform: NotifyPlatform,
-    private val formatter: MessageFormatter,
     private val cache: NotificationCache,
 ) {
 
@@ -46,44 +46,53 @@ class NotificationListener(
     private fun subscribeServerEvents() {
         subscriptions.add(
             api.event().server().onStateChanged { event ->
-                if (event.oldState == event.newState) {
-                    return@onStateChanged
-                }
+                if (event.oldState == event.newState) return@onStateChanged
 
                 val server = event.server
                 val state = event.newState
 
                 scope.launch {
                     val type = NotificationType.fromServerState(state) ?: return@launch
-                    val message = messages.get().notifications.server?.getByState(state) ?: return@launch
+                    val config = messages.get()
+                    val message = config.notifications.server?.getByState(state) ?: return@launch
                     if (lastSentState.put(server.serverId, state) == state) return@launch
 
-                    broadcast(
-                        Notification(
-                            formatter.server(server, message, Placeholder.unparsed("state", StringPrettifier.prettify(state.name, PrettifyCase.SENTENCE))),
-                            type,
-                        ),
+                    val stateName = StringPrettifier.prettify(state.name, PrettifyCase.SENTENCE)
+                    val component = MessageFormatter.server(
+                        config,
+                        server,
+                        message,
+                        Placeholder.unparsed("state", stateName),
                     )
+                    broadcast(Notification(component, type))
                 }
             },
         )
 
         subscriptions.add(
             api.event().server().onStopped { event ->
-                val server = event.server
-
                 scope.launch {
-                    lastSentState.remove(server.serverId)
-                    val message = messages.get().notifications.server?.stopped ?: return@launch
-                    broadcast(
-                        Notification(
-                            formatter.server(server, message, Placeholder.unparsed("state", "Stopped")),
-                            NotificationType.SERVER_STOPPED,
-                        ),
-                    )
+                    lastSentState.remove(event.serverId)
+                    onStopped(event)
                 }
             },
         )
+
+        subscriptions.add(
+            api.event().server().onDeleted { event ->
+                scope.launch {
+                    lastSentState.remove(event.serverId)
+                }
+            },
+        )
+    }
+
+    private fun onStopped(event: ServerStoppedEvent) {
+        val config = messages.get()
+        val notifications = config.notifications.server ?: return
+        val type = if (event.isCrashed) NotificationType.SERVER_CRASHED else NotificationType.SERVER_STOPPED
+        val message = (if (event.isCrashed) notifications.crashed else notifications.stopped) ?: return
+        broadcast(Notification(MessageFormatter.stoppedServer(config, event, message), type))
     }
 
     private fun subscribeGroupEvents() {
@@ -92,35 +101,28 @@ class NotificationListener(
                 val groupId = event.serverGroupId
 
                 scope.launch {
-                    val message = messages.get().notifications.group?.created ?: return@launch
+                    val config = messages.get()
+                    val message = config.notifications.group?.created ?: return@launch
                     val name = try {
                         api.group().getGroupById(groupId).await().name
                     } catch (_: Exception) {
                         groupId
                     }
-
-                    broadcast(
-                        Notification(
-                            formatter.group(message, name),
-                            NotificationType.GROUP_CREATED,
-                        ),
-                    )
+                    val component = MessageFormatter.group(config, message, name)
+                    broadcast(Notification(component, NotificationType.GROUP_CREATED))
                 }
             },
         )
 
         subscriptions.add(
             api.event().group().onDeleted { event ->
-                val name = event.name
+                val name = event.name ?: event.serverGroupId
 
                 scope.launch {
-                    val message = messages.get().notifications.group?.deleted ?: return@launch
-                    broadcast(
-                        Notification(
-                            formatter.group(message, name),
-                            NotificationType.GROUP_DELETED,
-                        ),
-                    )
+                    val config = messages.get()
+                    val message = config.notifications.group?.deleted ?: return@launch
+                    val component = MessageFormatter.group(config, message, name)
+                    broadcast(Notification(component, NotificationType.GROUP_DELETED))
                 }
             },
         )
@@ -132,13 +134,10 @@ class NotificationListener(
                 val name = event.name ?: event.persistentServerId
 
                 scope.launch {
-                    val message = messages.get().notifications.persistentServer?.created ?: return@launch
-                    broadcast(
-                        Notification(
-                            formatter.persistentServer(message, name),
-                            NotificationType.PERSISTENT_SERVER_CREATED,
-                        ),
-                    )
+                    val config = messages.get()
+                    val message = config.notifications.persistentServer?.created ?: return@launch
+                    val component = MessageFormatter.persistentServer(config, message, name)
+                    broadcast(Notification(component, NotificationType.PERSISTENT_SERVER_CREATED))
                 }
             },
         )
@@ -148,13 +147,10 @@ class NotificationListener(
                 val name = event.name ?: event.persistentServerId
 
                 scope.launch {
-                    val message = messages.get().notifications.persistentServer?.deleted ?: return@launch
-                    broadcast(
-                        Notification(
-                            formatter.persistentServer(message, name),
-                            NotificationType.PERSISTENT_SERVER_DELETED,
-                        ),
-                    )
+                    val config = messages.get()
+                    val message = config.notifications.persistentServer?.deleted ?: return@launch
+                    val component = MessageFormatter.persistentServer(config, message, name)
+                    broadcast(Notification(component, NotificationType.PERSISTENT_SERVER_DELETED))
                 }
             },
         )
