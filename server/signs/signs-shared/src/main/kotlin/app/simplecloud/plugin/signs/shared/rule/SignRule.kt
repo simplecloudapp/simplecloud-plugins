@@ -19,8 +19,8 @@ enum class SignRule {
 
             OFFLINE -> false
 
-            MAINTENANCE -> server.properties["maintenance"]?.toString().toBoolean() ||
-                server.properties["joinstate"]?.toString() == "maintenance"
+            MAINTENANCE -> server.properties?.get("maintenance")?.toString().toBoolean() ||
+                server.properties?.get("joinstate")?.toString() == "maintenance"
 
             FULL -> server.playerCount == server.maxPlayers
 

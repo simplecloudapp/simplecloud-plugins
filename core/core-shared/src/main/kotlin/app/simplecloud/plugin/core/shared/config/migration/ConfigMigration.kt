@@ -1,8 +1,10 @@
 package app.simplecloud.plugin.core.shared.config.migration
 
-import org.spongepowered.configurate.CommentedConfigurationNode
+import org.spongepowered.configurate.NodePath
+import org.spongepowered.configurate.transformation.TransformAction
 
-/** A single migration step that modifies a yaml node in place. */
-fun interface ConfigMigration {
-    fun migrate(node: CommentedConfigurationNode)
-}
+data class ConfigMigration(
+    val version: Int,
+    val path: NodePath,
+    val action: TransformAction,
+)

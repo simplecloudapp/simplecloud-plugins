@@ -1,20 +1,20 @@
 package app.simplecloud.plugin.signs.shared.config
 
 import app.simplecloud.plugin.core.shared.command.HelpMessages
-import app.simplecloud.plugin.core.shared.config.AbstractCommandMessageConfig
-import app.simplecloud.plugin.core.shared.config.AbstractCommandMessages
-import app.simplecloud.plugin.core.shared.config.CommandExceptionMessages
-import app.simplecloud.plugin.core.shared.config.MessagePalette
 import app.simplecloud.plugin.core.shared.config.VersionedConfig
+import app.simplecloud.plugin.core.shared.config.command.AbstractCommandMessageConfig
+import app.simplecloud.plugin.core.shared.config.command.AbstractCommandMessages
+import app.simplecloud.plugin.core.shared.config.command.CommandExceptionMessages
+import app.simplecloud.plugin.core.shared.config.message.MessagePalette
 import org.spongepowered.configurate.objectmapping.ConfigSerializable
 
 @ConfigSerializable
 data class MessageConfig(
     override val version: Int = VERSION,
-    override val palette: Map<String, String> = MessagePalette.defaults,
-    override val variables: Map<String, String> = mapOf("prefix" to MessagePalette.PREFIX),
+    val palette: Map<String, String> = MessagePalette.defaults,
+    val variables: Map<String, String> = mapOf("prefix" to MessagePalette.PREFIX),
     override val command: CommandMessages = CommandMessages(),
-) : VersionedConfig, AbstractCommandMessageConfig() {
+) : VersionedConfig, AbstractCommandMessageConfig(palette, variables) {
 
     companion object {
         const val VERSION = 1

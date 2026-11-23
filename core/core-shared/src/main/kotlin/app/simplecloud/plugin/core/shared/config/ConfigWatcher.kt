@@ -10,45 +10,44 @@ import org.slf4j.LoggerFactory
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.attribute.FileTime
-import kotlin.time.Duration
+import java.util.concurrent.atomic.AtomicReference
 import kotlin.time.Duration.Companion.seconds
 
-private typealias FileStates = Map<Path, Pair<FileTime, Long>>
-
-// polls instead of using a WatchService, because each WatchService uses up an inotify instance
-// and many servers on one host would run out of them
 class ConfigWatcher(
     private val directory: Path,
-    private val interval: Duration = DEFAULT_INTERVAL,
     private val onChange: () -> Unit,
 ) {
 
     private val logger = LoggerFactory.getLogger(ConfigWatcher::class.java)
+    private val loaded = AtomicReference<Map<Path, FileState>>(emptyMap())
+    private val lastCheck = AtomicReference<Map<Path, FileState>>(emptyMap())
 
     fun start(scope: CoroutineScope): Job {
         val initial = snapshot().orEmpty()
+        loaded.set(initial)
+        lastCheck.set(initial)
+
         return scope.launch(Dispatchers.IO) {
-            var loaded = initial
-            var lastCheck = initial
-
             while (isActive) {
-                delay(interval)
-                val current = snapshot() ?: continue
-
-                val stillChanging = current != lastCheck
-                lastCheck = current
-                if (stillChanging || current == loaded) continue
-
-                reload()
-                // the reload can write files itself, e.g. a migrated config, which must not trigger another reload
-                loaded = snapshot() ?: current
-                lastCheck = loaded
+                delay(2.seconds)
+                poll()
             }
         }
     }
 
-    private fun reload() {
-        logger.info("Reloading the configs because a file in {} changed", directory)
+    private fun poll() {
+        val current = snapshot() ?: return
+        val previous = lastCheck.getAndSet(current)
+        if (current != previous || current == loaded.get()) return
+
+        reload(findChangedFiles(loaded.get(), current))
+        val reloaded = snapshot() ?: current
+        loaded.set(reloaded)
+        lastCheck.set(reloaded)
+    }
+
+    private fun reload(changedFiles: List<Path>) {
+        logger.info("Reloading the configs because {} changed", changedFiles.joinToString { file -> file.toString() })
         try {
             onChange()
         } catch (e: Exception) {
@@ -56,15 +55,21 @@ class ConfigWatcher(
         }
     }
 
-    private fun snapshot(): FileStates? {
+    private fun findChangedFiles(previous: Map<Path, FileState>, current: Map<Path, FileState>): List<Path> =
+        (previous.keys + current.keys)
+            .filter { file -> previous[file] != current[file] }
+            .map { file -> directory.relativize(file) }
+            .sorted()
+
+    private fun snapshot(): Map<Path, FileState>? {
         if (Files.notExists(directory)) return emptyMap()
 
         return try {
             Files.walk(directory).use { paths ->
                 paths
-                    .filter { Files.isRegularFile(it) && isYaml(it) }
+                    .filter { path -> Files.isRegularFile(path) && isYaml(path) }
                     .toList()
-                    .associateWith { Files.getLastModifiedTime(it) to Files.size(it) }
+                    .associateWith { path -> FileState(Files.getLastModifiedTime(path), Files.size(path)) }
             }
         } catch (_: Exception) {
             null
@@ -76,7 +81,8 @@ class ConfigWatcher(
         return name.endsWith(".yml") || name.endsWith(".yaml")
     }
 
-    private companion object {
-        val DEFAULT_INTERVAL = 2.seconds
-    }
+    private data class FileState(
+        val modified: FileTime,
+        val size: Long,
+    )
 }

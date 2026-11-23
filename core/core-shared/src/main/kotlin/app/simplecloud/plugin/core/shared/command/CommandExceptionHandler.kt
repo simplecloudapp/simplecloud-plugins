@@ -1,8 +1,8 @@
 package app.simplecloud.plugin.core.shared.command
 
 import app.simplecloud.plugin.core.shared.adventure.tags
-import app.simplecloud.plugin.core.shared.config.AbstractCommandMessageConfig
 import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
+import app.simplecloud.plugin.core.shared.config.command.AbstractCommandMessageConfig
 import app.simplecloud.plugin.core.shared.controller.ApiUtils
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 import org.incendo.cloud.CommandManager

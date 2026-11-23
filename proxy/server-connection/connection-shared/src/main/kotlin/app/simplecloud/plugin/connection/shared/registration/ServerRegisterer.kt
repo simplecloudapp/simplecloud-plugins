@@ -3,6 +3,7 @@ package app.simplecloud.plugin.connection.shared.registration
 import app.simplecloud.api.CloudApi
 import app.simplecloud.api.cache.QueryKey
 import app.simplecloud.api.event.Subscription
+import app.simplecloud.api.event.server.ServerStateChangedEvent
 import app.simplecloud.api.group.GroupServerType
 import app.simplecloud.api.internal.CloudApiImpl
 import app.simplecloud.api.proxy.ProxyServerNames
@@ -11,6 +12,7 @@ import app.simplecloud.api.server.ServerQuery
 import app.simplecloud.api.server.ServerState
 import app.simplecloud.api.shaded.nats.client.Connection
 import app.simplecloud.plugin.connection.shared.config.ConnectionConfig
+import app.simplecloud.plugin.connection.shared.config.RegistrationConfig
 import app.simplecloud.plugin.connection.shared.utilities.RegisteredServerResolver
 import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
 import kotlinx.coroutines.*
@@ -25,80 +27,69 @@ import kotlin.time.Duration.Companion.seconds
 
 class ServerRegisterer(
     private val api: CloudApi,
-    registry: ServerRegistry,
+    private val registrations: ServerRegistrations,
+    private val cache: ServerStatusCache,
     private val config: ConfigurationFactory<ConnectionConfig>,
 ) {
 
     private val logger = LoggerFactory.getLogger(ServerRegisterer::class.java)
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private val subscriptions: MutableList<Subscription> = mutableListOf()
-    private val registrations = ProxyServerRegistrations(registry)
     private val lookupRegistration = AtomicReference<ProxyServerNames.Registration?>()
-    private val stoppingServers = ConcurrentHashMap.newKeySet<String>()
-    private val syncMutex = Mutex()
-    private val syncRequired = AtomicBoolean(true)
-    private val changedDuringSync = ConcurrentHashMap.newKeySet<String>()
+    private val mutex = Mutex()
+    private val outdated = AtomicBoolean(true)
+    private val recentEvents = ConcurrentHashMap<String, Long>()
+    private val skippedServerIds = ConcurrentHashMap.newKeySet<String>()
 
     fun start() {
         lookupRegistration.set(ProxyServerNames.register(registrations))
+
         subscriptions.add(
             api.event().server().onStateChanged { event ->
-                val server = event.server ?: return@onStateChanged
-                if (server.serverBase?.type != GroupServerType.SERVER) return@onStateChanged
-                if (event.newState == ServerState.STOPPING || event.newState == ServerState.CLEANUP) {
-                    stoppingServers.add(server.serverId)
-                }
-                if (event.newState == ServerState.AVAILABLE && event.oldState != ServerState.AVAILABLE) {
-                    stoppingServers.remove(server.serverId)
-                    markChanged(server.serverId)
-                    scope.launch {
-                        register(server)
-                    }
-                }
-                if (event.newState == ServerState.STOPPED) {
-                    markChanged(server.serverId)
-                    scope.launch {
-                        unregister(server.serverId)
-                    }
+                recentEvents[event.serverId] = System.currentTimeMillis()
+                try {
+                    onStateChanged(event)
+                } catch (e: IllegalStateException) {
+                    logger.debug("Ignoring state change of server ${event.serverId}: ${e.message}")
                 }
             },
         )
 
         subscriptions.add(
             api.event().server().onUpdated { event ->
-                val previousServer = registrations.find(event.serverId) ?: return@onUpdated
-                val server = event.server ?: return@onUpdated
-                scope.launch {
-                    val registeredServer = convertToRegisteredServer(server) ?: return@launch
-                    if (registeredServer.proxyName != previousServer.proxyName) {
-                        markChanged(registeredServer.serverId)
-                        register(registeredServer)
+                if (registrations.find(event.serverId) == null) return@onUpdated
+                recentEvents[event.serverId] = System.currentTimeMillis()
+                try {
+                    val server = event.server
+                    scope.launch {
+                        mutex.withLock { update(server, config.get().registration) }
                     }
+                } catch (e: IllegalStateException) {
+                    logger.debug("Ignoring update of server ${event.serverId}: ${e.message}")
                 }
             },
         )
 
         subscriptions.add(
             api.event().server().onStopped { event ->
-                val server = event.server ?: return@onStopped
-                markChanged(server.serverId)
+                recentEvents[event.serverId] = System.currentTimeMillis()
                 scope.launch {
-                    unregister(server.serverId)
+                    mutex.withLock { unregister(event.serverId) }
                 }
             },
         )
 
         subscriptions.add(
             api.event().server().onDeleted { event ->
-                markChanged(event.serverId)
+                recentEvents[event.serverId] = System.currentTimeMillis()
                 scope.launch {
-                    unregister(event.serverId)
+                    mutex.withLock { unregister(event.serverId) }
                 }
             },
         )
 
         scope.launch {
-            watchConnection()
+            watchServers()
         }
     }
 
@@ -109,84 +100,107 @@ class ServerRegisterer(
         scope.cancel()
     }
 
-    fun getStoppingServerNames(): Set<String> = registrations.findAll()
-        .filter { server -> server.serverId in stoppingServers }
-        .map { server -> server.proxyName }
-        .toSet()
-
-    fun register(server: Server) {
-        val registeredServer = convertToRegisteredServer(server) ?: return
-        register(registeredServer)
-    }
-
-    suspend fun refresh() {
-        registrations.findAll().forEach { server ->
-            register(server.copy(proxyName = resolveProxyName(server)))
+    private fun onStateChanged(event: ServerStateChangedEvent) {
+        if (event.newState == ServerState.STOPPING || event.newState == ServerState.CLEANUP) {
+            scope.launch {
+                mutex.withLock { cache.markStopping(event.serverId) }
+            }
         }
-        sync()
+        val becameAvailable = event.newState == ServerState.AVAILABLE && event.oldState != ServerState.AVAILABLE
+        if (!becameAvailable) return
+
+        val server = event.server
+        scope.launch {
+            mutex.withLock { register(server, config.get().registration) }
+        }
     }
 
-    private suspend fun watchConnection() {
+    private suspend fun watchServers() {
         while (currentCoroutineContext().isActive) {
-            if (!isConnected()) {
-                if (!syncRequired.getAndSet(true)) {
+            if (isConnected()) {
+                sync()
+                delay(config.get().registration.syncInterval.coerceAtLeast(1).seconds)
+            } else {
+                if (!outdated.getAndSet(true)) {
                     logger.warn("Lost connection to SimpleCloud, the servers will be loaded again once it is back")
                 }
-            } else if (syncRequired.get() && !sync()) {
-                delay(10.seconds)
-            }
-            delay(1.seconds)
-        }
-    }
-
-    private fun isConnected(): Boolean = (api as CloudApiImpl).natsConnection.status == Connection.Status.CONNECTED
-
-    private suspend fun sync(): Boolean = syncMutex.withLock {
-        syncRequired.set(!isConnected())
-        changedDuringSync.clear()
-        try {
-            api.cache().invalidateAll(QueryKey.of("servers"))
-            val servers = fetchRunningServers()
-            logger.info("Found ${servers.size} servers")
-
-            val serverIds = servers.map { server -> server.serverId }.toSet()
-            synchronized(changedDuringSync) {
-                val staleServerIds = registrations.findAll()
-                    .map { server -> server.serverId }
-                    .filter { serverId -> serverId !in serverIds && serverId !in changedDuringSync }
-                staleServerIds.forEach { serverId -> unregister(serverId) }
-                servers
-                    .filter { server -> server.serverId !in changedDuringSync }
-                    .forEach { server -> register(server) }
-            }
-            true
-        } catch (e: Exception) {
-            currentCoroutineContext().ensureActive()
-            syncRequired.set(true)
-            logger.warn("Could not load the servers from SimpleCloud, retrying: ${e.message}")
-            false
-        }
-    }
-
-    private fun markChanged(serverId: String) {
-        synchronized(changedDuringSync) {
-            if (syncMutex.isLocked) {
-                changedDuringSync.add(serverId)
+                delay(1.seconds)
             }
         }
     }
 
-    private suspend fun fetchRunningServers(): List<Server> = api.server().getAllServers(
+    private fun isConnected(): Boolean {
+        val impl = api as? CloudApiImpl ?: return true
+        return impl.natsConnection.status == Connection.Status.CONNECTED
+    }
+
+    suspend fun sync() {
+        mutex.withLock {
+            try {
+                val startedAt = System.currentTimeMillis()
+                val registration = config.get().registration
+                api.cache().invalidateAll(QueryKey.of("servers"))
+                val servers = fetchServers().filter { server -> isReadable(server) }
+                if (outdated.getAndSet(false)) {
+                    logger.info("Found ${servers.size} servers")
+                }
+
+                reconcile(servers, registration, startedAt - 3.seconds.inWholeMilliseconds)
+            } catch (e: Exception) {
+                currentCoroutineContext().ensureActive()
+                if (!outdated.getAndSet(true)) {
+                    logger.warn("Could not load the servers from SimpleCloud, retrying: ${e.message}")
+                }
+            }
+        }
+    }
+
+    private fun reconcile(servers: List<Server>, registration: RegistrationConfig, changedSince: Long) {
+        recentEvents.values.removeIf { time -> time < changedSince }
+        val changedServerIds = recentEvents.keys.toSet()
+        val serverIds = servers.map { server -> server.serverId }.toSet()
+        skippedServerIds.retainAll(serverIds)
+        registrations.findAll()
+            .filter { server -> server.serverId !in serverIds && server.serverId !in changedServerIds }
+            .forEach { server -> unregister(server.serverId) }
+
+        servers.filter { server -> server.serverId !in changedServerIds }.forEach { server ->
+            if (server.state == ServerState.STOPPING || server.state == ServerState.CLEANUP) {
+                cache.markStopping(server.serverId)
+            } else {
+                register(server, registration)
+            }
+        }
+    }
+
+    private suspend fun fetchServers(): List<Server> = api.server().getAllServers(
         ServerQuery.create()
-            .filterByState(ServerState.AVAILABLE, ServerState.INGAME)
+            .filterByState(ServerState.AVAILABLE, ServerState.INGAME, ServerState.STOPPING, ServerState.CLEANUP)
             .filterByServerGroupType(GroupServerType.SERVER),
     ).await()
 
-    private fun register(server: RegisteredServer) {
-        if (server.blueprintConfigurator == "standalone") return
+    private fun register(server: Server, registration: RegistrationConfig) {
+        val registeredServer = convertToRegisteredServer(server, registration) ?: return
+        val status = ServerStatus(
+            stopping = false,
+            playerCount = server.playerCount ?: 0,
+            maxPlayers = getMaxPlayers(server),
+        )
 
-        val ignoredNames = config.get().registration.ignoreServerGroupsAndPersistentServers
+        cache.update(server.serverId, status)
+        registerServer(registeredServer, registration)
+    }
+
+    private fun registerServer(server: RegisteredServer, registration: RegistrationConfig) {
+        val ignoredNames = registration.ignoreServerGroupsAndPersistentServers
         if (ignoredNames.any { name -> name.equals(server.serverBaseName, ignoreCase = true) }) {
+            unregister(server.serverId)
+            return
+        }
+
+        val additionalNames = registration.additionalServers.map { additionalServer -> additionalServer.name }
+        if (additionalNames.any { name -> name.equals(server.proxyName, ignoreCase = true) }) {
+            warnSkipped(server.serverId, "the additional server ${server.proxyName} uses the same name")
             unregister(server.serverId)
             return
         }
@@ -194,40 +208,70 @@ class ServerRegisterer(
         registrations.register(server)
     }
 
+    private fun update(server: Server, registration: RegistrationConfig) {
+        val previousServer = registrations.find(server.serverId) ?: return
+        val registeredServer = convertToRegisteredServer(server, registration) ?: return
+        if (registeredServer != previousServer) {
+            registerServer(registeredServer, registration)
+        }
+    }
+
     private fun unregister(serverId: String) {
-        stoppingServers.remove(serverId)
+        cache.remove(serverId)
         registrations.unregister(serverId)
     }
 
-    private fun convertToRegisteredServer(server: Server): RegisteredServer? {
-        val serverBaseName = server.serverBase?.name
-        val ip = server.ip
-        val port = server.port
-        if (serverBaseName == null || ip == null || port == null) {
-            logger.warn("Skipping server ${server.serverId} because its server base name, ip or port is missing.")
-            return null
-        }
+    private fun convertToRegisteredServer(server: Server, registration: RegistrationConfig): RegisteredServer? {
+        return try {
+            val serverBase = server.serverBase
+            if (serverBase.type != GroupServerType.SERVER || server.blueprint?.configurator == "standalone") return null
 
-        val registeredServer = RegisteredServer(
-            serverId = server.serverId,
-            numericalId = server.numericalId,
-            ip = ip,
-            port = port,
-            serverBaseName = serverBaseName,
-            proxyName = "",
-            properties = server.properties ?: emptyMap(),
-            blueprintConfigurator = server.blueprint?.configurator,
-            persistent = server.isFromPersistentServer,
-        )
-        return registeredServer.copy(proxyName = resolveProxyName(registeredServer))
+            val ip = server.ip
+            val port = server.port
+            if (ip == null || port == null) {
+                warnSkipped(server.serverId, "ip or port is missing")
+                return null
+            }
+
+            val properties = server.properties ?: emptyMap()
+            val proxyName = RegisteredServerResolver.resolve(
+                serverId = server.serverId,
+                numericalId = server.numericalId,
+                serverBaseName = serverBase.name,
+                properties = properties,
+                persistent = server.isFromPersistentServer,
+                config = registration,
+            )
+            RegisteredServer(
+                serverId = server.serverId,
+                numericalId = server.numericalId,
+                ip = ip,
+                port = port,
+                serverBaseName = serverBase.name,
+                proxyName = proxyName,
+                properties = properties,
+                persistent = server.isFromPersistentServer,
+            )
+        } catch (e: IllegalStateException) {
+            warnSkipped(server.serverId, e.message.orEmpty())
+            null
+        }
     }
 
-    private fun resolveProxyName(server: RegisteredServer): String = RegisteredServerResolver.resolve(
-        serverId = server.serverId,
-        numericalId = server.numericalId,
-        serverBaseName = server.serverBaseName,
-        properties = server.properties,
-        persistent = server.persistent,
-        config = config.get().registration,
-    )
+    private fun isReadable(server: Server): Boolean = try {
+        server.serverId.isNotEmpty() && server.state != ServerState.UNKNOWN_STATE
+    } catch (_: IllegalStateException) {
+        false
+    }
+
+    private fun getMaxPlayers(server: Server): Int = try {
+        server.maxPlayers
+    } catch (_: IllegalStateException) {
+        0
+    }
+
+    private fun warnSkipped(serverId: String, reason: String) {
+        if (!skippedServerIds.add(serverId)) return
+        logger.warn("Skipping server $serverId: $reason")
+    }
 }

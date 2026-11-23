@@ -44,7 +44,6 @@ include(
     ":proxy:server-connection:connection-shared",
     ":proxy:server-connection:connection-bungeecord",
     ":proxy:server-connection:connection-velocity",
-    ":proxy:server-connection:connection-waterdog",
 
     ":proxy:proxy-essentials:proxy-essentials-shared",
     ":proxy:proxy-essentials:proxy-essentials-bungeecord",

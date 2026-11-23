@@ -1,6 +1,6 @@
 package app.simplecloud.plugin.core.shared.command
 
-import app.simplecloud.plugin.core.shared.config.AbstractMessageConfig
+import app.simplecloud.plugin.core.shared.config.message.AbstractMessageConfig
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.event.HoverEvent

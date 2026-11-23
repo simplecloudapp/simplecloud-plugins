@@ -1,56 +1,78 @@
 package app.simplecloud.plugin.core.shared.config
 
-import app.simplecloud.plugin.core.shared.config.migration.ConfigMigrator
+import app.simplecloud.plugin.core.shared.config.migration.ConfigMigrations
 import app.simplecloud.plugin.core.shared.config.serializer.GenericEnumSerializer
+import org.slf4j.LoggerFactory
 import org.spongepowered.configurate.CommentedConfigurationNode
 import org.spongepowered.configurate.kotlin.objectMapperFactory
 import org.spongepowered.configurate.yaml.NodeStyle
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader
 import java.io.File
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
+import java.util.concurrent.ConcurrentHashMap
 
-class YamlFileConfigurator<E>(private val javaClass: Class<E>, private val configMigrator: ConfigMigrator? = null) {
+class YamlFileConfigurator<E>(
+    private val javaClass: Class<E>,
+    private val migrations: ConfigMigrations? = null,
+) {
 
     init {
-        require(configMigrator == null || VersionedConfig::class.java.isAssignableFrom(javaClass)) {
+        require(migrations == null || VersionedConfig::class.java.isAssignableFrom(javaClass)) {
             "Config migrations can only be used with VersionedConfig types"
         }
     }
 
-    private val configurationLoaders = hashMapOf<File, YamlConfigurationLoader>()
+    private val logger = LoggerFactory.getLogger(YamlFileConfigurator::class.java)
+    private val loaders = ConcurrentHashMap<File, YamlConfigurationLoader>()
 
-    private val defaultConfigurationBuilder =
-        YamlConfigurationLoader.builder().nodeStyle(NodeStyle.BLOCK).defaultOptions { options ->
-            options.serializers { builder ->
-                builder.registerAnnotatedObjects(objectMapperFactory())
-                builder.register(Enum::class.java, GenericEnumSerializer)
-                builder.register({ type -> type is Class<*> && type.isEnum }, GenericEnumSerializer)
-            }
+    private val loaderBuilder = YamlConfigurationLoader.builder().nodeStyle(NodeStyle.BLOCK).defaultOptions { options ->
+        options.serializers { builder ->
+            builder.registerAnnotatedObjects(objectMapperFactory())
+            builder.register(Enum::class.java, GenericEnumSerializer)
+            builder.register({ type -> type is Class<*> && type.isEnum }, GenericEnumSerializer)
         }
+    }
 
-    /** Writes the [entity] to the [file]. */
     fun save(file: File, entity: E) {
-        val (node, loader) = buildNode(file)
+        val loader = loaderOf(file)
+        val node = loader.load()
         node.set(javaClass, entity)
         loader.save(node)
     }
 
-    /** Reads the [file], migrates it if needed and saves the migrated result. */
     fun load(file: File): E? {
-        val (node, loader) = buildNode(file)
-        if (configMigrator?.migrate(node) == true) {
-            loader.save(node)
+        val loader = loaderOf(file)
+        val node = loader.load()
+        if (migrations != null && migrations.isOutdated(node)) {
+            migrate(file, loader, node, migrations)
         }
         return node.get(javaClass)
     }
 
-    /** Loads the raw node of the [file] together with its loader. */
-    fun buildNode(file: File): Pair<CommentedConfigurationNode, YamlConfigurationLoader> {
-        val loader = getOrCreateConfigurationLoader(file)
-        return loader.load() to loader
+    private fun migrate(
+        file: File,
+        loader: YamlConfigurationLoader,
+        node: CommentedConfigurationNode,
+        migrations: ConfigMigrations,
+    ) {
+        val previousVersion = migrations.versionOf(node)
+        val label = if (previousVersion < 0) "unversioned" else "v$previousVersion"
+        val backup = File(file.parentFile, "${file.name}.$label.bak")
+        Files.copy(file.toPath(), backup.toPath(), StandardCopyOption.REPLACE_EXISTING)
+
+        migrations.migrate(node)
+        loader.save(node)
+        logger.info(
+            "Migrated {} from version {} to {}, the old file was saved as {}",
+            file.name,
+            previousVersion,
+            migrations.version,
+            backup.name,
+        )
     }
 
-    /** The cached loader of the [file]. */
-    fun getOrCreateConfigurationLoader(file: File): YamlConfigurationLoader = configurationLoaders.getOrPut(file) {
-        defaultConfigurationBuilder.path(file.toPath()).build()
+    private fun loaderOf(file: File): YamlConfigurationLoader = loaders.getOrPut(file) {
+        loaderBuilder.path(file.toPath()).build()
     }
 }

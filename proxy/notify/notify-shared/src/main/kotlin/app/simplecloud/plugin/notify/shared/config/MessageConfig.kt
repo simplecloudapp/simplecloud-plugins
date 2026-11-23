@@ -2,11 +2,11 @@ package app.simplecloud.plugin.notify.shared.config
 
 import app.simplecloud.api.server.ServerState
 import app.simplecloud.plugin.core.shared.command.HelpMessages
-import app.simplecloud.plugin.core.shared.config.AbstractCommandMessageConfig
-import app.simplecloud.plugin.core.shared.config.AbstractCommandMessages
-import app.simplecloud.plugin.core.shared.config.CommandExceptionMessages
-import app.simplecloud.plugin.core.shared.config.MessagePalette
 import app.simplecloud.plugin.core.shared.config.VersionedConfig
+import app.simplecloud.plugin.core.shared.config.command.AbstractCommandMessageConfig
+import app.simplecloud.plugin.core.shared.config.command.AbstractCommandMessages
+import app.simplecloud.plugin.core.shared.config.command.CommandExceptionMessages
+import app.simplecloud.plugin.core.shared.config.message.MessagePalette
 import app.simplecloud.plugin.notify.shared.utilities.config.ConfigVersion
 import org.spongepowered.configurate.objectmapping.ConfigSerializable
 
@@ -14,11 +14,11 @@ import org.spongepowered.configurate.objectmapping.ConfigSerializable
 data class MessageConfig(
     override val version: Int = ConfigVersion.VERSION,
     val format: Format = Format(),
-    override val palette: Map<String, String> = MessagePalette.defaults,
-    override val variables: Map<String, String> = mapOf("prefix" to MessagePalette.PREFIX),
+    val palette: Map<String, String> = MessagePalette.defaults,
+    val variables: Map<String, String> = mapOf("prefix" to MessagePalette.PREFIX),
     override val command: Command = Command(),
     val notifications: Notifications = Notifications(),
-) : VersionedConfig, AbstractCommandMessageConfig()
+) : VersionedConfig, AbstractCommandMessageConfig(palette, variables)
 
 @ConfigSerializable
 data class Format(

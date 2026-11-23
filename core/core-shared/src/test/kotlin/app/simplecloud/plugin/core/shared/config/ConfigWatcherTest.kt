@@ -1,5 +1,6 @@
 package app.simplecloud.plugin.core.shared.config
 
+import app.simplecloud.plugin.core.shared.config.command.CommandExceptionMessages
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
@@ -18,8 +19,6 @@ import kotlin.time.Duration.Companion.seconds
 
 class ConfigWatcherTest {
 
-    private val interval = 50.milliseconds
-
     @Test
     fun `reloads once after a yaml file changed`() = runBlocking {
         val directory = Files.createTempDirectory("config-watcher")
@@ -27,11 +26,11 @@ class ConfigWatcherTest {
         config.writeText("a: 1\n")
         val reloads = AtomicInteger()
         val scope = CoroutineScope(Dispatchers.IO)
-        ConfigWatcher(directory, interval) { reloads.incrementAndGet() }.start(scope)
+        ConfigWatcher(directory) { reloads.incrementAndGet() }.start(scope)
 
         config.writeText("a: 12\n")
         awaitReloads(reloads, 1)
-        delay(interval * 6)
+        delay(6.seconds)
 
         assertEquals(1, reloads.get())
         scope.cancel()
@@ -42,10 +41,10 @@ class ConfigWatcherTest {
         val directory = Files.createTempDirectory("config-watcher")
         val reloads = AtomicInteger()
         val scope = CoroutineScope(Dispatchers.IO)
-        ConfigWatcher(directory, interval) { reloads.incrementAndGet() }.start(scope)
+        ConfigWatcher(directory) { reloads.incrementAndGet() }.start(scope)
 
         directory.resolve("server-icon.png").writeText("png")
-        delay(interval * 6)
+        delay(6.seconds)
 
         assertEquals(0, reloads.get())
         scope.cancel()
@@ -56,7 +55,7 @@ class ConfigWatcherTest {
         val directory = Files.createTempDirectory("config-watcher")
         val reloads = AtomicInteger()
         val scope = CoroutineScope(Dispatchers.IO)
-        ConfigWatcher(directory, interval) { reloads.incrementAndGet() }.start(scope)
+        ConfigWatcher(directory) { reloads.incrementAndGet() }.start(scope)
 
         directory.resolve("layouts").createDirectories().resolve("lobby.yml").writeText("a: 1\n")
         awaitReloads(reloads, 1)
@@ -80,8 +79,8 @@ class ConfigWatcherTest {
     }
 
     private suspend fun awaitReloads(reloads: AtomicInteger, expected: Int) {
-        withTimeout(5.seconds) {
-            while (reloads.get() < expected) delay(10.milliseconds)
+        withTimeout(10.seconds) {
+            while (reloads.get() < expected) delay(50.milliseconds)
         }
     }
 }

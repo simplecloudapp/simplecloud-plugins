@@ -1,159 +1,169 @@
 package app.simplecloud.plugin.connection.shared.connection
 
+import app.simplecloud.plugin.connection.shared.config.CommandEntry
 import app.simplecloud.plugin.connection.shared.config.ConnectionConfig
 import app.simplecloud.plugin.connection.shared.config.ConnectionEntry
 import app.simplecloud.plugin.connection.shared.config.ConnectionRule
 import app.simplecloud.plugin.connection.shared.config.FallbackTargetConnection
+import app.simplecloud.plugin.connection.shared.config.MessageConfig
 import app.simplecloud.plugin.connection.shared.config.RuleType
-import app.simplecloud.plugin.connection.shared.config.SubdomainRoute
 import app.simplecloud.plugin.connection.shared.platform.ConnectionPlatform
 import app.simplecloud.plugin.connection.shared.platform.ConnectionPlayer
 import app.simplecloud.plugin.connection.shared.platform.ConnectionServer
+import app.simplecloud.plugin.connection.shared.registration.ServerStatus
+import app.simplecloud.plugin.connection.shared.registration.ServerStatusCache
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 
-object ConnectionResolver {
+class ConnectionResolver(
+    private val platform: ConnectionPlatform,
+    private val statusCache: ServerStatusCache,
+) {
 
-    fun findConnection(name: String, connections: List<ConnectionEntry>): ConnectionEntry? = connections.find { it.name.equals(name, ignoreCase = true) }
+    fun findConnection(name: String, connections: List<ConnectionEntry>): ConnectionEntry? =
+        connections.find { connection -> connection.name.equals(name, ignoreCase = true) }
 
-    fun findRoute(host: String, routes: List<SubdomainRoute>): SubdomainRoute? = routes.find { route -> route.subdomain.equals(host, ignoreCase = true) }
-
-    fun findMatchingServerNames(connection: ConnectionEntry, servers: List<String>): List<String> = servers.filter { connection.serverNameMatcher.matches(it) }
-
-    fun checkRules(connection: ConnectionEntry, player: ConnectionPlayer): ConnectionRule? {
-        for (rule in connection.rules) {
-            if (rule.bypassPermission.isNotEmpty() && player.hasPermission(rule.bypassPermission)) {
-                continue
-            }
-
-            val failed = when (rule.type) {
-                RuleType.PERMISSION -> {
-                    val hasPermission = player.hasPermission(rule.name)
-                    val permissionRequired = rule.value.isEmpty() || rule.value.toBoolean()
-                    hasPermission != permissionRequired
-                }
-
-                RuleType.ENV -> {
-                    val envValue = System.getenv(rule.name) ?: ""
-                    val matches = rule.operation.matches(envValue, rule.value, rule.negate)
-                    !matches
-                }
-            }
-
-            if (failed) return rule
-        }
-        return null
-    }
-
-    fun isServerInConnection(serverName: String, connectionName: String, connections: List<ConnectionEntry>, servers: List<String>): Boolean {
-        val connection = findConnection(connectionName, connections) ?: return false
-        val matchingNames = findMatchingServerNames(connection, servers)
-        return matchingNames.any { it.equals(serverName, ignoreCase = true) }
-    }
-
-    fun <S : ConnectionServer> findJoinTarget(
-        platform: ConnectionPlatform<S>,
-        player: ConnectionPlayer,
+    fun findJoinTarget(
         config: ConnectionConfig,
-        stoppingServers: Set<String>,
-    ): S? {
-        val routeServer = findRouteTarget(platform, player, config, stoppingServers)
-        if (routeServer != null || !config.networkJoinTargets.enabled) return routeServer
+        player: ConnectionPlayer,
+        excludedServerNames: Set<String> = emptySet(),
+    ): String? {
+        val servers = findAvailableServers(excludedServerNames)
+        val routeServerName = findRouteTarget(config, player, servers)
+        if (routeServerName != null || !config.networkJoinTargets.enabled) return routeServerName
 
         return config.networkJoinTargets.targetConnections
-            .sortedByDescending { it.priority }
+            .sortedByDescending { target -> target.priority }
             .asSequence()
             .mapNotNull { target -> findConnection(target.name, config.connections) }
-            .firstNotNullOfOrNull { connection ->
-                findLeastPopulated(platform, player, connection, emptySet(), stoppingServers)
-            }
+            .filter { connection -> passesRules(connection, player) }
+            .firstNotNullOfOrNull { connection -> findLeastPopulated(connection, servers) }
     }
 
-    fun <S : ConnectionServer> findFallbackTarget(
-        platform: ConnectionPlatform<S>,
+    fun findFallbackTarget(
+        config: ConnectionConfig,
         player: ConnectionPlayer,
         kickedServerName: String?,
-        excludedServerNames: Set<String>,
-        config: ConnectionConfig,
-        stoppingServers: Set<String>,
-    ): S? {
-        val serverNames = platform.getServers().map { server -> server.getName() }
+        excludedServerNames: Set<String> = emptySet(),
+    ): String? {
+        val servers = findAvailableServers(excludedServerNames + listOfNotNull(kickedServerName))
+
         return config.fallback.targetConnections
-            .sortedByDescending { it.priority }
+            .sortedByDescending { target -> target.priority }
             .asSequence()
-            .filter { target -> isFromAllowed(target, kickedServerName, config.connections, serverNames) }
+            .filter { target -> isFromAllowed(target, kickedServerName, config.connections) }
             .mapNotNull { target -> findConnection(target.name, config.connections) }
-            .firstNotNullOfOrNull { connection ->
-                findLeastPopulated(platform, player, connection, excludedServerNames, stoppingServers)
-            }
+            .filter { connection -> passesRules(connection, player) }
+            .firstNotNullOfOrNull { connection -> findLeastPopulated(connection, servers) }
     }
 
-    fun <S : ConnectionServer> findCommandTarget(
-        platform: ConnectionPlatform<S>,
-        player: ConnectionPlayer,
-        targets: List<FallbackTargetConnection>,
+    fun executeCommand(
         config: ConnectionConfig,
-        stoppingServers: Set<String>,
-    ): CommandTarget<S> {
-        val currentServerName = player.getServerName()
-        val servers = platform.getServers()
-        val serverNames = servers.map { server -> server.getName() }
+        messages: MessageConfig,
+        player: ConnectionPlayer,
+        command: CommandEntry,
+    ) {
+        when (val target = findCommandTarget(config, player, command.targetConnections)) {
+            is ConnectionTarget.Connect -> player.connect(target.serverName)
 
-        for (target in targets.sortedByDescending { it.priority }) {
-            if (!isFromAllowed(target, currentServerName, config.connections, serverNames)) continue
-            val connection = findConnection(target.name, config.connections) ?: continue
-            if (checkRules(connection, player) != null) continue
-
-            val matchingServers = servers.filter { server -> connection.serverNameMatcher.matches(server.getName()) }
-            if (matchingServers.any { server -> server.getName().equals(currentServerName, ignoreCase = true) }) {
-                return CommandTarget.AlreadyConnected
+            ConnectionTarget.AlreadyConnected -> {
+                val server = Placeholder.unparsed("server", player.getServerName().orEmpty())
+                player.sendMessage(messages.msg(command.messages.alreadyConnected, server))
             }
 
-            val server = matchingServers
-                .filter { server -> server.getName() !in stoppingServers }
-                .minByOrNull { server -> server.getPlayerCount() }
-            if (server != null) return CommandTarget.Connect(server)
+            ConnectionTarget.NotFound -> player.sendMessage(messages.msg(command.messages.noTargetConnectionFound))
+        }
+    }
+
+    private fun findCommandTarget(
+        config: ConnectionConfig,
+        player: ConnectionPlayer,
+        targets: List<FallbackTargetConnection>,
+    ): ConnectionTarget {
+        val currentServerName = player.getServerName()
+        val currentServerStopping = statusCache.findAllByProxyName()[currentServerName]?.stopping == true
+        val servers = findAvailableServers(emptySet())
+
+        for (target in targets.sortedByDescending { target -> target.priority }) {
+            if (!isFromAllowed(target, currentServerName, config.connections)) continue
+            val connection = findConnection(target.name, config.connections) ?: continue
+            if (!passesRules(connection, player)) continue
+            if (currentServerName != null && !currentServerStopping &&
+                connection.serverNameMatcher.matches(currentServerName)
+            ) {
+                return ConnectionTarget.AlreadyConnected
+            }
+
+            val serverName = findLeastPopulated(connection, servers)
+            if (serverName != null) return ConnectionTarget.Connect(serverName)
         }
 
-        return CommandTarget.NotFound
+        return ConnectionTarget.NotFound
+    }
+
+    private fun findRouteTarget(
+        config: ConnectionConfig,
+        player: ConnectionPlayer,
+        servers: List<ConnectionServer>,
+    ): String? {
+        val virtualHost = player.getVirtualHost() ?: return null
+        val route = config.address.routes.find { route -> route.subdomain.equals(virtualHost, ignoreCase = true) }
+            ?: return null
+        val connection = findConnection(route.targetConnection, config.connections) ?: return null
+        if (!passesRules(connection, player)) return null
+        return findLeastPopulated(connection, servers)
+    }
+
+    private fun findLeastPopulated(connection: ConnectionEntry, servers: List<ConnectionServer>): String? = servers
+        .firstOrNull { server -> connection.serverNameMatcher.matches(server.name) }
+        ?.name
+
+    private fun findAvailableServers(excludedServerNames: Set<String>): List<ConnectionServer> {
+        val statuses = statusCache.findAllByProxyName()
+
+        return platform.getServers()
+            .filter { server -> excludedServerNames.none { name -> name.equals(server.name, ignoreCase = true) } }
+            .filter { server -> statuses[server.name]?.stopping != true }
+            .map { server ->
+                val cloudPlayerCount = statuses[server.name]?.playerCount ?: 0
+                server.copy(playerCount = maxOf(server.playerCount, cloudPlayerCount))
+            }
+            .sortedWith(
+                compareBy(
+                    { server -> !hasFreeSlot(server, statuses[server.name]) },
+                    { server -> server.playerCount },
+                ),
+            )
+    }
+
+    private fun hasFreeSlot(server: ConnectionServer, status: ServerStatus?): Boolean {
+        val maxPlayers = status?.maxPlayers ?: 0
+        return maxPlayers <= 0 || server.playerCount < maxPlayers
     }
 
     private fun isFromAllowed(
         target: FallbackTargetConnection,
         fromServerName: String?,
         connections: List<ConnectionEntry>,
-        serverNames: List<String>,
-    ): Boolean = fromServerName == null ||
-        target.from.isEmpty() ||
-        target.from.any { isServerInConnection(fromServerName, it, connections, serverNames) }
-
-    private fun <S : ConnectionServer> findRouteTarget(
-        platform: ConnectionPlatform<S>,
-        player: ConnectionPlayer,
-        config: ConnectionConfig,
-        stoppingServers: Set<String>,
-    ): S? {
-        val virtualHost = player.getVirtualHost() ?: return null
-        val route = findRoute(virtualHost, config.address.routes) ?: return null
-        val connection = findConnection(route.targetConnection, config.connections) ?: return null
-        return findLeastPopulated(platform, player, connection, emptySet(), stoppingServers)
+    ): Boolean {
+        if (fromServerName == null || target.from.isEmpty()) return true
+        return target.from
+            .mapNotNull { connectionName -> findConnection(connectionName, connections) }
+            .any { connection -> connection.serverNameMatcher.matches(fromServerName) }
     }
 
-    private fun <S : ConnectionServer> findLeastPopulated(
-        platform: ConnectionPlatform<S>,
-        player: ConnectionPlayer,
-        connection: ConnectionEntry,
-        excludedServerNames: Set<String>,
-        stoppingServers: Set<String>,
-    ): S? {
-        if (checkRules(connection, player) != null) return null
-        return platform.getServers()
-            .filter { server -> connection.serverNameMatcher.matches(server.getName()) }
-            .filter { server -> server.getName() !in stoppingServers }
-            .filterNot { server -> isExcluded(server, excludedServerNames) }
-            .minByOrNull { server -> server.getPlayerCount() }
-    }
+    private fun passesRules(connection: ConnectionEntry, player: ConnectionPlayer): Boolean =
+        connection.rules.all { rule -> passesRule(rule, player) }
 
-    private fun isExcluded(server: ConnectionServer, excludedServerNames: Set<String>): Boolean {
-        val serverName = server.getName()
-        return excludedServerNames.any { name -> name.equals(serverName, ignoreCase = true) }
+    private fun passesRule(rule: ConnectionRule, player: ConnectionPlayer): Boolean {
+        if (rule.bypassPermission.isNotEmpty() && player.hasPermission(rule.bypassPermission)) return true
+
+        return when (rule.type) {
+            RuleType.PERMISSION -> {
+                val permissionRequired = rule.value.isEmpty() || rule.value.toBoolean()
+                player.hasPermission(rule.name) == permissionRequired
+            }
+
+            RuleType.ENV -> rule.operation.matches(System.getenv(rule.name).orEmpty(), rule.value, rule.negate)
+        }
     }
 }

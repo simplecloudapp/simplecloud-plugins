@@ -70,11 +70,12 @@ class ServerCommand<C : CloudSender>(
     private fun displayName(server: Server): String {
         val groupName = server.group?.name
         val persistentServerName = server.persistentServer?.name
+        val persistentServerId = server.persistentServerId
         return when {
             !groupName.isNullOrBlank() -> "$groupName-${server.numericalId}"
             !server.serverGroupId.isNullOrBlank() -> "${server.serverGroupId}-${server.numericalId}"
             !persistentServerName.isNullOrBlank() -> persistentServerName
-            !server.persistentServerId.isNullOrBlank() -> server.persistentServerId
+            !persistentServerId.isNullOrBlank() -> persistentServerId
             else -> server.serverId
         }
     }

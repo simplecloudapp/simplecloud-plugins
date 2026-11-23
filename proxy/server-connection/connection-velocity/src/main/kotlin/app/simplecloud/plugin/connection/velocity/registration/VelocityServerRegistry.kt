@@ -12,16 +12,21 @@ class VelocityServerRegistry(
 ) : ServerRegistry {
 
     override fun register(proxyName: String, server: RegisteredServer) {
-        unregisterExisting(proxyName)
-        proxy.registerServer(ServerInfo(proxyName, InetSocketAddress.createUnresolved(server.ip, server.port)))
+        val serverInfo = ServerInfo(proxyName, InetSocketAddress.createUnresolved(server.ip, server.port))
+        val existing = proxy.getServer(proxyName).getOrNull()
+        if (existing?.serverInfo == serverInfo) return
+
+        if (existing != null) proxy.unregisterServer(existing.serverInfo)
+        proxy.registerServer(serverInfo)
     }
 
     override fun unregister(proxyName: String, server: RegisteredServer) {
-        unregisterExisting(proxyName)
+        val existing = proxy.getServer(proxyName).getOrNull() ?: return
+        if (existing.serverInfo.address != InetSocketAddress.createUnresolved(server.ip, server.port)) return
+        proxy.unregisterServer(existing.serverInfo)
     }
 
-    private fun unregisterExisting(proxyName: String) {
-        val existing = proxy.getServer(proxyName).getOrNull() ?: return
-        proxy.unregisterServer(existing.serverInfo)
+    override fun clear() {
+        proxy.allServers.forEach { server -> proxy.unregisterServer(server.serverInfo) }
     }
 }

@@ -29,8 +29,6 @@ repositories {
     maven("https://repo.simplecloud.app/dev")
     maven("https://repo.papermc.io/repository/maven-public/")
     maven("https://repo.spectr.is/snapshots")
-    maven("https://repo.waterdog.dev/releases/")
-    maven("https://repo.waterdog.dev/snapshots/")
     maven("https://repo.opencollab.dev/maven-releases/")
     maven("https://repo.opencollab.dev/maven-snapshots/")
     maven("https://repo.extendedclip.com/releases/")
@@ -79,7 +77,7 @@ tasks.shadowJar {
     archiveFileName.set("${project.name}.jar")
 }
 
-val platforms = setOf("velocity", "bungeecord", "waterdog", "paper", "minestom")
+val platforms = setOf("velocity", "bungeecord", "paper", "minestom")
 
 if (!path.startsWith(":core:") && name.substringAfterLast('-') in platforms) {
     val destination = isolated.rootProject.projectDirectory

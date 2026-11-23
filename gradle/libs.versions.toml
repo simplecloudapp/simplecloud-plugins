@@ -18,7 +18,6 @@ simplecloud-api = "feat-minestom-SNAPSHOT"
 # Platforms
 velocity = "4.1.0-SNAPSHOT"
 bungeecord = "1.21-R0.4"
-waterdog = "2.0.4-SNAPSHOT"
 paper = "26.3.build.+"
 minestom = "26_3-SNAPSHOT"
 
@@ -80,7 +79,6 @@ simplecloud-api-testing = { module = "app.simplecloud.api:testing", version.ref 
 # Platforms
 velocity-api = { module = "com.velocitypowered:velocity-api", version.ref = "velocity" }
 bungeecord-api = { module = "net.md-5:bungeecord-api", version.ref = "bungeecord" }
-waterdog-api = { module = "dev.waterdog.waterdogpe:waterdog", version.ref = "waterdog" }
 paper-api = { module = "io.papermc.paper:paper-api", version.ref = "paper" }
 minestom = { module = "net.minestom:minestom", version.ref = "minestom" }
 
