@@ -10,7 +10,7 @@ dependencies {
     implementation(libs.bundles.configurate)
     implementation(libs.bundles.cloud)
 
-    testImplementation(libs.simplecloud.api)
+    testImplementation(libs.simplecloud.api.testing)
     testImplementation(libs.bundles.adventure)
     testImplementation(libs.slf4j.api)
 }

@@ -8,4 +8,6 @@ dependencies {
     compileOnly(libs.simplecloud.api)
     compileOnly(libs.waterdog.api)
     compileOnly(libs.slf4j.api)
+
+    testImplementation(libs.simplecloud.api.testing)
 }

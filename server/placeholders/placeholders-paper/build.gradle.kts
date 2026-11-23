@@ -8,6 +8,8 @@ dependencies {
     compileOnly(libs.paper.api)
     compileOnly(libs.placeholderapi)
     compileOnly(libs.miniplaceholders.api)
+
+    testImplementation(libs.simplecloud.api.testing)
 }
 
 modrinth {

@@ -11,6 +11,8 @@ dependencies {
     compileOnly(libs.simplecloud.api)
     compileOnly(libs.bungeecord.api)
     compileOnly(libs.slf4j.api)
+
+    testImplementation(libs.simplecloud.api.testing)
 }
 
 modrinth {

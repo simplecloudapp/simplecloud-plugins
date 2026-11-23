@@ -9,6 +9,6 @@ dependencies {
     compileOnly(libs.simplecloud.api)
     compileOnly(libs.slf4j.api)
 
-    testImplementation(libs.simplecloud.api)
+    testImplementation(libs.simplecloud.api.testing)
     testImplementation(libs.slf4j.api)
 }

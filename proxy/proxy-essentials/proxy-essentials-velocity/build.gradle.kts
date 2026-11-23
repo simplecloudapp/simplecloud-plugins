@@ -13,6 +13,8 @@ dependencies {
     compileOnly(libs.simplecloud.api)
     compileOnly(libs.slf4j.api)
     kapt(libs.velocity.api)
+
+    testImplementation(libs.simplecloud.api.testing)
 }
 
 modrinth {

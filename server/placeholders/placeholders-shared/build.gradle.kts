@@ -6,4 +6,6 @@ dependencies {
     compileOnly(libs.simplecloud.api)
     compileOnly(libs.slf4j.api)
     implementation(libs.caffeine)
+
+    testImplementation(libs.simplecloud.api.testing)
 }

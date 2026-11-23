@@ -17,6 +17,8 @@ dependencies {
     implementation(libs.protobuf.kotlin.lite)
     implementation(libs.bundles.configurate)
     implementation(libs.bundles.cloud)
+
+    testImplementation(libs.simplecloud.api.testing)
 }
 
 sourceSets {

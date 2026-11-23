@@ -12,4 +12,6 @@ dependencies {
     compileOnly(projects.core.coreShared)
     compileOnly(libs.paper.api)
     compileOnly(libs.cloud.paper)
+
+    testImplementation(libs.simplecloud.api.testing)
 }

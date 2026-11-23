@@ -12,4 +12,6 @@ dependencies {
     compileOnly(projects.core.coreShared)
     compileOnly(libs.minestom)
     compileOnly(libs.cloud.minestom)
+
+    testImplementation(libs.simplecloud.api.testing)
 }

@@ -7,13 +7,13 @@ kotlinx-coroutines = "1.11.0"
 shadow = "9.6.1"
 minotaur = "2.10.0"
 blossom = "2.2.0"
-spotless = "8.10.4"
+spotless = "8.12.0"
 detekt = "2.0.0-alpha.6"
 paperweight = "2.0.0-beta.24"
-protobuf = "0.10.0"
+protobuf = "0.10.1"
 
 # SimpleCloud
-simplecloud-api = "0.1.0-platform.61-dev.8.1-9a2bef3"
+simplecloud-api = "feat-minestom-SNAPSHOT"
 
 # Platforms
 velocity = "4.1.0-SNAPSHOT"
@@ -33,7 +33,7 @@ adventure = "5.2.0"
 configurate = "4.2.0"
 caffeine = "3.3.1"
 slf4j = "2.0.20"
-jnats = "2.26.3"
+jnats = "2.27.0"
 
 # Protobuf
 protoc = "4.36.2"
@@ -75,6 +75,7 @@ minotaur-gradle-plugin = { module = "com.modrinth.minotaur:Minotaur", version.re
 
 # SimpleCloud
 simplecloud-api = { module = "app.simplecloud.api:api", version.ref = "simplecloud-api" }
+simplecloud-api-testing = { module = "app.simplecloud.api:testing", version.ref = "simplecloud-api" }
 
 # Platforms
 velocity-api = { module = "com.velocitypowered:velocity-api", version.ref = "velocity" }

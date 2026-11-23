@@ -12,4 +12,6 @@ dependencies {
     compileOnly(projects.core.coreShared)
     compileOnly(libs.cloud.velocity)
     compileOnly(libs.velocity.api)
+
+    testImplementation(libs.simplecloud.api.testing)
 }

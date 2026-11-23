@@ -9,6 +9,7 @@ dependencies {
     compileOnly(libs.bundles.configurate)
     compileOnly(libs.slf4j.api)
 
+    testImplementation(libs.simplecloud.api.testing)
     testImplementation(libs.bundles.configurate)
     testImplementation(libs.slf4j.api)
 }

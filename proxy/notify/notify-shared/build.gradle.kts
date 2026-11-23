@@ -10,4 +10,6 @@ dependencies {
     compileOnly(libs.adventure)
     compileOnly(libs.adventure.text.minimessage)
     compileOnly(libs.slf4j.api)
+
+    testImplementation(libs.simplecloud.api.testing)
 }

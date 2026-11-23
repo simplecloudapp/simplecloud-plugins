@@ -8,6 +8,8 @@ dependencies {
     implementation(libs.cloud.paper)
     compileOnly(libs.simplecloud.api)
     compileOnly(libs.paper.api)
+
+    testImplementation(libs.simplecloud.api.testing)
 }
 
 modrinth {

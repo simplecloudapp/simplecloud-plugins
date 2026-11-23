@@ -10,4 +10,6 @@ dependencies {
     implementation(projects.core.coreShared)
     implementation(libs.bundles.configurate)
     implementation(libs.bundles.cloud)
+
+    testImplementation(libs.simplecloud.api.testing)
 }
