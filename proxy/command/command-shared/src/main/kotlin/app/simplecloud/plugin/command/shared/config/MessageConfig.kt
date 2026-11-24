@@ -39,6 +39,9 @@ data class HelpSection(
         "group info <group>" to "Show a group",
         "group start <group> [count]" to "Start servers of a group",
         "group stop <group> [id]" to "Stop servers of a group",
+        "group rollout <group>" to "Restart a group server by server",
+        "group rollout <group> status" to "Show the rollout of a group",
+        "group rollout <group> cancel" to "Cancel the rollout of a group",
         "server list [group]" to "List the running servers",
         "server info <group> <id>" to "Show a server",
         "server start <group>" to "Start a new server",
@@ -64,6 +67,7 @@ data class GroupSection(
     val info: GroupInfoSection = GroupInfoSection(),
     val start: GroupStartSection = GroupStartSection(),
     val stop: GroupStopSection = GroupStopSection(),
+    val rollout: GroupRolloutSection = GroupRolloutSection(),
     val error: GroupErrorSection = GroupErrorSection(),
 )
 
@@ -91,6 +95,31 @@ data class GroupStopSection(
     val success: String = "<prefix> <info>Sent the stop request for the servers of group <group>.",
     val successWithIds: String = "<prefix> <info>Sent the stop request for servers <ids> of group <group>.",
     val partial: String = "<prefix> <warning>Stopped only <count>/<total> servers of group <group> because <reason>.",
+)
+
+@ConfigSerializable
+data class GroupRolloutSection(
+    val started: String = "<prefix> <success>Started the rollout of group <group>.",
+    val cancelled: String = "<prefix> <success>Cancelled the rollout of group <group>.",
+    val status: GroupRolloutStatusSection = GroupRolloutStatusSection(),
+    val error: GroupRolloutErrorSection = GroupRolloutErrorSection(),
+)
+
+@ConfigSerializable
+data class GroupRolloutStatusSection(
+    val title: String = "<prefix> <info>Rollout of group <group>",
+    val entry: String = "<separator>•</separator> <muted><key><separator>:</separator> <highlight><value>",
+    val inactive: String = "<prefix> <warning>Group <group> has no active rollout.",
+)
+
+@ConfigSerializable
+data class GroupRolloutErrorSection(
+    val alreadyActive: String = "<prefix> <warning>Group <group> already has an active rollout.",
+    val noServers: String = "<prefix> <warning>Group <group> has no running servers to roll out.",
+    val notActive: String = "<prefix> <warning>Group <group> has no active rollout to cancel.",
+    val startFailed: String = "<prefix> <error>Couldn't start the rollout of group <group> because <reason>.",
+    val cancelFailed: String = "<prefix> <error>Couldn't cancel the rollout of group <group> because <reason>.",
+    val statusFailed: String = "<prefix> <error>Couldn't get the rollout status of group <group> because <reason>.",
 )
 
 @ConfigSerializable

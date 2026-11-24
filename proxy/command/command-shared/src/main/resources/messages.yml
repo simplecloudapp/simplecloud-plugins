@@ -47,6 +47,9 @@ command:
       'group info <group>': 'Show a group'
       'group start <group> [count]': 'Start servers of a group'
       'group stop <group> [id]': 'Stop servers of a group'
+      'group rollout <group>': 'Restart a group server by server'
+      'group rollout <group> status': 'Show the rollout of a group'
+      'group rollout <group> cancel': 'Cancel the rollout of a group'
       'server list [group]': 'List the running servers'
       'server info <group> <id>': 'Show a server'
       'server start <group>': 'Start a new server'
@@ -79,6 +82,21 @@ command:
       success: '<prefix> <info>Sent the stop request for the servers of group <group>.'
       success-with-ids: '<prefix> <info>Sent the stop request for servers <ids> of group <group>.'
       partial: '<prefix> <warning>Stopped only <count>/<total> servers of group <group> because <reason>.'
+    # /cloud group rollout <group> [status|cancel]
+    rollout:
+      started: '<prefix> <success>Started the rollout of group <group>.'
+      cancelled: '<prefix> <success>Cancelled the rollout of group <group>.'
+      status:
+        title: '<prefix> <info>Rollout of group <group>'
+        entry: '<separator>•</separator> <muted><key><separator>:</separator> <highlight><value>'
+        inactive: '<prefix> <warning>Group <group> has no active rollout.'
+      error:
+        already-active: '<prefix> <warning>Group <group> already has an active rollout.'
+        no-servers: '<prefix> <warning>Group <group> has no running servers to roll out.'
+        not-active: '<prefix> <warning>Group <group> has no active rollout to cancel.'
+        start-failed: '<prefix> <error>Couldn''t start the rollout of group <group> because <reason>.'
+        cancel-failed: '<prefix> <error>Couldn''t cancel the rollout of group <group> because <reason>.'
+        status-failed: '<prefix> <error>Couldn''t get the rollout status of group <group> because <reason>.'
     error:
       not-found: '<prefix> <error>Group <group> was not found.'
       already-empty: '<prefix> <warning>Group <group> has no running servers.'
