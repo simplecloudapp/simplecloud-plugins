@@ -123,15 +123,23 @@ data class Notifications(
         "server.available" to "Server available",
         "server.stopping" to "Server stopping",
         "server.stopped" to "Server stopped",
+        "server.crashed" to "Server crashed",
         "group.created" to "Group created",
         "group.deleted" to "Group deleted",
         "persistent-server.created" to "Persistent server created",
         "persistent-server.deleted" to "Persistent server deleted",
     ),
+    val kind: Kind = Kind(),
     val hover: Hover = Hover(),
     val server: ServerNotifications? = ServerNotifications(),
     val group: GroupNotifications? = GroupNotifications(),
     val persistentServer: PersistentServerNotifications? = PersistentServerNotifications(),
+)
+
+@ConfigSerializable
+data class Kind(
+    val server: String = "Server",
+    val persistentServer: String = "Persistent server",
 )
 
 @ConfigSerializable
@@ -142,6 +150,15 @@ data class Hover(
         <muted>State: <highlight><state>
         <muted>Address: <highlight><ip>:<port>
         <muted>Players: <highlight><players>/<max>
+        <muted>Time: <highlight><time>
+    """.trimIndent(),
+
+    val stopped: String = """
+        <brand><server>
+
+        <muted>State: <highlight><state>
+        <muted>Reason: <highlight><reason>
+        <muted>Exit code: <highlight><exit_code>
         <muted>Time: <highlight><time>
     """.trimIndent(),
 
@@ -160,10 +177,11 @@ data class Hover(
 
 @ConfigSerializable
 data class ServerNotifications(
-    val starting: String? = "<prefix> <info>Server <hover:show_text:'<notifications.hover.server>'><server></hover> is starting.",
-    val available: String? = "<prefix> <success>Server <hover:show_text:'<notifications.hover.server>'><server></hover> is now available.",
-    val stopping: String? = "<prefix> <warning>Server <hover:show_text:'<notifications.hover.server>'><server></hover> is stopping.",
-    val stopped: String? = "<prefix> <muted>Server <hover:show_text:'<notifications.hover.server>'><server></hover> has stopped.",
+    val starting: String? = "<prefix> <info><kind> <hover:show_text:'<notifications.hover.server>'><server></hover> is starting.",
+    val available: String? = "<prefix> <success><kind> <hover:show_text:'<notifications.hover.server>'><server></hover> is now available.",
+    val stopping: String? = "<prefix> <warning><kind> <hover:show_text:'<notifications.hover.server>'><server></hover> is stopping.",
+    val stopped: String? = "<prefix> <muted><kind> <hover:show_text:'<notifications.hover.stopped>'><server></hover> has stopped.",
+    val crashed: String? = "<prefix> <error><kind> <hover:show_text:'<notifications.hover.stopped>'><server></hover> has crashed.",
 ) {
     fun getByState(state: ServerState): String? = when (state) {
         ServerState.STARTING -> starting

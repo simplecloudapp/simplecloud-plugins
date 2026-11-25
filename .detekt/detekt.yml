@@ -24,6 +24,8 @@ performance:
     active: false
 
 style:
+  AbstractClassCanBeConcreteClass:
+    active: false
   ForbiddenComment:
     active: false
   LoopWithTooManyJumpStatements:

@@ -12,4 +12,6 @@ dependencies {
     compileOnly(libs.slf4j.api)
 
     testImplementation(libs.simplecloud.api.testing)
+    testImplementation(libs.bundles.adventure)
+    testImplementation(libs.slf4j.api)
 }
