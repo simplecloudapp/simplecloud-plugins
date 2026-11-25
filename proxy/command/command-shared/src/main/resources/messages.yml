@@ -52,14 +52,14 @@ command:
       'group rollout <group> cancel': 'Cancel the rollout of a group'
       'group queue <group>': 'Show the start queue of a group'
       'group queue <group> clear': 'Clear the start queue of a group'
-      'server list [group]': 'List the running servers'
+      'server list [group] [page]': 'List the running servers'
       'server info <server>': 'Show a server'
       'server start <group>': 'Start a new server'
       'server stop <server>': 'Stop a server'
       'server command <server> <command>': 'Run a console command on a server'
       'ps list': 'List all persistent servers'
       'ps info <name>': 'Show a persistent server'
-      'player list [<group|ps|server> <target>]': 'List the online players'
+      'player list [<group|ps|server> <target>] [page]': 'List the online players'
       'player info <player>': 'Show a player'
       'player send <player> <group|ps|server> <target> [mode]': 'Send a player to a target'
       'player sendall <group|ps|server> <target> [mode]': 'Send all players to a target'
@@ -68,6 +68,12 @@ command:
       'player kick <player> [reason]': 'Kick a player from the network'
       'info': 'Show the network stats'
       'reload': 'Reload the messages'
+
+  # Shown below lists with more than one page
+  page:
+    footer: '<previous><info>Page <page>/<pages><next>'
+    previous: '<interactive>Previous</interactive>  '
+    next: '  <interactive>Next'
 
   # Shown when a command is used with wrong arguments
   usage:

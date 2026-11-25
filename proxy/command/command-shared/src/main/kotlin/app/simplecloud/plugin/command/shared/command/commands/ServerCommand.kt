@@ -9,6 +9,7 @@ import app.simplecloud.plugin.command.shared.utilities.Formatter
 import app.simplecloud.core.shared.adventure.tags
 import app.simplecloud.core.shared.command.CloudSender
 import app.simplecloud.core.shared.command.CloudSuggestions
+import app.simplecloud.core.shared.command.ListPage
 import app.simplecloud.core.shared.controller.ApiUtils
 import app.simplecloud.core.shared.controller.getDisplayName
 import app.simplecloud.core.shared.controller.isRunning
@@ -18,6 +19,7 @@ import app.simplecloud.core.shared.pretty.StringPrettifier
 import kotlinx.coroutines.future.*
 import org.incendo.cloud.CommandManager
 import org.incendo.cloud.kotlin.coroutines.extension.suspendingHandler
+import org.incendo.cloud.parser.standard.IntegerParser.integerParser
 import org.incendo.cloud.parser.standard.StringParser.StringMode
 import org.incendo.cloud.parser.standard.StringParser.stringParser
 import org.incendo.cloud.permission.Permission
@@ -42,9 +44,13 @@ class ServerCommand<C : CloudSender>(
                 .literal("server")
                 .literal("list")
                 .optional("group", stringParser(), CloudSuggestions.groups(api))
+                .optional("page", integerParser(1))
                 .suspendingHandler(plugin.scope) { context ->
                     val sender = context.sender()
-                    val groupName = context.getOrDefault("group", null as String?)
+                    val groupArgument = context.getOrDefault("group", null as String?)
+                    val isPage = isPageArgument(groupArgument)
+                    val groupName = if (isPage) null else groupArgument
+                    val requestedPage = if (isPage) groupArgument?.toIntOrNull() ?: 1 else context.getOrDefault("page", 1)
                     val messages = plugin.config
                     val servers = if (groupName == null) {
                         api.server().allServers.await().filter { !it.isStopped() }
@@ -56,11 +62,17 @@ class ServerCommand<C : CloudSender>(
                         sender.sendMessage(messages.msg(messages.command.server.list.empty))
                         return@suspendingHandler
                     }
+                    val pages = ListPage.count(servers.size)
+                    val page = requestedPage.coerceIn(1, pages)
                     sender.sendMessage(messages.msg(messages.command.server.list.title, tags("count" to servers.size)))
-                    servers.forEach { server ->
+                    ListPage.entries(servers.sortedBy { it.getDisplayName().lowercase() }, page).forEach { server ->
                         val serverName = server.getDisplayName()
                         val value = "${server.playerCount ?: 0}/${server.maxPlayers}, ${server.state.name.lowercase()}"
                         sender.sendMessage(messages.msg(messages.command.server.list.entry, tags("server" to serverName, "value" to value)))
+                    }
+                    if (pages > 1) {
+                        val command = listOfNotNull("/cloud server list", groupName, "<page>").joinToString(" ")
+                        sender.sendMessage(ListPage.footer(messages, messages.command.page, page, pages, command))
                     }
                 }
                 .permission(Permission.permission(CommandPermissions.SERVER_LIST))
@@ -171,6 +183,11 @@ class ServerCommand<C : CloudSender>(
                 .permission(Permission.permission(CommandPermissions.SERVER_COMMAND))
                 .build(),
         )
+    }
+
+    private suspend fun isPageArgument(argument: String?): Boolean {
+        if (argument == null || argument.toIntOrNull() == null) return false
+        return ApiUtils.findGroup(api, argument) == null
     }
 
     private suspend fun findGroup(sender: C, groupName: String): Group? {

@@ -9,6 +9,7 @@ import app.simplecloud.core.shared.adventure.miniMessage
 import app.simplecloud.core.shared.adventure.tags
 import app.simplecloud.core.shared.command.CloudSender
 import app.simplecloud.core.shared.command.CloudSuggestions
+import app.simplecloud.core.shared.command.ListPage
 import app.simplecloud.core.shared.command.CloudSuggestions.TARGET_TYPE_GROUP
 import app.simplecloud.core.shared.command.CloudSuggestions.TARGET_TYPE_PERSISTENT_SERVER
 import app.simplecloud.core.shared.command.CloudSuggestions.TARGET_TYPE_SERVER
@@ -21,6 +22,7 @@ import kotlinx.coroutines.future.*
 import org.incendo.cloud.CommandManager
 import org.incendo.cloud.kotlin.coroutines.extension.suspendingHandler
 import org.incendo.cloud.parser.standard.EnumParser.enumParser
+import org.incendo.cloud.parser.standard.IntegerParser.integerParser
 import org.incendo.cloud.parser.standard.StringParser.StringMode
 import org.incendo.cloud.parser.standard.StringParser.stringParser
 import org.incendo.cloud.permission.Permission
@@ -51,16 +53,20 @@ class PlayerCommand<C : CloudSender>(
                 .literal("list")
                 .optional("targetType", stringParser(), CloudSuggestions.of(types))
                 .optional("target", stringParser(), CloudSuggestions.targets(api))
+                .optional("page", integerParser(1))
                 .suspendingHandler(plugin.scope) { context ->
                     val sender = context.sender()
-                    val targetType = context.optional<String>("targetType").orElse(null)
-                    val target = context.optional<String>("target").orElse(null)
+                    val typeArgument = context.getOrDefault("targetType", null as String?)
+                    val pageArgument = typeArgument?.toIntOrNull()
+                    val targetType = if (pageArgument == null) typeArgument else null
+                    val target = context.getOrDefault("target", null as String?)
+                    val requestedPage = pageArgument ?: context.getOrDefault("page", 1)
                     val messages = plugin.config
-                    if (targetType != null && target == null) {
-                        sender.sendMessage(messages.msg(messages.command.exception.syntax, tags("command" to "/cloud player list [<group|ps|server> <target>]")))
+                    if ((targetType == null) != (target == null)) {
+                        sender.sendMessage(messages.msg(messages.command.exception.syntax, tags("command" to "/cloud player list [<group|ps|server> <target>] [page]")))
                         return@suspendingHandler
                     }
-                    val players = if (targetType == null) {
+                    val players = if (targetType == null || target == null) {
                         api.player().onlinePlayers.await()
                     } else {
                         val resolvedTarget = findTarget(sender, targetType, target, null) ?: return@suspendingHandler
@@ -70,8 +76,10 @@ class PlayerCommand<C : CloudSender>(
                         sender.sendMessage(messages.msg(messages.command.player.list.empty))
                         return@suspendingHandler
                     }
+                    val pages = ListPage.count(players.size)
+                    val page = requestedPage.coerceIn(1, pages)
                     sender.sendMessage(messages.msg(messages.command.player.list.title, tags("count" to players.size)))
-                    players.sortedBy { it.name.lowercase() }.forEach { player ->
+                    ListPage.entries(players.sortedBy { it.name.lowercase() }, page).forEach { player ->
                         sender.sendMessage(
                             messages.msg(
                                 messages.command.player.list.entry,
@@ -82,6 +90,10 @@ class PlayerCommand<C : CloudSender>(
                                 ),
                             ),
                         )
+                    }
+                    if (pages > 1) {
+                        val command = listOfNotNull("/cloud player list", targetType, target, "<page>").joinToString(" ")
+                        sender.sendMessage(ListPage.footer(messages, messages.command.page, page, pages, command))
                     }
                 }
                 .permission(Permission.permission(CommandPermissions.PLAYER_LIST))

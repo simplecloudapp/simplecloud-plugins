@@ -2,6 +2,7 @@ package app.simplecloud.plugin.command.shared.config
 
 import app.simplecloud.plugin.command.shared.utilities.ConfigVersion
 import app.simplecloud.core.shared.command.HelpMessages
+import app.simplecloud.core.shared.command.PageMessages
 import app.simplecloud.core.shared.config.VersionedConfig
 import app.simplecloud.core.shared.config.command.AbstractCommandMessageConfig
 import app.simplecloud.core.shared.config.command.AbstractCommandMessages
@@ -21,6 +22,7 @@ data class MessageConfig(
 data class CommandSection(
     val help: HelpSection = HelpSection(),
     val usage: UsageSection = UsageSection(),
+    val page: PageSection = PageSection(),
     val group: GroupSection = GroupSection(),
     val server: ServerSection = ServerSection(),
     val player: PlayerSection = PlayerSection(),
@@ -46,14 +48,14 @@ data class HelpSection(
         "group rollout <group> cancel" to "Cancel the rollout of a group",
         "group queue <group>" to "Show the start queue of a group",
         "group queue <group> clear" to "Clear the start queue of a group",
-        "server list [group]" to "List the running servers",
+        "server list [group] [page]" to "List the running servers",
         "server info <server>" to "Show a server",
         "server start <group>" to "Start a new server",
         "server stop <server>" to "Stop a server",
         "server command <server> <command>" to "Run a console command on a server",
         "ps list" to "List all persistent servers",
         "ps info <name>" to "Show a persistent server",
-        "player list [<group|ps|server> <target>]" to "List the online players",
+        "player list [<group|ps|server> <target>] [page]" to "List the online players",
         "player info <player>" to "Show a player",
         "player send <player> <group|ps|server> <target> [mode]" to "Send a player to a target",
         "player sendall <group|ps|server> <target> [mode]" to "Send all players to a target",
@@ -64,6 +66,13 @@ data class HelpSection(
         "reload" to "Reload the messages",
     ),
 ) : HelpMessages
+
+@ConfigSerializable
+data class PageSection(
+    override val footer: String = PageMessages.FOOTER,
+    override val previous: String = PageMessages.PREVIOUS,
+    override val next: String = PageMessages.NEXT,
+) : PageMessages
 
 @ConfigSerializable
 data class UsageSection(
