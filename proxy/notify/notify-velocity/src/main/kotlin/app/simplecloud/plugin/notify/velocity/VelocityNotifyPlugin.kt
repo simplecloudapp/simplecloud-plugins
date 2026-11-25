@@ -1,6 +1,6 @@
 package app.simplecloud.plugin.notify.velocity
 
-import app.simplecloud.plugin.core.velocity.command.VelocityCloudCommandManager
+import app.simplecloud.core.velocity.command.VelocityCloudCommandManager
 import app.simplecloud.plugin.notify.shared.BuildConstants
 import app.simplecloud.plugin.notify.shared.NotifyPlugin
 import app.simplecloud.plugin.notify.shared.command.NotifyCommand

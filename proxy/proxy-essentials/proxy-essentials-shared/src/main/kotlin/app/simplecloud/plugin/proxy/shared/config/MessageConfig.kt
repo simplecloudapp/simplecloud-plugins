@@ -1,11 +1,11 @@
 package app.simplecloud.plugin.proxy.shared.config
 
-import app.simplecloud.plugin.core.shared.command.HelpMessages
-import app.simplecloud.plugin.core.shared.config.VersionedConfig
-import app.simplecloud.plugin.core.shared.config.command.AbstractCommandMessageConfig
-import app.simplecloud.plugin.core.shared.config.command.AbstractCommandMessages
-import app.simplecloud.plugin.core.shared.config.command.CommandExceptionMessages
-import app.simplecloud.plugin.core.shared.config.message.MessagePalette
+import app.simplecloud.core.shared.command.HelpMessages
+import app.simplecloud.core.shared.config.VersionedConfig
+import app.simplecloud.core.shared.config.command.AbstractCommandMessageConfig
+import app.simplecloud.core.shared.config.command.AbstractCommandMessages
+import app.simplecloud.core.shared.config.command.CommandExceptionMessages
+import app.simplecloud.core.shared.config.message.MessagePalette
 import app.simplecloud.plugin.proxy.shared.utilities.ConfigVersion
 import org.spongepowered.configurate.objectmapping.ConfigSerializable
 

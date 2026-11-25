@@ -1,7 +1,7 @@
 package app.simplecloud.plugin.proxy.shared.tablist
 
-import app.simplecloud.plugin.core.shared.matcher.OperationType
-import app.simplecloud.plugin.core.shared.matcher.ServerMatcherConfiguration
+import app.simplecloud.core.shared.matcher.OperationType
+import app.simplecloud.core.shared.matcher.ServerMatcherConfiguration
 import app.simplecloud.plugin.proxy.shared.config.TabListGroup
 import kotlin.test.Test
 import kotlin.test.assertEquals

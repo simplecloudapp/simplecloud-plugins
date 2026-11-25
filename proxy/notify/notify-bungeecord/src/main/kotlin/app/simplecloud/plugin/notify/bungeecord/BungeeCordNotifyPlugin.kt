@@ -1,6 +1,6 @@
 package app.simplecloud.plugin.notify.bungeecord
 
-import app.simplecloud.plugin.core.bungeecord.command.BungeeCloudCommandManager
+import app.simplecloud.core.bungeecord.command.BungeeCloudCommandManager
 import app.simplecloud.plugin.notify.bungeecord.listener.NotifyConnectionListener
 import app.simplecloud.plugin.notify.bungeecord.platform.BungeeCordPlatformImpl
 import app.simplecloud.plugin.notify.shared.NotifyPlugin

@@ -2,7 +2,7 @@ package app.simplecloud.plugin.command.shared.command.commands
 
 import app.simplecloud.plugin.command.shared.CommandPlugin
 import app.simplecloud.plugin.command.shared.utilities.CommandPermissions
-import app.simplecloud.plugin.core.shared.command.CloudSender
+import app.simplecloud.core.shared.command.CloudSender
 import org.incendo.cloud.CommandManager
 import org.incendo.cloud.kotlin.coroutines.extension.suspendingHandler
 import org.incendo.cloud.permission.Permission
@@ -21,16 +21,12 @@ class ReloadCommand<C : CloudSender>(
                 .literal("reload")
                 .suspendingHandler(plugin.scope) { context ->
                     runCatching {
-                        plugin.config.reload()
+                        plugin.configuration.reload()
                     }.onSuccess {
-                        context.sender().sendMessage(
-                            plugin.messageConfiguration.msg(plugin.messageConfiguration.command.reload.success),
-                        )
+                        context.sender().sendMessage(plugin.config.msg(plugin.config.command.reload.success))
                     }.onFailure {
                         logger.error("Failed to reload messages.yml", it)
-                        context.sender().sendMessage(
-                            plugin.messageConfiguration.msg(plugin.messageConfiguration.command.reload.failed),
-                        )
+                        context.sender().sendMessage(plugin.config.msg(plugin.config.command.reload.failed))
                     }
                 }
                 .permission(Permission.permission(CommandPermissions.RELOAD))

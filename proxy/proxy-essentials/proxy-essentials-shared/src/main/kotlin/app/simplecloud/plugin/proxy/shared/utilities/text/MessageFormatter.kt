@@ -1,7 +1,7 @@
 package app.simplecloud.plugin.proxy.shared.utilities.text
 
-import app.simplecloud.plugin.core.shared.command.HelpPage
-import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
+import app.simplecloud.core.shared.command.HelpPage
+import app.simplecloud.core.shared.config.ConfigurationFactory
 import app.simplecloud.plugin.proxy.shared.config.HelpListMessages
 import app.simplecloud.plugin.proxy.shared.config.MessageConfig
 import app.simplecloud.plugin.proxy.shared.layout.LayoutService

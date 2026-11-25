@@ -1,7 +1,7 @@
 package app.simplecloud.plugin.prefixes.shared
 
-import app.simplecloud.plugin.core.shared.config.ConfigWatcher
-import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
+import app.simplecloud.core.shared.config.ConfigWatcher
+import app.simplecloud.core.shared.config.ConfigurationFactory
 import app.simplecloud.plugin.prefixes.api.PrefixesApiProvider
 import app.simplecloud.plugin.prefixes.shared.api.PrefixesApiImpl
 import app.simplecloud.plugin.prefixes.shared.config.MessageConfig

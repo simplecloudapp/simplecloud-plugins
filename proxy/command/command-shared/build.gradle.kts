@@ -12,4 +12,6 @@ dependencies {
     implementation(libs.bundles.cloud)
 
     testImplementation(libs.simplecloud.api.testing)
+    testImplementation(libs.adventure.text.serializer.plain)
+    testImplementation(libs.slf4j.api)
 }

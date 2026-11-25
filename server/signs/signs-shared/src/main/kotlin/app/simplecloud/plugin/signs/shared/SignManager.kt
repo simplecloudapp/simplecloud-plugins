@@ -5,10 +5,10 @@ import app.simplecloud.api.event.Subscription
 import app.simplecloud.api.server.Server
 import app.simplecloud.api.server.ServerQuery
 import app.simplecloud.api.server.ServerState
-import app.simplecloud.plugin.core.shared.adventure.miniMessage
-import app.simplecloud.plugin.core.shared.config.ConfigWatcher
-import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
-import app.simplecloud.plugin.core.shared.config.DefaultConfigInstaller
+import app.simplecloud.core.shared.adventure.miniMessage
+import app.simplecloud.core.shared.config.ConfigWatcher
+import app.simplecloud.core.shared.config.ConfigurationFactory
+import app.simplecloud.core.shared.config.DefaultConfigInstaller
 import app.simplecloud.plugin.signs.shared.config.MessageConfig
 import app.simplecloud.plugin.signs.shared.config.layout.LayoutConfig
 import app.simplecloud.plugin.signs.shared.config.location.LocationsConfig

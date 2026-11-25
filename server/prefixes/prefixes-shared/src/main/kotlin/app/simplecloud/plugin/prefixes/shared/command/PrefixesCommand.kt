@@ -1,8 +1,8 @@
 package app.simplecloud.plugin.prefixes.shared.command
 
-import app.simplecloud.plugin.core.shared.command.CloudSender
-import app.simplecloud.plugin.core.shared.command.CommandExceptionHandler
-import app.simplecloud.plugin.core.shared.command.HelpPage
+import app.simplecloud.core.shared.command.CloudSender
+import app.simplecloud.core.shared.command.CommandExceptionHandler
+import app.simplecloud.core.shared.command.HelpPage
 import app.simplecloud.plugin.prefixes.shared.Prefixes
 import app.simplecloud.plugin.prefixes.shared.utilities.PrefixesPermissions
 import org.incendo.cloud.CommandManager

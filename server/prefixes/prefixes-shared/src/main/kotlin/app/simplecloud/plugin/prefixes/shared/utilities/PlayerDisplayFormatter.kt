@@ -1,6 +1,6 @@
 package app.simplecloud.plugin.prefixes.shared.utilities
 
-import app.simplecloud.plugin.core.shared.adventure.miniMessage
+import app.simplecloud.core.shared.adventure.miniMessage
 import app.simplecloud.plugin.prefixes.api.group.PrefixesPlayerData
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder

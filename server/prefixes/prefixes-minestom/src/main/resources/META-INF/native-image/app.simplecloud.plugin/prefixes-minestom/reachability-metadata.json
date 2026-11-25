@@ -12,37 +12,37 @@
       "type": "kotlin.jvm.internal.DefaultConstructorMarker"
     },
     {
-      "type": "app.simplecloud.plugin.core.shared.config.VersionedConfig",
+      "type": "app.simplecloud.core.shared.config.VersionedConfig",
       "allDeclaredMethods": true
     },
     {
-      "type": "app.simplecloud.plugin.core.shared.config.AbstractMessageConfig",
+      "type": "app.simplecloud.core.shared.config.AbstractMessageConfig",
       "allDeclaredFields": true,
       "allDeclaredMethods": true,
       "allDeclaredConstructors": true
     },
     {
-      "type": "app.simplecloud.plugin.core.shared.config.AbstractCommandMessageConfig",
+      "type": "app.simplecloud.core.shared.config.AbstractCommandMessageConfig",
       "allDeclaredFields": true,
       "allDeclaredMethods": true,
       "allDeclaredConstructors": true
     },
     {
-      "type": "app.simplecloud.plugin.core.shared.config.AbstractCommandMessages",
+      "type": "app.simplecloud.core.shared.config.AbstractCommandMessages",
       "allDeclaredMethods": true
     },
     {
-      "type": "app.simplecloud.plugin.core.shared.command.HelpMessages",
+      "type": "app.simplecloud.core.shared.command.HelpMessages",
       "allDeclaredMethods": true
     },
     {
-      "type": "app.simplecloud.plugin.core.shared.config.CommandExceptionMessages",
+      "type": "app.simplecloud.core.shared.config.CommandExceptionMessages",
       "allDeclaredFields": true,
       "allDeclaredMethods": true,
       "allDeclaredConstructors": true
     },
     {
-      "type": "app.simplecloud.plugin.core.shared.config.ArgumentExceptionMessages",
+      "type": "app.simplecloud.core.shared.config.ArgumentExceptionMessages",
       "allDeclaredFields": true,
       "allDeclaredMethods": true,
       "allDeclaredConstructors": true

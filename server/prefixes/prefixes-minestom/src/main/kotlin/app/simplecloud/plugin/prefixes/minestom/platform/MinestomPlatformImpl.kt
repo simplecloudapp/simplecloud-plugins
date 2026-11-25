@@ -1,7 +1,7 @@
 package app.simplecloud.plugin.prefixes.minestom.platform
 
-import app.simplecloud.plugin.core.minestom.permission.MinestomPermissions
-import app.simplecloud.plugin.core.shared.permission.PermissionChecker
+import app.simplecloud.core.minestom.permission.MinestomPermissions
+import app.simplecloud.core.shared.permission.PermissionChecker
 import app.simplecloud.plugin.prefixes.shared.platform.PrefixesPlatform
 import net.luckperms.api.LuckPerms
 import net.luckperms.api.LuckPermsProvider

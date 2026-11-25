@@ -1,6 +1,6 @@
 package app.simplecloud.plugin.prefixes.shared.config
 
-import app.simplecloud.plugin.core.shared.config.VersionedConfig
+import app.simplecloud.core.shared.config.VersionedConfig
 import app.simplecloud.plugin.prefixes.shared.PrefixesConstants
 import app.simplecloud.plugin.prefixes.shared.utilities.config.ConfigVersion
 import org.spongepowered.configurate.objectmapping.ConfigSerializable

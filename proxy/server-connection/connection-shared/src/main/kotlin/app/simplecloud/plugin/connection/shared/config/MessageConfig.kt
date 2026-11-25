@@ -1,9 +1,9 @@
 package app.simplecloud.plugin.connection.shared.config
 
 import app.simplecloud.plugin.connection.shared.utilities.config.ConfigVersion
-import app.simplecloud.plugin.core.shared.config.VersionedConfig
-import app.simplecloud.plugin.core.shared.config.message.AbstractMessageConfig
-import app.simplecloud.plugin.core.shared.config.message.MessagePalette
+import app.simplecloud.core.shared.config.VersionedConfig
+import app.simplecloud.core.shared.config.message.AbstractMessageConfig
+import app.simplecloud.core.shared.config.message.MessagePalette
 import org.spongepowered.configurate.objectmapping.ConfigSerializable
 
 @ConfigSerializable

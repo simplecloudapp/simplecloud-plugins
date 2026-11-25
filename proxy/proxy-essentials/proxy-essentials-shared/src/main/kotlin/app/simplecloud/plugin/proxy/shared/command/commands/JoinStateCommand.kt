@@ -1,11 +1,11 @@
 package app.simplecloud.plugin.proxy.shared.command.commands
 
 import app.simplecloud.api.CloudApi
-import app.simplecloud.plugin.core.shared.command.CloudSender
-import app.simplecloud.plugin.core.shared.command.CloudSuggestions
+import app.simplecloud.core.shared.command.CloudSender
+import app.simplecloud.core.shared.command.CloudSuggestions
 import app.simplecloud.plugin.proxy.shared.ProxyEssentials
 import app.simplecloud.plugin.proxy.shared.utilities.CommandPermissions
-import kotlinx.coroutines.future.await
+import kotlinx.coroutines.future.*
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.incendo.cloud.CommandManager
 import org.incendo.cloud.context.CommandContext

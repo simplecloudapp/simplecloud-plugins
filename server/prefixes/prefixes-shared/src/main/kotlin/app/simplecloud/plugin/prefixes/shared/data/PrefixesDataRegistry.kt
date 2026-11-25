@@ -1,6 +1,6 @@
 package app.simplecloud.plugin.prefixes.shared.data
 
-import app.simplecloud.plugin.core.shared.adventure.miniMessage
+import app.simplecloud.core.shared.adventure.miniMessage
 import app.simplecloud.plugin.prefixes.api.group.PrefixesGroup
 import app.simplecloud.plugin.prefixes.api.group.PrefixesPlayerData
 import app.simplecloud.plugin.prefixes.shared.PrefixesConstants

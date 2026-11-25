@@ -11,7 +11,7 @@ import app.simplecloud.api.testing.TestCloud
 import app.simplecloud.plugin.connection.shared.config.ConnectionConfig
 import app.simplecloud.plugin.connection.shared.config.RegistrationConfig
 import app.simplecloud.plugin.connection.shared.config.RegistrationServer
-import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
+import app.simplecloud.core.shared.config.ConfigurationFactory
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout

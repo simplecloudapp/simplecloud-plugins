@@ -1,8 +1,8 @@
 package app.simplecloud.plugin.proxy.shared.config
 
-import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
-import app.simplecloud.plugin.core.shared.matcher.OperationType
-import app.simplecloud.plugin.core.shared.matcher.ServerMatcherConfiguration
+import app.simplecloud.core.shared.config.ConfigurationFactory
+import app.simplecloud.core.shared.matcher.OperationType
+import app.simplecloud.core.shared.matcher.ServerMatcherConfiguration
 import java.nio.file.Files
 import kotlin.test.Test
 import kotlin.test.assertEquals

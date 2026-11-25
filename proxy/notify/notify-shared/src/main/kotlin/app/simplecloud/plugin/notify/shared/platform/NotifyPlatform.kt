@@ -1,6 +1,6 @@
 package app.simplecloud.plugin.notify.shared.platform
 
-import app.simplecloud.plugin.core.shared.command.CloudSender
+import app.simplecloud.core.shared.command.CloudSender
 import java.io.File
 
 /**

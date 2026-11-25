@@ -4,10 +4,10 @@ import app.simplecloud.api.CloudApi
 import app.simplecloud.api.event.Subscription
 import app.simplecloud.api.event.server.ServerStoppedEvent
 import app.simplecloud.api.server.ServerState
-import app.simplecloud.plugin.core.shared.command.CloudSender
-import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
-import app.simplecloud.plugin.core.shared.pretty.PrettifyCase
-import app.simplecloud.plugin.core.shared.pretty.StringPrettifier
+import app.simplecloud.core.shared.command.CloudSender
+import app.simplecloud.core.shared.config.ConfigurationFactory
+import app.simplecloud.core.shared.pretty.PrettifyCase
+import app.simplecloud.core.shared.pretty.StringPrettifier
 import app.simplecloud.plugin.notify.shared.config.MessageConfig
 import app.simplecloud.plugin.notify.shared.notification.Notification
 import app.simplecloud.plugin.notify.shared.notification.NotificationCache
@@ -15,7 +15,7 @@ import app.simplecloud.plugin.notify.shared.notification.NotificationType
 import app.simplecloud.plugin.notify.shared.platform.NotifyPlatform
 import app.simplecloud.plugin.notify.shared.utilities.MessageFormatter
 import kotlinx.coroutines.*
-import kotlinx.coroutines.future.await
+import kotlinx.coroutines.future.*
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import java.util.concurrent.ConcurrentHashMap
 

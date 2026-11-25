@@ -1,7 +1,7 @@
 package app.simplecloud.plugin.notify.shared.listener
 
 import app.simplecloud.api.testing.TestCloud
-import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
+import app.simplecloud.core.shared.config.ConfigurationFactory
 import app.simplecloud.plugin.notify.shared.config.MessageConfig
 import app.simplecloud.plugin.notify.shared.config.Notifications
 import app.simplecloud.plugin.notify.shared.config.ServerNotifications

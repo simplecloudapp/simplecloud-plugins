@@ -9,7 +9,7 @@ import java.nio.file.Path
 import java.util.Base64
 import java.util.concurrent.ConcurrentHashMap
 import javax.imageio.ImageIO
-import kotlin.math.roundToInt
+import kotlin.math.*
 
 class ServerIconCache(
     directory: Path,

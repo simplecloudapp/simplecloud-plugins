@@ -1,7 +1,7 @@
 package app.simplecloud.plugin.notify.bungeecord.platform
 
-import app.simplecloud.plugin.core.bungeecord.command.BungeeCloudSender
-import app.simplecloud.plugin.core.shared.command.CloudSender
+import app.simplecloud.core.bungeecord.command.BungeeCloudSender
+import app.simplecloud.core.shared.command.CloudSender
 import app.simplecloud.plugin.notify.shared.platform.NotifyPlatform
 import net.md_5.bungee.api.plugin.Plugin
 import java.io.File

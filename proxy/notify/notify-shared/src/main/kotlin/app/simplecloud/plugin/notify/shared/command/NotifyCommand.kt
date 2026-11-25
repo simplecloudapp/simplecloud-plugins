@@ -1,14 +1,14 @@
 package app.simplecloud.plugin.notify.shared.command
 
 import app.simplecloud.api.player.CloudPlayer
-import app.simplecloud.plugin.core.shared.command.CloudSender
-import app.simplecloud.plugin.core.shared.command.CloudSuggestions
-import app.simplecloud.plugin.core.shared.command.CommandExceptionHandler
-import app.simplecloud.plugin.core.shared.command.HelpPage
+import app.simplecloud.core.shared.command.CloudSender
+import app.simplecloud.core.shared.command.CloudSuggestions
+import app.simplecloud.core.shared.command.CommandExceptionHandler
+import app.simplecloud.core.shared.command.HelpPage
 import app.simplecloud.plugin.notify.shared.NotifyPlugin
 import app.simplecloud.plugin.notify.shared.notification.NotificationType
 import app.simplecloud.plugin.notify.shared.utilities.NotifyPermissions
-import kotlinx.coroutines.future.await
+import kotlinx.coroutines.future.*
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder

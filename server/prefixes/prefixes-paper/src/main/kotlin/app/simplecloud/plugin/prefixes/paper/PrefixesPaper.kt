@@ -1,6 +1,6 @@
 package app.simplecloud.plugin.prefixes.paper
 
-import app.simplecloud.plugin.core.paper.command.PaperCloudCommandManager
+import app.simplecloud.core.paper.command.PaperCloudCommandManager
 import app.simplecloud.plugin.prefixes.api.PrefixesApi
 import app.simplecloud.plugin.prefixes.paper.display.PaperDisplayManager
 import app.simplecloud.plugin.prefixes.paper.display.PaperTablist

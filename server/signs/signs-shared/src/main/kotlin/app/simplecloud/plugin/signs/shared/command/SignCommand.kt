@@ -1,12 +1,12 @@
 package app.simplecloud.plugin.signs.shared.command
 
-import app.simplecloud.plugin.core.shared.adventure.tags
-import app.simplecloud.plugin.core.shared.command.CloudSender
-import app.simplecloud.plugin.core.shared.command.CloudSuggestions
-import app.simplecloud.plugin.core.shared.command.CommandExceptionHandler
-import app.simplecloud.plugin.core.shared.command.HelpPage
-import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
-import app.simplecloud.plugin.core.shared.controller.ApiUtils
+import app.simplecloud.core.shared.adventure.tags
+import app.simplecloud.core.shared.command.CloudSender
+import app.simplecloud.core.shared.command.CloudSuggestions
+import app.simplecloud.core.shared.command.CommandExceptionHandler
+import app.simplecloud.core.shared.command.HelpPage
+import app.simplecloud.core.shared.config.ConfigurationFactory
+import app.simplecloud.core.shared.controller.ApiUtils
 import app.simplecloud.plugin.signs.shared.SignManager
 import app.simplecloud.plugin.signs.shared.SignPermissions
 import app.simplecloud.plugin.signs.shared.config.MessageConfig

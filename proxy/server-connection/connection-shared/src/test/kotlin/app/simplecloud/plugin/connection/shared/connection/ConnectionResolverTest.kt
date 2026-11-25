@@ -19,8 +19,8 @@ import app.simplecloud.plugin.connection.shared.registration.ServerRegistrations
 import app.simplecloud.plugin.connection.shared.registration.ServerStatus
 import app.simplecloud.plugin.connection.shared.registration.ServerStatusCache
 import app.simplecloud.plugin.connection.shared.registration.TestServerRegistry
-import app.simplecloud.plugin.core.shared.matcher.OperationType
-import app.simplecloud.plugin.core.shared.matcher.ServerMatcherConfiguration
+import app.simplecloud.core.shared.matcher.OperationType
+import app.simplecloud.core.shared.matcher.ServerMatcherConfiguration
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import kotlin.test.Test
 import kotlin.test.assertEquals

@@ -2,8 +2,8 @@ package app.simplecloud.plugin.notify.shared
 
 import app.simplecloud.api.CloudApi
 import app.simplecloud.api.CloudApiOptions
-import app.simplecloud.plugin.core.shared.config.ConfigWatcher
-import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
+import app.simplecloud.core.shared.config.ConfigWatcher
+import app.simplecloud.core.shared.config.ConfigurationFactory
 import app.simplecloud.plugin.notify.shared.config.MessageConfig
 import app.simplecloud.plugin.notify.shared.listener.NotificationListener
 import app.simplecloud.plugin.notify.shared.notification.NotificationCache

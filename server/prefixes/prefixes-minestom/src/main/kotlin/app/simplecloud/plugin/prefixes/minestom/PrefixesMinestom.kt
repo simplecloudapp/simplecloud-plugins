@@ -1,7 +1,7 @@
 package app.simplecloud.plugin.prefixes.minestom
 
-import app.simplecloud.plugin.core.minestom.command.MinestomCloudSenderMapper
-import app.simplecloud.plugin.core.minestom.permission.MinestomPermissions
+import app.simplecloud.core.minestom.command.MinestomCloudSenderMapper
+import app.simplecloud.core.minestom.permission.MinestomPermissions
 import app.simplecloud.plugin.prefixes.api.PrefixesApi
 import app.simplecloud.plugin.prefixes.api.PrefixesApiProvider
 import app.simplecloud.plugin.prefixes.minestom.display.MinestomDisplayManager

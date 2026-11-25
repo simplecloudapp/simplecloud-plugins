@@ -1,7 +1,7 @@
 package app.simplecloud.plugin.signs.shared
 
 import app.simplecloud.api.server.Server
-import app.simplecloud.plugin.core.shared.adventure.tags
+import app.simplecloud.core.shared.adventure.tags
 import net.kyori.adventure.text.minimessage.tag.Tag
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 

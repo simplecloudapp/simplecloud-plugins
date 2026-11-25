@@ -14,9 +14,9 @@ import app.simplecloud.plugin.connection.shared.registration.RegisteredServer
 import app.simplecloud.plugin.connection.shared.registration.ServerRegisterer
 import app.simplecloud.plugin.connection.shared.registration.ServerRegistrations
 import app.simplecloud.plugin.connection.shared.registration.ServerStatusCache
-import app.simplecloud.plugin.core.shared.config.ConfigWatcher
-import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
-import app.simplecloud.plugin.core.shared.config.DefaultConfigInstaller
+import app.simplecloud.core.shared.config.ConfigWatcher
+import app.simplecloud.core.shared.config.ConfigurationFactory
+import app.simplecloud.core.shared.config.DefaultConfigInstaller
 import kotlinx.coroutines.*
 import org.slf4j.LoggerFactory
 import java.io.File

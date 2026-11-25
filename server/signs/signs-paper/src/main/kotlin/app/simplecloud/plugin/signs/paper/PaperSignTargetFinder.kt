@@ -1,6 +1,6 @@
 package app.simplecloud.plugin.signs.paper
 
-import app.simplecloud.plugin.core.paper.command.PaperCloudSender
+import app.simplecloud.core.paper.command.PaperCloudSender
 import app.simplecloud.plugin.signs.shared.command.SignTargetFinder
 import app.simplecloud.plugin.signs.shared.config.location.SignLocation
 import kotlinx.coroutines.future.await

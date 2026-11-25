@@ -1,7 +1,7 @@
 package app.simplecloud.plugin.notify.shared.notification
 
 import app.simplecloud.api.player.PlayerApi
-import kotlinx.coroutines.future.await
+import kotlinx.coroutines.future.*
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 

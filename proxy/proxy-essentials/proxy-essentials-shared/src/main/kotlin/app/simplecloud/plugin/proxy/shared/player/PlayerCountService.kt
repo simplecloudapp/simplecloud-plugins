@@ -3,13 +3,13 @@ package app.simplecloud.plugin.proxy.shared.player
 import app.simplecloud.api.CloudApi
 import app.simplecloud.api.group.Group
 import app.simplecloud.api.runtime.SimpleCloudRuntime
-import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
+import app.simplecloud.core.shared.config.ConfigurationFactory
 import app.simplecloud.plugin.proxy.shared.config.PlayerCountConfig
 import app.simplecloud.plugin.proxy.shared.config.ProxyEssentialsConfig
 import app.simplecloud.plugin.proxy.shared.network.NetworkCache
 import app.simplecloud.plugin.proxy.shared.platform.ProxyPlatform
 import kotlinx.coroutines.*
-import kotlinx.coroutines.future.await
+import kotlinx.coroutines.future.*
 import org.slf4j.LoggerFactory
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger

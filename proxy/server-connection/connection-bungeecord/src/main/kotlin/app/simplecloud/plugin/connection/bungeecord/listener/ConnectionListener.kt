@@ -3,7 +3,7 @@ package app.simplecloud.plugin.connection.bungeecord.listener
 import app.simplecloud.plugin.connection.bungeecord.platform.BungeeCordConnectionPlayer
 import app.simplecloud.plugin.connection.shared.ConnectionPlugin
 import app.simplecloud.plugin.connection.shared.connection.KickTracker
-import app.simplecloud.plugin.core.bungeecord.text.BungeeComponentConverter
+import app.simplecloud.core.bungeecord.text.BungeeComponentConverter
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import net.md_5.bungee.api.ProxyServer

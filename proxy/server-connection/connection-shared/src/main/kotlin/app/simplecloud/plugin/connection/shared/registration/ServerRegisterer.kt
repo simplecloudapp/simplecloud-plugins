@@ -14,7 +14,7 @@ import app.simplecloud.api.shaded.nats.client.Connection
 import app.simplecloud.plugin.connection.shared.config.ConnectionConfig
 import app.simplecloud.plugin.connection.shared.config.RegistrationConfig
 import app.simplecloud.plugin.connection.shared.utilities.RegisteredServerResolver
-import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
+import app.simplecloud.core.shared.config.ConfigurationFactory
 import kotlinx.coroutines.*
 import kotlinx.coroutines.future.await
 import kotlinx.coroutines.sync.Mutex

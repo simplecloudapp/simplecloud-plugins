@@ -2,8 +2,8 @@ package app.simplecloud.plugin.command.velocity
 
 import app.simplecloud.plugin.command.shared.BuildConstants
 import app.simplecloud.plugin.command.shared.CommandPlugin
-import app.simplecloud.plugin.command.shared.command.CloudCommandHandler
-import app.simplecloud.plugin.core.velocity.command.VelocityCloudCommandManager
+import app.simplecloud.plugin.command.shared.command.CloudCommand
+import app.simplecloud.core.velocity.command.VelocityCloudCommandManager
 import com.google.inject.Inject
 import com.velocitypowered.api.event.Subscribe
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent
@@ -34,7 +34,7 @@ class VelocityPlugin @Inject constructor(
 
     @Subscribe
     fun onProxyInitialization(event: ProxyInitializeEvent) {
-        CloudCommandHandler(VelocityCloudCommandManager.create(this, server), plugin).register()
+        CloudCommand(VelocityCloudCommandManager.create(this, server), plugin).register()
         plugin.start()
     }
 

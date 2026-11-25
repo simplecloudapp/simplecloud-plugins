@@ -2,8 +2,8 @@ package app.simplecloud.plugin.signs.paper
 
 import app.simplecloud.api.CloudApi
 import app.simplecloud.api.CloudApiOptions
-import app.simplecloud.plugin.core.paper.command.PaperCloudCommandManager
-import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
+import app.simplecloud.core.paper.command.PaperCloudCommandManager
+import app.simplecloud.core.shared.config.ConfigurationFactory
 import app.simplecloud.plugin.signs.paper.listener.SignListener
 import app.simplecloud.plugin.signs.shared.SignManager
 import app.simplecloud.plugin.signs.shared.command.SignCommand

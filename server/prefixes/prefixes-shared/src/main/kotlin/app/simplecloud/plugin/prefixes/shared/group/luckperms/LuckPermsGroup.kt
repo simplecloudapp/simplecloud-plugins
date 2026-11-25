@@ -1,6 +1,6 @@
 package app.simplecloud.plugin.prefixes.shared.group.luckperms
 
-import app.simplecloud.plugin.core.shared.adventure.miniMessage
+import app.simplecloud.core.shared.adventure.miniMessage
 import app.simplecloud.plugin.prefixes.api.group.PrefixesGroup
 import app.simplecloud.plugin.prefixes.shared.PrefixesConstants
 import app.simplecloud.plugin.prefixes.shared.utilities.ColorParser

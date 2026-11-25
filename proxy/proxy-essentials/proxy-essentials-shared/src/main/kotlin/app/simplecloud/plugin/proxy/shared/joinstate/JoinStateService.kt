@@ -8,7 +8,7 @@ import app.simplecloud.api.runtime.SimpleCloudRuntime
 import app.simplecloud.api.server.Server
 import app.simplecloud.api.server.ServerQuery
 import app.simplecloud.api.server.ServerState
-import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
+import app.simplecloud.core.shared.config.ConfigurationFactory
 import app.simplecloud.plugin.proxy.shared.config.ProxyEssentialsConfig
 import app.simplecloud.plugin.proxy.shared.network.NetworkCache
 import kotlinx.coroutines.*

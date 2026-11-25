@@ -1,5 +1,5 @@
 # The messages format version. Do not change this value.
-version: 1
+version: 2
 
 # ───────────────────────────────────────────────────────────────────────────────
 # Palette
@@ -46,7 +46,7 @@ command:
       'group list': 'List all groups'
       'group info <group>': 'Show a group'
       'group start <group> [count]': 'Start servers of a group'
-      'group stop <group> [id]': 'Stop servers of a group'
+      'group stop <group> [ids]': 'Stop servers of a group'
       'group rollout <group>': 'Restart a group server by server'
       'group rollout <group> status': 'Show the rollout of a group'
       'group rollout <group> cancel': 'Cancel the rollout of a group'
@@ -54,17 +54,23 @@ command:
       'server info <group> <id>': 'Show a server'
       'server start <group>': 'Start a new server'
       'server stop <group> <id>': 'Stop a server'
-      'player list [<group|ps> <target>]': 'List the online players'
+      'server command <server> <command>': 'Run a console command on a server'
+      'ps list': 'List all persistent servers'
+      'ps info <name>': 'Show a persistent server'
+      'player list [<group|ps|server> <target>]': 'List the online players'
       'player info <player>': 'Show a player'
-      'player send <player> <group|ps> <target>': 'Send a player to a target'
-      'player sendall <group|ps> <target>': 'Send all players to a target'
-      'player sendfrom <source> <group|ps> <target>': 'Move the players of a source'
+      'player send <player> <group|ps|server> <target> [mode]': 'Send a player to a target'
+      'player sendall <group|ps|server> <target> [mode]': 'Send all players to a target'
+      'player sendfrom <source> <group|ps|server> <target> [mode]': 'Move the players of a source'
       'player message <player> <message>': 'Send a player a message'
+      'player kick <player> [reason]': 'Kick a player from the network'
+      'info': 'Show the network stats'
       'reload': 'Reload the messages'
 
   # Shown when a command is used with wrong arguments
   usage:
-    invalid-target-type: '<prefix> <error>Use group or ps as the target type.'
+    invalid-target-type: '<prefix> <error>Use group, ps or server as the target type.'
+    mode-only-for-groups: '<prefix> <error>A selection mode only works with a group as the target.'
 
   # /cloud group ...
   group:
@@ -79,7 +85,7 @@ command:
       success: '<prefix> <info>Sent the start request for <count> servers of group <group>.'
       partial: '<prefix> <warning>Started only <count>/<total> servers for group <group> because <reason>.'
     stop:
-      success: '<prefix> <info>Sent the stop request for the servers of group <group>.'
+      success: '<prefix> <info>Sent the stop request for <count> servers of group <group>.'
       success-with-ids: '<prefix> <info>Sent the stop request for servers <ids> of group <group>.'
       partial: '<prefix> <warning>Stopped only <count>/<total> servers of group <group> because <reason>.'
     # /cloud group rollout <group> [status|cancel]
@@ -94,14 +100,15 @@ command:
         already-active: '<prefix> <warning>Group <group> already has an active rollout.'
         no-servers: '<prefix> <warning>Group <group> has no running servers to roll out.'
         not-active: '<prefix> <warning>Group <group> has no active rollout to cancel.'
-        start-failed: '<prefix> <error>Couldn''t start the rollout of group <group> because <reason>.'
-        cancel-failed: '<prefix> <error>Couldn''t cancel the rollout of group <group> because <reason>.'
-        status-failed: '<prefix> <error>Couldn''t get the rollout status of group <group> because <reason>.'
     error:
       not-found: '<prefix> <error>Group <group> was not found.'
       already-empty: '<prefix> <warning>Group <group> has no running servers.'
       start-failed: '<prefix> <error>Couldn''t start servers for group <group> because <reason>.'
       stop-failed: '<prefix> <error>Couldn''t stop the servers of group <group> because <reason>.'
+      limit-reached: '<prefix> <warning>Group <group> can only start <available> more servers <separator>(</separator><muted><running>/<max> running or queued</muted><separator>)</separator>.'
+      invalid-ids: '<prefix> <error><ids> are not valid server ids.'
+      servers-not-found: '<prefix> <error>Servers <ids> of group <group> were not found.'
+      already-stopping: '<prefix> <warning>Servers <ids> of group <group> are already stopping.'
 
   # /cloud server ...
   server:
@@ -116,11 +123,25 @@ command:
       requested: '<prefix> <info>Sent the start request for a new server of group <group>.'
     stop:
       success: '<prefix> <info>Sent the stop request for server <group>-<id>.'
+    command:
+      success: '<prefix> <success>Sent <highlight><command></highlight> to server <server>.'
     error:
       not-found: '<prefix> <error>Server <group>-<id> was not found.'
       already-stopping: '<prefix> <warning>Server <group>-<id> is already stopping.'
-      start-failed: '<prefix> <error>Couldn''t queue a new server for group <group> because <reason>.'
-      stop-failed: '<prefix> <error>Couldn''t stop server <group>-<id> because <reason>.'
+      unknown: '<prefix> <error>Server <server> was not found.'
+      command-empty: '<prefix> <error>Write a command for server <server>.'
+
+  # /cloud ps ...
+  persistent-server:
+    list:
+      title: '<prefix> <info>Persistent servers <separator>(</separator><muted><count></muted><separator>)</separator>'
+      entry: '<separator>•</separator> <highlight><server> <separator>(</separator><muted><value></muted><separator>)</separator>'
+      empty: '<prefix> <warning>No persistent servers were found.'
+    info:
+      title: '<prefix> <info>Persistent server <server>'
+      entry: '<separator>•</separator> <muted><key><separator>:</separator> <highlight><value>'
+    error:
+      not-found: '<prefix> <error>Persistent server <server> was not found.'
 
   # /cloud player ...
   # <head:<playername>:true> shows the head of the player
@@ -138,6 +159,8 @@ command:
       success-from-server: '<prefix> <success>Sent <count> players from <source> to <target>.'
     message:
       success: '<prefix> <success>Sent your message to <white><head:<playername>:true></white> <displayname>.'
+    kick:
+      success: '<prefix> <success>Kicked <white><head:<playername>:true></white> <displayname>.'
     error:
       not-found: '<prefix> <error>Player <playername> was not found.'
       not-online: '<prefix> <error>Player <playername> is not online.'
@@ -150,7 +173,11 @@ command:
       all-on-target: '<prefix> <warning>All players are already on <target>.'
       no-source-players: '<prefix> <warning>No players are on <source>.'
       message-empty: '<prefix> <error>Write a message for <playername>.'
-      message-failed: '<prefix> <error>Couldn''t send the message to <playername>.'
+
+  # /cloud info
+  info:
+    title: '<prefix> <info>Cloud network'
+    entry: '<separator>•</separator> <muted><key><separator>:</separator> <highlight><value>'
 
   # /cloud reload
   reload:

@@ -1,8 +1,8 @@
 package app.simplecloud.plugin.prefixes.shared.group.config
 
-import app.simplecloud.plugin.core.shared.adventure.miniMessage
-import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
-import app.simplecloud.plugin.core.shared.permission.PermissionChecker
+import app.simplecloud.core.shared.adventure.miniMessage
+import app.simplecloud.core.shared.config.ConfigurationFactory
+import app.simplecloud.core.shared.permission.PermissionChecker
 import app.simplecloud.plugin.prefixes.api.group.GroupProvider
 import app.simplecloud.plugin.prefixes.api.group.PrefixesGroup
 import app.simplecloud.plugin.prefixes.shared.PrefixesConstants

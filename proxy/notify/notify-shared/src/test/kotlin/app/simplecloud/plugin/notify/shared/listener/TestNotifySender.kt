@@ -1,6 +1,6 @@
 package app.simplecloud.plugin.notify.shared.listener
 
-import app.simplecloud.plugin.core.shared.command.CloudSender
+import app.simplecloud.core.shared.command.CloudSender
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import java.util.UUID

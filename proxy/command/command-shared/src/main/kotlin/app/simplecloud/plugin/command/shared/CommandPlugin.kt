@@ -3,8 +3,9 @@ package app.simplecloud.plugin.command.shared
 import app.simplecloud.api.CloudApi
 import app.simplecloud.api.CloudApiOptions
 import app.simplecloud.plugin.command.shared.config.MessageConfig
-import app.simplecloud.plugin.core.shared.config.ConfigWatcher
-import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
+import app.simplecloud.plugin.command.shared.config.migration.MessageMigrations
+import app.simplecloud.core.shared.config.ConfigWatcher
+import app.simplecloud.core.shared.config.ConfigurationFactory
 import kotlinx.coroutines.*
 import org.slf4j.LoggerFactory
 import java.io.File
@@ -13,10 +14,10 @@ class CommandPlugin(private val dir: File) {
 
     private val logger = LoggerFactory.getLogger(CommandPlugin::class.java)
 
-    val config = ConfigurationFactory.create(dir, "messages.yml", MessageConfig())
-    val messageConfiguration: MessageConfig get() = config.get()
-
     val api: CloudApi = CloudApi.create(CloudApiOptions.builder().component("cloud-command").build())
+
+    val configuration = ConfigurationFactory.create(dir, "messages.yml", MessageConfig(), MessageMigrations)
+    val config: MessageConfig get() = configuration.get()
 
     // coroutine scope used for commands
     val scope = CoroutineScope(
@@ -29,7 +30,7 @@ class CommandPlugin(private val dir: File) {
     )
 
     fun start() {
-        ConfigWatcher(dir.toPath()) { config.reload() }.start(scope)
+        ConfigWatcher(dir.toPath()) { configuration.reload() }.start(scope)
     }
 
     fun shutdown() {

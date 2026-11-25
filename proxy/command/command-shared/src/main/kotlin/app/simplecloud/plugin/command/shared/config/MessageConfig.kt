@@ -1,12 +1,12 @@
 package app.simplecloud.plugin.command.shared.config
 
 import app.simplecloud.plugin.command.shared.utilities.ConfigVersion
-import app.simplecloud.plugin.core.shared.command.HelpMessages
-import app.simplecloud.plugin.core.shared.config.VersionedConfig
-import app.simplecloud.plugin.core.shared.config.command.AbstractCommandMessageConfig
-import app.simplecloud.plugin.core.shared.config.command.AbstractCommandMessages
-import app.simplecloud.plugin.core.shared.config.command.CommandExceptionMessages
-import app.simplecloud.plugin.core.shared.config.message.MessagePalette
+import app.simplecloud.core.shared.command.HelpMessages
+import app.simplecloud.core.shared.config.VersionedConfig
+import app.simplecloud.core.shared.config.command.AbstractCommandMessageConfig
+import app.simplecloud.core.shared.config.command.AbstractCommandMessages
+import app.simplecloud.core.shared.config.command.CommandExceptionMessages
+import app.simplecloud.core.shared.config.message.MessagePalette
 import org.spongepowered.configurate.objectmapping.ConfigSerializable
 
 @ConfigSerializable
@@ -24,6 +24,8 @@ data class CommandSection(
     val group: GroupSection = GroupSection(),
     val server: ServerSection = ServerSection(),
     val player: PlayerSection = PlayerSection(),
+    val persistentServer: PersistentServerSection = PersistentServerSection(),
+    val info: InfoSection = InfoSection(),
     val reload: ReloadSection = ReloadSection(),
     override val exception: CommandExceptionMessages = CommandExceptionMessages(),
 ) : AbstractCommandMessages
@@ -38,7 +40,7 @@ data class HelpSection(
         "group list" to "List all groups",
         "group info <group>" to "Show a group",
         "group start <group> [count]" to "Start servers of a group",
-        "group stop <group> [id]" to "Stop servers of a group",
+        "group stop <group> [ids]" to "Stop servers of a group",
         "group rollout <group>" to "Restart a group server by server",
         "group rollout <group> status" to "Show the rollout of a group",
         "group rollout <group> cancel" to "Cancel the rollout of a group",
@@ -46,19 +48,25 @@ data class HelpSection(
         "server info <group> <id>" to "Show a server",
         "server start <group>" to "Start a new server",
         "server stop <group> <id>" to "Stop a server",
-        "player list [<group|ps> <target>]" to "List the online players",
+        "server command <server> <command>" to "Run a console command on a server",
+        "ps list" to "List all persistent servers",
+        "ps info <name>" to "Show a persistent server",
+        "player list [<group|ps|server> <target>]" to "List the online players",
         "player info <player>" to "Show a player",
-        "player send <player> <group|ps> <target>" to "Send a player to a target",
-        "player sendall <group|ps> <target>" to "Send all players to a target",
-        "player sendfrom <source> <group|ps> <target>" to "Move the players of a source",
+        "player send <player> <group|ps|server> <target> [mode]" to "Send a player to a target",
+        "player sendall <group|ps|server> <target> [mode]" to "Send all players to a target",
+        "player sendfrom <source> <group|ps|server> <target> [mode]" to "Move the players of a source",
         "player message <player> <message>" to "Send a player a message",
+        "player kick <player> [reason]" to "Kick a player from the network",
+        "info" to "Show the network stats",
         "reload" to "Reload the messages",
     ),
 ) : HelpMessages
 
 @ConfigSerializable
 data class UsageSection(
-    val invalidTargetType: String = "<prefix> <error>Use group or ps as the target type.",
+    val invalidTargetType: String = "<prefix> <error>Use group, ps or server as the target type.",
+    val modeOnlyForGroups: String = "<prefix> <error>A selection mode only works with a group as the target.",
 )
 
 @ConfigSerializable
@@ -92,7 +100,7 @@ data class GroupStartSection(
 
 @ConfigSerializable
 data class GroupStopSection(
-    val success: String = "<prefix> <info>Sent the stop request for the servers of group <group>.",
+    val success: String = "<prefix> <info>Sent the stop request for <count> servers of group <group>.",
     val successWithIds: String = "<prefix> <info>Sent the stop request for servers <ids> of group <group>.",
     val partial: String = "<prefix> <warning>Stopped only <count>/<total> servers of group <group> because <reason>.",
 )
@@ -117,9 +125,6 @@ data class GroupRolloutErrorSection(
     val alreadyActive: String = "<prefix> <warning>Group <group> already has an active rollout.",
     val noServers: String = "<prefix> <warning>Group <group> has no running servers to roll out.",
     val notActive: String = "<prefix> <warning>Group <group> has no active rollout to cancel.",
-    val startFailed: String = "<prefix> <error>Couldn't start the rollout of group <group> because <reason>.",
-    val cancelFailed: String = "<prefix> <error>Couldn't cancel the rollout of group <group> because <reason>.",
-    val statusFailed: String = "<prefix> <error>Couldn't get the rollout status of group <group> because <reason>.",
 )
 
 @ConfigSerializable
@@ -128,6 +133,10 @@ data class GroupErrorSection(
     val alreadyEmpty: String = "<prefix> <warning>Group <group> has no running servers.",
     val startFailed: String = "<prefix> <error>Couldn't start servers for group <group> because <reason>.",
     val stopFailed: String = "<prefix> <error>Couldn't stop the servers of group <group> because <reason>.",
+    val limitReached: String = "<prefix> <warning>Group <group> can only start <available> more servers <separator>(</separator><muted><running>/<max> running or queued</muted><separator>)</separator>.",
+    val invalidIds: String = "<prefix> <error><ids> are not valid server ids.",
+    val serversNotFound: String = "<prefix> <error>Servers <ids> of group <group> were not found.",
+    val alreadyStopping: String = "<prefix> <warning>Servers <ids> of group <group> are already stopping.",
 )
 
 @ConfigSerializable
@@ -136,6 +145,7 @@ data class ServerSection(
     val info: ServerInfoSection = ServerInfoSection(),
     val start: ServerStartSection = ServerStartSection(),
     val stop: ServerStopSection = ServerStopSection(),
+    val command: ServerCommandSection = ServerCommandSection(),
     val error: ServerErrorSection = ServerErrorSection(),
 )
 
@@ -163,11 +173,41 @@ data class ServerStopSection(
 )
 
 @ConfigSerializable
+data class ServerCommandSection(
+    val success: String = "<prefix> <success>Sent <highlight><command></highlight> to server <server>.",
+)
+
+@ConfigSerializable
 data class ServerErrorSection(
     val notFound: String = "<prefix> <error>Server <group>-<id> was not found.",
     val alreadyStopping: String = "<prefix> <warning>Server <group>-<id> is already stopping.",
-    val startFailed: String = "<prefix> <error>Couldn't queue a new server for group <group> because <reason>.",
-    val stopFailed: String = "<prefix> <error>Couldn't stop server <group>-<id> because <reason>.",
+    val unknown: String = "<prefix> <error>Server <server> was not found.",
+    val commandEmpty: String = "<prefix> <error>Write a command for server <server>.",
+)
+
+@ConfigSerializable
+data class PersistentServerSection(
+    val list: PersistentServerListSection = PersistentServerListSection(),
+    val info: PersistentServerInfoSection = PersistentServerInfoSection(),
+    val error: PersistentServerErrorSection = PersistentServerErrorSection(),
+)
+
+@ConfigSerializable
+data class PersistentServerListSection(
+    val title: String = "<prefix> <info>Persistent servers <separator>(</separator><muted><count></muted><separator>)</separator>",
+    val entry: String = "<separator>•</separator> <highlight><server> <separator>(</separator><muted><value></muted><separator>)</separator>",
+    val empty: String = "<prefix> <warning>No persistent servers were found.",
+)
+
+@ConfigSerializable
+data class PersistentServerInfoSection(
+    val title: String = "<prefix> <info>Persistent server <server>",
+    val entry: String = "<separator>•</separator> <muted><key><separator>:</separator> <highlight><value>",
+)
+
+@ConfigSerializable
+data class PersistentServerErrorSection(
+    val notFound: String = "<prefix> <error>Persistent server <server> was not found.",
 )
 
 @ConfigSerializable
@@ -176,6 +216,7 @@ data class PlayerSection(
     val info: PlayerInfoSection = PlayerInfoSection(),
     val send: PlayerSendSection = PlayerSendSection(),
     val message: PlayerMessageSection = PlayerMessageSection(),
+    val kick: PlayerKickSection = PlayerKickSection(),
     val error: PlayerErrorSection = PlayerErrorSection(),
 )
 
@@ -205,6 +246,11 @@ data class PlayerMessageSection(
 )
 
 @ConfigSerializable
+data class PlayerKickSection(
+    val success: String = "<prefix> <success>Kicked <white><head:<playername>:true></white> <displayname>.",
+)
+
+@ConfigSerializable
 data class PlayerErrorSection(
     val notFound: String = "<prefix> <error>Player <playername> was not found.",
     val notOnline: String = "<prefix> <error>Player <playername> is not online.",
@@ -217,7 +263,12 @@ data class PlayerErrorSection(
     val allOnTarget: String = "<prefix> <warning>All players are already on <target>.",
     val noSourcePlayers: String = "<prefix> <warning>No players are on <source>.",
     val messageEmpty: String = "<prefix> <error>Write a message for <playername>.",
-    val messageFailed: String = "<prefix> <error>Couldn't send the message to <playername>.",
+)
+
+@ConfigSerializable
+data class InfoSection(
+    val title: String = "<prefix> <info>Cloud network",
+    val entry: String = "<separator>•</separator> <muted><key><separator>:</separator> <highlight><value>",
 )
 
 @ConfigSerializable

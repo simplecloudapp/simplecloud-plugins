@@ -1,29 +1,29 @@
 package app.simplecloud.plugin.command.shared.command.commands
 
 import app.simplecloud.api.CloudApi
-import app.simplecloud.api.base.ServerBase
 import app.simplecloud.api.group.Group
-import app.simplecloud.api.persistentserver.PersistentServer
 import app.simplecloud.api.player.CloudPlayer
 import app.simplecloud.api.player.CloudPlayer.ConnectResult
-import app.simplecloud.api.server.Server
+import app.simplecloud.api.player.ServerSelectionMode
+import app.simplecloud.core.shared.adventure.miniMessage
+import app.simplecloud.core.shared.adventure.tags
+import app.simplecloud.core.shared.command.CloudSender
+import app.simplecloud.core.shared.command.CloudSuggestions
+import app.simplecloud.core.shared.command.CloudSuggestions.TARGET_TYPE_GROUP
+import app.simplecloud.core.shared.command.CloudSuggestions.TARGET_TYPE_PERSISTENT_SERVER
+import app.simplecloud.core.shared.command.CloudSuggestions.TARGET_TYPE_SERVER
+import app.simplecloud.core.shared.controller.ApiUtils
+import app.simplecloud.core.shared.controller.getIdentifiers
 import app.simplecloud.plugin.command.shared.CommandPlugin
 import app.simplecloud.plugin.command.shared.utilities.CommandPermissions
-import app.simplecloud.plugin.core.shared.adventure.tags
-import app.simplecloud.plugin.core.shared.command.CloudSender
-import app.simplecloud.plugin.core.shared.command.CloudSuggestions
-import app.simplecloud.plugin.core.shared.command.CloudSuggestions.TARGET_TYPE_GROUP
-import app.simplecloud.plugin.core.shared.command.CloudSuggestions.TARGET_TYPE_PERSISTENT_SERVER
-import app.simplecloud.plugin.core.shared.controller.ApiUtils
-import kotlinx.coroutines.*
+import app.simplecloud.plugin.command.shared.utilities.Formatter
 import kotlinx.coroutines.future.*
-import net.kyori.adventure.text.Component
 import org.incendo.cloud.CommandManager
 import org.incendo.cloud.kotlin.coroutines.extension.suspendingHandler
+import org.incendo.cloud.parser.standard.EnumParser.enumParser
 import org.incendo.cloud.parser.standard.StringParser.StringMode
 import org.incendo.cloud.parser.standard.StringParser.stringParser
 import org.incendo.cloud.permission.Permission
-import java.util.concurrent.CompletableFuture
 import kotlin.time.Duration.Companion.seconds
 
 class PlayerCommand<C : CloudSender>(
@@ -32,6 +32,8 @@ class PlayerCommand<C : CloudSender>(
     private val manager: CommandManager<C>,
 ) {
 
+    private val types = listOf(TARGET_TYPE_GROUP, TARGET_TYPE_PERSISTENT_SERVER, TARGET_TYPE_SERVER)
+
     fun register() {
         registerList()
         registerInfo()
@@ -39,6 +41,7 @@ class PlayerCommand<C : CloudSender>(
         registerSendAll()
         registerSendFrom()
         registerMessage()
+        registerKick()
     }
 
     private fun registerList() {
@@ -46,53 +49,44 @@ class PlayerCommand<C : CloudSender>(
             manager.commandBuilder("cloud", "sc", "simplecloud")
                 .literal("player")
                 .literal("list")
-                .optional("targetType", stringParser(), CloudSuggestions.targetTypes())
+                .optional("targetType", stringParser(), CloudSuggestions.of(types))
                 .optional("target", stringParser(), CloudSuggestions.targets(api))
                 .suspendingHandler(plugin.scope) { context ->
+                    val sender = context.sender()
                     val targetType = context.optional<String>("targetType").orElse(null)
                     val target = context.optional<String>("target").orElse(null)
-                    listPlayers(context.sender(), targetType, target)
+                    val messages = plugin.config
+                    if (targetType != null && target == null) {
+                        sender.sendMessage(messages.msg(messages.command.exception.syntax, tags("command" to "/cloud player list [<group|ps|server> <target>]")))
+                        return@suspendingHandler
+                    }
+                    val players = if (targetType == null) {
+                        api.player().onlinePlayers.await()
+                    } else {
+                        val resolvedTarget = findTarget(sender, targetType, target, null) ?: return@suspendingHandler
+                        ApiUtils.getPlayersOnTarget(api, resolvedTarget)
+                    }
+                    if (players.isEmpty()) {
+                        sender.sendMessage(messages.msg(messages.command.player.list.empty))
+                        return@suspendingHandler
+                    }
+                    sender.sendMessage(messages.msg(messages.command.player.list.title, tags("count" to players.size)))
+                    players.sortedBy { it.name.lowercase() }.forEach { player ->
+                        sender.sendMessage(
+                            messages.msg(
+                                messages.command.player.list.entry,
+                                tags(
+                                    "playername" to player.name,
+                                    "displayname" to player.displayName,
+                                    "value" to player.connectedServerName,
+                                ),
+                            ),
+                        )
+                    }
                 }
                 .permission(Permission.permission(CommandPermissions.PLAYER_LIST))
                 .build(),
         )
-    }
-
-    private suspend fun listPlayers(sender: C, targetType: String?, target: String?) {
-        val messages = plugin.messageConfiguration
-        if (targetType != null && !isTargetTypeValid(targetType)) {
-            sender.sendMessage(messages.msg(messages.command.usage.invalidTargetType))
-            return
-        }
-        if (targetType != null && target == null) {
-            sender.sendMessage(
-                messages.msg(messages.command.exception.syntax, tags("command" to "/cloud player list [<group|ps> <target>]")),
-            )
-            return
-        }
-        val resolvedTarget = if (targetType == null || target == null) null else resolveTarget(targetType, target)
-        if (target != null && resolvedTarget == null) {
-            sender.sendMessage(messages.msg(messages.command.player.error.targetNotFound, tags("target" to target)))
-            return
-        }
-        val players = if (resolvedTarget == null) api.player().onlinePlayers.await() else playersForTarget(resolvedTarget)
-        if (players.isEmpty()) {
-            sender.sendMessage(messages.msg(messages.command.player.list.empty))
-            return
-        }
-        sender.sendMessage(messages.msg(messages.command.player.list.title, tags("count" to players.size)))
-        players.sortedBy { it.name.lowercase() }.forEach { player ->
-            sender.sendMessage(
-                messages.msg(
-                    messages.command.player.list.entry,
-                    tags(
-                        "playername" to player.name,
-                        "displayname" to player.displayName,
-                        "value" to player.connectedServerName,
-                    ),
-                ),
-            )
-        }
     }
 
     private fun registerInfo() {
@@ -104,8 +98,8 @@ class PlayerCommand<C : CloudSender>(
                 .suspendingHandler(plugin.scope) { context ->
                     val sender = context.sender()
                     val playerName = context.get<String>("player")
-                    val messages = plugin.messageConfiguration
-                    val player = api.player().find(playerName).await().orElse(null)
+                    val messages = plugin.config
+                    val player = ApiUtils.findPlayer(api, playerName)
                     if (player == null) {
                         sender.sendMessage(
                             messages.msg(messages.command.player.error.notFound, tags("playername" to playerName)),
@@ -115,25 +109,21 @@ class PlayerCommand<C : CloudSender>(
                     sender.sendMessage(
                         messages.msg(
                             messages.command.player.info.title,
-                            tags(
-                                "playername" to player.name,
-                                "displayname" to player.displayName,
-                            ),
+                            tags("playername" to player.name, "displayname" to player.displayName),
                         ),
                     )
                     listOf<Pair<String, Any?>>(
                         "Name" to player.name,
+                        "UUID" to player.uniqueId,
                         "Display name" to player.displayName,
-                        "Online" to if (player.isOnline) "Yes" else "No",
+                        "Online" to Formatter.yesNo(player.isOnline),
                         "Server" to player.connectedServerName,
                         "Proxy" to player.connectedProxyName,
                         "Online time" to player.onlineTimeSeconds.seconds,
-                        "First seen" to player.firstSeen,
-                        "Last seen" to player.lastSeen,
+                        "First seen" to Formatter.date(player.firstSeen),
+                        "Last seen" to Formatter.date(player.lastSeen),
                     ).forEach { (key, value) ->
-                        sender.sendMessage(
-                            messages.msg(messages.command.player.info.entry, tags("key" to key, "value" to value)),
-                        )
+                        sender.sendMessage(messages.msg(messages.command.player.info.entry, tags("key" to key, "value" to value)))
                     }
                 }
                 .permission(Permission.permission(CommandPermissions.PLAYER_INFO))
@@ -147,19 +137,15 @@ class PlayerCommand<C : CloudSender>(
                 .literal("player")
                 .literal("send")
                 .required("player", stringParser(), CloudSuggestions.onlinePlayers(api))
-                .required("targetType", stringParser(), CloudSuggestions.targetTypes())
+                .required("targetType", stringParser(), CloudSuggestions.of(types))
                 .required("target", stringParser(), CloudSuggestions.targets(api))
+                .optional("mode", enumParser(ServerSelectionMode::class.java))
                 .suspendingHandler(plugin.scope) { context ->
                     val sender = context.sender()
                     val playerName = context.get<String>("player")
-                    val targetType = context.get<String>("targetType")
-                    val target = context.get<String>("target")
-                    val messages = plugin.messageConfiguration
-                    if (!isTargetTypeValid(targetType)) {
-                        sender.sendMessage(messages.msg(messages.command.usage.invalidTargetType))
-                        return@suspendingHandler
-                    }
-                    val player = api.player().find(playerName).await().orElse(null)
+                    val mode = context.getOrDefault("mode", null as ServerSelectionMode?)
+                    val messages = plugin.config
+                    val player = ApiUtils.findPlayer(api, playerName)
                     if (player == null) {
                         sender.sendMessage(
                             messages.msg(messages.command.player.error.notFound, tags("playername" to playerName)),
@@ -172,22 +158,17 @@ class PlayerCommand<C : CloudSender>(
                         )
                         return@suspendingHandler
                     }
-                    val resolvedTarget = resolveTarget(targetType, target)
-                    if (resolvedTarget == null) {
-                        sender.sendMessage(
-                            messages.msg(messages.command.player.error.targetNotFound, tags("target" to target)),
-                        )
-                        return@suspendingHandler
-                    }
-                    sendConnectResult(sender, player, resolvedTarget.name, connect(player, resolvedTarget))
+                    val target = findTarget(sender, context.get("targetType"), context.get("target"), mode)
+                        ?: return@suspendingHandler
+                    sendConnectResult(sender, player, ApiUtils.getTargetName(target), ApiUtils.connect(player, target, mode))
                 }
                 .permission(Permission.permission(CommandPermissions.PLAYER_SEND))
                 .build(),
         )
     }
 
-    private fun sendConnectResult(sender: C, player: CloudPlayer, targetName: String, result: ConnectResult?) {
-        val messages = plugin.messageConfiguration
+    private fun sendConnectResult(sender: C, player: CloudPlayer, targetName: String, result: ConnectResult) {
+        val messages = plugin.config
         val playerTags = tags(
             "playername" to player.name,
             "displayname" to player.displayName,
@@ -214,49 +195,22 @@ class PlayerCommand<C : CloudSender>(
             manager.commandBuilder("cloud", "sc", "simplecloud")
                 .literal("player")
                 .literal("sendall")
-                .required("targetType", stringParser(), CloudSuggestions.targetTypes())
+                .required("targetType", stringParser(), CloudSuggestions.of(types))
                 .required("target", stringParser(), CloudSuggestions.targets(api))
+                .optional("mode", enumParser(ServerSelectionMode::class.java))
                 .suspendingHandler(plugin.scope) { context ->
                     val sender = context.sender()
-                    val targetType = context.get<String>("targetType")
-                    val target = context.get<String>("target")
-                    val messages = plugin.messageConfiguration
-                    if (!isTargetTypeValid(targetType)) {
-                        sender.sendMessage(messages.msg(messages.command.usage.invalidTargetType))
-                        return@suspendingHandler
-                    }
-                    val resolvedTarget = resolveTarget(targetType, target)
-                    if (resolvedTarget == null) {
-                        sender.sendMessage(
-                            messages.msg(messages.command.player.error.targetNotFound, tags("target" to target)),
-                        )
-                        return@suspendingHandler
-                    }
+                    val mode = context.getOrDefault("mode", null as ServerSelectionMode?)
+                    val messages = plugin.config
+                    val target = findTarget(sender, context.get("targetType"), context.get("target"), mode)
+                        ?: return@suspendingHandler
                     val players = api.player().onlinePlayers.await()
                     if (players.isEmpty()) {
                         sender.sendMessage(messages.msg(messages.command.player.error.noOnlinePlayers))
                         return@suspendingHandler
                     }
-                    val results = connectAll(players, resolvedTarget)
-                    val sent = results.count { it == ConnectResult.SUCCESS }
-                    when {
-                        sent > 0 -> sender.sendMessage(
-                            messages.msg(
-                                messages.command.player.send.successAll,
-                                tags("count" to sent, "target" to resolvedTarget.name),
-                            ),
-                        )
-
-                        results.all {
-                            it == ConnectResult.ALREADY_CONNECTED
-                        } -> sender.sendMessage(
-                            messages.msg(messages.command.player.error.allOnTarget, tags("target" to resolvedTarget.name)),
-                        )
-
-                        else -> sender.sendMessage(
-                            messages.msg(messages.command.player.error.sendAllFailed, tags("target" to resolvedTarget.name)),
-                        )
-                    }
+                    val results = ApiUtils.connectAll(players, target, mode)
+                    sendConnectResults(sender, results, ApiUtils.getTargetName(target), messages.command.player.send.successAll, "")
                 }
                 .permission(Permission.permission(CommandPermissions.PLAYER_SEND))
                 .build(),
@@ -269,73 +223,54 @@ class PlayerCommand<C : CloudSender>(
                 .literal("player")
                 .literal("sendfrom")
                 .required("source", stringParser(), CloudSuggestions.servers(api))
-                .required("targetType", stringParser(), CloudSuggestions.targetTypes())
+                .required("targetType", stringParser(), CloudSuggestions.of(types))
                 .required("target", stringParser(), CloudSuggestions.targets(api))
+                .optional("mode", enumParser(ServerSelectionMode::class.java))
                 .suspendingHandler(plugin.scope) { context ->
                     val sender = context.sender()
-                    val source = context.get<String>("source")
-                    val targetType = context.get<String>("targetType")
-                    val target = context.get<String>("target")
-                    val messages = plugin.messageConfiguration
-                    if (!isTargetTypeValid(targetType)) {
-                        sender.sendMessage(messages.msg(messages.command.usage.invalidTargetType))
-                        return@suspendingHandler
-                    }
-                    val resolvedTarget = resolveTarget(targetType, target)
-                    if (resolvedTarget == null) {
-                        sender.sendMessage(
-                            messages.msg(messages.command.player.error.targetNotFound, tags("target" to target)),
-                        )
-                        return@suspendingHandler
-                    }
-                    val sourceKey = source.lowercase()
-                    val serverSources = api.server().allServers.await()
-                        .filter {
-                            sourceKey in serverIdentifiers(it) ||
-                                (it.group?.name ?: it.serverGroupId).equals(source, true)
-                        }
-                        .map { serverIdentifiers(it) }
-                    val persistentServerSources = api.persistentServer().allPersistentServers.await()
-                        .map { serverIdentifiers(it) }
-                        .filter { sourceKey in it }
-                    val sourceIdentifiers = (serverSources + persistentServerSources).flatten().toSet()
-                    if (sourceIdentifiers.isEmpty()) {
-                        sender.sendMessage(
-                            messages.msg(messages.command.player.error.sourceNotFound, tags("source" to source)),
-                        )
-                        return@suspendingHandler
-                    }
-                    val players = playersOn(sourceIdentifiers)
-                    if (players.isEmpty()) {
-                        sender.sendMessage(
-                            messages.msg(messages.command.player.error.noSourcePlayers, tags("source" to source)),
-                        )
-                        return@suspendingHandler
-                    }
-                    val results = connectAll(players, resolvedTarget)
-                    val sent = results.count { it == ConnectResult.SUCCESS }
-                    when {
-                        sent > 0 -> sender.sendMessage(
-                            messages.msg(
-                                messages.command.player.send.successFromServer,
-                                tags("count" to sent, "source" to source, "target" to resolvedTarget.name),
-                            ),
-                        )
-
-                        results.all {
-                            it == ConnectResult.ALREADY_CONNECTED
-                        } -> sender.sendMessage(
-                            messages.msg(messages.command.player.error.allOnTarget, tags("target" to resolvedTarget.name)),
-                        )
-
-                        else -> sender.sendMessage(
-                            messages.msg(messages.command.player.error.sendAllFailed, tags("target" to resolvedTarget.name)),
-                        )
-                    }
+                    val mode = context.getOrDefault("mode", null as ServerSelectionMode?)
+                    val target = findTarget(sender, context.get("targetType"), context.get("target"), mode)
+                        ?: return@suspendingHandler
+                    sendFrom(sender, context.get("source"), target, mode)
                 }
                 .permission(Permission.permission(CommandPermissions.PLAYER_SEND))
                 .build(),
         )
+    }
+
+    private suspend fun sendFrom(sender: C, source: String, target: Any, mode: ServerSelectionMode?) {
+        val messages = plugin.config
+        val sourceKey = source.lowercase()
+        val serverSources = api.server().allServers.await()
+            .filter { sourceKey in it.getIdentifiers() || (it.group?.name ?: it.serverGroupId).equals(source, true) }
+            .map { it.getIdentifiers() }
+        val persistentServerSources = api.persistentServer().allPersistentServers.await()
+            .map { it.getIdentifiers() }
+            .filter { sourceKey in it }
+        val sourceIdentifiers = (serverSources + persistentServerSources).flatten().toSet()
+        if (sourceIdentifiers.isEmpty()) {
+            sender.sendMessage(messages.msg(messages.command.player.error.sourceNotFound, tags("source" to source)))
+            return
+        }
+        val players = ApiUtils.getPlayersOn(api, sourceIdentifiers)
+        if (players.isEmpty()) {
+            sender.sendMessage(messages.msg(messages.command.player.error.noSourcePlayers, tags("source" to source)))
+            return
+        }
+        val results = ApiUtils.connectAll(players, target, mode)
+        sendConnectResults(sender, results, ApiUtils.getTargetName(target), messages.command.player.send.successFromServer, source)
+    }
+
+    private fun sendConnectResults(sender: C, results: List<ConnectResult?>, targetName: String, success: String, source: String) {
+        val messages = plugin.config
+        val sent = results.count { it == ConnectResult.SUCCESS }
+        val message = when {
+            sent > 0 -> messages.msg(success, tags("count" to sent, "source" to source, "target" to targetName))
+            results.all { it == ConnectResult.ALREADY_CONNECTED } ->
+                messages.msg(messages.command.player.error.allOnTarget, tags("target" to targetName))
+            else -> messages.msg(messages.command.player.error.sendAllFailed, tags("target" to targetName))
+        }
+        sender.sendMessage(message)
     }
 
     private fun registerMessage() {
@@ -349,89 +284,86 @@ class PlayerCommand<C : CloudSender>(
                     val sender = context.sender()
                     val playerName = context.get<String>("player")
                     val message = context.get<String>("message")
-                    val messages = plugin.messageConfiguration
+                    val messages = plugin.config
                     if (message.isBlank()) {
                         sender.sendMessage(
                             messages.msg(messages.command.player.error.messageEmpty, tags("playername" to playerName)),
                         )
                         return@suspendingHandler
                     }
-                    val player = api.player().find(playerName).await().orElse(null)
+                    val player = ApiUtils.findPlayer(api, playerName)
                     if (player == null || !player.isOnline) {
                         sender.sendMessage(
                             messages.msg(messages.command.player.error.notOnline, tags("playername" to playerName)),
                         )
                         return@suspendingHandler
                     }
-                    runCatching { player.sendMessage(Component.text(message)) }
-                        .onSuccess {
-                            sender.sendMessage(
-                                messages.msg(
-                                    messages.command.player.message.success,
-                                    tags("playername" to player.name, "displayname" to player.displayName),
-                                ),
-                            )
-                        }
-                        .onFailure {
-                            sender.sendMessage(
-                                messages.msg(
-                                    messages.command.player.error.messageFailed,
-                                    tags("playername" to player.name),
-                                ),
-                            )
-                        }
+                    player.sendMessage(miniMessage.deserialize(message))
+                    sender.sendMessage(
+                        messages.msg(
+                            messages.command.player.message.success,
+                            tags("playername" to player.name, "displayname" to player.displayName),
+                        ),
+                    )
                 }
                 .permission(Permission.permission(CommandPermissions.PLAYER_MESSAGE))
                 .build(),
         )
     }
 
-    private fun isTargetTypeValid(targetType: String): Boolean =
-        targetType.equals(TARGET_TYPE_GROUP, true) || targetType.equals(TARGET_TYPE_PERSISTENT_SERVER, true)
-
-    private suspend fun resolveTarget(targetType: String, target: String): ServerBase? = when {
-        targetType.equals(TARGET_TYPE_GROUP, true) -> ApiUtils.findGroup(api, target)
-        targetType.equals(TARGET_TYPE_PERSISTENT_SERVER, true) -> ApiUtils.findPersistentServer(api, target)
-        else -> null
+    private fun registerKick() {
+        manager.command(
+            manager.commandBuilder("cloud", "sc", "simplecloud")
+                .literal("player")
+                .literal("kick")
+                .required("player", stringParser(), CloudSuggestions.onlinePlayers(api))
+                .optional("reason", stringParser(StringMode.GREEDY))
+                .suspendingHandler(plugin.scope) { context ->
+                    val sender = context.sender()
+                    val playerName = context.get<String>("player")
+                    val reason = context.getOrDefault("reason", null as String?)
+                    val messages = plugin.config
+                    val player = ApiUtils.findPlayer(api, playerName)
+                    if (player == null || !player.isOnline) {
+                        sender.sendMessage(messages.msg(messages.command.player.error.notOnline, tags("playername" to playerName)))
+                        return@suspendingHandler
+                    }
+                    val kickMessage = if (reason.isNullOrBlank()) null else miniMessage.deserialize(reason)
+                    if (!api.player().kick(player.uniqueId, kickMessage).await()) {
+                        sender.sendMessage(messages.msg(messages.command.player.error.notOnline, tags("playername" to player.name)))
+                        return@suspendingHandler
+                    }
+                    sender.sendMessage(
+                        messages.msg(
+                            messages.command.player.kick.success,
+                            tags("playername" to player.name, "displayname" to player.displayName),
+                        ),
+                    )
+                }
+                .permission(Permission.permission(CommandPermissions.PLAYER_KICK))
+                .build(),
+        )
     }
 
-    private suspend fun playersForTarget(target: ServerBase): List<CloudPlayer> = when (target) {
-        is Group -> playersOn(api.server().getServersByGroup(target.name).await().flatMap { serverIdentifiers(it) }.toSet())
-        is PersistentServer -> playersOn(serverIdentifiers(target))
-        else -> emptyList()
-    }
-
-    private suspend fun connect(player: CloudPlayer, target: ServerBase): ConnectResult = when (target) {
-        is Group -> player.connectToGroup(target.name)
-        is PersistentServer -> player.connectToPersistentServer(target.persistentServerId)
-        else -> CompletableFuture.completedFuture(ConnectResult.SERVER_NOT_FOUND)
-    }.await()
-
-    private suspend fun playersOn(identifiers: Set<String>): List<CloudPlayer> =
-        api.player().onlinePlayers.await().filter { player ->
-            player.connectedServerName?.lowercase() in identifiers || player.connectedProxyName?.lowercase() in identifiers
+    private suspend fun findTarget(sender: C, targetType: String, target: String, mode: ServerSelectionMode?): Any? {
+        val messages = plugin.config
+        if (types.none { it.equals(targetType, true) }) {
+            sender.sendMessage(messages.msg(messages.command.usage.invalidTargetType))
+            return null
         }
+        val resolvedTarget = ApiUtils.findTarget(api, targetType, target)
+        return when {
+            resolvedTarget == null -> {
+                sender.sendMessage(messages.msg(messages.command.player.error.targetNotFound, tags("target" to target)))
+                null
+            }
 
-    private suspend fun connectAll(players: List<CloudPlayer>, target: ServerBase): List<ConnectResult?> = coroutineScope {
-        players.map { player -> async { runCatching { connect(player, target) }.getOrNull() } }.awaitAll()
-    }
+            mode != null && resolvedTarget !is Group -> {
+                sender.sendMessage(messages.msg(messages.command.usage.modeOnlyForGroups))
+                null
+            }
 
-    private fun serverIdentifiers(server: Server): Set<String> {
-        val groupName = server.group?.name ?: server.serverGroupId
-        val numbered = if (groupName.isNullOrBlank()) {
-            emptyList()
-        } else {
-            listOf("$groupName-${server.numericalId}")
+            else -> resolvedTarget
         }
-        return (listOfNotNull(server.serverId, server.persistentServerId, server.persistentServer?.name) + numbered)
-            .filter { it.isNotBlank() }
-            .map { it.lowercase() }
-            .toSet()
     }
-
-    private fun serverIdentifiers(server: PersistentServer): Set<String> =
-        listOfNotNull(server.persistentServerId, server.name)
-            .filter { it.isNotBlank() }
-            .map { it.lowercase() }
-            .toSet()
 }

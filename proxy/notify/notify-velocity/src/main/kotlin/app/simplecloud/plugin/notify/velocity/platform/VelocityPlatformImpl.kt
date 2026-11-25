@@ -1,7 +1,7 @@
 package app.simplecloud.plugin.notify.velocity.platform
 
-import app.simplecloud.plugin.core.shared.command.CloudSender
-import app.simplecloud.plugin.core.velocity.command.VelocityCloudSender
+import app.simplecloud.core.shared.command.CloudSender
+import app.simplecloud.core.velocity.command.VelocityCloudSender
 import app.simplecloud.plugin.notify.shared.platform.NotifyPlatform
 import com.velocitypowered.api.proxy.ProxyServer
 import java.io.File

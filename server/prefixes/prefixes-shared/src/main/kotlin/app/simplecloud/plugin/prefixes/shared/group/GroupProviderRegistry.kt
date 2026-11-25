@@ -1,6 +1,6 @@
 package app.simplecloud.plugin.prefixes.shared.group
 
-import app.simplecloud.plugin.core.shared.config.ConfigurationFactory
+import app.simplecloud.core.shared.config.ConfigurationFactory
 import app.simplecloud.plugin.prefixes.api.group.GroupProvider
 import app.simplecloud.plugin.prefixes.shared.PrefixesConstants
 import app.simplecloud.plugin.prefixes.shared.config.PrefixesConfig

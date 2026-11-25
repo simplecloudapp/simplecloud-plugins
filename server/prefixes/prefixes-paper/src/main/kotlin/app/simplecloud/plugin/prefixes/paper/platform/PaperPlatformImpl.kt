@@ -1,6 +1,6 @@
 package app.simplecloud.plugin.prefixes.paper.platform
 
-import app.simplecloud.plugin.core.shared.permission.PermissionChecker
+import app.simplecloud.core.shared.permission.PermissionChecker
 import app.simplecloud.plugin.prefixes.shared.platform.PrefixesPlatform
 import net.luckperms.api.LuckPerms
 import org.bukkit.Bukkit
