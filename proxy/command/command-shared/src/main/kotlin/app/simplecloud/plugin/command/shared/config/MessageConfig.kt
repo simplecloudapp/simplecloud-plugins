@@ -48,6 +48,8 @@ data class HelpSection(
         "group rollout <group> cancel" to "Cancel the rollout of a group",
         "group queue <group>" to "Show the start queue of a group",
         "group queue <group> clear" to "Clear the start queue of a group",
+        "group enable <group>" to "Enable a group so it starts servers",
+        "group disable <group>" to "Disable a group and stop its servers",
         "server list [group] [page]" to "List the running servers",
         "server info <server>" to "Show a server",
         "server start <group>" to "Start a new server",
@@ -55,6 +57,8 @@ data class HelpSection(
         "server command <server> <command>" to "Run a console command on a server",
         "ps list" to "List all persistent servers",
         "ps info <name>" to "Show a persistent server",
+        "ps enable <name>" to "Enable and start a persistent server",
+        "ps disable <name>" to "Disable and stop a persistent server",
         "player list [<group|ps|server> <target>] [page]" to "List the online players",
         "player info <player>" to "Show a player",
         "player send <player> <group|ps|server> <target> [mode]" to "Send a player to a target",
@@ -88,6 +92,7 @@ data class GroupSection(
     val stop: GroupStopSection = GroupStopSection(),
     val rollout: GroupRolloutSection = GroupRolloutSection(),
     val queue: GroupQueueSection = GroupQueueSection(),
+    val activation: GroupActivationSection = GroupActivationSection(),
     val error: GroupErrorSection = GroupErrorSection(),
 )
 
@@ -137,6 +142,14 @@ data class GroupRolloutErrorSection(
     val alreadyActive: String = "<prefix> <warning>Group <group> already has an active rollout.",
     val noServers: String = "<prefix> <warning>Group <group> has no running servers to roll out.",
     val notActive: String = "<prefix> <warning>Group <group> has no active rollout to cancel.",
+)
+
+@ConfigSerializable
+data class GroupActivationSection(
+    val enabled: String = "<prefix> <success>Enabled group <group>, it starts servers again.",
+    val disabled: String = "<prefix> <success>Disabled group <group>, its servers are stopping.",
+    val alreadyEnabled: String = "<prefix> <warning>Group <group> is already enabled.",
+    val alreadyDisabled: String = "<prefix> <warning>Group <group> is already disabled.",
 )
 
 @ConfigSerializable
@@ -212,6 +225,7 @@ data class ServerErrorSection(
 data class PersistentServerSection(
     val list: PersistentServerListSection = PersistentServerListSection(),
     val info: PersistentServerInfoSection = PersistentServerInfoSection(),
+    val activation: PersistentServerActivationSection = PersistentServerActivationSection(),
     val error: PersistentServerErrorSection = PersistentServerErrorSection(),
 )
 
@@ -226,6 +240,14 @@ data class PersistentServerListSection(
 data class PersistentServerInfoSection(
     val title: String = "<prefix> <info>Persistent server <server>",
     val entry: String = "<separator>•</separator> <muted><key><separator>:</separator> <highlight><value>",
+)
+
+@ConfigSerializable
+data class PersistentServerActivationSection(
+    val enabled: String = "<prefix> <success>Enabled persistent server <server>, it is starting.",
+    val disabled: String = "<prefix> <success>Disabled persistent server <server>, it is stopping.",
+    val alreadyEnabled: String = "<prefix> <warning>Persistent server <server> is already enabled.",
+    val alreadyDisabled: String = "<prefix> <warning>Persistent server <server> is already disabled.",
 )
 
 @ConfigSerializable

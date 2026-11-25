@@ -1,6 +1,7 @@
 package app.simplecloud.plugin.command.shared.command.commands
 
 import app.simplecloud.api.CloudApi
+import app.simplecloud.api.persistentserver.UpdatePersistentServerRequest
 import app.simplecloud.plugin.command.shared.CommandPlugin
 import app.simplecloud.plugin.command.shared.utilities.CommandPermissions
 import app.simplecloud.plugin.command.shared.utilities.Formatter
@@ -26,6 +27,8 @@ class PersistentServerCommand<C : CloudSender>(
     fun register() {
         registerList()
         registerInfo()
+        registerActivation("enable", true, CommandPermissions.PERSISTENT_SERVER_ENABLE)
+        registerActivation("disable", false, CommandPermissions.PERSISTENT_SERVER_DISABLE)
     }
 
     private fun registerList() {
@@ -103,4 +106,36 @@ class PersistentServerCommand<C : CloudSender>(
         )
     }
 
+    private fun registerActivation(literal: String, active: Boolean, permission: String) {
+        manager.command(
+            manager.commandBuilder("cloud", "sc", "simplecloud")
+                .literal("ps")
+                .literal(literal)
+                .required("name", stringParser(), CloudSuggestions.persistentServers(api))
+                .suspendingHandler(plugin.scope) { context ->
+                    setActive(context.sender(), context.get("name"), active)
+                }
+                .permission(Permission.permission(permission))
+                .build(),
+        )
+    }
+
+    private suspend fun setActive(sender: C, name: String, active: Boolean) {
+        val messages = plugin.config
+        val activation = messages.command.persistentServer.activation
+        val persistentServer = ApiUtils.findPersistentServer(api, name)
+        if (persistentServer == null) {
+            sender.sendMessage(messages.msg(messages.command.persistentServer.error.notFound, tags("server" to name)))
+            return
+        }
+        val serverTags = tags("server" to persistentServer.name)
+        if (persistentServer.isActive() == active) {
+            val message = if (active) activation.alreadyEnabled else activation.alreadyDisabled
+            sender.sendMessage(messages.msg(message, serverTags))
+            return
+        }
+        val request = UpdatePersistentServerRequest.builder().active(active).build()
+        api.persistentServer().updatePersistentServer(persistentServer.persistentServerId, request).await()
+        sender.sendMessage(messages.msg(if (active) activation.enabled else activation.disabled, serverTags))
+    }
 }

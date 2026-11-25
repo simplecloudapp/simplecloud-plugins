@@ -52,6 +52,8 @@ command:
       'group rollout <group> cancel': 'Cancel the rollout of a group'
       'group queue <group>': 'Show the start queue of a group'
       'group queue <group> clear': 'Clear the start queue of a group'
+      'group enable <group>': 'Enable a group so it starts servers'
+      'group disable <group>': 'Disable a group and stop its servers'
       'server list [group] [page]': 'List the running servers'
       'server info <server>': 'Show a server'
       'server start <group>': 'Start a new server'
@@ -59,6 +61,8 @@ command:
       'server command <server> <command>': 'Run a console command on a server'
       'ps list': 'List all persistent servers'
       'ps info <name>': 'Show a persistent server'
+      'ps enable <name>': 'Enable and start a persistent server'
+      'ps disable <name>': 'Disable and stop a persistent server'
       'player list [<group|ps|server> <target>] [page]': 'List the online players'
       'player info <player>': 'Show a player'
       'player send <player> <group|ps|server> <target> [mode]': 'Send a player to a target'
@@ -118,6 +122,12 @@ command:
       empty: '<prefix> <warning>The start queue of group <group> is empty.'
       cleared: '<prefix> <success>Cleared <count> queued starts of group <group>.'
       already-empty: '<prefix> <warning>The start queue of group <group> is already empty.'
+    # /cloud group enable|disable <group>
+    activation:
+      enabled: '<prefix> <success>Enabled group <group>, it starts servers again.'
+      disabled: '<prefix> <success>Disabled group <group>, its servers are stopping.'
+      already-enabled: '<prefix> <warning>Group <group> is already enabled.'
+      already-disabled: '<prefix> <warning>Group <group> is already disabled.'
     error:
       not-found: '<prefix> <error>Group <group> was not found.'
       already-empty: '<prefix> <warning>Group <group> has no running servers.'
@@ -157,6 +167,12 @@ command:
     info:
       title: '<prefix> <info>Persistent server <server>'
       entry: '<separator>•</separator> <muted><key><separator>:</separator> <highlight><value>'
+    # /cloud ps enable|disable <name>
+    activation:
+      enabled: '<prefix> <success>Enabled persistent server <server>, it is starting.'
+      disabled: '<prefix> <success>Disabled persistent server <server>, it is stopping.'
+      already-enabled: '<prefix> <warning>Persistent server <server> is already enabled.'
+      already-disabled: '<prefix> <warning>Persistent server <server> is already disabled.'
     error:
       not-found: '<prefix> <error>Persistent server <server> was not found.'
 

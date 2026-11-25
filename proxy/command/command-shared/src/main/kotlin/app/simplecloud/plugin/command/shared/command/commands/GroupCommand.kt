@@ -5,6 +5,7 @@ import app.simplecloud.api.group.Group
 import app.simplecloud.api.group.GroupStartQueueItem
 import app.simplecloud.api.group.GroupStartQueueItemStatus
 import app.simplecloud.api.group.RollingRestartStatus
+import app.simplecloud.api.group.UpdateGroupRequest
 import app.simplecloud.api.server.Server
 import app.simplecloud.core.shared.adventure.tags
 import app.simplecloud.core.shared.command.CloudSender
@@ -47,6 +48,8 @@ class GroupCommand<C : CloudSender>(
         registerRolloutCancel()
         registerQueue()
         registerQueueClear()
+        registerActivation("enable", true, CommandPermissions.GROUP_ENABLE)
+        registerActivation("disable", false, CommandPermissions.GROUP_DISABLE)
     }
 
     private fun registerList() {
@@ -396,6 +399,34 @@ class GroupCommand<C : CloudSender>(
         }
         api.group().clearServerStartQueue(group).await()
         sender.sendMessage(messages.msg(messages.command.group.queue.cleared, tags("count" to queued, "group" to group.name)))
+    }
+
+    private fun registerActivation(literal: String, active: Boolean, permission: String) {
+        manager.command(
+            manager.commandBuilder("cloud", "sc", "simplecloud")
+                .literal("group")
+                .literal(literal)
+                .required("group", stringParser(), CloudSuggestions.groups(api))
+                .suspendingHandler(plugin.scope) { context ->
+                    setActive(context.sender(), context.get("group"), active)
+                }
+                .permission(Permission.permission(permission))
+                .build(),
+        )
+    }
+
+    private suspend fun setActive(sender: C, groupName: String, active: Boolean) {
+        val messages = plugin.config
+        val activation = messages.command.group.activation
+        val group = findGroup(sender, groupName) ?: return
+        if (group.isActive() == active) {
+            val message = if (active) activation.alreadyEnabled else activation.alreadyDisabled
+            sender.sendMessage(messages.msg(message, tags("group" to group.name)))
+            return
+        }
+        api.group().updateGroup(group.serverGroupId, UpdateGroupRequest.builder().active(active).build()).await()
+        val message = if (active) activation.enabled else activation.disabled
+        sender.sendMessage(messages.msg(message, tags("group" to group.name)))
     }
 
     private suspend fun findGroup(sender: C, groupName: String): Group? {
