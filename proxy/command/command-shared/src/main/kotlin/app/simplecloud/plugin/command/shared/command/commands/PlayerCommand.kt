@@ -86,7 +86,7 @@ class PlayerCommand<C : CloudSender>(
                                 tags(
                                     "playername" to player.name,
                                     "displayname" to player.displayName,
-                                    "value" to player.connectedServerName,
+                                    "value" to (player.connectedServerName ?: "-"),
                                 ),
                             ),
                         )
@@ -118,6 +118,7 @@ class PlayerCommand<C : CloudSender>(
                         )
                         return@suspendingHandler
                     }
+                    val session = if (player.isOnline) api.player().findCurrentSession(player.uniqueId).await().orElse(null) else null
                     sender.sendMessage(
                         messages.msg(
                             messages.command.player.info.title,
@@ -129,11 +130,15 @@ class PlayerCommand<C : CloudSender>(
                         "UUID" to player.uniqueId,
                         "Display name" to player.displayName,
                         "Online" to Formatter.yesNo(player.isOnline),
-                        "Server" to player.connectedServerName,
-                        "Proxy" to player.connectedProxyName,
+                        "Server" to (player.connectedServerName ?: "-"),
+                        "Proxy" to (player.connectedProxyName ?: "-"),
                         "Online time" to player.onlineTimeSeconds.seconds,
                         "First seen" to Formatter.date(player.firstSeen),
                         "Last seen" to Formatter.date(player.lastSeen),
+                        "Session" to if (session == null) "-" else "${Formatter.since(session.loginTime())} since ${Formatter.date(session.loginTime())}",
+                        "Protocol" to (session?.clientVersion() ?: "-"),
+                        "Online mode" to Formatter.yesNo(session?.onlineMode()),
+                        "Language" to (session?.clientSettings()?.locale() ?: "-"),
                     ).forEach { (key, value) ->
                         sender.sendMessage(messages.msg(messages.command.player.info.entry, tags("key" to key, "value" to value)))
                     }
