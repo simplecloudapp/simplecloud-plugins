@@ -134,7 +134,7 @@ class PlayerCommand<C : CloudSender>(
                         "Proxy" to (player.connectedProxyName ?: "-"),
                         "Online time" to player.onlineTimeSeconds.seconds,
                         "First seen" to Formatter.date(player.firstSeen),
-                        "Last seen" to Formatter.date(player.lastSeen),
+                        "Last seen" to if (player.isOnline) "Now" else Formatter.date(player.lastSeen),
                         "Session" to if (session == null) "-" else "${Formatter.since(session.loginTime())} since ${Formatter.date(session.loginTime())}",
                         "Protocol" to (session?.clientVersion() ?: "-"),
                         "Online mode" to Formatter.yesNo(session?.onlineMode()),
