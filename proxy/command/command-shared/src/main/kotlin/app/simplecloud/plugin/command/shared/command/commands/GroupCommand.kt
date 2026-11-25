@@ -20,7 +20,6 @@ import app.simplecloud.core.shared.pretty.PrettifyCase
 import app.simplecloud.core.shared.pretty.StringPrettifier
 import app.simplecloud.plugin.command.shared.CommandPlugin
 import app.simplecloud.plugin.command.shared.utilities.CommandPermissions
-import app.simplecloud.plugin.command.shared.utilities.Formatter
 import kotlinx.coroutines.*
 import kotlinx.coroutines.future.*
 import net.kyori.adventure.text.Component
@@ -37,6 +36,8 @@ class GroupCommand<C : CloudSender>(
     private val plugin: CommandPlugin,
     private val manager: CommandManager<C>,
 ) {
+
+    private val formatter get() = plugin.formatter
 
     fun register() {
         registerList()
@@ -67,7 +68,7 @@ class GroupCommand<C : CloudSender>(
                     }
                     val serversByGroup = api.server().allServers.await().filter { !it.isStopped() }.groupBy { it.serverGroupId }
                     sender.sendMessage(messages.msg(messages.command.group.list.title, tags("count" to groups.size)))
-                    groups.forEach { group ->
+                    groups.sortedBy { it.name.lowercase() }.forEach { group ->
                         val servers = serversByGroup[group.serverGroupId].orEmpty()
                         val online = servers.count { it.isJoinable() }
                         sender.sendMessage(
@@ -99,11 +100,11 @@ class GroupCommand<C : CloudSender>(
                     sender.sendMessage(messages.msg(messages.command.group.info.title, tags("group" to group.name)))
                     listOf<Pair<String, Any?>>(
                         "Type" to StringPrettifier.prettify(group.type.name, PrettifyCase.SENTENCE),
-                        "Active" to Formatter.yesNo(group.isActive()),
-                        "Priority" to (group.priority ?: "-"),
-                        "Tags" to group.tags.orEmpty().joinToString(", ").ifEmpty { "-" },
-                        "Memory" to "${group.minMemory}-${group.maxMemory} MB",
-                        "Max players" to group.maxPlayers,
+                        "Active" to formatter.yesNo(group.isActive()),
+                        "Priority" to (group.priority ?: formatter.empty),
+                        "Tags" to group.tags.orEmpty().joinToString(", ").ifEmpty { formatter.empty },
+                        "Memory" to formatter.memory(group.minMemory, group.maxMemory),
+                        "Max players" to (group.maxPlayers ?: formatter.empty),
                         "Running servers" to servers.size,
                         "Scaling" to scalingText(group),
                         "Rollout" to rolloutText(rollout),
@@ -117,15 +118,15 @@ class GroupCommand<C : CloudSender>(
     }
 
     private fun scalingText(group: Group): String {
-        val scaling = group.scaling ?: return "-"
-        val servers = "${group.getMinServers()}-${group.getMaxServers() ?: "-"} servers"
+        val scaling = group.scaling ?: return formatter.empty
+        val servers = "${group.getMinServers()}-${group.getMaxServers() ?: formatter.empty} servers"
         val mode = scaling.scalingMode() ?: return servers
         return "$servers, ${StringPrettifier.prettify(mode.name, PrettifyCase.SENTENCE)}"
     }
 
     private fun rolloutText(status: RollingRestartStatus?): String = when {
-        status == null -> "-"
-        status.active() -> "Running since ${Formatter.date(status.timestamp())}"
+        status == null -> formatter.empty
+        status.active() -> "Running since ${formatter.date(status.timestamp())}"
         else -> "Inactive"
     }
 
@@ -147,6 +148,10 @@ class GroupCommand<C : CloudSender>(
     private suspend fun startServers(sender: C, groupName: String, count: Int) {
         val messages = plugin.config
         val group = findGroup(sender, groupName) ?: return
+        if (group.isActive() == false) {
+            sender.sendMessage(messages.msg(messages.command.group.error.disabled, tags("group" to group.name)))
+            return
+        }
         val maxServers = group.getMaxServers()
         if (maxServers != null) {
             val running = ApiUtils.getRunningServers(api, group).size + ApiUtils.getQueuedStarts(api, group)
@@ -286,14 +291,14 @@ class GroupCommand<C : CloudSender>(
                         sender.sendMessage(messages.msg(messages.command.group.rollout.status.inactive, tags("group" to group.name)))
                         return@suspendingHandler
                     }
-                    val startedAt = Formatter.parseTime(status.timestamp())
+                    val startedAt = formatter.parseTime(status.timestamp())
                     val servers = ApiUtils.getRunningServers(api, group)
                     val renewed = if (startedAt == null) 0 else servers.count { isRenewed(it, startedAt) }
                     sender.sendMessage(messages.msg(messages.command.group.rollout.status.title, tags("group" to group.name)))
                     listOf<Pair<String, Any?>>(
                         "Progress" to "$renewed/${servers.size} servers",
-                        "Running for" to Formatter.since(status.timestamp()),
-                        "Started at" to Formatter.date(status.timestamp()),
+                        "Running for" to formatter.since(status.timestamp()),
+                        "Started at" to formatter.date(status.timestamp()),
                     ).forEach { (key, value) ->
                         sender.sendMessage(messages.msg(messages.command.group.rollout.status.entry, tags("key" to key, "value" to value)))
                     }
@@ -381,7 +386,7 @@ class GroupCommand<C : CloudSender>(
 
     private fun queueEntry(start: GroupStartQueueItem): Component {
         val messages = plugin.config
-        val date = Formatter.date(start.createdAt())
+        val date = formatter.date(start.createdAt())
         if (start.status() == GroupStartQueueItemStatus.FAILED) {
             val reason = start.failureReason() ?: "unknown reason"
             return messages.msg(messages.command.group.queue.failed, tags("date" to date, "reason" to reason))
@@ -439,7 +444,7 @@ class GroupCommand<C : CloudSender>(
     }
 
     private fun isRenewed(server: Server, startedAt: Instant): Boolean {
-        val createdAt = Formatter.parseTime(server.createdAt) ?: return false
+        val createdAt = formatter.parseTime(server.createdAt) ?: return false
         return !createdAt.isBefore(startedAt)
     }
 

@@ -5,6 +5,7 @@ import app.simplecloud.api.group.Group
 import app.simplecloud.api.player.CloudPlayer
 import app.simplecloud.api.player.CloudPlayer.ConnectResult
 import app.simplecloud.api.player.ServerSelectionMode
+import app.simplecloud.api.server.Server
 import app.simplecloud.core.shared.adventure.miniMessage
 import app.simplecloud.core.shared.adventure.tags
 import app.simplecloud.core.shared.command.CloudSender
@@ -15,9 +16,9 @@ import app.simplecloud.core.shared.command.CloudSuggestions.TARGET_TYPE_PERSISTE
 import app.simplecloud.core.shared.command.CloudSuggestions.TARGET_TYPE_SERVER
 import app.simplecloud.core.shared.controller.ApiUtils
 import app.simplecloud.core.shared.controller.getIdentifiers
+import app.simplecloud.core.shared.controller.isRunning
 import app.simplecloud.plugin.command.shared.CommandPlugin
 import app.simplecloud.plugin.command.shared.utilities.CommandPermissions
-import app.simplecloud.plugin.command.shared.utilities.Formatter
 import kotlinx.coroutines.future.*
 import org.incendo.cloud.CommandManager
 import org.incendo.cloud.kotlin.coroutines.extension.suspendingHandler
@@ -33,6 +34,8 @@ class PlayerCommand<C : CloudSender>(
     private val plugin: CommandPlugin,
     private val manager: CommandManager<C>,
 ) {
+
+    private val formatter get() = plugin.formatter
 
     private val types = listOf(TARGET_TYPE_GROUP, TARGET_TYPE_PERSISTENT_SERVER, TARGET_TYPE_SERVER)
 
@@ -86,7 +89,7 @@ class PlayerCommand<C : CloudSender>(
                                 tags(
                                     "playername" to player.name,
                                     "displayname" to player.displayName,
-                                    "value" to (player.connectedServerName ?: "-"),
+                                    "value" to (player.connectedServerName ?: formatter.empty),
                                 ),
                             ),
                         )
@@ -125,21 +128,28 @@ class PlayerCommand<C : CloudSender>(
                             tags("playername" to player.name, "displayname" to player.displayName),
                         ),
                     )
-                    listOf<Pair<String, Any?>>(
+                    val entries = listOf<Pair<String, Any?>>(
                         "Name" to player.name,
                         "UUID" to player.uniqueId,
                         "Display name" to player.displayName,
-                        "Online" to Formatter.yesNo(player.isOnline),
-                        "Server" to (player.connectedServerName ?: "-"),
-                        "Proxy" to (player.connectedProxyName ?: "-"),
+                        "Online" to formatter.yesNo(player.isOnline),
                         "Online time" to player.onlineTimeSeconds.seconds,
-                        "First seen" to Formatter.date(player.firstSeen),
-                        "Last seen" to if (player.isOnline) "Now" else Formatter.date(player.lastSeen),
-                        "Session" to if (session == null) "-" else "${Formatter.since(session.loginTime())} since ${Formatter.date(session.loginTime())}",
-                        "Protocol" to (session?.clientVersion() ?: "-"),
-                        "Online mode" to Formatter.yesNo(session?.onlineMode()),
-                        "Language" to (session?.clientSettings()?.locale() ?: "-"),
-                    ).forEach { (key, value) ->
+                        "First seen" to formatter.date(player.firstSeen),
+                        "Last seen" to if (player.isOnline) "Now" else formatter.date(player.lastSeen),
+                    )
+                    val onlineEntries = if (!player.isOnline) {
+                        emptyList()
+                    } else {
+                        listOf<Pair<String, Any?>>(
+                            "Server" to (player.connectedServerName ?: formatter.empty),
+                            "Proxy" to (player.connectedProxyName ?: formatter.empty),
+                            "Session" to if (session == null) formatter.empty else "${formatter.since(session.loginTime())} since ${formatter.date(session.loginTime())}",
+                            "Protocol" to (session?.clientVersion() ?: formatter.empty),
+                            "Online mode" to formatter.yesNo(session?.onlineMode()),
+                            "Language" to (session?.clientSettings()?.locale() ?: formatter.empty),
+                        )
+                    }
+                    (entries + onlineEntries).forEach { (key, value) ->
                         sender.sendMessage(messages.msg(messages.command.player.info.entry, tags("key" to key, "value" to value)))
                     }
                 }
@@ -371,6 +381,11 @@ class PlayerCommand<C : CloudSender>(
         val resolvedTarget = ApiUtils.findTarget(api, targetType, target)
         return when {
             resolvedTarget == null -> {
+                sender.sendMessage(messages.msg(messages.command.player.error.targetNotFound, tags("target" to target)))
+                null
+            }
+
+            resolvedTarget is Server && !resolvedTarget.isRunning() -> {
                 sender.sendMessage(messages.msg(messages.command.player.error.targetNotFound, tags("target" to target)))
                 null
             }

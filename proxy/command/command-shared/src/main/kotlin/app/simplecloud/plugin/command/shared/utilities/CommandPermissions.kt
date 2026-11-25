@@ -25,5 +25,4 @@ object CommandPermissions {
     const val PLAYER_MESSAGE = "simplecloud.command.player.message"
     const val PLAYER_KICK = "simplecloud.command.player.kick"
     const val INFO = "simplecloud.command.info"
-    const val RELOAD = "simplecloud.command.reload"
 }

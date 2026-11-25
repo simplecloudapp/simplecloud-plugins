@@ -60,5 +60,7 @@ object MessageMigrations : ConfigMigrations(ConfigVersion.VERSION) {
         remove(2, "command.server.error.start-failed"),
         remove(2, "command.server.error.stop-failed"),
         remove(2, "command.player.error.message-failed"),
+        remove(2, "command.reload"),
+        remove(2, "$DESCRIPTIONS.reload"),
     )
 }

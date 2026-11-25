@@ -86,7 +86,7 @@ object MessageFormatter {
     private fun formatTime(config: MessageConfig, instant: Instant?): String {
         if (instant == null) return "N/A"
         return DateTimeFormatter.ofPattern(config.format.date, Locale.getDefault())
-            .withZone(ZoneId.systemDefault())
+            .withZone(if (config.format.zone == "system") ZoneId.systemDefault() else ZoneId.of(config.format.zone))
             .format(instant)
     }
 }

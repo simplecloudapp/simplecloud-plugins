@@ -2,6 +2,19 @@
 version: 2
 
 # ───────────────────────────────────────────────────────────────────────────────
+# Format
+# Controls how values inside messages are formatted.
+# ───────────────────────────────────────────────────────────────────────────────
+format:
+  # Pattern used for dates, e.g. last seen or the start of a rollout.
+  # See java.time.format.DateTimeFormatter for all available pattern letters.
+  date: 'dd.MM.yyyy HH:mm'
+  # Time zone used for dates, e.g. 'Europe/Berlin' or 'UTC'. 'system' uses the time zone of the server.
+  zone: 'system'
+  # Shown when a value is not set or not available.
+  empty: '-'
+
+# ───────────────────────────────────────────────────────────────────────────────
 # Palette
 # Colors used throughout the messages. Every entry is a tag, e.g. <brand>text or <error>text.
 # ───────────────────────────────────────────────────────────────────────────────
@@ -35,9 +48,19 @@ variables:
 # Placeholders like <group>, <playername> or <reason> are filled in by the plugin.
 # ───────────────────────────────────────────────────────────────────────────────
 command:
-  # Shown on /cloud
+  # Shown on /cloud and /cloud help as an overview, and on /cloud <section> with its commands
   help:
     title: '<prefix> <info>Cloud commands  <separator>/cloud'
+    section-title: '<prefix> <info>Cloud <section> commands  <separator>/cloud <section>'
+    section: '<separator>•</separator> <interactive><section></interactive> <muted><description>'
+    section-hover: '<highlight><description><br><br><interactive>Click to open /cloud <section>'
+    # Shown in the overview, keyed by the section.
+    sections:
+      'group': 'Manage groups and their servers'
+      'server': 'Manage running servers'
+      'ps': 'Manage persistent servers'
+      'player': 'Manage online players'
+      'info': 'Show the network stats'
     entry: '   <interactive><subcommand></interactive> <muted><arguments>'
     hover: '<highlight><description><br><muted>Usage: <highlight><usage><br><br><interactive>Click to type this command'
     empty: '<prefix> <warning>You can''t use any cloud commands.'
@@ -47,9 +70,9 @@ command:
       'group info <group>': 'Show a group'
       'group start <group> [count]': 'Start servers of a group'
       'group stop <group> [ids]': 'Stop servers of a group'
-      'group rollout <group>': 'Restart a group server by server'
-      'group rollout <group> status': 'Show the rollout of a group'
-      'group rollout <group> cancel': 'Cancel the rollout of a group'
+      'group rollout <group>': 'Start a rolling restart of a group'
+      'group rollout <group> status': 'Show the rolling restart of a group'
+      'group rollout <group> cancel': 'Cancel the rolling restart of a group'
       'group queue <group>': 'Show the start queue of a group'
       'group queue <group> clear': 'Clear the start queue of a group'
       'group enable <group>': 'Enable a group so it starts servers'
@@ -71,7 +94,6 @@ command:
       'player message <player> <message>': 'Send a player a message'
       'player kick <player> [reason]': 'Kick a player from the network'
       'info': 'Show the network stats'
-      'reload': 'Reload the messages'
 
   # Shown below lists with more than one page
   page:
@@ -137,6 +159,7 @@ command:
       invalid-ids: '<prefix> <error><ids> are not valid server ids.'
       servers-not-found: '<prefix> <error>Servers <ids> of group <group> were not found.'
       already-stopping: '<prefix> <warning>Servers <ids> of group <group> are already stopping.'
+      disabled: '<prefix> <warning>Group <group> is disabled, enable it with <highlight>/cloud group enable <group></highlight> first.'
 
   # /cloud server ...
   server:
@@ -151,11 +174,13 @@ command:
       requested: '<prefix> <info>Sent the start request for a new server of group <group>.'
     stop:
       success: '<prefix> <info>Sent the stop request for server <server>.'
+      restarting: '<prefix> <info>Sent the stop request for server <server>. It starts again because it is enabled, use <highlight>/cloud ps disable <server></highlight> to keep it offline.'
     command:
       success: '<prefix> <success>Sent <highlight><command></highlight> to server <server>.'
     error:
       not-found: '<prefix> <error>Server <server> was not found.'
       already-stopping: '<prefix> <warning>Server <server> is already stopping.'
+      not-running: '<prefix> <warning>Server <server> is not running.'
       command-empty: '<prefix> <error>Write a command for server <server>.'
 
   # /cloud ps ...
@@ -211,11 +236,6 @@ command:
   info:
     title: '<prefix> <info>Cloud network'
     entry: '<separator>•</separator> <muted><key><separator>:</separator> <highlight><value>'
-
-  # /cloud reload
-  reload:
-    success: '<prefix> <success>Reloaded the cloud commands!'
-    failed: '<prefix> <error>Couldn''t reload the cloud commands. Check the console.'
 
   # Shown when a command fails or is used wrong
   # Placeholders: <command>, <reason>, <value>, <min>, <max>, <options>

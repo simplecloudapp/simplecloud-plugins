@@ -5,7 +5,6 @@ import app.simplecloud.api.group.Group
 import app.simplecloud.api.server.Server
 import app.simplecloud.plugin.command.shared.CommandPlugin
 import app.simplecloud.plugin.command.shared.utilities.CommandPermissions
-import app.simplecloud.plugin.command.shared.utilities.Formatter
 import app.simplecloud.core.shared.adventure.tags
 import app.simplecloud.core.shared.command.CloudSender
 import app.simplecloud.core.shared.command.CloudSuggestions
@@ -29,6 +28,8 @@ class ServerCommand<C : CloudSender>(
     private val plugin: CommandPlugin,
     private val manager: CommandManager<C>,
 ) {
+
+    private val formatter get() = plugin.formatter
 
     fun register() {
         registerList()
@@ -67,7 +68,8 @@ class ServerCommand<C : CloudSender>(
                     sender.sendMessage(messages.msg(messages.command.server.list.title, tags("count" to servers.size)))
                     ListPage.entries(servers.sortedBy { it.getDisplayName().lowercase() }, page).forEach { server ->
                         val serverName = server.getDisplayName()
-                        val value = "${server.playerCount ?: 0}/${server.maxPlayers}, ${server.state.name.lowercase()}"
+                        val state = StringPrettifier.prettify(server.state.name, PrettifyCase.SENTENCE)
+                        val value = "${server.playerCount ?: 0}/${server.maxPlayers ?: formatter.empty}, $state"
                         sender.sendMessage(messages.msg(messages.command.server.list.entry, tags("server" to serverName, "value" to value)))
                     }
                     if (pages > 1) {
@@ -96,15 +98,15 @@ class ServerCommand<C : CloudSender>(
                     sender.sendMessage(messages.msg(messages.command.server.info.title, tags("server" to server.getDisplayName())))
                     listOf<Pair<String, Any?>>(
                         "State" to StringPrettifier.prettify(server.state.name, PrettifyCase.SENTENCE),
-                        "Address" to if (ip == null) "-" else "$ip:${server.port ?: "-"}",
-                        "Serverhost" to (server.serverhostId ?: "-"),
-                        "Players" to "${server.playerCount ?: 0}/${server.maxPlayers}",
-                        "Memory" to "${server.minMemory}-${server.maxMemory} MB",
-                        "Memory usage" to if (memoryUsage == null) "-" else "%.0f MB".format(memoryUsage),
-                        "CPU usage" to if (cpuUsage == null) "-" else "%.1f%%".format(cpuUsage),
-                        "Uptime" to Formatter.since(server.createdAt),
-                        "Last activity" to Formatter.date(server.lastActivity),
-                        "Blueprint" to (server.blueprint?.name ?: "-"),
+                        "Address" to if (ip == null) formatter.empty else "$ip:${server.port ?: formatter.empty}",
+                        "Serverhost" to (server.serverhostId ?: formatter.empty),
+                        "Players" to "${server.playerCount ?: 0}/${server.maxPlayers ?: formatter.empty}",
+                        "Memory" to formatter.memory(server.minMemory, server.maxMemory),
+                        "Memory usage" to if (memoryUsage == null) formatter.empty else "%.0f MB".format(memoryUsage),
+                        "CPU usage" to if (cpuUsage == null) formatter.empty else "%.1f%%".format(cpuUsage),
+                        "Uptime" to formatter.since(server.createdAt),
+                        "Last activity" to formatter.date(server.lastActivity),
+                        "Blueprint" to (server.blueprint?.name ?: formatter.empty),
                     ).forEach { (key, value) ->
                         sender.sendMessage(messages.msg(messages.command.server.info.entry, tags("key" to key, "value" to value)))
                     }
@@ -125,6 +127,10 @@ class ServerCommand<C : CloudSender>(
                     val groupName = context.get<String>("group")
                     val messages = plugin.config
                     val group = findGroup(sender, groupName) ?: return@suspendingHandler
+                    if (group.isActive() == false) {
+                        sender.sendMessage(messages.msg(messages.command.group.error.disabled, tags("group" to group.name)))
+                        return@suspendingHandler
+                    }
                     api.group().requestServerStart(group).await()
                     sender.sendMessage(messages.msg(messages.command.server.start.requested, tags("group" to group.name)))
                 }
@@ -149,7 +155,9 @@ class ServerCommand<C : CloudSender>(
                         return@suspendingHandler
                     }
                     api.server().stopServer(server.serverId).await()
-                    sender.sendMessage(messages.msg(messages.command.server.stop.success, serverTags))
+                    val restarts = server.persistentServer?.isActive() == true
+                    val message = if (restarts) messages.command.server.stop.restarting else messages.command.server.stop.success
+                    sender.sendMessage(messages.msg(message, serverTags))
                 }
                 .permission(Permission.permission(CommandPermissions.SERVER_STOP))
                 .build(),
@@ -169,7 +177,7 @@ class ServerCommand<C : CloudSender>(
                     val messages = plugin.config
                     val server = findServer(sender, context.get("server")) ?: return@suspendingHandler
                     if (!server.isRunning()) {
-                        sender.sendMessage(messages.msg(messages.command.server.error.notFound, tags("server" to server.getDisplayName())))
+                        sender.sendMessage(messages.msg(messages.command.server.error.notRunning, tags("server" to server.getDisplayName())))
                         return@suspendingHandler
                     }
                     val tags = tags("server" to server.getDisplayName(), "command" to command)

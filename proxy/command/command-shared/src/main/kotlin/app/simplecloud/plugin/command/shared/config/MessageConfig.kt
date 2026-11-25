@@ -13,10 +13,18 @@ import org.spongepowered.configurate.objectmapping.ConfigSerializable
 @ConfigSerializable
 data class MessageConfig(
     override val version: Int = ConfigVersion.VERSION,
+    val format: FormatSection = FormatSection(),
     val palette: Map<String, String> = MessagePalette.defaults,
     val variables: Map<String, String> = mapOf("prefix" to MessagePalette.PREFIX),
     override val command: CommandSection = CommandSection(),
 ) : VersionedConfig, AbstractCommandMessageConfig(palette, variables)
+
+@ConfigSerializable
+data class FormatSection(
+    val date: String = "dd.MM.yyyy HH:mm",
+    val zone: String = "system",
+    val empty: String = "-",
+)
 
 @ConfigSerializable
 data class CommandSection(
@@ -28,13 +36,22 @@ data class CommandSection(
     val player: PlayerSection = PlayerSection(),
     val persistentServer: PersistentServerSection = PersistentServerSection(),
     val info: InfoSection = InfoSection(),
-    val reload: ReloadSection = ReloadSection(),
     override val exception: CommandExceptionMessages = CommandExceptionMessages(),
 ) : AbstractCommandMessages
 
 @ConfigSerializable
 data class HelpSection(
     val title: String = "<prefix> <info>Cloud commands  <separator>/cloud",
+    val sectionTitle: String = "<prefix> <info>Cloud <section> commands  <separator>/cloud <section>",
+    val section: String = "<separator>•</separator> <interactive><section></interactive> <muted><description>",
+    val sectionHover: String = "<highlight><description><br><br><interactive>Click to open /cloud <section>",
+    val sections: Map<String, String> = mapOf(
+        "group" to "Manage groups and their servers",
+        "server" to "Manage running servers",
+        "ps" to "Manage persistent servers",
+        "player" to "Manage online players",
+        "info" to "Show the network stats",
+    ),
     override val entry: String = HelpMessages.ENTRY,
     override val hover: String = HelpMessages.HOVER,
     val empty: String = "<prefix> <warning>You can't use any cloud commands.",
@@ -43,9 +60,9 @@ data class HelpSection(
         "group info <group>" to "Show a group",
         "group start <group> [count]" to "Start servers of a group",
         "group stop <group> [ids]" to "Stop servers of a group",
-        "group rollout <group>" to "Restart a group server by server",
-        "group rollout <group> status" to "Show the rollout of a group",
-        "group rollout <group> cancel" to "Cancel the rollout of a group",
+        "group rollout <group>" to "Start a rolling restart of a group",
+        "group rollout <group> status" to "Show the rolling restart of a group",
+        "group rollout <group> cancel" to "Cancel the rolling restart of a group",
         "group queue <group>" to "Show the start queue of a group",
         "group queue <group> clear" to "Clear the start queue of a group",
         "group enable <group>" to "Enable a group so it starts servers",
@@ -67,7 +84,6 @@ data class HelpSection(
         "player message <player> <message>" to "Send a player a message",
         "player kick <player> [reason]" to "Kick a player from the network",
         "info" to "Show the network stats",
-        "reload" to "Reload the messages",
     ),
 ) : HelpMessages
 
@@ -174,6 +190,7 @@ data class GroupErrorSection(
     val invalidIds: String = "<prefix> <error><ids> are not valid server ids.",
     val serversNotFound: String = "<prefix> <error>Servers <ids> of group <group> were not found.",
     val alreadyStopping: String = "<prefix> <warning>Servers <ids> of group <group> are already stopping.",
+    val disabled: String = "<prefix> <warning>Group <group> is disabled, enable it with <highlight>/cloud group enable <group></highlight> first.",
 )
 
 @ConfigSerializable
@@ -207,6 +224,7 @@ data class ServerStartSection(
 @ConfigSerializable
 data class ServerStopSection(
     val success: String = "<prefix> <info>Sent the stop request for server <server>.",
+    val restarting: String = "<prefix> <info>Sent the stop request for server <server>. It starts again because it is enabled, use <highlight>/cloud ps disable <server></highlight> to keep it offline.",
 )
 
 @ConfigSerializable
@@ -218,6 +236,7 @@ data class ServerCommandSection(
 data class ServerErrorSection(
     val notFound: String = "<prefix> <error>Server <server> was not found.",
     val alreadyStopping: String = "<prefix> <warning>Server <server> is already stopping.",
+    val notRunning: String = "<prefix> <warning>Server <server> is not running.",
     val commandEmpty: String = "<prefix> <error>Write a command for server <server>.",
 )
 
@@ -314,10 +333,4 @@ data class PlayerErrorSection(
 data class InfoSection(
     val title: String = "<prefix> <info>Cloud network",
     val entry: String = "<separator>•</separator> <muted><key><separator>:</separator> <highlight><value>",
-)
-
-@ConfigSerializable
-data class ReloadSection(
-    val success: String = "<prefix> <success>Reloaded the cloud commands!",
-    val failed: String = "<prefix> <error>Couldn't reload the cloud commands. Check the console.",
 )

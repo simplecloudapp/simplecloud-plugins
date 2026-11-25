@@ -9,6 +9,8 @@ format:
   # Pattern used for the <time>, <create_date> and <updated> placeholders.
   # See java.time.format.DateTimeFormatter for all available pattern letters.
   date: 'dd.MM.yyyy HH:mm:ss'
+  # Time zone used for these placeholders, e.g. 'Europe/Berlin' or 'UTC'. 'system' uses the time zone of the server.
+  zone: 'system'
 
 # ───────────────────────────────────────────────────────────────────────────────
 # Palette

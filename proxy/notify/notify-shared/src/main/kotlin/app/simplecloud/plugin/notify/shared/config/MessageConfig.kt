@@ -23,6 +23,7 @@ data class MessageConfig(
 @ConfigSerializable
 data class Format(
     val date: String = "dd.MM.yyyy HH:mm:ss",
+    val zone: String = "system",
 )
 
 @ConfigSerializable

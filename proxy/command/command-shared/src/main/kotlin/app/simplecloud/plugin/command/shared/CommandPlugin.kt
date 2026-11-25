@@ -4,6 +4,7 @@ import app.simplecloud.api.CloudApi
 import app.simplecloud.api.CloudApiOptions
 import app.simplecloud.plugin.command.shared.config.MessageConfig
 import app.simplecloud.plugin.command.shared.config.migration.MessageMigrations
+import app.simplecloud.plugin.command.shared.utilities.Formatter
 import app.simplecloud.core.shared.config.ConfigWatcher
 import app.simplecloud.core.shared.config.ConfigurationFactory
 import kotlinx.coroutines.*
@@ -18,6 +19,7 @@ class CommandPlugin(private val dir: File) {
 
     val configuration = ConfigurationFactory.create(dir, "messages.yml", MessageConfig(), MessageMigrations)
     val config: MessageConfig get() = configuration.get()
+    val formatter: Formatter get() = Formatter(config.format)
 
     // coroutine scope used for commands
     val scope = CoroutineScope(

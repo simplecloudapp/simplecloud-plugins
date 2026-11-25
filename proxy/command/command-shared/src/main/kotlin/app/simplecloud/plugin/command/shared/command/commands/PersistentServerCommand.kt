@@ -4,7 +4,6 @@ import app.simplecloud.api.CloudApi
 import app.simplecloud.api.persistentserver.UpdatePersistentServerRequest
 import app.simplecloud.plugin.command.shared.CommandPlugin
 import app.simplecloud.plugin.command.shared.utilities.CommandPermissions
-import app.simplecloud.plugin.command.shared.utilities.Formatter
 import app.simplecloud.core.shared.adventure.tags
 import app.simplecloud.core.shared.command.CloudSender
 import app.simplecloud.core.shared.command.CloudSuggestions
@@ -23,6 +22,8 @@ class PersistentServerCommand<C : CloudSender>(
     private val plugin: CommandPlugin,
     private val manager: CommandManager<C>,
 ) {
+
+    private val formatter get() = plugin.formatter
 
     fun register() {
         registerList()
@@ -50,10 +51,11 @@ class PersistentServerCommand<C : CloudSender>(
                     sender.sendMessage(messages.msg(messages.command.persistentServer.list.title, tags("count" to persistentServers.size)))
                     persistentServers.sortedBy { it.name.lowercase() }.forEach { persistentServer ->
                         val server = runningServers[persistentServer.persistentServerId]
-                        val value = if (server == null) {
-                            "offline"
-                        } else {
-                            "${server.playerCount ?: 0}/${server.maxPlayers}, ${server.state.name.lowercase()}"
+                        val value = when {
+                            server != null -> "${server.playerCount ?: 0}/${server.maxPlayers ?: formatter.empty}, " +
+                                StringPrettifier.prettify(server.state.name, PrettifyCase.SENTENCE)
+                            persistentServer.isActive() == false -> "Disabled"
+                            else -> "Offline"
                         }
                         sender.sendMessage(
                             messages.msg(
@@ -90,13 +92,13 @@ class PersistentServerCommand<C : CloudSender>(
                     listOf<Pair<String, Any?>>(
                         "Type" to StringPrettifier.prettify(persistentServer.type.name, PrettifyCase.SENTENCE),
                         "State" to state,
-                        "Active" to Formatter.yesNo(persistentServer.isActive()),
-                        "Priority" to (persistentServer.priority ?: "-"),
-                        "Tags" to persistentServer.tags.orEmpty().joinToString(", ").ifEmpty { "-" },
-                        "Players" to "${persistentServer.playerCount}/${persistentServer.maxPlayers ?: "-"}",
-                        "Memory" to "${persistentServer.minMemory}-${persistentServer.maxMemory} MB",
-                        "Serverhost" to (persistentServer.serverhostId ?: "-"),
-                        "Uptime" to if (server == null) "-" else Formatter.since(server.createdAt),
+                        "Active" to formatter.yesNo(persistentServer.isActive()),
+                        "Priority" to (persistentServer.priority ?: formatter.empty),
+                        "Tags" to persistentServer.tags.orEmpty().joinToString(", ").ifEmpty { formatter.empty },
+                        "Players" to "${persistentServer.playerCount}/${persistentServer.maxPlayers ?: formatter.empty}",
+                        "Memory" to formatter.memory(persistentServer.minMemory, persistentServer.maxMemory),
+                        "Serverhost" to (persistentServer.serverhostId ?: formatter.empty),
+                        "Uptime" to if (server == null) formatter.empty else formatter.since(server.createdAt),
                     ).forEach { (key, value) ->
                         sender.sendMessage(messages.msg(messages.command.persistentServer.info.entry, tags("key" to key, "value" to value)))
                     }

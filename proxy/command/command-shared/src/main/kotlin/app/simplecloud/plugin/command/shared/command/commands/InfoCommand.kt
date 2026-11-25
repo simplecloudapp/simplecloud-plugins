@@ -34,7 +34,7 @@ class InfoCommand<C : CloudSender>(
                     val serverhosts = stats.serverhosts()
                     val resources = stats.resources()
                     val health = stats.health()
-                    val healthStatus = StringPrettifier.prettify(health.status(), PrettifyCase.SENTENCE)
+                    val healthStatus = StringPrettifier.prettify(health.status() ?: "unknown", PrettifyCase.SENTENCE)
                     sender.sendMessage(messages.msg(messages.command.info.title))
                     listOf(
                         "Health" to "$healthStatus (${percent(health.healthyServerPercent())} of servers healthy)",

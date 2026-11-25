@@ -41,13 +41,13 @@ class MessageMigrationsTest {
             command:
               help:
                 descriptions:
-                  'reload': 'Custom reload'
+                  'info': 'Custom info'
             """.trimIndent(),
         )
 
         val descriptions = load().command.help.descriptions
 
-        assertEquals("Custom reload", descriptions["reload"])
+        assertEquals("Custom info", descriptions["info"])
         assertEquals(HelpSection().descriptions.keys, descriptions.keys)
     }
 

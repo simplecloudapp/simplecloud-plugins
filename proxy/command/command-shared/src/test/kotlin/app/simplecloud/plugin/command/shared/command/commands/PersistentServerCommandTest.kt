@@ -28,8 +28,8 @@ class PersistentServerCommandTest {
         val messages = commands.execute("cloud ps list")
 
         assertContains(messages, "Persistent servers (2)")
-        assertContains(messages, "creative (offline)")
-        assertContains(messages, "available")
+        assertContains(messages, "creative (Offline)")
+        assertContains(messages, "Available")
     }
 
     @Test
