@@ -11,6 +11,8 @@ object MessageMigrations : ConfigMigrations(ConfigVersion.VERSION) {
 
     override val migrations: List<ConfigMigration> = listOf(
         rename(2, "$DESCRIPTIONS.group stop <group> [id]", "group stop <group> [ids]"),
+        rename(2, "$DESCRIPTIONS.server info <group> <id>", "server info <server>"),
+        rename(2, "$DESCRIPTIONS.server stop <group> <id>", "server stop <server>"),
         rename(2, "$DESCRIPTIONS.player list [<group|ps> <target>]", "player list [<group|ps|server> <target>]"),
         rename(2, "$DESCRIPTIONS.player send <player> <group|ps> <target>", "player send <player> <group|ps|server> <target> [mode]"),
         rename(2, "$DESCRIPTIONS.player sendall <group|ps> <target>", "player sendall <group|ps|server> <target> [mode]"),
@@ -32,6 +34,24 @@ object MessageMigrations : ConfigMigrations(ConfigVersion.VERSION) {
             "command.group.stop.success",
             "<prefix> <info>Sent the stop request for the servers of group <group>.",
             "<prefix> <info>Sent the stop request for <count> servers of group <group>.",
+        ),
+        replaceDefault(
+            2,
+            "command.server.stop.success",
+            "<prefix> <info>Sent the stop request for server <group>-<id>.",
+            "<prefix> <info>Sent the stop request for server <server>.",
+        ),
+        replaceDefault(
+            2,
+            "command.server.error.not-found",
+            "<prefix> <error>Server <group>-<id> was not found.",
+            "<prefix> <error>Server <server> was not found.",
+        ),
+        replaceDefault(
+            2,
+            "command.server.error.already-stopping",
+            "<prefix> <warning>Server <group>-<id> is already stopping.",
+            "<prefix> <warning>Server <server> is already stopping.",
         ),
         remove(2, "command.group.rollout.error.start-failed"),
         remove(2, "command.group.rollout.error.cancel-failed"),

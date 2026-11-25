@@ -50,10 +50,12 @@ command:
       'group rollout <group>': 'Restart a group server by server'
       'group rollout <group> status': 'Show the rollout of a group'
       'group rollout <group> cancel': 'Cancel the rollout of a group'
+      'group queue <group>': 'Show the start queue of a group'
+      'group queue <group> clear': 'Clear the start queue of a group'
       'server list [group]': 'List the running servers'
-      'server info <group> <id>': 'Show a server'
+      'server info <server>': 'Show a server'
       'server start <group>': 'Start a new server'
-      'server stop <group> <id>': 'Stop a server'
+      'server stop <server>': 'Stop a server'
       'server command <server> <command>': 'Run a console command on a server'
       'ps list': 'List all persistent servers'
       'ps info <name>': 'Show a persistent server'
@@ -100,6 +102,16 @@ command:
         already-active: '<prefix> <warning>Group <group> already has an active rollout.'
         no-servers: '<prefix> <warning>Group <group> has no running servers to roll out.'
         not-active: '<prefix> <warning>Group <group> has no active rollout to cancel.'
+    # /cloud group queue <group> [clear]
+    queue:
+      title: '<prefix> <info>Start queue of group <group> <separator>(</separator><muted><count></muted><separator>)</separator>'
+      entry: '<separator>•</separator> <muted><key><separator>:</separator> <highlight><value>'
+      pending: '<separator>•</separator> <muted>Pending since <highlight><date>'
+      failed: '<separator>•</separator> <muted>Failed at <highlight><date></highlight> <separator>(</separator><error><reason></error><separator>)</separator>'
+      more: '<separator>•</separator> <muted>... and <count> more'
+      empty: '<prefix> <warning>The start queue of group <group> is empty.'
+      cleared: '<prefix> <success>Cleared <count> queued starts of group <group>.'
+      already-empty: '<prefix> <warning>The start queue of group <group> is already empty.'
     error:
       not-found: '<prefix> <error>Group <group> was not found.'
       already-empty: '<prefix> <warning>Group <group> has no running servers.'
@@ -122,13 +134,12 @@ command:
     start:
       requested: '<prefix> <info>Sent the start request for a new server of group <group>.'
     stop:
-      success: '<prefix> <info>Sent the stop request for server <group>-<id>.'
+      success: '<prefix> <info>Sent the stop request for server <server>.'
     command:
       success: '<prefix> <success>Sent <highlight><command></highlight> to server <server>.'
     error:
-      not-found: '<prefix> <error>Server <group>-<id> was not found.'
-      already-stopping: '<prefix> <warning>Server <group>-<id> is already stopping.'
-      unknown: '<prefix> <error>Server <server> was not found.'
+      not-found: '<prefix> <error>Server <server> was not found.'
+      already-stopping: '<prefix> <warning>Server <server> is already stopping.'
       command-empty: '<prefix> <error>Write a command for server <server>.'
 
   # /cloud ps ...

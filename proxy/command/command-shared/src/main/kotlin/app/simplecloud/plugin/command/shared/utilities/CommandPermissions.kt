@@ -7,6 +7,7 @@ object CommandPermissions {
     const val GROUP_START = "simplecloud.command.group.start"
     const val GROUP_STOP = "simplecloud.command.group.stop"
     const val GROUP_ROLLOUT = "simplecloud.command.group.rollout"
+    const val GROUP_QUEUE = "simplecloud.command.group.queue"
     const val SERVER_LIST = "simplecloud.command.server.list"
     const val SERVER_INFO = "simplecloud.command.server.info"
     const val SERVER_START = "simplecloud.command.server.start"

@@ -4,6 +4,7 @@ import app.simplecloud.api.CloudApi
 import app.simplecloud.api.CloudApiException
 import app.simplecloud.api.base.ServerBase
 import app.simplecloud.api.group.Group
+import app.simplecloud.api.group.GroupStartQueueEntry
 import app.simplecloud.api.persistentserver.PersistentServer
 import app.simplecloud.api.player.CloudPlayer
 import app.simplecloud.api.player.CloudPlayer.ConnectResult
@@ -53,8 +54,10 @@ object ApiUtils {
     suspend fun getRunningServers(api: CloudApi, group: Group): List<Server> =
         api.server().getServersByGroup(group.name).await().filter { it.isRunning() }
 
-    suspend fun getQueuedStarts(api: CloudApi, group: Group): Int =
-        api.group().serverStartQueue.await().findByServerGroupId(group.serverGroupId)?.queuedStarts() ?: 0
+    suspend fun findStartQueue(api: CloudApi, group: Group): GroupStartQueueEntry? =
+        api.group().serverStartQueue.await().findByServerGroupId(group.serverGroupId)
+
+    suspend fun getQueuedStarts(api: CloudApi, group: Group): Int = findStartQueue(api, group)?.queuedStarts() ?: 0
 
     suspend fun getPlayersOn(api: CloudApi, identifiers: Set<String>): List<CloudPlayer> =
         api.player().onlinePlayers.await().filter { player ->

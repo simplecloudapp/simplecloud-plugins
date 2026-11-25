@@ -51,12 +51,21 @@ class ServerCommandTest {
     fun `info shows the runtime details`() {
         cloud.createGroup("lobby").startServer()
 
-        val messages = commands.execute("cloud server info lobby 1")
+        val messages = commands.execute("cloud server info lobby-1")
 
         assertContains(messages, "Server lobby-1")
         assertContains(messages, "Address:")
         assertContains(messages, "Uptime:")
         assertContains(messages, "Blueprint:")
+    }
+
+    @Test
+    fun `persistent server is stopped by name`() {
+        cloud.createPersistentServer("survival").start()
+
+        val messages = commands.execute("cloud server stop survival")
+
+        assertContains(messages, "Sent the stop request for server survival.")
     }
 
     private fun assertContains(messages: List<String>, expected: String) {

@@ -18,7 +18,6 @@ import app.simplecloud.core.shared.pretty.StringPrettifier
 import kotlinx.coroutines.future.*
 import org.incendo.cloud.CommandManager
 import org.incendo.cloud.kotlin.coroutines.extension.suspendingHandler
-import org.incendo.cloud.parser.standard.IntegerParser.integerParser
 import org.incendo.cloud.parser.standard.StringParser.StringMode
 import org.incendo.cloud.parser.standard.StringParser.stringParser
 import org.incendo.cloud.permission.Permission
@@ -74,14 +73,10 @@ class ServerCommand<C : CloudSender>(
             manager.commandBuilder("cloud", "sc", "simplecloud")
                 .literal("server")
                 .literal("info")
-                .required("group", stringParser(), CloudSuggestions.groups(api))
-                .required("id", integerParser(1), CloudSuggestions.serverIds(api))
+                .required("server", stringParser(), CloudSuggestions.servers(api))
                 .suspendingHandler(plugin.scope) { context ->
                     val sender = context.sender()
-                    val groupName = context.get<String>("group")
-                    val id = context.get<Int>("id")
-                    val group = findGroup(sender, groupName) ?: return@suspendingHandler
-                    val server = findServer(sender, group, id) ?: return@suspendingHandler
+                    val server = findServer(sender, context.get("server")) ?: return@suspendingHandler
                     val messages = plugin.config
                     val cpuUsage = server.cpuUsage
                     val memoryUsage = server.memoryUsage
@@ -131,21 +126,18 @@ class ServerCommand<C : CloudSender>(
             manager.commandBuilder("cloud", "sc", "simplecloud")
                 .literal("server")
                 .literal("stop")
-                .required("group", stringParser(), CloudSuggestions.groups(api))
-                .required("id", integerParser(1), CloudSuggestions.serverIds(api))
+                .required("server", stringParser(), CloudSuggestions.servers(api))
                 .suspendingHandler(plugin.scope) { context ->
                     val sender = context.sender()
-                    val groupName = context.get<String>("group")
-                    val id = context.get<Int>("id")
                     val messages = plugin.config
-                    val group = findGroup(sender, groupName) ?: return@suspendingHandler
-                    val server = findServer(sender, group, id) ?: return@suspendingHandler
+                    val server = findServer(sender, context.get("server")) ?: return@suspendingHandler
+                    val serverTags = tags("server" to server.getDisplayName())
                     if (!server.isRunning()) {
-                        sender.sendMessage(messages.msg(messages.command.server.error.alreadyStopping, tags("group" to group.name, "id" to id)))
+                        sender.sendMessage(messages.msg(messages.command.server.error.alreadyStopping, serverTags))
                         return@suspendingHandler
                     }
                     api.server().stopServer(server.serverId).await()
-                    sender.sendMessage(messages.msg(messages.command.server.stop.success, tags("group" to group.name, "id" to id)))
+                    sender.sendMessage(messages.msg(messages.command.server.stop.success, serverTags))
                 }
                 .permission(Permission.permission(CommandPermissions.SERVER_STOP))
                 .build(),
@@ -161,12 +153,11 @@ class ServerCommand<C : CloudSender>(
                 .required("command", stringParser(StringMode.GREEDY))
                 .suspendingHandler(plugin.scope) { context ->
                     val sender = context.sender()
-                    val serverName = context.get<String>("server")
                     val command = context.get<String>("command").trim().removePrefix("/")
                     val messages = plugin.config
-                    val server = ApiUtils.findServer(api, serverName)
-                    if (server == null || !server.isRunning()) {
-                        sender.sendMessage(messages.msg(messages.command.server.error.unknown, tags("server" to serverName)))
+                    val server = findServer(sender, context.get("server")) ?: return@suspendingHandler
+                    if (!server.isRunning()) {
+                        sender.sendMessage(messages.msg(messages.command.server.error.notFound, tags("server" to server.getDisplayName())))
                         return@suspendingHandler
                     }
                     val tags = tags("server" to server.getDisplayName(), "command" to command)
@@ -191,11 +182,11 @@ class ServerCommand<C : CloudSender>(
         return group
     }
 
-    private suspend fun findServer(sender: C, group: Group, id: Int): Server? {
-        val server = ApiUtils.findServer(api, group, id)
+    private suspend fun findServer(sender: C, serverName: String): Server? {
+        val server = ApiUtils.findServer(api, serverName)
         if (server == null) {
             val messages = plugin.config
-            sender.sendMessage(messages.msg(messages.command.server.error.notFound, tags("group" to group.name, "id" to id)))
+            sender.sendMessage(messages.msg(messages.command.server.error.notFound, tags("server" to serverName)))
         }
         return server
     }

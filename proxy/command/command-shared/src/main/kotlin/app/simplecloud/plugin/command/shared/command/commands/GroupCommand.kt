@@ -2,6 +2,8 @@ package app.simplecloud.plugin.command.shared.command.commands
 
 import app.simplecloud.api.CloudApi
 import app.simplecloud.api.group.Group
+import app.simplecloud.api.group.GroupStartQueueItem
+import app.simplecloud.api.group.GroupStartQueueItemStatus
 import app.simplecloud.api.group.RollingRestartStatus
 import app.simplecloud.api.server.Server
 import app.simplecloud.core.shared.adventure.tags
@@ -20,6 +22,7 @@ import app.simplecloud.plugin.command.shared.utilities.CommandPermissions
 import app.simplecloud.plugin.command.shared.utilities.Formatter
 import kotlinx.coroutines.*
 import kotlinx.coroutines.future.*
+import net.kyori.adventure.text.Component
 import org.incendo.cloud.CommandManager
 import org.incendo.cloud.kotlin.coroutines.extension.suspendingHandler
 import org.incendo.cloud.parser.standard.IntegerParser.integerParser
@@ -42,6 +45,8 @@ class GroupCommand<C : CloudSender>(
         registerRollout()
         registerRolloutStatus()
         registerRolloutCancel()
+        registerQueue()
+        registerQueueClear()
     }
 
     private fun registerList() {
@@ -319,6 +324,80 @@ class GroupCommand<C : CloudSender>(
         )
     }
 
+    private fun registerQueue() {
+        manager.command(
+            manager.commandBuilder("cloud", "sc", "simplecloud")
+                .literal("group")
+                .literal("queue")
+                .required("group", stringParser(), CloudSuggestions.groups(api))
+                .suspendingHandler(plugin.scope) { context ->
+                    showQueue(context.sender(), context.get("group"))
+                }
+                .permission(Permission.permission(CommandPermissions.GROUP_QUEUE))
+                .build(),
+        )
+    }
+
+    private fun registerQueueClear() {
+        manager.command(
+            manager.commandBuilder("cloud", "sc", "simplecloud")
+                .literal("group")
+                .literal("queue")
+                .required("group", stringParser(), CloudSuggestions.groups(api))
+                .literal("clear")
+                .suspendingHandler(plugin.scope) { context ->
+                    clearQueue(context.sender(), context.get("group"))
+                }
+                .permission(Permission.permission(CommandPermissions.GROUP_QUEUE))
+                .build(),
+        )
+    }
+
+    private suspend fun showQueue(sender: C, groupName: String) {
+        val messages = plugin.config
+        val group = findGroup(sender, groupName) ?: return
+        val queue = ApiUtils.findStartQueue(api, group)
+        if (queue == null || queue.starts().isEmpty()) {
+            sender.sendMessage(messages.msg(messages.command.group.queue.empty, tags("group" to group.name)))
+            return
+        }
+        val starts = queue.starts()
+        sender.sendMessage(messages.msg(messages.command.group.queue.title, tags("group" to group.name, "count" to starts.size)))
+        listOf(
+            "Queued" to queue.queuedStarts(),
+            "Failed" to queue.failedStarts(),
+            "Total" to queue.totalStarts(),
+        ).forEach { (key, value) ->
+            sender.sendMessage(messages.msg(messages.command.group.queue.entry, tags("key" to key, "value" to value)))
+        }
+        starts.take(MAX_QUEUE_ENTRIES).forEach { start -> sender.sendMessage(queueEntry(start)) }
+        if (starts.size > MAX_QUEUE_ENTRIES) {
+            sender.sendMessage(messages.msg(messages.command.group.queue.more, tags("count" to starts.size - MAX_QUEUE_ENTRIES)))
+        }
+    }
+
+    private fun queueEntry(start: GroupStartQueueItem): Component {
+        val messages = plugin.config
+        val date = Formatter.date(start.createdAt())
+        if (start.status() == GroupStartQueueItemStatus.FAILED) {
+            val reason = start.failureReason() ?: "unknown reason"
+            return messages.msg(messages.command.group.queue.failed, tags("date" to date, "reason" to reason))
+        }
+        return messages.msg(messages.command.group.queue.pending, tags("date" to date))
+    }
+
+    private suspend fun clearQueue(sender: C, groupName: String) {
+        val messages = plugin.config
+        val group = findGroup(sender, groupName) ?: return
+        val queued = ApiUtils.getQueuedStarts(api, group)
+        if (queued == 0) {
+            sender.sendMessage(messages.msg(messages.command.group.queue.alreadyEmpty, tags("group" to group.name)))
+            return
+        }
+        api.group().clearServerStartQueue(group).await()
+        sender.sendMessage(messages.msg(messages.command.group.queue.cleared, tags("count" to queued, "group" to group.name)))
+    }
+
     private suspend fun findGroup(sender: C, groupName: String): Group? {
         val group = ApiUtils.findGroup(api, groupName)
         if (group == null) {
@@ -335,5 +414,6 @@ class GroupCommand<C : CloudSender>(
 
     companion object {
         private const val MAX_START_COUNT = 50
+        private const val MAX_QUEUE_ENTRIES = 10
     }
 }

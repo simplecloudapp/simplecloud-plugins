@@ -44,10 +44,12 @@ data class HelpSection(
         "group rollout <group>" to "Restart a group server by server",
         "group rollout <group> status" to "Show the rollout of a group",
         "group rollout <group> cancel" to "Cancel the rollout of a group",
+        "group queue <group>" to "Show the start queue of a group",
+        "group queue <group> clear" to "Clear the start queue of a group",
         "server list [group]" to "List the running servers",
-        "server info <group> <id>" to "Show a server",
+        "server info <server>" to "Show a server",
         "server start <group>" to "Start a new server",
-        "server stop <group> <id>" to "Stop a server",
+        "server stop <server>" to "Stop a server",
         "server command <server> <command>" to "Run a console command on a server",
         "ps list" to "List all persistent servers",
         "ps info <name>" to "Show a persistent server",
@@ -76,6 +78,7 @@ data class GroupSection(
     val start: GroupStartSection = GroupStartSection(),
     val stop: GroupStopSection = GroupStopSection(),
     val rollout: GroupRolloutSection = GroupRolloutSection(),
+    val queue: GroupQueueSection = GroupQueueSection(),
     val error: GroupErrorSection = GroupErrorSection(),
 )
 
@@ -128,6 +131,18 @@ data class GroupRolloutErrorSection(
 )
 
 @ConfigSerializable
+data class GroupQueueSection(
+    val title: String = "<prefix> <info>Start queue of group <group> <separator>(</separator><muted><count></muted><separator>)</separator>",
+    val entry: String = "<separator>•</separator> <muted><key><separator>:</separator> <highlight><value>",
+    val pending: String = "<separator>•</separator> <muted>Pending since <highlight><date>",
+    val failed: String = "<separator>•</separator> <muted>Failed at <highlight><date></highlight> <separator>(</separator><error><reason></error><separator>)</separator>",
+    val more: String = "<separator>•</separator> <muted>... and <count> more",
+    val empty: String = "<prefix> <warning>The start queue of group <group> is empty.",
+    val cleared: String = "<prefix> <success>Cleared <count> queued starts of group <group>.",
+    val alreadyEmpty: String = "<prefix> <warning>The start queue of group <group> is already empty.",
+)
+
+@ConfigSerializable
 data class GroupErrorSection(
     val notFound: String = "<prefix> <error>Group <group> was not found.",
     val alreadyEmpty: String = "<prefix> <warning>Group <group> has no running servers.",
@@ -169,7 +184,7 @@ data class ServerStartSection(
 
 @ConfigSerializable
 data class ServerStopSection(
-    val success: String = "<prefix> <info>Sent the stop request for server <group>-<id>.",
+    val success: String = "<prefix> <info>Sent the stop request for server <server>.",
 )
 
 @ConfigSerializable
@@ -179,9 +194,8 @@ data class ServerCommandSection(
 
 @ConfigSerializable
 data class ServerErrorSection(
-    val notFound: String = "<prefix> <error>Server <group>-<id> was not found.",
-    val alreadyStopping: String = "<prefix> <warning>Server <group>-<id> is already stopping.",
-    val unknown: String = "<prefix> <error>Server <server> was not found.",
+    val notFound: String = "<prefix> <error>Server <server> was not found.",
+    val alreadyStopping: String = "<prefix> <warning>Server <server> is already stopping.",
     val commandEmpty: String = "<prefix> <error>Write a command for server <server>.",
 )
 
